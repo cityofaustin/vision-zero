@@ -1,30 +1,28 @@
 import { ReactNode } from "react";
 import { ColDataCardDef, InputType } from "@/types/types";
 import { LookupTableOption } from "@/types/lookupTables";
-import { Path } from "@/types/utils";
 
 /**
- * Retrieve a value from an object from a given path using dot notation
+ * Retrieve a value from an object given a dot-noted path string.
  *
- * todo: is this actually typesafe lol
+ * Essentially, it performs optional chaining on an object. It is similar
+ * to lodash.get(), except array notation is not supported.
+ *
+ * @example
+ * // returns "Austin"
+ * getFromPath({ city: { label: "Austin" } }, "city.label" )
  */
-export const getFromPath = <T extends Record<string, unknown>>(
-  obj: T,
-  path: Path<T>
-): unknown => {
-  // todo: what about nulls/undefined?
-  return path.split(".").reduce((previousValue: unknown, pathPart: string) => {
-    if (
-      previousValue &&
-      typeof previousValue === "object" &&
-      pathPart in previousValue
-    ) {
-      return previousValue[pathPart as keyof typeof previousValue];
+export function getFromPath(
+  obj: Record<string, unknown>,
+  path: string
+): unknown {
+  return path.split(".").reduce((currentValue: unknown, key: string) => {
+    if (currentValue != null && typeof currentValue === "object") {
+      return (currentValue as Record<string, unknown>)[key];
     }
-    // todo: should never reach here - not sure how to handle since returning undefined
     return undefined;
   }, obj);
-};
+}
 
 /**
  * Convert a record value to a string so that it can be used as the initial value
