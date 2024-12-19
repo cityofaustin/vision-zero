@@ -5,12 +5,11 @@ export const locationColumns: {
   [name: string]: ColDataCardDef<Location>;
 } = {
   location_id: {
-    name: "location_id",
+    path: "location_id",
     label: "Location ID",
   },
-  // todo: need to support non-lookup table relationships
-  //   cr3_crash_count: {
-  //     name: "cr3_crash_count",
-  //     relationshipName: "locations_list_view"
-  //   }
+  cr3_crash_count: {
+    path: "locations_list_view.cr3_crash_count",
+    label: "CR3 Crashes (Previous 5 years)",
+  },
 };

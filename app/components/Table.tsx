@@ -27,17 +27,17 @@ export default function Table<T extends Record<string, unknown>>({
         <tr>
           {columns.map((col) => (
             <th
-              key={String(col.name)}
+              key={String(col.path)}
               style={{ cursor: col.sortable ? "pointer" : "auto" }}
               onClick={() => {
                 if (col.sortable) {
                   const newQueryConfig = { ...queryConfig };
-                  if (col.name === queryConfig.sortColName) {
+                  if (col.path === queryConfig.sortColName) {
                     // already sorting on this column, so switch order
                     newQueryConfig.sortAsc = !newQueryConfig.sortAsc;
                   } else {
                     // change sort column and leave order as-is
-                    newQueryConfig.sortColName = String(col.name);
+                    newQueryConfig.sortColName = String(col.path);
                   }
                   // reset offset/pagination
                   newQueryConfig.offset = 0;
@@ -46,7 +46,7 @@ export default function Table<T extends Record<string, unknown>>({
               }}
             >
               {col.label}
-              {col.name === queryConfig.sortColName && (
+              {col.path === queryConfig.sortColName && (
                 <SortIcon className="ms-1 my-1" />
               )}
             </th>
@@ -58,7 +58,7 @@ export default function Table<T extends Record<string, unknown>>({
           <tr key={i}>
             {columns.map((col) => (
               // todo: is no-wrap / side-scrolling ok?
-              <td key={String(col.name)} style={{ whiteSpace: "nowrap" }}>
+              <td key={String(col.path)} style={{ whiteSpace: "nowrap" }}>
                 {renderColumnValue(row, col)}
               </td>
             ))}
