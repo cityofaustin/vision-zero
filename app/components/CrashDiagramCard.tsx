@@ -8,6 +8,8 @@ import {
   TransformComponent,
   useControls,
 } from "react-zoom-pan-pinch";
+import { BsZoomIn, BsZoomOut } from "react-icons/bs";
+import { SlActionUndo } from "react-icons/sl";
 
 const CR3_DIAGRAM_BASE_URL = process.env.NEXT_PUBLIC_CR3_DIAGRAM_BASE_URL!;
 
@@ -25,9 +27,42 @@ const ZoomResetControls = ({
 
   return (
     <div className="tools">
-      <button onClick={() => zoomIn()}>+</button>
-      <button onClick={() => zoomOut()}>-</button>
-      <button onClick={handleReset}>x</button>
+      <button
+        onClick={() => zoomIn()}
+        style={{
+          color: "black",
+          backgroundColor: "white",
+          border: "none",
+          fontSize: "24px",
+          fontWeight: "bold",
+        }}
+      >
+        <BsZoomIn />
+      </button>
+      <button
+        onClick={() => zoomOut()}
+        style={{
+          color: "black",
+          backgroundColor: "white",
+          border: "none",
+          fontSize: "24px",
+          fontWeight: "bold",
+        }}
+      >
+        <BsZoomOut />
+      </button>
+      <button
+        onClick={handleReset}
+        style={{
+          color: "black",
+          backgroundColor: "white",
+          border: "none",
+          fontSize: "24px",
+          fontWeight: "bold",
+        }}
+      >
+        <SlActionUndo />
+      </button>
     </div>
   );
 };
