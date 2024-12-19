@@ -11,14 +11,23 @@ import {
 
 const CR3_DIAGRAM_BASE_URL = process.env.NEXT_PUBLIC_CR3_DIAGRAM_BASE_URL!;
 
-const Controls = () => {
+const Controls = ({
+  setRotation,
+}: {
+  setRotation: (value: number) => void;
+}) => {
   const { zoomIn, zoomOut, resetTransform } = useControls();
+
+  const handleReset = () => {
+    resetTransform();
+    setRotation(0);
+  };
 
   return (
     <div className="tools">
       <button onClick={() => zoomIn()}>+</button>
       <button onClick={() => zoomOut()}>-</button>
-      <button onClick={() => resetTransform()}>x</button>
+      <button onClick={handleReset}>x</button>
     </div>
   );
 };
@@ -102,7 +111,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               </Alert>
             )}
           </TransformComponent>
-          <Controls />
+          <Controls setRotation={setRotation} />
           <RotateControls rotation={rotation} setRotation={setRotation} />
         </TransformWrapper>
       </Card.Body>
