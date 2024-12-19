@@ -1,7 +1,14 @@
 import { format, parseISO } from "date-fns";
 
-// const formatCostToDollars = (cost: number | null) =>
-//   cost || cost === 0 ? `$${cost.toLocaleString()}` : "--";
+/**
+ * Format a number as a string with a dollar sign
+ */
+export const formatDollars = (cost: unknown | null): string => {
+  if (typeof cost !== "number") {
+    return "";
+  }
+  return `$${cost.toLocaleString()}`;
+};
 
 /**
  * Format date as: Tue 5 Nov 2024 9:18 AM
