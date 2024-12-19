@@ -112,20 +112,6 @@ const renderYesNoString = (value: unknown): string => {
 };
 
 /**
- * Return the `label` column from a related lookup table
- */
-export const renderLookupLabel = <T extends Record<string, unknown>>(
-  record: T,
-  column: ColDataCardDef<T>
-): string => {
-  if (column.relationshipName) {
-    const relatedObject = record[column.relationshipName] as LookupTableOption;
-    return relatedObject?.label;
-  }
-  return "";
-};
-
-/**
  * Get a value from a record given its column. Uses the column's valueGetter (if present),
  * otherwise column.path is used.
  */
@@ -170,11 +156,8 @@ export const renderColumnValue = <T extends Record<string, unknown>>(
       column
     );
   }
-  // todo: these should probably be valueFormatter's? 😵‍💫
-  if (column.relationshipName) {
-    return renderLookupLabel(record, column);
-  }
 
+  // todo: this should probably be a valueFormatter? 😵‍💫
   if (column.inputType === "yes_no") {
     return renderYesNoString(record[column.path]);
   }
