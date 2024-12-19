@@ -2,6 +2,7 @@ import { useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
+import Button from "react-bootstrap/Button";
 import { Crash } from "@/types/crashes";
 import {
   TransformWrapper,
@@ -27,54 +28,15 @@ const ZoomResetControls = ({
 
   return (
     <div className="tools">
-      <button
-        onClick={() => zoomIn()}
-        style={{
-          color: "black",
-          backgroundColor: "#f0f0f0",
-          border: "1px solid #d0d0d0",
-          fontSize: "24px",
-          fontWeight: "bold",
-          transition: "transform 0.1s",
-        }}
-        onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
-        onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-      >
+      <Button size="sm" variant="primary" onClick={() => zoomIn()}>
         <BsZoomIn />
-      </button>
-      <button
-        onClick={() => zoomOut()}
-        style={{
-          color: "black",
-          backgroundColor: "#f0f0f0",
-          border: "1px solid #d0d0d0",
-          fontSize: "24px",
-          fontWeight: "bold",
-          transition: "transform 0.1s",
-        }}
-        onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
-        onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-      >
+      </Button>
+      <Button size="sm" variant="primary" onClick={() => zoomOut()}>
         <BsZoomOut />
-      </button>
-      <button
-        onClick={handleReset}
-        style={{
-          color: "black",
-          backgroundColor: "#f0f0f0",
-          border: "1px solid #d0d0d0",
-          fontSize: "24px",
-          fontWeight: "bold",
-          transition: "transform 0.1s",
-        }}
-        onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
-        onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-      >
+      </Button>
+      <Button size="sm" variant="primary" onClick={handleReset}>
         <SlActionUndo />
-      </button>
+      </Button>
     </div>
   );
 };
