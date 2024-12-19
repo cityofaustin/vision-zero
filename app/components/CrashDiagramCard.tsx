@@ -11,7 +11,7 @@ import {
 
 const CR3_DIAGRAM_BASE_URL = process.env.NEXT_PUBLIC_CR3_DIAGRAM_BASE_URL!;
 
-const Controls = ({
+const ZoomResetControls = ({
   setRotation,
 }: {
   setRotation: (value: number) => void;
@@ -111,7 +111,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               </Alert>
             )}
           </TransformComponent>
-          <Controls setRotation={setRotation} />
+          <ZoomResetControls setRotation={setRotation} />
           <RotateControls rotation={rotation} setRotation={setRotation} />
         </TransformWrapper>
       </Card.Body>
