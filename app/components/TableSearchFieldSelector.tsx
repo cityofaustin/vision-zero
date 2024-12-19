@@ -6,7 +6,6 @@ export default function TableSearchFieldSelector({
   setSearchSettings,
   queryConfig,
 }: TableSearchProps) {
-  // todo: bug here where changing the search field clears the search input if it hasn't been searched
   return (
     <>
       <Form.Label className="fw-bold me-2 my-0">Search by </Form.Label>
