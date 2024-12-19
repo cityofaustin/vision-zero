@@ -3,6 +3,7 @@ import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { Crash } from "@/types/crashes";
 import {
   TransformWrapper,
@@ -27,13 +28,24 @@ const ZoomResetControls = ({
   };
 
   return (
-    <div className="tools">
-      <Button size="sm" variant="primary" onClick={() => zoomIn()}>
-        <BsZoomIn />
-      </Button>
-      <Button size="sm" variant="primary" onClick={() => zoomOut()}>
-        <BsZoomOut />
-      </Button>
+    <div
+      className="tools"
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        width: "100%",
+      }}
+    >
+      <div>
+        <ButtonGroup>
+          <Button size="sm" variant="primary" onClick={() => zoomIn()}>
+            <BsZoomIn />
+          </Button>
+          <Button size="sm" variant="primary" onClick={() => zoomOut()}>
+            <BsZoomOut />
+          </Button>
+        </ButtonGroup>
+      </div>
       <Button size="sm" variant="primary" onClick={handleReset}>
         <SlActionUndo />
       </Button>
