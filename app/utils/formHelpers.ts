@@ -87,11 +87,9 @@ const stringToNumberNullable = (value: string): number | null => {
  * // returns "0"
  * renderValueToString(0)
  *
- * @example
  * // returns "false"
  * renderValueToString(false)
  *
- * @example
  * // returns "[object Object]"
  * renderValueToString({ a: "1"})
  */
