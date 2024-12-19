@@ -31,11 +31,15 @@ const ZoomResetControls = ({
         onClick={() => zoomIn()}
         style={{
           color: "black",
-          backgroundColor: "white",
-          border: "none",
+          backgroundColor: "#f0f0f0",
+          border: "1px solid #d0d0d0",
           fontSize: "24px",
           fontWeight: "bold",
+          transition: "transform 0.1s",
         }}
+        onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
+        onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
       >
         <BsZoomIn />
       </button>
@@ -43,11 +47,15 @@ const ZoomResetControls = ({
         onClick={() => zoomOut()}
         style={{
           color: "black",
-          backgroundColor: "white",
-          border: "none",
+          backgroundColor: "#f0f0f0",
+          border: "1px solid #d0d0d0",
           fontSize: "24px",
           fontWeight: "bold",
+          transition: "transform 0.1s",
         }}
+        onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
+        onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
       >
         <BsZoomOut />
       </button>
@@ -55,11 +63,15 @@ const ZoomResetControls = ({
         onClick={handleReset}
         style={{
           color: "black",
-          backgroundColor: "white",
-          border: "none",
+          backgroundColor: "#f0f0f0",
+          border: "1px solid #d0d0d0",
           fontSize: "24px",
           fontWeight: "bold",
+          transition: "transform 0.1s",
         }}
+        onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
+        onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
       >
         <SlActionUndo />
       </button>
