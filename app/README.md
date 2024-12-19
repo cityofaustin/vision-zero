@@ -29,7 +29,7 @@ npm install
 npm run dev
 ```
 
-6. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Open [http://localhost:3002](http://localhost:3002) with your browser to see the result.
 
 ## This app vs the old VZE
 
