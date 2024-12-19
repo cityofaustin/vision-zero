@@ -1,11 +1,8 @@
-import { useState, Component } from "react";
+import { useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import { Crash } from "@/types/crashes";
-
-// import axios from "axios";
-// import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import {
   TransformWrapper,
   TransformComponent,
@@ -26,8 +23,35 @@ const Controls = () => {
   );
 };
 
+const RotateControls = ({
+  rotation,
+  setRotation,
+}: {
+  rotation: number;
+  setRotation: (value: number) => void;
+}) => {
+  const rotate = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRotation(Number(event.target.value));
+  };
+
+  return (
+    <div className="rotate-controls">
+      <input
+        type="range"
+        min="-180"
+        max="180"
+        value={rotation}
+        className="form-control-range"
+        id="formControlRange"
+        onChange={rotate}
+      />
+    </div>
+  );
+};
+
 export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [diagramError, setDiagramError] = useState(false);
+  const [rotation, setRotation] = useState(0);
 
   return (
     <Card>
@@ -41,6 +65,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
                 style={{
                   height: "100%",
                   maxWidth: "100%",
+                  transform: `rotate(${rotation}deg)`,
                 }}
                 src={`${CR3_DIAGRAM_BASE_URL}/${crash.record_locator}.jpeg`}
                 alt="crash diagram"
@@ -60,7 +85,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               <Alert variant="danger">
                 <p>
                   The crash diagram is not available. Typically, this indicates
-                  there was an error when processing this crashaposs CR3 PDF.
+                  there was an error when processing this crash&aposs CR3 PDF.
                 </p>
                 <p>
                   For additional assistance, you can&nbsp;
@@ -78,6 +103,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             )}
           </TransformComponent>
           <Controls />
+          <RotateControls rotation={rotation} setRotation={setRotation} />
         </TransformWrapper>
       </Card.Body>
       <Card.Footer>Something else here</Card.Footer>
