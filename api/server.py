@@ -3,11 +3,14 @@
 # ATD - CR3 Download API
 #
 
-import json
-import re
 import datetime
-import boto3
+import json
 import os
+import re
+import secrets
+import string
+
+import boto3
 import requests
 
 from dotenv import load_dotenv, find_dotenv
@@ -15,7 +18,7 @@ from os import environ as env
 from functools import wraps
 from six.moves.urllib.request import urlopen
 
-from flask import Flask, request, jsonify, abort, g
+from flask import Flask, request, jsonify, g
 from flask_cors import cross_origin
 from werkzeug.local import LocalProxy
 from jose import jwt
@@ -42,6 +45,32 @@ AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
 
 ADMIN_ROLE_NAME = "vz-admin"
 
+CORS_URL = "*"
+ALGORITHMS = ["RS256"]
+APP = Flask(__name__)
+
+
+def get_secure_password(num_chars=16):
+    """Generate a secure random password with at least one lowercase character,
+    uppercase character, special character, and digit:
+    https://docs.python.org/3/library/secrets.html#recipes-and-best-practices
+
+    Args:
+        num_chars (int, optional): Defaults to 16.
+    """
+    special_chars = "!@#$%^&*"
+    alphabet = string.ascii_letters + string.digits + special_chars
+    while True:
+        password = "".join(secrets.choice(alphabet) for i in range(num_chars))
+        if (
+            any(c.islower() for c in password)
+            and any(c.isupper() for c in password)
+            and any(c.isdigit() for c in password)
+            and any(c in special_chars for c in password)
+        ):
+            break
+    return password
+
 
 def get_api_token():
     """
@@ -63,12 +92,22 @@ def get_api_token():
     return response.json().get("access_token", None)
 
 
-CORS_URL = "*"
-ALGORITHMS = ["RS256"]
-APP = Flask(__name__)
+def notAuthorizedError():
+    """Return 403 error as application/json in shape of the Auth0 API"""
+    return (
+        jsonify(
+            {
+                "error": "Forbidden",
+                "message": "You do not have permission to access this resource.",
+                "statusCode": 403,
+            }
+        ),
+        403,
+    )
 
 
 # Add the appropriate security headers to all responses
+# These headers may be overwritten in prod and staging by the API gateway!
 @APP.after_request
 def add_custom_headers(response):
     # Cache-Control to manage caching behavior
@@ -103,8 +142,9 @@ def add_custom_headers(response):
     response.headers["Expect-CT"] = "max-age=86400, enforce"
 
     # Access-Control-Allow-Origin for CORS
+    # These headers may be overwritten in prod and staging by the API gateway!
     response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     response.headers["Access-Control-Allow-Credentials"] = "true"
 
@@ -315,8 +355,14 @@ def healthcheck():
 
 
 @APP.route("/cr3/download/<crash_id>")
-@cross_origin(headers=["Content-Type", "Authorization"])
-@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
 @requires_auth
 def download_crash_id(crash_id):
     """A valid access token is required to access this route"""
@@ -366,7 +412,7 @@ def isValidUser(user_dict):
         return False
 
     # Check email for austintexas.gov
-    if str(user_email).endswith("@austintexas.gov") is False:
+    if not str(user_email).endswith("@austintexas.gov"):
         return False
 
     return True
@@ -382,20 +428,32 @@ def hasUserRole(role, user_dict):
 
 
 @APP.route("/user/test")
-@cross_origin(headers=["Content-Type", "Authorization"])
-@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
 @requires_auth
 def user_test():
     user_dict = current_user._get_current_object()
     if isValidUser(user_dict):
         return jsonify(message=current_user._get_current_object())
     else:
-        abort(403)
+        return notAuthorizedError()
 
 
 @APP.route("/user/list_users")
-@cross_origin(headers=["Content-Type", "Authorization"])
-@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
 @requires_auth
 def user_list_users():
     user_dict = current_user._get_current_object()
@@ -407,28 +465,34 @@ def user_list_users():
             + page
             + "&per_page="
             + per_page
-            + "&include_totals=true"
+            + "&include_totals=true&sort=last_login:-1"
         )
         headers = {"Authorization": f"Bearer {get_api_token()}"}
-        response = requests.get(endpoint, headers=headers).json()
-        return jsonify(response)
+        response = requests.get(endpoint, headers=headers)
+        return jsonify(response.json()), response.status_code
     else:
-        abort(403)
+        return notAuthorizedError()
 
 
 @APP.route("/user/get_user/<id>")
-@cross_origin(headers=["Content-Type", "Authorization"])
-@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
 @requires_auth
 def user_get_user(id):
     user_dict = current_user._get_current_object()
     if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
-        response = requests.get(endpoint, headers=headers).json()
-        return jsonify(response)
+        response = requests.get(endpoint, headers=headers)
+        return jsonify(response.json()), response.status_code
     else:
-        abort(403)
+        return notAuthorizedError()
 
 
 @APP.route("/user/create_user", methods=["POST"])
@@ -439,17 +503,29 @@ def user_create_user():
     user_dict = current_user._get_current_object()
     if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
         json_data = request.json
+        # set the user's password - user will have to reset it for access
+        json_data["password"] = get_secure_password()
+        # set additional user properties
+        json_data["connection"] = "Username-Password-Authentication"
+        json_data["verify_email"] = True
+        json_data["email_verified"] = False
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users"
         headers = {"Authorization": f"Bearer {get_api_token()}"}
-        response = requests.post(endpoint, headers=headers, json=json_data).json()
-        return jsonify(response)
+        response = requests.post(endpoint, headers=headers, json=json_data)
+        return jsonify(response.json()), response.status_code
     else:
-        abort(403)
+        return notAuthorizedError()
 
 
 @APP.route("/user/update_user/<id>", methods=["PUT"])
-@cross_origin(headers=["Content-Type", "Authorization"])
-@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
 @requires_auth
 def user_update_user(id):
     user_dict = current_user._get_current_object()
@@ -457,15 +533,21 @@ def user_update_user(id):
         json_data = request.json
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
-        response = requests.patch(endpoint, headers=headers, json=json_data).json()
-        return jsonify(response)
+        response = requests.patch(endpoint, headers=headers, json=json_data)
+        return jsonify(response.json()), response.status_code
     else:
-        abort(403)
+        return notAuthorizedError()
 
 
 @APP.route("/user/unblock_user/<id>", methods=["DELETE"])
-@cross_origin(headers=["Content-Type", "Authorization"])
-@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
 @requires_auth
 def user_unblock_user(id):
     user_dict = current_user._get_current_object()
@@ -475,12 +557,18 @@ def user_unblock_user(id):
         response = requests.delete(endpoint, headers=headers)
         return f"{response.status_code}"
     else:
-        abort(403)
+        return notAuthorizedError()
 
 
 @APP.route("/user/delete_user/<id>", methods=["DELETE"])
-@cross_origin(headers=["Content-Type", "Authorization"])
-@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
 @requires_auth
 def user_delete_user(id):
     user_dict = current_user._get_current_object()
@@ -490,7 +578,7 @@ def user_delete_user(id):
         response = requests.delete(endpoint, headers=headers)
         return f"{response.status_code}"
     else:
-        abort(403)
+        return notAuthorizedError()
 
 
 if __name__ == "__main__":
