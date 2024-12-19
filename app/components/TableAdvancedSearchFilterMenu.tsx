@@ -55,11 +55,7 @@ export default function TableAdvancedSearchFilterMenu({
         return (
           <Col key={filterCard.id}>
             <Card>
-              <Card.Header>
-                {filterCard.label}
-                {/* todo: showing the group operator here just for debug help */}
-                <span className="ms-2">{`(match: ${filterCard.groupOperator})`}</span>
-              </Card.Header>
+              <Card.Header>{filterCard.label}</Card.Header>
               <Card.Body>
                 <Form>
                   {filterCard.filterGroups?.map((switchFilterGroup) => {
