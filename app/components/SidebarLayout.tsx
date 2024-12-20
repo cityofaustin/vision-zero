@@ -13,6 +13,7 @@ import {
   FaLocationDot,
   FaAngleRight,
   FaUserGroup,
+  FaHeart,
 } from "react-icons/fa6";
 import AppNavBar from "./AppNavBar";
 import SideBarListItem from "./SideBarListItem";
@@ -55,10 +56,10 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
    * Hook which refreshes the user's token and redirects to the Auth0 login page
    * if the user's session expires. The hook re-runs every time the app route
    * changes and on a 5-minute loop.
-   * 
+   *
    * Note that the token has a short lifespan
    * (10 hrs at the time of writing) vs the user session, which is currently
-   * set to 3 days (of inactivity) up to a max of 7 days. 
+   * set to 3 days (of inactivity) up to a max of 7 days.
    */
   useEffect(() => {
     const refreshToken = async () => {
@@ -169,6 +170,13 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
                 Icon={FaUserGroup}
                 label="Users"
                 href="/users"
+              />
+              <SideBarListItem
+                isCollapsed={isCollapsed}
+                isCurrentPage={segments.includes("fatalities")}
+                Icon={FaHeart}
+                label="Fatalities"
+                href="/fatalities"
               />
             </ListGroup>
           </div>
