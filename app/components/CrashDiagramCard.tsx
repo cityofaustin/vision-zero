@@ -44,26 +44,24 @@ const ZoomResetControls = ({
         marginBottom: "5px",
       }}
     >
-      <div>
-        <ButtonGroup>
-          <Button
-            size="sm"
-            variant="primary"
-            onClick={() => zoomIn()}
-            title="Zoom In"
-          >
-            <BsZoomIn style={iconStyle} />
-          </Button>
-          <Button
-            size="sm"
-            variant="primary"
-            onClick={() => zoomOut()}
-            title="Zoom Out"
-          >
-            <BsZoomOut style={iconStyle} />
-          </Button>
-        </ButtonGroup>
-      </div>
+      <ButtonGroup>
+        <Button
+          size="sm"
+          variant="primary"
+          onClick={() => zoomIn()}
+          title="Zoom In"
+        >
+          <BsZoomIn style={iconStyle} />
+        </Button>
+        <Button
+          size="sm"
+          variant="primary"
+          onClick={() => zoomOut()}
+          title="Zoom Out"
+        >
+          <BsZoomOut style={iconStyle} />
+        </Button>
+      </ButtonGroup>
       <Button size="sm" variant="primary" onClick={handleReset} title="Reset">
         <SlActionUndo style={iconStyle} />
       </Button>
