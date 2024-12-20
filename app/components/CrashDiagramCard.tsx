@@ -30,7 +30,7 @@ const ZoomResetControls = ({
   };
 
   return (
-    <div className="tools d-flex justify-content-between w-100 mb-1">
+    <div className="d-flex justify-content-between w-100 mb-1">
       <ButtonGroup>
         <Button
           size="sm"
