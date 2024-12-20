@@ -75,7 +75,7 @@ const RotateControls = ({
   };
 
   return (
-    <div className="rotate-controls">
+    <div className="rotate-controls" style={{ marginTop: "10px" }}>
       <input
         type="range"
         min="-180"
