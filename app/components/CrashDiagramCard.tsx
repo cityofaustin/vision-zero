@@ -123,7 +123,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               {diagramError && crash.is_temp_record && (
                 <Alert variant="info">
                   <i className="fa fa-info-circle" /> Crash diagrams are not
-                  available for user-created crash records
+                  available for temporary crash records
                 </Alert>
               )}
               {diagramError && !crash.is_temp_record && (
