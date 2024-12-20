@@ -18,7 +18,7 @@ services:
     container_name: visionzero-vze
     command: npm start
     ports:
-      - 3000:3000
+      - 3002:3000
     hostname: vze
     build: editor
     volumes:
@@ -41,7 +41,7 @@ services:
     volumes:
       - ./database/snapshots:/snapshots
     ports:
-      - 5432:5432
+      - 5431:5432
 
   cr3-user-api:
     build: api
