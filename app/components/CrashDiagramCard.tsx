@@ -12,6 +12,7 @@ import {
   TransformComponent,
   useControls,
 } from "react-zoom-pan-pinch";
+import AlignedLabel from "@/components/AlignedLabel";
 import { Crash } from "@/types/crashes";
 
 const CR3_DIAGRAM_BASE_URL = process.env.NEXT_PUBLIC_CR3_DIAGRAM_BASE_URL!;
@@ -36,15 +37,7 @@ const ZoomResetControls = ({
   };
 
   return (
-    <div
-      className="tools"
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        width: "100%",
-        marginBottom: "5px",
-      }}
-    >
+    <div className="tools d-flex justify-content-between w-100 mb-1">
       <ButtonGroup>
         <Button
           size="sm"
@@ -52,7 +45,10 @@ const ZoomResetControls = ({
           onClick={() => zoomIn()}
           title="Zoom In"
         >
-          <FaMagnifyingGlassPlus style={iconStyle} />
+          <AlignedLabel>
+            <FaMagnifyingGlassPlus className="me-2" />
+            <span>Zoom In</span>
+          </AlignedLabel>
         </Button>
         <Button
           size="sm"
@@ -60,11 +56,17 @@ const ZoomResetControls = ({
           onClick={() => zoomOut()}
           title="Zoom Out"
         >
-          <FaMagnifyingGlassMinus style={iconStyle} />
+          <AlignedLabel>
+            <FaMagnifyingGlassMinus className="me-2" />
+            <span>Zoom Out</span>
+          </AlignedLabel>
         </Button>
       </ButtonGroup>
       <Button size="sm" variant="primary" onClick={handleReset} title="Reset">
-        <SlActionUndo style={iconStyle} />
+        <AlignedLabel>
+          <SlActionUndo className="me-2" />
+          <span>Reset</span>
+        </AlignedLabel>
       </Button>
     </div>
   );
