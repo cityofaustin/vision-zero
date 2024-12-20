@@ -126,10 +126,15 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
                 />
               )}
               {diagramError && crash.is_temp_record && (
-                <Alert variant="info" style={{ marginTop: "50px" }}>
-                  <i className="fa fa-info-circle" />
-                  Crash diagrams are not available for temporary crash records
-                </Alert>
+                <div
+                  className="d-flex align-items-start justify-content-center h-100 mt-3"
+                  style={{ width: "490px" }}
+                >
+                  <Alert variant="info" className="mx-auto">
+                    <i className="fa fa-info-circle" />
+                    Crash diagrams are not available for temporary crash records
+                  </Alert>
+                </div>
               )}
               {diagramError && !crash.is_temp_record && (
                 <Alert variant="danger" style={{ marginTop: "20px" }}>
