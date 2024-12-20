@@ -12,6 +12,7 @@ import {
   useControls,
 } from "react-zoom-pan-pinch";
 import { Crash } from "@/types/crashes";
+
 const CR3_DIAGRAM_BASE_URL = process.env.NEXT_PUBLIC_CR3_DIAGRAM_BASE_URL!;
 
 const ZoomResetControls = ({
