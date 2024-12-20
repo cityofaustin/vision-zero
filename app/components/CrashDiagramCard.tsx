@@ -61,6 +61,7 @@ const ZoomResetControls = ({
     </div>
   );
 };
+
 const RotateControls = ({
   rotation,
   setRotation,
@@ -96,6 +97,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
       <Card.Header>Diagram</Card.Header>
       <Card.Body className="crash-header-card-body text-center">
         <TransformWrapper>
+          <ZoomResetControls setRotation={setRotation} />
           <TransformComponent>
             {!diagramError && (
               <Image
@@ -140,7 +142,6 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               </Alert>
             )}
           </TransformComponent>
-          <ZoomResetControls setRotation={setRotation} />
           <RotateControls rotation={rotation} setRotation={setRotation} />
         </TransformWrapper>
       </Card.Body>
