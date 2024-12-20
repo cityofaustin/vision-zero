@@ -27,6 +27,15 @@ const ZoomResetControls = ({
     setRotation(0);
   };
 
+  // pixel pushing
+  const iconStyle = {
+    // type assertion that the type of this string is the string "relative" to satisfy Button's style prop.
+    // TS will infer this as string when we want something more specific.
+    position: "relative" as "relative",
+    top: "-1px",
+    fontSize: "1.3em",
+  };
+
   return (
     <div
       className="tools"
@@ -39,20 +48,19 @@ const ZoomResetControls = ({
       <div>
         <ButtonGroup>
           <Button size="sm" variant="primary" onClick={() => zoomIn()}>
-            <BsZoomIn />
+            <BsZoomIn style={iconStyle} />
           </Button>
           <Button size="sm" variant="primary" onClick={() => zoomOut()}>
-            <BsZoomOut />
+            <BsZoomOut style={iconStyle} />
           </Button>
         </ButtonGroup>
       </div>
       <Button size="sm" variant="primary" onClick={handleReset}>
-        <SlActionUndo />
+        <SlActionUndo style={iconStyle} />
       </Button>
     </div>
   );
 };
-
 const RotateControls = ({
   rotation,
   setRotation,
