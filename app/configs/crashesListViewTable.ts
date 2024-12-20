@@ -6,7 +6,7 @@ import { crashesListViewColumns } from "@/configs/crashesListViewColumns";
 import { QueryConfig, FilterGroup } from "@/utils/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
-const columns = crashesListViewColumns.map((col) => String(col.name));
+const columns = crashesListViewColumns.map((col) => String(col.path));
 
 const crashesListViewfilterCards: FilterGroup[] = [
   {

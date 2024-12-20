@@ -1,5 +1,28 @@
+import { ReactNode } from "react";
 import { ColDataCardDef, InputType } from "@/types/types";
-import { LookupTableOption } from "@/types/lookupTables";
+import { LookupTableOption } from "@/types/relationships";
+
+/**
+ * Retrieve a value from an object given a dot-noted path string.
+ *
+ * Essentially, it performs optional chaining on an object. It is similar
+ * to lodash.get(), except array notation is not supported.
+ *
+ * @example
+ * // returns "Austin"
+ * getFromPath({ city: { label: "Austin" } }, "city.label" )
+ */
+export function getFromPath(
+  obj: Record<string, unknown>,
+  path: string
+): unknown {
+  return path.split(".").reduce((currentValue: unknown, key: string) => {
+    if (currentValue != null && typeof currentValue === "object") {
+      return (currentValue as Record<string, unknown>)[key];
+    }
+    return undefined;
+  }, obj);
+}
 
 /**
  * Convert a record value to a string so that it can be used as the initial value
@@ -55,11 +78,23 @@ const stringToNumberNullable = (value: string): number | null => {
 };
 
 /**
+ * Stringify an unknown value and coerce null and undefined to empty string
  *
- * Stringify a number and coerce nulls to empty strings
+ * @example
+ * // returns "a"
+ * renderValueToString("a")
+ *
+ * // returns "0"
+ * renderValueToString(0)
+ *
+ * // returns "false"
+ * renderValueToString(false)
+ *
+ * // returns "[object Object]"
+ * renderValueToString({ a: "1"})
  */
-export const renderNumber = (value: number | null): string => {
-  if (value === null) {
+const renderValueToString = (value: unknown): string => {
+  if (value === null || value === undefined) {
     return "";
   }
   return String(value);
@@ -75,31 +110,28 @@ const renderYesNoString = (value: unknown): string => {
 };
 
 /**
- * Return the `label` column from a related lookup table
- */
-export const renderLookupLabel = <T extends Record<string, unknown>>(
-  record: T,
-  column: ColDataCardDef<T>
-): string => {
-  if (column.relationshipName) {
-    const relatedObject = record[column.relationshipName] as LookupTableOption;
-    return relatedObject?.label;
-  }
-  return "";
-};
-
-/**
- * Generic accessor function that returns a record property. It uses the
- * column's valueGetter (if present) otherwise record[column.name];
+ * Get a columns's value from a record
+ * @param record - the record object
+ * @param column - the column definition
+ * @param useForeignKeyIfExists - if true and a Relationship is available,
+ * return the value of the relationship's foreign key
  */
 export const getRecordValue = <T extends Record<string, unknown>>(
   record: T,
-  column: ColDataCardDef<T>
+  column: ColDataCardDef<T>,
+  useForeignKeyIfExists?: boolean
 ): unknown => {
-  if (column.valueGetter) {
-    return column.valueGetter(record, column);
+  if (useForeignKeyIfExists && column.relationship?.foreignKey) {
+    // access the current foreign key - for when a relationship is
+    // being edited
+    return record[column.relationship?.foreignKey];
   }
-  return record[column.name];
+  if (!column.path.includes(".")) {
+    // simple object accessor
+    return record[column.path];
+  }
+  // handle dot notation
+  return getFromPath(record, column.path);
 };
 
 /**
@@ -107,15 +139,16 @@ export const getRecordValue = <T extends Record<string, unknown>>(
  *
  * The rendered output resolves in the following order:
  *
- * column.valueRenderer() => ReactElement
- * column.valueFormatter() => string
- * column.valueGetter() => string
- * record[column.name]
+ * ```
+ * column.valueRenderer()
+ * column.valueFormatter()
+ * record[column.path]
+ * ```
  */
 export const renderColumnValue = <T extends Record<string, unknown>>(
   record: T,
   column: ColDataCardDef<T>
-) => {
+): ReactNode => {
   if (column.valueRenderer) {
     return column.valueRenderer(record, column);
   }
@@ -126,16 +159,13 @@ export const renderColumnValue = <T extends Record<string, unknown>>(
       column
     );
   }
-  // todo: these should probably be valueFormatter's? 😵‍💫
-  if (column.relationshipName) {
-    return renderLookupLabel(record, column);
-  }
 
+  // todo: this should probably be a valueFormatter? 😵‍💫
   if (column.inputType === "yes_no") {
-    return renderYesNoString(record[column.name]);
+    return renderYesNoString(record[column.path]);
   }
 
-  return String(getRecordValue(record, column) || "");
+  return renderValueToString(getRecordValue(record, column));
 };
 
 /**

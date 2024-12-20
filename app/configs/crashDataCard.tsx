@@ -1,13 +1,11 @@
 import { crashesColumns } from "./crashesColumns";
 
-
-/** Construct card-specific arrays of columns */
 export const crashDataCards = {
   summary: [
     crashesColumns.case_id,
     crashesColumns.crash_timestamp,
-    crashesColumns.fhe_collsn_id,
-    crashesColumns.rpt_city_id,
+    crashesColumns.collsn,
+    crashesColumns.city,
   ],
   flags: [
     crashesColumns.private_dr_fl,
@@ -22,7 +20,7 @@ export const crashDataCards = {
   other: [
     crashesColumns.light_cond_id,
     crashesColumns.crash_speed_limit,
-    crashesColumns.obj_struck_id,
+    crashesColumns.obj_struck,
     crashesColumns.law_enforcement_ytd_fatality_num,
   ],
   address: [

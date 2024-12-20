@@ -2,7 +2,7 @@ import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { InputType } from "@/types/types";
-import { LookupTableOption } from "@/types/lookupTables";
+import { LookupTableOption } from "@/types/relationships";
 
 interface DataCardInputProps {
   /**

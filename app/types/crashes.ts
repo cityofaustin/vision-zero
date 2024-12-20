@@ -1,5 +1,5 @@
 import { CrashInjuryMetric } from "./crashInjuryMetrics";
-import { LookupTableOption } from "./lookupTables";
+import { LookupTableOption } from "./relationships";
 import { ChangeLogEntry } from "./changeLog";
 import { Unit } from "./unit";
 import { Charge } from "./charge"

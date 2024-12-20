@@ -1,4 +1,4 @@
-import { LookupTableOption } from "./lookupTables";
+import { LookupTableOption } from "./relationships";
 
 export type Unit = {
   id: number;
