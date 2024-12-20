@@ -128,6 +128,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               )}
               {diagramError && !crash.is_temp_record && (
                 <Alert variant="danger" style={{ marginTop: "20px" }}>
+                  <p>The crash diagram is not available.</p>
                   <p>
                     For additional assistance, you can&nbsp;
                     <a
