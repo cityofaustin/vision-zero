@@ -4,7 +4,7 @@ import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
-import { BsZoomIn, BsZoomOut } from "react-icons/bs";
+import { FaMagnifyingGlassPlus, FaMagnifyingGlassMinus } from "react-icons/fa6";
 import { SlActionUndo } from "react-icons/sl";
 import {
   TransformWrapper,
@@ -51,7 +51,7 @@ const ZoomResetControls = ({
           onClick={() => zoomIn()}
           title="Zoom In"
         >
-          <BsZoomIn style={iconStyle} />
+          <FaMagnifyingGlassPlus style={iconStyle} />
         </Button>
         <Button
           size="sm"
@@ -59,7 +59,7 @@ const ZoomResetControls = ({
           onClick={() => zoomOut()}
           title="Zoom Out"
         >
-          <BsZoomOut style={iconStyle} />
+          <FaMagnifyingGlassMinus style={iconStyle} />
         </Button>
       </ButtonGroup>
       <Button size="sm" variant="primary" onClick={handleReset} title="Reset">
