@@ -29,10 +29,7 @@ const ZoomResetControls = ({
 
   // pixel pushing
   const iconStyle = {
-    // 👇 Type assertion saying: the type of this string is the string "relative"
-    // to satisfy Button's style prop.
-    // TS will infer this as just `string` when we want something more specific.
-    position: "relative" as "relative",
+    position: "relative" as const,
     top: "-1px",
     fontSize: "1.3em",
   };
