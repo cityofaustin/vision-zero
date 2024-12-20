@@ -106,16 +106,16 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
     <Card>
       <Card.Header>Diagram</Card.Header>
       <Card.Body className="crash-header-card-body text-center">
-        <TransformWrapper>
+        <TransformWrapper initialScale={1}>
           {!diagramError && <ZoomResetControls setRotation={setRotation} />}
           <TransformComponent>
-            <div style={{ height: "100%", overflow: "hidden" }}>
+            <div style={{ height: "340px", width: "100%", overflow: "hidden" }}>
               {!diagramError && (
                 <Image
                   fluid
                   style={{
                     height: "100%",
-                    width: "100%",
+                    width: "440px",
                     transform: `rotate(${rotation}deg)`,
                     objectFit: "contain",
                   }}
