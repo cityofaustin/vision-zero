@@ -29,8 +29,9 @@ const ZoomResetControls = ({
 
   // pixel pushing
   const iconStyle = {
-    // type assertion that the type of this string is the string "relative" to satisfy Button's style prop.
-    // TS will infer this as string when we want something more specific.
+    // 👇 Type assertion saying: the type of this string is the string "relative"
+    // to satisfy Button's style prop.
+    // TS will infer this as just `string` when we want something more specific.
     position: "relative" as "relative",
     top: "-1px",
     fontSize: "1.3em",
@@ -43,7 +44,7 @@ const ZoomResetControls = ({
         display: "flex",
         justifyContent: "space-between",
         width: "100%",
-        marginBottom: "5px", // Added margin-bottom
+        marginBottom: "5px",
       }}
     >
       <div>
@@ -84,6 +85,7 @@ const RotateControls = ({
         className="form-control-range"
         id="formControlRange"
         onChange={rotate}
+        style={{ width: "70%" }}
       />
     </div>
   );
