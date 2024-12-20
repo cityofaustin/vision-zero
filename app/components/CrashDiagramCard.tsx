@@ -49,21 +49,30 @@ const ZoomResetControls = ({
     >
       <div>
         <ButtonGroup>
-          <Button size="sm" variant="primary" onClick={() => zoomIn()}>
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() => zoomIn()}
+            title="Zoom In"
+          >
             <BsZoomIn style={iconStyle} />
           </Button>
-          <Button size="sm" variant="primary" onClick={() => zoomOut()}>
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() => zoomOut()}
+            title="Zoom Out"
+          >
             <BsZoomOut style={iconStyle} />
           </Button>
         </ButtonGroup>
       </div>
-      <Button size="sm" variant="primary" onClick={handleReset}>
+      <Button size="sm" variant="primary" onClick={handleReset} title="Reset">
         <SlActionUndo style={iconStyle} />
       </Button>
     </div>
   );
 };
-
 const RotateControls = ({
   rotation,
   setRotation,
@@ -86,11 +95,11 @@ const RotateControls = ({
         id="formControlRange"
         onChange={rotate}
         style={{ width: "70%" }}
+        title="Rotate Diagram"
       />
     </div>
   );
 };
-
 export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [diagramError, setDiagramError] = useState(false);
   const [rotation, setRotation] = useState(0);
