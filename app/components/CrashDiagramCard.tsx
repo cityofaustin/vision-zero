@@ -29,13 +29,6 @@ const ZoomResetControls = ({
     setRotation(0);
   };
 
-  // pixel pushing
-  const iconStyle = {
-    position: "relative" as const,
-    top: "-1px",
-    fontSize: "1.3em",
-  };
-
   return (
     <div className="tools d-flex justify-content-between w-100 mb-1">
       <ButtonGroup>
