@@ -1,10 +1,16 @@
 "use client";
+import { useState, useCallback } from "react";
+import { notFound } from "next/navigation";
+import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
+import { FaUserEdit, FaUserAltSlash } from "react-icons/fa";
+import AlignedLabel from "@/components/AlignedLabel";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
+import UserModal from "@/components/UserModal";
 import { useToken, formatRoleName } from "@/utils/auth";
 import { useUser } from "@/utils/users";
 import { User } from "@/types/users";
@@ -51,17 +57,52 @@ export default function UserDetails({
 }) {
   const token = useToken();
   const userId = params.user_id;
-  const { data: user } = useUser(userId, token);
+  const { data: user, mutate } = useUser(userId, token);
+  const [showNewUserModal, setShowNewUserModal] = useState(false);
+  const onCloseModal = () => setShowNewUserModal(false);
+
+  const onUpdateUserCallback = useCallback(async () => {
+    // refetch the user details and close
+    await mutate();
+    setShowNewUserModal(false);
+  }, [mutate]);
+
+  if (user && "error" in user) {
+    // 404
+    notFound();
+  }
 
   return (
     <>
       <AppBreadCrumb />
       <Row>
-        <Col md={6} lg={4}>
+        <Col md={12} lg={6}>
           <Card>
-            <Card.Header className="fs-5 fw-bold">User Details</Card.Header>
+            <Card.Header className="fs-5 fw-bold">User details</Card.Header>
             <Card.Body>
               {!user && <Spinner variant="primary" />}
+              <div className="mb-3">
+                {user && (
+                  <>
+                    <Button
+                      className="me-2"
+                      onClick={() => setShowNewUserModal(true)}
+                    >
+                      <AlignedLabel>
+                        <FaUserEdit className="me-2" />
+                        <span>Edit</span>
+                      </AlignedLabel>
+                    </Button>
+                    <Button variant="danger" disabled>
+                      {/* todo */}
+                      <AlignedLabel>
+                        <FaUserAltSlash className="me-2" />
+                        <span>Delete</span>
+                      </AlignedLabel>
+                    </Button>
+                  </>
+                )}
+              </div>
               {user && (
                 <Table responsive hover>
                   <tbody>
@@ -71,7 +112,7 @@ export default function UserDetails({
                         <td>
                           {col.renderer
                             ? col.renderer(user)
-                            : String(user[col.name])}
+                            : String(user[col.name] || "")}
                         </td>
                       </tr>
                     ))}
@@ -82,6 +123,14 @@ export default function UserDetails({
           </Card>
         </Col>
       </Row>
+      {user && (
+        <UserModal
+          onClose={onCloseModal}
+          show={showNewUserModal}
+          onSubmitCallback={onUpdateUserCallback}
+          user={user}
+        ></UserModal>
+      )}
     </>
   );
 }
