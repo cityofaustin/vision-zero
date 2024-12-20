@@ -108,7 +108,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
         <TransformWrapper initialScale={1}>
           {!diagramError && <ZoomResetControls setRotation={setRotation} />}
           <TransformComponent>
-            <div style={{ height: "340px", width: "100%", overflow: "hidden" }}>
+            <div style={{ height: "330px", width: "100%", overflow: "hidden" }}>
               {!diagramError && (
                 <Image
                   fluid
