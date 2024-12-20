@@ -4,15 +4,14 @@ import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
-import { Crash } from "@/types/crashes";
+import { BsZoomIn, BsZoomOut } from "react-icons/bs";
+import { SlActionUndo } from "react-icons/sl";
 import {
   TransformWrapper,
   TransformComponent,
   useControls,
 } from "react-zoom-pan-pinch";
-import { BsZoomIn, BsZoomOut } from "react-icons/bs";
-import { SlActionUndo } from "react-icons/sl";
-
+import { Crash } from "@/types/crashes";
 const CR3_DIAGRAM_BASE_URL = process.env.NEXT_PUBLIC_CR3_DIAGRAM_BASE_URL!;
 
 const ZoomResetControls = ({
@@ -100,7 +99,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
       <Card.Header>Diagram</Card.Header>
       <Card.Body className="crash-header-card-body text-center">
         <TransformWrapper>
-          <ZoomResetControls setRotation={setRotation} />
+          {!diagramError && <ZoomResetControls setRotation={setRotation} />}
           <TransformComponent>
             <div style={{ height: "100%", overflow: "hidden" }}>
               {!diagramError && (
@@ -121,9 +120,9 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
                 />
               )}
               {diagramError && crash.is_temp_record && (
-                <Alert variant="info" style={{ marginTop: "20px" }}>
-                  <i className="fa fa-info-circle" /> Crash diagrams are not
-                  available for temporary crash records
+                <Alert variant="info" style={{ marginTop: "50px" }}>
+                  <i className="fa fa-info-circle" />
+                  Crash diagrams are not available for temporary crash records
                 </Alert>
               )}
               {diagramError && !crash.is_temp_record && (
@@ -147,9 +146,11 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
           </TransformComponent>
         </TransformWrapper>
       </Card.Body>
-      <Card.Footer className="text-center">
-        <RotateControls rotation={rotation} setRotation={setRotation} />
-      </Card.Footer>
+      {!diagramError && (
+        <Card.Footer className="text-center">
+          <RotateControls rotation={rotation} setRotation={setRotation} />
+        </Card.Footer>
+      )}
     </Card>
   );
 }
