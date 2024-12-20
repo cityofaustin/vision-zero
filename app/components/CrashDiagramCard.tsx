@@ -43,6 +43,7 @@ const ZoomResetControls = ({
         display: "flex",
         justifyContent: "space-between",
         width: "100%",
+        marginBottom: "5px", // Added margin-bottom
       }}
     >
       <div>
