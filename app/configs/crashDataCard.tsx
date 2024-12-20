@@ -7,7 +7,7 @@ export const crashDataCards = {
     crashesColumns.case_id,
     crashesColumns.crash_timestamp,
     crashesColumns.collsn,
-    crashesColumns.rpt_city_id,
+    crashesColumns.city,
   ],
   flags: [
     crashesColumns.private_dr_fl,

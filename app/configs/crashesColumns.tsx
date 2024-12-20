@@ -118,15 +118,17 @@ export const crashesColumns: {
     editable: true,
     inputType: "text",
   },
-  rpt_city_id: {
-    path: "rpt_city_id",
+  city: {
+    path: "city.label",
     label: "City",
     editable: true,
     inputType: "select",
-    relationshipName: "city",
-    lookupTable: {
+    relationship: {
       tableSchema: "lookups",
       tableName: "city",
+      foreignKey: "rpt_city_id",
+      idColumnName: "id",
+      labelColumnName: "label",
     },
   },
   rpt_hwy_num: {
