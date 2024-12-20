@@ -6,79 +6,94 @@ export const ALL_UNIT_COLUMNS: { [name: string]: ColDataCardDef<Unit> } = {
     path: "unit_nbr",
     label: "Unit",
   },
-  unit_desc_id: {
-    path: "unit_desc_id",
+  unit_desc: {
+    path: "unit_desc.label",
     label: "Type",
     editable: true,
     inputType: "select",
-    relationshipName: "unit_desc",
-    lookupTable: {
+    relationship: {
       tableSchema: "lookups",
       tableName: "unit_desc",
+      foreignKey: "unit_desc_id",
+      idColumnName: "id",
+      labelColumnName: "label",
     },
   },
-  veh_body_styl_id: {
-    path: "veh_body_styl_id",
+  veh_body_styl: {
+    path: "veh_body_styl.label",
     label: "Body style",
     editable: true,
     inputType: "select",
-    relationshipName: "veh_body_styl",
-    lookupTable: {
+    relationship: {
       tableSchema: "lookups",
       tableName: "veh_body_styl",
+      foreignKey: "veh_body_styl_id",
+      idColumnName: "id",
+      labelColumnName: "label",
     },
   },
   veh_mod_year: {
     path: "veh_mod_year",
     label: "Year",
   },
-  veh_make_id: {
-    path: "veh_make_id",
+  veh_make: {
+    path: "veh_make.label",
     label: "Make",
     editable: false,
     inputType: "select",
-    relationshipName: "veh_make",
+    // todo: demo purposes only
+    // we dont need this if the field is not editable 👇
+    // relationship: {
+    //   tableSchema: "lookups",
+    //   tableName: "veh_make",
+    //   foreignKey: "veh_make_id",
+    //   idColumnName: "id",
+    //   labelColumnName: "label",
+    // },
   },
-  veh_mod_id: {
-    path: "veh_mod_id",
+  veh_mod: {
+    path: "veh_mod.label",
     label: "Model",
     editable: false,
     inputType: "select",
-    relationshipName: "veh_mod",
   },
-
-  veh_trvl_dir_id: {
-    path: "veh_trvl_dir_id",
+  trvl_dir: {
+    path: "trvl_dir.label",
     label: "Direction",
     editable: true,
     inputType: "select",
-    relationshipName: "trvl_dir",
-    lookupTable: {
+    relationship: {
       tableSchema: "lookups",
       tableName: "trvl_dir",
+      foreignKey: "veh_trvl_dir_id",
+      idColumnName: "id",
+      labelColumnName: "label",
     },
   },
-
-  movement_id: {
-    path: "movement_id",
+  movt: {
+    path: "movt.label",
     label: "Movement",
     editable: true,
     inputType: "select",
-    relationshipName: "movt",
-    lookupTable: {
+    relationship: {
       tableSchema: "lookups",
       tableName: "movt",
+      foreignKey: "movement_id",
+      idColumnName: "id",
+      labelColumnName: "label",
     },
   },
-  contrib_factr_1_id: {
-    path: "contrib_factr_1_id",
+  contrib_factr: {
+    path: "contrib_factr.label",
     label: "Primary contrib factor",
     editable: true,
     inputType: "select",
-    relationshipName: "contrib_factr",
-    lookupTable: {
+    relationship: {
       tableSchema: "lookups",
       tableName: "contrib_factr",
+      foreignKey: "contrib_factr_1_id",
+      idColumnName: "id",
+      labelColumnName: "label",
     },
   },
 };

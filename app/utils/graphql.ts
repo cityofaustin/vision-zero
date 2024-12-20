@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
-import useSWR, { SWRConfiguration, KeyedMutator } from "swr";
+import { useState, useCallback, useMemo } from "react";
+import useSWR, { SWRConfiguration } from "swr";
 import {
   gql,
   GraphQLClient,
@@ -9,7 +9,7 @@ import {
 } from "graphql-request";
 import { getRolesArray, getHasuraRoleName, useToken } from "./auth";
 import { MutationVariables } from "@/types/types";
-import { LookupTableDef } from "@/types/lookupTables";
+import { Relationship } from "@/types/relationships";
 import { useAuth0 } from "@auth0/auth0-react";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_HASURA_ENDPOINT!;
@@ -153,31 +153,38 @@ export const useMutation = (mutation: RequestDocument) => {
 };
 
 /**
- * Hook which constructs a graphql query string to fetch data from a lookup table
+ * Hook which constructs a graphql query string to fetch data from a lookup table.
+ * 
+ * The query returned by this hook uses field name aliasing to ensure so that it
+ * always returns an array of objects with an `id` and `label` property, which 
+ * makes the results of this query compatible with our lookup value editing
+ * component.
  */
-export const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
+export const useLookupQuery = <T extends Record<string, unknown>>(
+  relationship?: Relationship<T>
+) =>
   useMemo(() => {
-    if (!lookupTableDef) {
+    if (!relationship) {
       return [];
     }
     // construct the Hasura typename, which is prefixed with the schema name
     // if schema is not public
     const prefix =
-      lookupTableDef.tableSchema === "public"
+      relationship.tableSchema === "public"
         ? ""
-        : lookupTableDef.tableSchema + "_";
+        : relationship.tableSchema + "_";
 
-    const typename = `${prefix}${lookupTableDef.tableName}`;
+    const typename = `${prefix}${relationship.tableName}`;
 
     return [
       gql`
         query LookupTableQuery {
-          ${typename}(order_by: {label: asc}) {
-            id
-            label
+          ${typename}(order_by: {${relationship.labelColumnName}: asc}) {
+            id: ${relationship.idColumnName}
+            label: ${relationship.labelColumnName}
           }
         }
       `,
       typename,
     ];
-  }, [lookupTableDef]);
+  }, [relationship]);

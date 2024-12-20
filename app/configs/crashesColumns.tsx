@@ -40,15 +40,17 @@ export const crashesColumns: {
     label: "Crash date",
     valueFormatter: formatDateTime,
   },
-  fhe_collsn_id: {
-    path: "fhe_collsn_id",
+  collsn: {
+    path: "collsn.label",
     label: "Collision type",
     editable: true,
     inputType: "select",
-    relationshipName: "collsn",
-    lookupTable: {
+    relationship: {
       tableSchema: "lookups",
       tableName: "collsn",
+      idColumnName: "id",
+      labelColumnName: "label",
+      foreignKey: "fhe_collsn_id",
     },
   },
   in_austin_full_purpose: {
@@ -79,15 +81,17 @@ export const crashesColumns: {
     editable: true,
     inputType: "number",
   },
-  obj_struck_id: {
-    path: "obj_struck_id",
+  obj_struck: {
+    path: "obj_struck.label",
     label: "Object struck",
     editable: true,
     inputType: "select",
-    relationshipName: "obj_struck",
-    lookupTable: {
+    relationship: {
       tableSchema: "lookups",
       tableName: "obj_struck",
+      idColumnName: "id",
+      labelColumnName: "label",
+      foreignKey: "obj_struck_id",
     },
   },
   onsys_fl: {
