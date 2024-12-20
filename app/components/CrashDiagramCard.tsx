@@ -121,18 +121,13 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
                 />
               )}
               {diagramError && crash.is_temp_record && (
-                <Alert variant="info">
+                <Alert variant="info" style={{ marginTop: "20px" }}>
                   <i className="fa fa-info-circle" /> Crash diagrams are not
                   available for temporary crash records
                 </Alert>
               )}
               {diagramError && !crash.is_temp_record && (
-                <Alert variant="danger">
-                  <p>
-                    The crash diagram is not available. Typically, this
-                    indicates there was an error when processing this
-                    crash&aposs CR3 PDF.
-                  </p>
+                <Alert variant="danger" style={{ marginTop: "20px" }}>
                   <p>
                     For additional assistance, you can&nbsp;
                     <a
