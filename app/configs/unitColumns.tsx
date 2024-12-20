@@ -41,15 +41,6 @@ export const ALL_UNIT_COLUMNS: { [name: string]: ColDataCardDef<Unit> } = {
     label: "Make",
     editable: false,
     inputType: "select",
-    // todo: demo purposes only
-    // we dont need this if the field is not editable 👇
-    // relationship: {
-    //   tableSchema: "lookups",
-    //   tableName: "veh_make",
-    //   foreignKey: "veh_make_id",
-    //   idColumnName: "id",
-    //   labelColumnName: "label",
-    // },
   },
   veh_mod: {
     path: "veh_mod.label",
