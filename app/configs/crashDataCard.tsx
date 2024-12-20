@@ -1,7 +1,5 @@
 import { crashesColumns } from "./crashesColumns";
 
-
-/** Construct card-specific arrays of columns */
 export const crashDataCards = {
   summary: [
     crashesColumns.case_id,
