@@ -2,9 +2,7 @@ import { ColDataCardDef } from "@/types/types";
 import { Crash } from "@/types/crashes";
 import { formatDateTime } from "@/utils/formatters";
 
-export const crashesColumns: {
-  [name: string]: ColDataCardDef<Crash>;
-} = {
+export const crashesColumns = {
   active_school_zone_fl: {
     path: "active_school_zone_fl",
     label: "Active school zone",
@@ -259,4 +257,4 @@ export const crashesColumns: {
     editable: true,
     inputType: "number",
   },
-};
+} satisfies Record<string, ColDataCardDef<Crash>>;

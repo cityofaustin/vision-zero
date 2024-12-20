@@ -1,7 +1,7 @@
 import { ColDataCardDef } from "@/types/types";
 import { Unit } from "@/types/unit";
 
-export const ALL_UNIT_COLUMNS: { [name: string]: ColDataCardDef<Unit> } = {
+export const ALL_UNIT_COLUMNS = {
   unit_nbr: {
     path: "unit_nbr",
     label: "Unit",
@@ -87,4 +87,4 @@ export const ALL_UNIT_COLUMNS: { [name: string]: ColDataCardDef<Unit> } = {
       labelColumnName: "label",
     },
   },
-};
+} satisfies Record<string, ColDataCardDef<Unit>>;
