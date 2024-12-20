@@ -6,7 +6,7 @@ export const crashDataCards = {
   summary: [
     crashesColumns.case_id,
     crashesColumns.crash_timestamp,
-    crashesColumns.fhe_collsn_id,
+    crashesColumns.collsn,
     crashesColumns.rpt_city_id,
   ],
   flags: [
@@ -22,7 +22,7 @@ export const crashDataCards = {
   other: [
     crashesColumns.light_cond_id,
     crashesColumns.crash_speed_limit,
-    crashesColumns.obj_struck_id,
+    crashesColumns.obj_struck,
     crashesColumns.law_enforcement_ytd_fatality_num,
   ],
   address: [

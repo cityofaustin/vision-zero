@@ -1,15 +1,18 @@
 import { ReactNode } from "react";
 import { Variables } from "graphql-request";
-import { LookupTableDef } from "./lookupTables";
+import { Relationship } from "./relationships";
 import { Path } from "./utils";
 
 export type InputType = "text" | "number" | "yes_no" | "select";
 
 /**
- * The base definition of a database column referenced by our app — where
- * <T> should be one of our core record types (Crash, Person, etc)
+ * Metadata for a database column referenced by our app — where
+ * <T> should be one of our core record types (Crash, Person, etc).
+ *
+ * These properties control how a column is rendered and edited
+ * in various UI components
  */
-export type ColBaseDef<T extends Record<string, unknown>> = {
+export interface ColDataCardDef<T extends Record<string, unknown>> {
   /**
    * the dot-notated string path to accessing the property on the given type
    */
@@ -18,20 +21,20 @@ export type ColBaseDef<T extends Record<string, unknown>> = {
    * label which will be rendered wherever this value is displayed in the app
    */
   label: string;
-};
-
-/**
- * Type which defines metadata for a single property of a record so that it can be
- * accessed, rendered, and edited in various UI components
- */
-export interface ColDataCardDef<T extends Record<string, unknown>>
-  extends ColBaseDef<T> {
+  /**
+   * If the column is editable
+   */
   editable?: boolean;
+  /**
+   * Determines the UI component that will be used to edit the column
+   */
   inputType?: InputType;
-  lookupTable?: LookupTableDef;
-  relationshipName?: keyof T;
+  /**
+   * Lookup table metadata, which is used to fetch lookup values
+   * and update the foreign key column with editing
+   */
+  relationship?: Relationship<T>;
   sortable?: boolean;
-  valueGetter?: (record: T, column: ColDataCardDef<T>) => unknown;
   valueFormatter?: (
     value: unknown,
     record: T,

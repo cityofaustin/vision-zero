@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Spinner from "react-bootstrap/Spinner";
-import CrashDataCardInput from "./DataCardInput";
+import DataCardInput from "./DataCardInput";
 import { useMutation, useQuery, useLookupQuery } from "@/utils/graphql";
 import {
   getRecordValue,
@@ -9,7 +9,7 @@ import {
   handleFormValueOutput,
 } from "@/utils/formHelpers";
 import { ColDataCardDef } from "@/types/types";
-import { LookupTableOption } from "@/types/lookupTables";
+import { LookupTableOption } from "@/types/relationships";
 
 interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   record: T;
@@ -39,7 +39,11 @@ export default function RelatedRecordTableRow<
   // todo: handling of null/undefined values in select input
   const [editColumn, setEditColumn] = useState<ColDataCardDef<T> | null>(null);
   const { mutate, loading: isMutating } = useMutation(mutation);
-  const [query, typename] = useLookupQuery(editColumn?.lookupTable);
+  const [query, typename] = useLookupQuery(
+    editColumn?.editable && editColumn?.relationship
+      ? editColumn.relationship
+      : undefined
+  );
   const { data: selectOptions, isLoading: isLoadingLookups } =
     useQuery<LookupTableOption>({
       query,
@@ -49,10 +53,18 @@ export default function RelatedRecordTableRow<
     });
 
   const onSave = async (recordId: number, value: unknown) => {
+    if (!editColumn) {
+      // not possible
+      return;
+    }
+    // Save the value to the foreign key column, if exists
+    const saveColumnName = editColumn.relationship?.foreignKey
+      ? editColumn.relationship?.foreignKey
+      : editColumn.path;
     await mutate({
       id: recordId,
       updates: {
-        [String(editColumn?.path)]: value,
+        [saveColumnName]: value,
       },
     });
     await onSaveCallback();
@@ -85,9 +97,9 @@ export default function RelatedRecordTableRow<
               <>
                 {isLoadingLookups && <Spinner size="sm" />}
                 {!isLoadingLookups && (
-                  <CrashDataCardInput
+                  <DataCardInput
                     initialValue={valueToString(
-                      getRecordValue(record, col),
+                      getRecordValue(record, col, true),
                       col
                     )}
                     onSave={(value: string) =>
@@ -95,7 +107,7 @@ export default function RelatedRecordTableRow<
                         Number(record.id),
                         handleFormValueOutput(
                           value,
-                          !!col.lookupTable,
+                          !!col.relationship,
                           col.inputType
                         )
                       )

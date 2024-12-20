@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { ColDataCardDef, InputType } from "@/types/types";
-import { LookupTableOption } from "@/types/lookupTables";
+import { LookupTableOption } from "@/types/relationships";
 
 /**
  * Retrieve a value from an object given a dot-noted path string.
@@ -110,17 +110,23 @@ const renderYesNoString = (value: unknown): string => {
 };
 
 /**
- * Get a value from a record given its column. Uses the column's valueGetter (if present),
- * otherwise column.path is used.
+ * Get a columns's value from a record
+ * @param record - the record object
+ * @param column - the column definition
+ * @param useForeignKeyIfExists - if true and a Relationship is available,
+ * return the value of the relationship's foreign key
  */
 export const getRecordValue = <T extends Record<string, unknown>>(
   record: T,
-  column: ColDataCardDef<T>
+  column: ColDataCardDef<T>,
+  useForeignKeyIfExists?: boolean
 ): unknown => {
-  // todo: valueGetter not in use anywhere - can remove?
-  if (column.valueGetter) {
-    return column.valueGetter(record, column);
-  } else if (!column.path.includes(".")) {
+  if (useForeignKeyIfExists && column.relationship?.foreignKey) {
+    // access the current foreign key - for when a relationship is
+    // being edited
+    return record[column.relationship?.foreignKey];
+  }
+  if (!column.path.includes(".")) {
     // simple object accessor
     return record[column.path];
   }
@@ -136,7 +142,6 @@ export const getRecordValue = <T extends Record<string, unknown>>(
  * ```
  * column.valueRenderer()
  * column.valueFormatter()
- * column.valueGetter()
  * record[column.path]
  * ```
  */
