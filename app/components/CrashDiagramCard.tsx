@@ -143,10 +143,11 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               </Alert>
             )}
           </TransformComponent>
-          <RotateControls rotation={rotation} setRotation={setRotation} />
         </TransformWrapper>
       </Card.Body>
-      <Card.Footer>Something else here</Card.Footer>
+      <Card.Footer className="text-center">
+        <RotateControls rotation={rotation} setRotation={setRotation} />
+      </Card.Footer>
     </Card>
   );
 }
