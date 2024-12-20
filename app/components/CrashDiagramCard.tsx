@@ -98,6 +98,7 @@ const RotateControls = ({
     </div>
   );
 };
+
 export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [diagramError, setDiagramError] = useState(false);
   const [rotation, setRotation] = useState(0);
