@@ -73,6 +73,7 @@ const ZoomResetControls = ({
     </div>
   );
 };
+
 const RotateControls = ({
   rotation,
   setRotation,
