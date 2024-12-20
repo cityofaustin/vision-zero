@@ -3,6 +3,7 @@ import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { FaMagnifyingGlassPlus, FaMagnifyingGlassMinus } from "react-icons/fa6";
 import { SlActionUndo } from "react-icons/sl";
@@ -82,12 +83,10 @@ const RotateControls = ({
 
   return (
     <div className="mt-2">
-      <input
-        type="range"
+      <Form.Range
         min="-180"
         max="180"
         value={rotation}
-        className="form-control-range"
         id="formControlRange"
         onChange={rotate}
         style={{ width: "70%" }}
