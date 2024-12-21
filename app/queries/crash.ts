@@ -185,6 +185,7 @@ export const GET_CRASH = gql`
         created_by
         crash_pk
         rec_update
+        recommendation_status_id
         atd__recommendation_status_lkp {
           rec_status_desc
         }

@@ -19,6 +19,7 @@ import { crashDataCards } from "@/configs/crashDataCard";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
 import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
 import { Crash } from "@/types/crashes";
+import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 
 const typename = "crashes";
 
@@ -161,6 +162,15 @@ export default function CrashDetailsPage({
             title="Charges"
             columns={chargeRelatedRecordCols}
             mutation={""}
+            onSaveCallback={onSaveCallback}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12} md={6} className="mb-3">
+          <CrashRecommendationCard
+            recommendation={crash.recommendation}
+            crash_pk={crash.id}
             onSaveCallback={onSaveCallback}
           />
         </Col>

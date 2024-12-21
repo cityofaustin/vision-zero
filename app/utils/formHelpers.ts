@@ -56,7 +56,7 @@ const valueToBoolString = (value: unknown): "true" | "false" | "" =>
 /**
  * Trim string and coerce falsey values to `null`
  */
-const trimStringNullable = (value: string): string | null => {
+export const trimStringNullable = (value: string): string | null => {
   return value.trim() || null;
 };
 
