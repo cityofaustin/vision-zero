@@ -2,9 +2,22 @@ import { gql } from "graphql-request";
 
 export const RECOMMENDATION_STATUS_QUERY = gql`
   query GetRecStatuses {
-    statuses: atd__recommendation_status_lkp {
+    statuses: atd__recommendation_status_lkp(
+      order_by: { rec_status_desc: desc }
+    ) {
       id
       rec_status_desc
+    }
+  }
+`;
+
+export const RECOMMENDATION_PARTNERS_QUERY = gql`
+  query GetPartners {
+    partners: atd__coordination_partners_lkp(
+      order_by: { coord_partner_desc: asc }
+    ) {
+      id
+      coord_partner_desc
     }
   }
 `;

@@ -3,17 +3,39 @@ import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
+
 import Spinner from "react-bootstrap/Spinner";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { trimStringNullable } from "@/utils/formHelpers";
 import { useQuery, useMutation } from "@/utils/graphql";
+import CrashRecommendationParters from "./CrashRecommendationPartners";
 import {
   RECOMMENDATION_STATUS_QUERY,
+  RECOMMENDATION_PARTNERS_QUERY,
   INSERT_RECOMMENDATION_MUTATION,
   UPDATE_RECOMMENDATION_MUTATION,
 } from "@/queries/recommendations";
-import { Recommendation, RecommendationStatus } from "@/types/recommendation";
+import {
+  Recommendation,
+  RecommendationStatus,
+  RecommendationPartner,
+  CoordinationPartner,
+} from "@/types/recommendation";
 import { useAuth0 } from "@auth0/auth0-react";
+
+export type RecommendationFormInputs = {
+  id?: number | undefined;
+  created_at?: string | undefined;
+  created_by?: string | undefined;
+  crash_pk?: number | undefined;
+  rec_text?: string | null | undefined;
+  rec_update?: string | null | undefined;
+  recommendation_status_id?: number | null | undefined;
+  recommendations_partners?:
+    | Partial<RecommendationPartner>[]
+    | null
+    | undefined;
+};
 
 const DEFAULT_VALUES = {
   rec_text: null,
@@ -38,22 +60,34 @@ export default function CrashRecommendationCard({
       typename: "statuses",
     });
 
+  const { data: partners, isLoading: isLoadingPartners } =
+    useQuery<CoordinationPartner>({
+      query: isEditing ? RECOMMENDATION_PARTNERS_QUERY : null,
+      typename: "partners",
+    });
+
   const {
     register,
     reset,
     handleSubmit,
-    control,
     formState: { errors, isDirty },
-    setError,
-  } = useForm<Recommendation>({
+    setValue,
+    watch,
+  } = useForm<RecommendationFormInputs>({
     defaultValues: recommendation
       ? {
           rec_text: recommendation.rec_text,
           rec_update: recommendation.rec_update,
           recommendation_status_id: recommendation.recommendation_status_id,
           crash_pk: recommendation.crash_pk,
+          recommendations_partners: recommendation.recommendations_partners,
         }
-      : { ...DEFAULT_VALUES, created_by: user?.email },
+      : {
+          ...DEFAULT_VALUES,
+          crash_pk,
+          created_by: user?.email,
+          recommendations_partners: [],
+        },
   });
 
   const isNewRec = !recommendation;
@@ -61,11 +95,13 @@ export default function CrashRecommendationCard({
     isNewRec ? INSERT_RECOMMENDATION_MUTATION : UPDATE_RECOMMENDATION_MUTATION
   );
 
-  const onSave = async (data: Recommendation) => {
+  const onSave = async (data: RecommendationFormInputs) => {
     let variables;
     // clear empty strings
     data.rec_text = trimStringNullable(data.rec_text || "");
     data.rec_update = trimStringNullable(data.rec_update || "");
+    data.recommendation_status_id =
+      Number(data.recommendation_status_id) || null;
     // set variable payload
     if (!isNewRec) {
       variables = { object: data, id: recommendation.id };
@@ -126,7 +162,7 @@ export default function CrashRecommendationCard({
             <Form.Label className="fw-bold">Status</Form.Label>
             {isEditing && !isLoadingStatuses && statuses && (
               <Form.Select {...register("recommendation_status_id")}>
-                <option>Select status...</option>
+                <option value="">Select status...</option>
                 {statuses.map((option) => (
                   <option key={option.id} value={String(option.id)}>
                     {option.rec_status_desc}
@@ -142,6 +178,16 @@ export default function CrashRecommendationCard({
               </p>
             )}
           </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-bold">Partners</Form.Label>
+            {partners && (
+              <CrashRecommendationParters
+                setValue={setValue}
+                watch={watch}
+                partners={partners}
+              />
+            )}
+          </Form.Group>
         </Form>
 
         {!recommendation && <p>No recommendation</p>}
@@ -152,7 +198,7 @@ export default function CrashRecommendationCard({
             <Button
               size="sm"
               variant="primary"
-              //   disabled={isMutating}
+                disabled={!isDirty}
               form="recommendationForm"
               type="submit"
             >

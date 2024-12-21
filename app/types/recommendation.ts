@@ -16,14 +16,14 @@ export type RecommendationStatus = {
   rec_status_desc: string;
 };
 
-type RecommendationPartner = {
+export type RecommendationPartner = {
   id: number;
   partner_id: number | null;
   recommendation_id: number | null;
   atd__coordination_partners_lkp: CoordinationPartner | null;
 };
 
-type CoordinationPartner = {
+export type CoordinationPartner = {
   id: number;
   coord_partner_desc: string;
 };
