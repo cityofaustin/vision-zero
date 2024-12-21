@@ -81,7 +81,7 @@ export const useQuery = <T extends Record<string, unknown>>({
     Variables
   ]): Promise<{ [K in typeof typename]: T[] }> => {
     const hasuraRoleName = getHasuraRoleName(getRolesArray(user));
-    return fetcher([query, variables, token, hasuraRoleName]);
+    return fetcher([query, variables, token || "", hasuraRoleName]);
   };
 
   // todo: document falsey query handling

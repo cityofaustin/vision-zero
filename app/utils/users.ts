@@ -20,7 +20,7 @@ const fetcher = async (url: string, token: string) =>
  * SWR hook that fetches all users up to the first
  * <INITIAL_PAGE_LIMIT> * <PAGE_SIZE>
  */
-export function useUsersInfinite(token: string) {
+export function useUsersInfinite(token: string | null) {
   const getKey = (pageIndex: number, previousPageData: ListUsersPage) => {
     if (!token) {
       return null;
@@ -38,7 +38,7 @@ export function useUsersInfinite(token: string) {
     isValidating,
     error,
     mutate,
-  } = useSWRInfinite<ListUsersPage>(getKey, (url) => fetcher(url, token), {
+  } = useSWRInfinite<ListUsersPage>(getKey, (url) => fetcher(url, token || ""), {
     revalidateOnReconnect: false,
     revalidateOnFocus: false,
     revalidateAll: true,
@@ -56,11 +56,9 @@ export function useUsersInfinite(token: string) {
 }
 
 /**
- * Hook to fetch a single user.
- *
- * Will not fetch until userId and token are truthy
+ * Hook to fetch a single user
  */
-export function useUser(userId?: string, token?: string) {
+export function useUser(userId?: string, token?: string | null ) {
   const url = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/user/get_user/${userId}`;
   return useSWR<User | UserAPIError>(
     token && userId ? url : null,

@@ -10,7 +10,7 @@ export const locationsListViewColumns: ColDataCardDef<LocationsListRow>[] =
       label: "Location ID",
       sortable: true,
       valueRenderer: (record: LocationsListRow) => (
-        <Link href={`/locations/${record.location_id}`}>
+        <Link href={`/locations/${record.location_id}`} prefetch={false}>
           {record.location_id}
         </Link>
       ),

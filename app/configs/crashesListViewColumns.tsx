@@ -9,7 +9,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     label: "Crash ID",
     sortable: true,
     valueRenderer: (record: CrashesListRow) => (
-      <Link href={`/crashes/${record.record_locator}`}>
+      <Link href={`/crashes/${record.record_locator}`} prefetch={false}>
         {record.record_locator}
       </Link>
     ),
