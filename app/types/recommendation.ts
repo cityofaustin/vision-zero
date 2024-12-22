@@ -1,5 +1,6 @@
 /**
- * A crash recommendation object for the fatality review board component
+ * A crash recommendation object for the fatality review board 
+ * recommendation component
  */
 export type Recommendation = {
   id: number;
