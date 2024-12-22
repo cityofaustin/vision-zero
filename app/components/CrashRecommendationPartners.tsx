@@ -7,15 +7,21 @@ import {
 } from "@/types/recommendation";
 import { RecommendationFormInputs } from "@/types/recommendation";
 
+interface CrashRecommendationPartersProps {
+  partners: CoordinationPartner[];
+  setValue: UseFormSetValue<RecommendationFormInputs>;
+  watch: UseFormWatch<RecommendationFormInputs>;
+}
+
+/**
+ * Multiselect form component for editing crash recommendation
+ * partners
+ */
 export default function CrashRecommendationParters({
   setValue,
   watch,
   partners,
-}: {
-  partners: CoordinationPartner[];
-  setValue: UseFormSetValue<RecommendationFormInputs>;
-  watch: UseFormWatch<RecommendationFormInputs>;
-}) {
+}: CrashRecommendationPartersProps) {
   const selectedPartners = watch("recommendations_partners");
 
   const togglePartner = (id: number, add: boolean) => {

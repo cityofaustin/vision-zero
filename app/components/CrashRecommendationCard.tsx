@@ -23,12 +23,15 @@ import {
 } from "@/types/recommendation";
 import { useAuth0 } from "@auth0/auth0-react";
 
-const DEFAULT_VALUES = {
-  rec_text: null,
-  rec_update: null,
-  recommendation_status_id: null,
-};
-
+/**
+ * Compares the old vs new RecommendationPartner arrays and returns
+ * new arrays of partner data that can be used in graphql mutation
+ * @param recommendationId - the pk of the current recommendation, if we are editing
+ * @param partnersOld - array of RecommendationPartner[] objs
+ * @param partnersNew - array of RecommendationPartner's from the form data. it is
+ * expected that these objects may only have a `partner_id` property
+ * @returns [addPartners, deletePartnerPks]
+ */
 const getPartnerChanges = (
   recommendationId: number | null,
   partnersOld: Partial<RecommendationPartner>[],
@@ -72,17 +75,24 @@ const getPartnerChanges = (
   return [addPartners, deletePartnerPks];
 };
 
+interface CrashRecommendationCardProps {
+  recommendation: Recommendation | null;
+  crash_pk: number;
+  onSaveCallback: () => Promise<void>;
+}
+
+/**
+ * UI component for viewing and editing fatalitiy review
+ * board (FRB) recommendations
+ */
 export default function CrashRecommendationCard({
   recommendation,
   crash_pk,
   onSaveCallback,
-}: {
-  recommendation: Recommendation | null;
-  crash_pk: number;
-  onSaveCallback: () => Promise<void>;
-}) {
+}: CrashRecommendationCardProps) {
   const { user } = useAuth0();
   const [isEditing, setIsEditing] = useState(false);
+  const [isMutating, setIsMutating] = useState(false);
   const { data: statuses, isLoading: isLoadingStatuses } =
     useQuery<RecommendationStatus>({
       query: isEditing ? RECOMMENDATION_STATUS_QUERY : null,
@@ -113,19 +123,23 @@ export default function CrashRecommendationCard({
             recommendation.recommendations_partners || [],
         }
       : {
-          ...DEFAULT_VALUES,
+          rec_text: null,
+          rec_update: null,
+          recommendation_status_id: null,
           crash_pk,
           created_by: user?.email,
           recommendations_partners: [],
         },
   });
 
-  const isNewRec = !recommendation;
   const { mutate } = useMutation(
-    isNewRec ? INSERT_RECOMMENDATION_MUTATION : UPDATE_RECOMMENDATION_MUTATION
+    recommendation
+      ? UPDATE_RECOMMENDATION_MUTATION
+      : INSERT_RECOMMENDATION_MUTATION
   );
 
   const onSave = async (data: RecommendationFormInputs) => {
+    setIsMutating(true);
     // just use a generic object to make the data structuring easier
     const payload: Record<string, unknown> = data;
 
@@ -136,13 +150,14 @@ export default function CrashRecommendationCard({
     );
 
     // coerce empty fields to null
+    // todo: would be nice to bake this into the RFH component
     payload.rec_text = trimStringNullable(data.rec_text || "");
     payload.rec_update = trimStringNullable(data.rec_update || "");
     payload.recommendation_status_id =
       Number(data.recommendation_status_id) || null;
 
     let variables;
-    if (!isNewRec) {
+    if (recommendation) {
       delete payload.recommendations_partners;
       variables = {
         object: payload,
@@ -154,9 +169,9 @@ export default function CrashRecommendationCard({
       payload.recommendations_partners = { data: addPartners };
       variables = { object: payload };
     }
-    // save and refetch
     await mutate(variables, { skip_updated_by_setter: true });
     await onSaveCallback();
+    setIsMutating(false);
     setIsEditing(false);
   };
 
@@ -211,7 +226,7 @@ export default function CrashRecommendationCard({
                   ?.map(
                     (x) => x.atd__coordination_partners_lkp?.coord_partner_desc
                   )
-                  .join(",") || ""}
+                  .join(", ") || ""}
               </p>
             )}
             {isEditing && isLoadingPartners && <Spinner size="sm" />}
@@ -252,7 +267,7 @@ export default function CrashRecommendationCard({
             <Button
               size="sm"
               variant="primary"
-              disabled={!isDirty}
+              disabled={!isDirty || isMutating}
               form="recommendationForm"
               type="submit"
             >
@@ -268,7 +283,7 @@ export default function CrashRecommendationCard({
                 setIsEditing(false);
                 reset();
               }}
-              // disabled={isMutating}
+              disabled={isMutating}
             >
               Cancel
             </Button>
