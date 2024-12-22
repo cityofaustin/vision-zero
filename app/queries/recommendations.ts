@@ -34,9 +34,19 @@ export const UPDATE_RECOMMENDATION_MUTATION = gql`
   mutation UpdateRecommendation(
     $object: recommendations_set_input!
     $id: Int!
+    $deletePartnerPks: [Int!]!
+    $addPartners: [recommendations_partners_insert_input!]!
   ) {
     update_recommendations_by_pk(pk_columns: { id: $id }, _set: $object) {
       id
     }
+    delete_recommendations_partners(where: { id: { _in: $deletePartnerPks } }) {
+      affected_rows
+    }
+    insert_recommendations_partners(objects: $addPartners) {
+      affected_rows
+    }
   }
 `;
+
+// addPartners,

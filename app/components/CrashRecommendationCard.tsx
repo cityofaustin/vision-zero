@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
@@ -43,6 +42,49 @@ const DEFAULT_VALUES = {
   recommendation_status_id: null,
 };
 
+const getPartnerChanges = (
+  recommendationId: number | null,
+  partnersOld: Partial<RecommendationPartner>[],
+  partnersNew: Partial<RecommendationPartner>[]
+) => {
+  const addPartners: Partial<RecommendationPartner>[] = [];
+  const deletePartnerPks: number[] = [];
+
+  if (partnersOld.length > 0) {
+    // check if any partners have been removed
+    partnersOld.forEach((partnerOld) => {
+      if (
+        !partnersNew.find(
+          (partnerNew) => partnerNew.partner_id === partnerOld.partner_id
+        )
+      ) {
+        // delete this partner - so grab it's PK
+        deletePartnerPks.push(partnerOld.id!);
+      }
+    });
+  }
+
+  if (partnersNew.length > 0) {
+    // check if any partners need to be added
+    partnersNew.forEach((partnerNew) => {
+      if (
+        !partnersOld.find(
+          (partnerOld) => partnerNew.partner_id === partnerOld.partner_id
+        )
+      ) {
+        // add this partner
+        addPartners.push({
+          partner_id: partnerNew.partner_id,
+          ...(recommendationId && {
+            recommendation_id: recommendationId,
+          }),
+        });
+      }
+    });
+  }
+  return [addPartners, deletePartnerPks];
+};
+
 export default function CrashRecommendationCard({
   recommendation,
   crash_pk,
@@ -70,7 +112,7 @@ export default function CrashRecommendationCard({
     register,
     reset,
     handleSubmit,
-    formState: { errors, isDirty },
+    formState: { isDirty },
     setValue,
     watch,
   } = useForm<RecommendationFormInputs>({
@@ -80,7 +122,8 @@ export default function CrashRecommendationCard({
           rec_update: recommendation.rec_update,
           recommendation_status_id: recommendation.recommendation_status_id,
           crash_pk: recommendation.crash_pk,
-          recommendations_partners: recommendation.recommendations_partners,
+          recommendations_partners:
+            recommendation.recommendations_partners || [],
         }
       : {
           ...DEFAULT_VALUES,
@@ -96,17 +139,33 @@ export default function CrashRecommendationCard({
   );
 
   const onSave = async (data: RecommendationFormInputs) => {
-    let variables;
-    // clear empty strings
-    data.rec_text = trimStringNullable(data.rec_text || "");
-    data.rec_update = trimStringNullable(data.rec_update || "");
-    data.recommendation_status_id =
+    // just use a generic object to make the data structuring easier
+    const payload: Record<string, unknown> = data;
+
+    const [addPartners, deletePartnerPks] = getPartnerChanges(
+      recommendation?.id || null,
+      recommendation?.recommendations_partners || [],
+      data.recommendations_partners || []
+    );
+
+    // coerce empty fields to null
+    payload.rec_text = trimStringNullable(data.rec_text || "");
+    payload.rec_update = trimStringNullable(data.rec_update || "");
+    payload.recommendation_status_id =
       Number(data.recommendation_status_id) || null;
-    // set variable payload
+
+    let variables;
     if (!isNewRec) {
-      variables = { object: data, id: recommendation.id };
+      delete payload.recommendations_partners;
+      variables = {
+        object: payload,
+        id: recommendation?.id,
+        addPartners,
+        deletePartnerPks,
+      };
     } else {
-      variables = { object: data };
+      payload.recommendations_partners = { data: addPartners };
+      variables = { object: payload };
     }
     // save and refetch
     await mutate(variables, { skip_updated_by_setter: true });
@@ -146,7 +205,6 @@ export default function CrashRecommendationCard({
             )}
             {!isEditing && <p>{recommendation?.rec_text || ""}</p>}
           </Form.Group>
-
           <Form.Group className="mb-3">
             <Form.Label className="fw-bold">Update</Form.Label>
             {isEditing && (
@@ -157,6 +215,26 @@ export default function CrashRecommendationCard({
               />
             )}
             {!isEditing && <p>{recommendation?.rec_update || ""}</p>}
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-bold">Partners</Form.Label>
+            {!isEditing && (
+              <p>
+                {recommendation?.recommendations_partners
+                  ?.map(
+                    (x) => x.atd__coordination_partners_lkp?.coord_partner_desc
+                  )
+                  .join(",") || ""}
+              </p>
+            )}
+            {isEditing && isLoadingPartners && <Spinner size="sm" />}
+            {isEditing && partners && (
+              <CrashRecommendationParters
+                setValue={setValue}
+                watch={watch}
+                partners={partners}
+              />
+            )}
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label className="fw-bold">Status</Form.Label>
@@ -178,18 +256,7 @@ export default function CrashRecommendationCard({
               </p>
             )}
           </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label className="fw-bold">Partners</Form.Label>
-            {partners && (
-              <CrashRecommendationParters
-                setValue={setValue}
-                watch={watch}
-                partners={partners}
-              />
-            )}
-          </Form.Group>
         </Form>
-
         {!recommendation && <p>No recommendation</p>}
       </Card.Body>
       <Card.Footer>
@@ -198,7 +265,7 @@ export default function CrashRecommendationCard({
             <Button
               size="sm"
               variant="primary"
-                disabled={!isDirty}
+              disabled={!isDirty}
               form="recommendationForm"
               type="submit"
             >

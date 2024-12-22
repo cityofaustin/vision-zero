@@ -2,7 +2,6 @@ import Form from "react-bootstrap/Form";
 import ListGroup from "react-bootstrap/ListGroup";
 import { UseFormSetValue, UseFormWatch } from "react-hook-form";
 import {
-  Recommendation,
   CoordinationPartner,
   RecommendationPartner,
 } from "@/types/recommendation";
@@ -13,8 +12,8 @@ export default function CrashRecommendationParters({
   watch,
   partners,
 }: {
-  setValue: UseFormSetValue<RecommendationFormInputs>;
   partners: CoordinationPartner[];
+  setValue: UseFormSetValue<RecommendationFormInputs>;
   watch: UseFormWatch<RecommendationFormInputs>;
 }) {
   const selectedPartners = watch("recommendations_partners");
@@ -26,7 +25,7 @@ export default function CrashRecommendationParters({
     } else {
       updated = updated.filter((partner) => partner.partner_id !== id) || null;
     }
-    setValue("recommendations_partners", updated);
+    setValue("recommendations_partners", updated, { shouldDirty: true });
   };
 
   return (
@@ -47,6 +46,7 @@ export default function CrashRecommendationParters({
             <Form.Check
               label={partner.coord_partner_desc}
               checked={checked}
+              onChange={() => null}
               style={{ pointerEvents: "none" }}
             />
           </ListGroup.Item>
