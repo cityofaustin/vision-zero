@@ -5,7 +5,7 @@ import {
   CoordinationPartner,
   RecommendationPartner,
 } from "@/types/recommendation";
-import { RecommendationFormInputs } from "./CrashRecommendationCard";
+import { RecommendationFormInputs } from "@/types/recommendation";
 
 export default function CrashRecommendationParters({
   setValue,

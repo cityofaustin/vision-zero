@@ -19,22 +19,9 @@ import {
   RecommendationStatus,
   RecommendationPartner,
   CoordinationPartner,
+  RecommendationFormInputs,
 } from "@/types/recommendation";
 import { useAuth0 } from "@auth0/auth0-react";
-
-export type RecommendationFormInputs = {
-  id?: number | undefined;
-  created_at?: string | undefined;
-  created_by?: string | undefined;
-  crash_pk?: number | undefined;
-  rec_text?: string | null | undefined;
-  rec_update?: string | null | undefined;
-  recommendation_status_id?: number | null | undefined;
-  recommendations_partners?:
-    | Partial<RecommendationPartner>[]
-    | null
-    | undefined;
-};
 
 const DEFAULT_VALUES = {
   rec_text: null,
