@@ -160,14 +160,14 @@ export default function CrashRecommendationCard({
     if (recommendation) {
       delete payload.recommendations_partners;
       variables = {
-        object: payload,
+        record: payload,
         id: recommendation?.id,
         addPartners,
         deletePartnerPks,
       };
     } else {
       payload.recommendations_partners = { data: addPartners };
-      variables = { object: payload };
+      variables = { record: payload };
     }
     await mutate(variables, { skip_updated_by_setter: true });
     await onSaveCallback();
@@ -177,22 +177,7 @@ export default function CrashRecommendationCard({
 
   return (
     <Card>
-      <Card.Header>
-        <div className="d-flex justify-content-between">
-          <span>Fatality Review Board Recommendations</span>
-          {!isEditing && (
-            <Button
-              size="sm"
-              variant="primary"
-              onClick={async () => {
-                setIsEditing(true);
-              }}
-            >
-              Edit
-            </Button>
-          )}
-        </div>
-      </Card.Header>
+      <Card.Header>Fatality Review Board Recommendations</Card.Header>
       <Card.Body>
         <Form id="recommendationForm" onSubmit={handleSubmit(onSave)}>
           <Form.Group className="mb-3">
@@ -263,6 +248,17 @@ export default function CrashRecommendationCard({
       </Card.Body>
       <Card.Footer>
         <div className="d-flex justify-content-end">
+          {!isEditing && (
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={async () => {
+                setIsEditing(true);
+              }}
+            >
+              Edit
+            </Button>
+          )}
           {isEditing && (
             <Button
               size="sm"

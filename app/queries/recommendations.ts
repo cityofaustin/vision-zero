@@ -23,8 +23,8 @@ export const RECOMMENDATION_PARTNERS_QUERY = gql`
 `;
 
 export const INSERT_RECOMMENDATION_MUTATION = gql`
-  mutation InsertRecommendation($object: recommendations_insert_input!) {
-    insert_recommendations_one(object: $object) {
+  mutation InsertRecommendation($record: recommendations_insert_input!) {
+    insert_recommendations_one(object: $record) {
       id
     }
   }
@@ -32,12 +32,12 @@ export const INSERT_RECOMMENDATION_MUTATION = gql`
 
 export const UPDATE_RECOMMENDATION_MUTATION = gql`
   mutation UpdateRecommendation(
-    $object: recommendations_set_input!
+    $record: recommendations_set_input!
     $id: Int!
     $deletePartnerPks: [Int!]!
     $addPartners: [recommendations_partners_insert_input!]!
   ) {
-    update_recommendations_by_pk(pk_columns: { id: $id }, _set: $object) {
+    update_recommendations_by_pk(pk_columns: { id: $id }, _set: $record) {
       id
     }
     delete_recommendations_partners(where: { id: { _in: $deletePartnerPks } }) {
@@ -48,5 +48,3 @@ export const UPDATE_RECOMMENDATION_MUTATION = gql`
     }
   }
 `;
-
-// addPartners,
