@@ -2,10 +2,8 @@ import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
-
 import Spinner from "react-bootstrap/Spinner";
 import { useForm } from "react-hook-form";
-import { trimStringNullable } from "@/utils/formHelpers";
 import { useQuery, useMutation } from "@/utils/graphql";
 import CrashRecommendationParters from "./CrashRecommendationPartners";
 import {
@@ -149,13 +147,6 @@ export default function CrashRecommendationCard({
       data.recommendations_partners || []
     );
 
-    // coerce empty fields to null
-    // todo: would be nice to bake this into the RFH component
-    payload.rec_text = trimStringNullable(data.rec_text || "");
-    payload.rec_update = trimStringNullable(data.rec_update || "");
-    payload.recommendation_status_id =
-      Number(data.recommendation_status_id) || null;
-
     let variables;
     if (recommendation) {
       delete payload.recommendations_partners;
@@ -184,7 +175,10 @@ export default function CrashRecommendationCard({
             <Form.Label className="fw-bold">Recommendation</Form.Label>
             {isEditing && (
               <Form.Control
-                {...register("rec_text")}
+                {...register("rec_text", {
+                  // coerce empty fields to null
+                  setValueAs: (v) => v.trim() || null,
+                })}
                 as="textarea"
                 rows={6}
                 autoFocus={true}
@@ -196,7 +190,10 @@ export default function CrashRecommendationCard({
             <Form.Label className="fw-bold">Update</Form.Label>
             {isEditing && (
               <Form.Control
-                {...register("rec_update")}
+                {...register("rec_update", {
+                  // coerce empty fields to null
+                  setValueAs: (v) => v.trim() || null,
+                })}
                 as="textarea"
                 rows={6}
               />
@@ -226,7 +223,12 @@ export default function CrashRecommendationCard({
           <Form.Group className="mb-3">
             <Form.Label className="fw-bold">Status</Form.Label>
             {isEditing && !isLoadingStatuses && statuses && (
-              <Form.Select {...register("recommendation_status_id")}>
+              <Form.Select
+                {...register("recommendation_status_id", {
+                  // coerce to number or null
+                  setValueAs: (v) => Number(v) || null,
+                })}
+              >
                 <option value="">Select status...</option>
                 {statuses.map((option) => (
                   <option key={option.id} value={String(option.id)}>
