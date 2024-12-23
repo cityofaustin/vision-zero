@@ -66,9 +66,11 @@ npm run dev
   - Crash data card: edit a text input
   - Crash data card: edit a number input
   - Crash data card: nullify a value (e.g. street name) by clearing its input and saving it
+  - FRB Recommendations
+    - Create recommendation
+    - Edit recommendation
   - Related records - units: click field to edit it
-  - Related records - people: todo
-  - Related records - chargs: todo
+  - Related records - charges
   - Change log: change log works normally with details modal. But it is not collapseable (yet).
 - Sidebar
   - is exapandable and open/closed state is preserved in localstorage
@@ -90,6 +92,7 @@ npm run dev
   - user details card
   - add a new user
   - edit a user
+  - delete a user
 
 ## Todo
 
@@ -100,11 +103,9 @@ npm run dev
 - crash details
   - crash injury widgets
   - swap addresses
-  - people table
-    - name edit component
-  - charges table
+    - Related records - people
+      - name edit component
   - notes
-  - recommendations
   - misc column editing + placement
   - Crash map: show coordinates and enable editing by tying into input
   - crash diagram: zoom/tilt control
@@ -114,7 +115,7 @@ npm run dev
   - export
   - record counts
 - Top nav component
-  - navigration crash search
+  - navigation crash search
 - locations
   - export records
 - location details
@@ -126,7 +127,6 @@ npm run dev
 - upload non-cr3
 - dashboard
 - users
-  - delete users
   - copy user emails
 - login page: make it look nice
 - versioned localstorage
