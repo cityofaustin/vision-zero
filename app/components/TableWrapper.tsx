@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+import Spinner from "react-bootstrap/Spinner";
 import isEqual from "lodash/isEqual";
 import { useQuery } from "@/utils/graphql";
 import Table from "@/components/Table";
@@ -125,7 +126,11 @@ export default function TableWrapper<T extends Record<string, unknown>>({
                   setSearchSettings={setSearchSettings}
                 />
               </Col>
-              <Col xs={12} md="auto" className="mt-sm-3 mt-md-0">
+              <Col
+                xs={12}
+                md="auto"
+                className="align-items-center"
+              >
                 <TableDateSelector
                   queryConfig={queryConfig}
                   setQueryConfig={setQueryConfig}
@@ -135,7 +140,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           </Col>
         </Row>
         <Row className="mb-3">
-          <Col xs={12} md={6} className="d-flex justify-content-between">
+          <Col xs={12} md={6} className="d-flex justify-content-start mt-2">
             {queryConfig.filterCards?.length > 0 && (
               <TableAdvancedSearchFilterToggle
                 setIsFilterOpen={setIsFilterOpen}
@@ -149,15 +154,18 @@ export default function TableWrapper<T extends Record<string, unknown>>({
               setSearchSettings={setSearchSettings}
             />
           </Col>
-          <Col xs="auto">
-            {areFiltersDirty && (
+          {areFiltersDirty && (
+            <Col className="px-0 mt-2" xs="auto">
               <TableResetFiltersToggle
                 queryConfig={initialQueryConfig}
                 setQueryConfig={setQueryConfig}
               />
-            )}
+            </Col>
+          )}
+          <Col className="d-flex justify-content-end align-items-center mt-2">
+            {isLoading && <Spinner variant="primary" />}
           </Col>
-          <Col className="d-flex justify-content-end">
+          <Col className="d-flex justify-content-end mt-2" xs="auto">
             <TablePaginationControls
               queryConfig={queryConfig}
               setQueryConfig={setQueryConfig}

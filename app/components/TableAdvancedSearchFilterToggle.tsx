@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useMemo } from "react";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
-import { FaFilter } from "react-icons/fa6";
+import { FaSliders } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/utils/queryBuilder";
 
@@ -47,7 +47,7 @@ export default function TableAdvancedSearchFilterToggle({
       }
     >
       <AlignedLabel>
-        <FaFilter />
+        <FaSliders />
         <span className="mx-2">Filters</span>
         {activeFilterCount > 0 && (
           <Badge bg="primary">{activeFilterCount}</Badge>
