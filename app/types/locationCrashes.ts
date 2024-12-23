@@ -10,6 +10,7 @@ export type LocationCrashRow = {
   crash_date: string | null;
   crash_sev_id: number | null;
   crash_time: string | null;
+  record_locator: string | null;
   cris_crash_id: number | null;
   day_of_week: string;
   est_comp_cost_crash_based: number | null;

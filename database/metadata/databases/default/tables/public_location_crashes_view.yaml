@@ -12,6 +12,7 @@ select_permissions:
         - tot_injry_count
         - unkn_injry_count
         - vz_fatality_count
+        - record_locator
         - cris_crash_id
         - crash_sev_id
         - est_comp_cost_crash_based
@@ -43,6 +44,7 @@ select_permissions:
         - tot_injry_count
         - unkn_injry_count
         - vz_fatality_count
+        - record_locator
         - cris_crash_id
         - crash_sev_id
         - est_comp_cost_crash_based
@@ -74,6 +76,7 @@ select_permissions:
         - tot_injry_count
         - unkn_injry_count
         - vz_fatality_count
+        - record_locator
         - cris_crash_id
         - crash_sev_id
         - est_comp_cost_crash_based

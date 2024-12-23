@@ -7,6 +7,14 @@ export const locationCrashesColumns: ColDataCardDef<LocationCrashRow>[] = [
     label: "Type",
   },
   {
+    path: "record_locator",
+    label: "Crash ID",
+  },
+  {
+    path: "case_id",
+    label: "Case ID",
+  },
+  {
     path: "address_primary",
     label: "Primary address",
   },
@@ -14,10 +22,7 @@ export const locationCrashesColumns: ColDataCardDef<LocationCrashRow>[] = [
     path: "address_secondary",
     label: "Secondary address",
   },
-  {
-    path: "case_id",
-    label: "Case ID",
-  },
+
   {
     path: "collsn_desc",
     label: "Collision type",
