@@ -1,6 +1,10 @@
 import { locationCrashesColumns } from "./locationCrashesColumns";
 import { QueryConfig, FilterGroup } from "@/utils/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
+import {
+  getStartOfYearDate,
+  makeDateFilters,
+} from "@/components/TableDateSelector";
 
 const columns = locationCrashesColumns.map((col) => String(col.path));
 
@@ -54,13 +58,24 @@ export const locationCrashesQueryConfig: QueryConfig = {
   searchFilter: {
     id: "search",
     value: "",
-    column: "address_primary",
+    column: "case_id",
     operator: "_ilike",
     wildcard: true,
   },
   searchFields: [
-    { label: "Address", value: "address_primary" },
     { label: "Case ID", value: "case_id" },
+    { label: "Crash ID", value: "record_locator" },
+    { label: "Primary address", value: "address_primary" },
+    { label: "Secondary address", value: "address_secondary" },
+    { label: "Collision type", value: "collsn_desc" },
   ],
+  dateFilter: {
+    mode: "5y",
+    column: "crash_timestamp",
+    filters: makeDateFilters("crash_timestamp", {
+      start: getStartOfYearDate(),
+      end: null,
+    }),
+  },
   filterCards: locationCrashesFiltercards,
 };
