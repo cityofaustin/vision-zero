@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
@@ -136,35 +136,38 @@ export default function CrashRecommendationCard({
       : INSERT_RECOMMENDATION_MUTATION
   );
 
-  const onSave = async (data: RecommendationFormInputs) => {
-    setIsMutating(true);
-    // just use a generic object to make the data structuring easier
-    const payload: Record<string, unknown> = data;
+  const onSave = useCallback(
+    async (data: RecommendationFormInputs) => {
+      setIsMutating(true);
+      // just use a generic object to make the data structuring easier
+      const payload: Record<string, unknown> = data;
 
-    const [addPartners, deletePartnerPks] = getPartnerChanges(
-      recommendation?.id || null,
-      recommendation?.recommendations_partners || [],
-      data.recommendations_partners || []
-    );
+      const [addPartners, deletePartnerPks] = getPartnerChanges(
+        recommendation?.id || null,
+        recommendation?.recommendations_partners || [],
+        data.recommendations_partners || []
+      );
 
-    let variables;
-    if (recommendation) {
-      delete payload.recommendations_partners;
-      variables = {
-        record: payload,
-        id: recommendation?.id,
-        addPartners,
-        deletePartnerPks,
-      };
-    } else {
-      payload.recommendations_partners = { data: addPartners };
-      variables = { record: payload };
-    }
-    await mutate(variables, { skip_updated_by_setter: true });
-    await onSaveCallback();
-    setIsMutating(false);
-    setIsEditing(false);
-  };
+      let variables;
+      if (recommendation) {
+        delete payload.recommendations_partners;
+        variables = {
+          record: payload,
+          id: recommendation?.id,
+          addPartners,
+          deletePartnerPks,
+        };
+      } else {
+        payload.recommendations_partners = { data: addPartners };
+        variables = { record: payload };
+      }
+      await mutate(variables, { skip_updated_by_setter: true });
+      await onSaveCallback();
+      setIsMutating(false);
+      setIsEditing(false);
+    },
+    [recommendation, mutate, onSaveCallback, setIsMutating, setIsEditing]
+  );
 
   return (
     <Card>
