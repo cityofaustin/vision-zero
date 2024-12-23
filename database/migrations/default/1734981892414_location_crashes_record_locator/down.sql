@@ -1,4 +1,4 @@
--- rever to 1727451511064_init
+-- revert to 1727451511064_init
 DROP VIEW IF EXISTS public.location_crashes_view;
 CREATE VIEW public.location_crashes_view AS
 SELECT
