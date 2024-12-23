@@ -177,7 +177,7 @@ export default function CrashRecommendationCard({
               <Form.Control
                 {...register("rec_text", {
                   // coerce empty fields to null
-                  setValueAs: (v) => v.trim() || null,
+                  setValueAs: (v) => v?.trim() || null,
                 })}
                 as="textarea"
                 rows={6}
@@ -192,7 +192,7 @@ export default function CrashRecommendationCard({
               <Form.Control
                 {...register("rec_update", {
                   // coerce empty fields to null
-                  setValueAs: (v) => v.trim() || null,
+                  setValueAs: (v) => v?.trim() || null,
                 })}
                 as="textarea"
                 rows={6}
@@ -213,11 +213,13 @@ export default function CrashRecommendationCard({
             )}
             {isEditing && isLoadingPartners && <Spinner size="sm" />}
             {isEditing && partners && (
-              <CrashRecommendationParters
-                setValue={setValue}
-                watch={watch}
-                partners={partners}
-              />
+              <div style={{ height: "200px", overflowY: "scroll" }}>
+                <CrashRecommendationParters
+                  setValue={setValue}
+                  watch={watch}
+                  partners={partners}
+                />
+              </div>
             )}
           </Form.Group>
           <Form.Group className="mb-3">
@@ -246,7 +248,6 @@ export default function CrashRecommendationCard({
             )}
           </Form.Group>
         </Form>
-        {!recommendation && <p>No recommendation</p>}
       </Card.Body>
       <Card.Footer>
         <div className="d-flex justify-content-end">
