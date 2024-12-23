@@ -3,7 +3,6 @@ import { produce } from "immer";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
-import Spinner from "react-bootstrap/Spinner";
 import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/utils/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
@@ -56,10 +55,7 @@ export default function TablePaginationControls({
           variant="outline-primary"
           style={{ border: "none", pointerEvents: "none" }}
         >
-          {!isLoading && (
-            <span className="mx-2 text-nowrap">{`Page ${currentPageNum}`}</span>
-          )}
-          {isLoading && <Spinner size="sm" variant="primary" />}
+          <span className="mx-2 text-nowrap">{`Page ${currentPageNum}`}</span>
         </Button>
         <Button
           variant="outline-primary"
