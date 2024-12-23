@@ -8,7 +8,7 @@ import Table from "@/components/Table";
 import TableSearch, { SearchSettings } from "@/components/TableSearch";
 import TableDateSelector from "@/components/TableDateSelector";
 import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
-import { QueryConfig, useQueryBuilder } from "@/utils/queryBuilder";
+import { QueryConfig, useQueryBuilder, Filter } from "@/utils/queryBuilder";
 import { ColDataCardDef } from "@/types/types";
 import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
 import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFilterToggle";
@@ -20,6 +20,7 @@ interface TableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
   initialQueryConfig: QueryConfig;
   localStorageKey: string;
+  contextFilters?: Filter[] 
 }
 
 /**
@@ -30,6 +31,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   initialQueryConfig,
   columns,
   localStorageKey,
+  contextFilters
 }: TableProps<T>) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [areFiltersDirty, setAreFiltersDirty] = useState(false);
@@ -42,7 +44,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     ...initialQueryConfig,
   });
 
-  const query = useQueryBuilder(queryConfig);
+  const query = useQueryBuilder(queryConfig, contextFilters);
 
   const { data, isLoading, error } = useQuery<T>({
     // dont fire first query until localstorage is loaded
@@ -105,7 +107,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   /**
    * wait until the localstorage hook resolves to render anything
-   * to prevent filter UI elements from jump
+   * to prevent filter UI elements from jumping
    */
   if (!isLocalStorageLoaded) {
     return;
