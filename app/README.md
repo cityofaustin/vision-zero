@@ -78,7 +78,8 @@ npm run dev
   - filters are preserved (in local storage) when refreshing the page or navigating back to it
 - Location details page
   - Location polygon map
-  - Location data card displays the location ID
+  - Location data card displays the location ID, crash counts and comp costs
+  - combined cr3 and noncr3 crashes list
 - Navabar:
   - Vision Zero logo displays on left side
   - Avatar image displays on right side with dropdown items
@@ -118,9 +119,6 @@ npm run dev
 - locations
   - export records
 - location details
-  - data card: crash counts and comp costs
-  - cr3 crashes list
-  - noncr3 crashes list
   - crash charts and widgets
 - create crash record
 - upload non-cr3
