@@ -53,7 +53,7 @@ export const locationCrashesQueryConfig: QueryConfig = {
   tableName: "location_crashes_view",
   limit: DEFAULT_QUERY_LIMIT,
   offset: 0,
-  sortColName: "crash_date",
+  sortColName: "crash_timestamp",
   sortAsc: false,
   searchFilter: {
     id: "search",
