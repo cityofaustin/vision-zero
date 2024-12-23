@@ -6,6 +6,7 @@ SELECT
     'CR3'::text AS type,
     crashes.location_id,
     crashes.case_id,
+    crashes.crash_timestamp::timestamptz,
     to_char(
         (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text),
         'YYYY-MM-DD'::text
@@ -96,11 +97,12 @@ WHERE
     AND crashes.crash_timestamp >= (now() - '5 years'::interval)::date
 UNION ALL
 SELECT
-    aab.form_id as record_locator,
+    null as record_locator,
     aab.form_id AS cris_crash_id,
     'NON-CR3'::text AS type,
     aab.location_id,
     aab.case_id::text AS case_id,
+    ((aab.date + make_interval(hours => aab.hour))::timestamp AT TIME ZONE 'America/Chicago' AT TIME ZONE 'UTC')::timestamptz AS crash_timestamp,
     aab.date::text AS crash_date,
     concat(aab.hour, ':00:00') AS crash_time,
     (
