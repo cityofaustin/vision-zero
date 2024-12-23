@@ -144,7 +144,7 @@ def add_custom_headers(response):
     # Access-Control-Allow-Origin for CORS
     # These headers may be overwritten in prod and staging by the API gateway!
     response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, OPTIONS"
+    response.headers["Access-Control-Allow-Methods"] = "GET, DELETE, POST, PUT, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     response.headers["Access-Control-Allow-Credentials"] = "true"
 
@@ -576,7 +576,10 @@ def user_delete_user(id):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.delete(endpoint, headers=headers)
-        return f"{response.status_code}"
+        if response.headers.get("Content-Type") == "application/json":
+            return jsonify(response.json()), response.status_code
+        else:
+            return response.text, response.status_code
     else:
         return notAuthorizedError()
 

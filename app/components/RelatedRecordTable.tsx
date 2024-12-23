@@ -38,16 +38,24 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
             </tr>
           </thead>
           <tbody>
-            {records.map((record, i) => (
-              <RelatedRecordTableRow
-                key={i}
-                columns={columns}
-                isValidating={isValidating}
-                onSaveCallback={onSaveCallback}
-                record={record}
-                mutation={mutation}
-              />
-            ))}
+            {records.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} style={{ textAlign: "center" }}>
+                  No {title.toLowerCase()} found
+                </td>
+              </tr>
+            ) : (
+              records.map((record, i) => (
+                <RelatedRecordTableRow
+                  key={i}
+                  columns={columns}
+                  isValidating={isValidating}
+                  onSaveCallback={onSaveCallback}
+                  record={record}
+                  mutation={mutation}
+                />
+              ))
+            )}
           </tbody>
         </Table>
       </Card.Body>
