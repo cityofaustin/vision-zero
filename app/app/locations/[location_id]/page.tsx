@@ -19,10 +19,9 @@ import { locationCrashesQueryConfig } from "@/configs/locationCrashesTable";
 const typename = "atd_txdot_locations";
 
 /**
- * Hook which returns builds a queryBuilder Filter array with the
- * `location_id` param - this can be passed as a `contextFilter`
- * to the TableWrapper so that locationCrashesList is filtered
- * by location
+ * Hook which returns builds a Filter array with the `location_id` param.
+ * This can be passed as a `contextFilter` to the TableWrapper so that the
+ * location's crashes table is filtered by location.
  * @param {string} locationId - the location ID string from the page route
  * @returns {Filter[]} the Filter array with the single location filter
  */
