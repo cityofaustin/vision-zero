@@ -46,10 +46,10 @@ export default function LocationDetailsPage({
       <AppBreadCrumb />
       <span className="fs-2">{location.description}</span>
       <Row>
-        <Col sm={12} md={8} className="mb-3">
+        <Col sm={12} md={6} lg={7} className="mb-3">
           <LocationMapCard location={location} />
         </Col>
-        <Col sm={12} md={4} className="mb-3">
+        <Col sm={12} md={6} lg={5} className="mb-3">
           <DataCard
             columns={locationCardColumns}
             isValidating={false}

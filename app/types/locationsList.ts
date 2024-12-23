@@ -3,4 +3,5 @@ export type LocationsListRow = {
   description: string | null;
   cr3_crash_count: number | null;
   non_cr3_crash_count: number | null;
+  total_est_comp_cost: number | null;
 };
