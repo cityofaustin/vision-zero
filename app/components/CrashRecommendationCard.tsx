@@ -171,7 +171,7 @@ export default function CrashRecommendationCard({
 
   return (
     <Card>
-      <Card.Header>Fatality Review Board Recommendations</Card.Header>
+      <Card.Header>Fatality Review Board recommendations</Card.Header>
       <Card.Body>
         <Form id="recommendationForm" onSubmit={handleSubmit(onSave)}>
           <Form.Group className="mb-3">
