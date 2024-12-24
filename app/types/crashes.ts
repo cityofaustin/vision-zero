@@ -2,7 +2,8 @@ import { CrashInjuryMetric } from "./crashInjuryMetrics";
 import { LookupTableOption } from "./relationships";
 import { ChangeLogEntry } from "./changeLog";
 import { Unit } from "./unit";
-import { Charge } from "./charge"
+import { Charge } from "./charge";
+import { Person } from "./person";
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
@@ -60,4 +61,5 @@ export type Crash = {
   change_logs: ChangeLogEntry[] | null;
   units: Unit[] | null;
   charges_cris: Charge[] | null;
+  people_list_view: Person[] | null;
 };

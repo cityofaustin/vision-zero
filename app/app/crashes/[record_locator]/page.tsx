@@ -18,6 +18,7 @@ import ChangeLog from "@/components/ChangeLog";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
 import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
+import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
 import { Crash } from "@/types/crashes";
 
 const typename = "crashes";
@@ -160,6 +161,18 @@ export default function CrashDetailsPage({
             isValidating={isValidating}
             title="Charges"
             columns={chargeRelatedRecordCols}
+            mutation={""}
+            onSaveCallback={onSaveCallback}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12} className="mb-3">
+          <RelatedRecordTable
+            records={crash.people_list_view || []}
+            isValidating={isValidating}
+            title="People"
+            columns={peopleRelatedRecordCols}
             mutation={""}
             onSaveCallback={onSaveCallback}
           />
