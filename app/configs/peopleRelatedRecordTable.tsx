@@ -9,5 +9,6 @@ export const peopleRelatedRecordCols = [
   ALL_PEOPLE_COLUMNS.drvr_ethncty,
   ALL_PEOPLE_COLUMNS.drvr_city_name,
   ALL_PEOPLE_COLUMNS.drvr_zip,
-  ALL_PEOPLE_COLUMNS.prsn_exp_homelessness
+  ALL_PEOPLE_COLUMNS.prsn_exp_homelessness,
+  ALL_PEOPLE_COLUMNS.prsn_last_name,
 ];

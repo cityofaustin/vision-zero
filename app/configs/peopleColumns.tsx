@@ -69,13 +69,18 @@ export const ALL_PEOPLE_COLUMNS = {
     inputType: "yes_no",
     editable: true,
   },
-} satisfies Record<string, ColDataCardDef<Person>>; // check satisfies
-
-/*
-  crash_pk: number;
-  id: number;
-  is_primary_person: boolean;
-  prsn_first_name: string | null;
-  prsn_last_name: string | null;
-  prsn_mid_name: string | null;
-*/
+  prsn_last_name: {
+    path: "prsn_last_name",
+    label: "Name",
+    valueFormatter: (value, record, column) => {
+      const nameFields = [
+        record.prsn_first_name,
+        record.prsn_mid_name,
+        record.prsn_last_name,
+      ];
+      // filter out null fields then join into a string
+      const displayName = nameFields.filter((n) => n).join(" ");
+      return displayName;
+    },
+  },
+} satisfies Record<string, ColDataCardDef<Person>>;
