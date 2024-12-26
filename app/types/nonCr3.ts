@@ -1,6 +1,21 @@
 import { z } from "zod";
 
 /**
+ * This is a 4x4 decimal degree bounding box centered on the tx state
+ * capitol building
+ * */
+const ATX_BBOX = {
+  latitude: {
+    min: 28.2747,
+    max: 32.2747,
+  },
+  longitude: {
+    min: -99.7404,
+    max: -95.7404,
+  },
+};
+
+/**
  * Validation schema for a non-CR3 record uploaded through the UI
  */
 export const nonCr3UploadSchema = z.object({
@@ -17,19 +32,19 @@ export const nonCr3UploadSchema = z.object({
     }),
   longitude: z.coerce
     .number()
-    .min(-99.7404, {
-      message: `Longitude is less than the minimum bounds (${-99.7404})`,
+    .min(ATX_BBOX.longitude.min, {
+      message: `Longitude is less than the minimum bounds (${ATX_BBOX.longitude.min})`,
     })
-    .max(-95.7404, {
-      message: `Longitude is greater than the maximum bounds (${-95.7404})`,
+    .max(ATX_BBOX.longitude.max, {
+      message: `Longitude is greater than the maximum bounds (${ATX_BBOX.longitude.max})`,
     }),
   latitude: z.coerce
     .number()
-    .min(28.2747, {
-      message: `Latitude is less than the maximum bounds (${28.2747})`,
+    .min(ATX_BBOX.latitude.min, {
+      message: `Latitude is less than the maximum bounds (${ATX_BBOX.latitude.min})`,
     })
-    .max(32.2747, {
-      message: `Latitude is greater than the maximum bounds (${32.2747})`,
+    .max(ATX_BBOX.latitude.max, {
+      message: `Latitude is greater than the maximum bounds (${ATX_BBOX.latitude.max})`,
     }),
   hour: z.coerce.number().int().min(0).max(23, "Hour must be between 0 and 23"),
 });
