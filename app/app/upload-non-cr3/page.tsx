@@ -11,13 +11,13 @@ import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
 import Papa, { ParseResult } from "papaparse";
-import { z, ZodError } from "zod";
+import { ZodError } from "zod";
 import AlignedLabel from "@/components/AlignedLabel";
 import { useMutation } from "@/utils/graphql";
 import { INSERT_NON_CR3 } from "@/queries/nonCr3s";
 import {
   NonCr3Upload,
-  nonCr3UploadSchema,
+  NonCr3UploadDedupedSchema,
   NonCr3ValidationError,
 } from "@/types/nonCr3";
 import {
@@ -60,9 +60,8 @@ export default function UploadNonCr3() {
             // CSV has been parsed — run schema validations
             console.log(results.data);
             try {
-              const parsedData: NonCr3Upload[] = z
-                .array(nonCr3UploadSchema)
-                .parse(results.data);
+              const parsedData: NonCr3Upload[] =
+                NonCr3UploadDedupedSchema.parse(results.data);
               setData(parsedData);
             } catch (err) {
               if (err instanceof ZodError) {
@@ -233,8 +232,9 @@ export default function UploadNonCr3() {
                       .slice(0, MAX_ERRORS_TO_DISPLAY)
                       .map(({ fieldName, rowNumber, message }, i) => (
                         <tr key={i}>
-                          <td>{rowNumber}</td>
-                          <td>{fieldName}</td>
+                          {/* if dupes are detected, rowNumber will be NaN and  the fieldname will be the string literal `"undefined"` */}
+                          <td>{isNaN(rowNumber) ? "" : rowNumber}</td>
+                          <td>{fieldName === "undefined" ? "" : fieldName}</td>
                           <td>{message}</td>
                         </tr>
                       ))}

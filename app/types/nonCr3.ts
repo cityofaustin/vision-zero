@@ -18,7 +18,7 @@ const ATX_BBOX = {
 /**
  * Validation schema for a non-CR3 record uploaded through the UI
  */
-export const nonCr3UploadSchema = z.object({
+export const NonCr3UploadSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date is missing or invalid"),
   case_id: z.string().regex(/^\d+$/, "Case ID is missing or invalid"),
   address: z
@@ -53,7 +53,28 @@ export const nonCr3UploadSchema = z.object({
  * Type for a non-CR3 record uploaded through the UI -
  * this type is inferred from the Zod schema
  */
-export type NonCr3Upload = z.infer<typeof nonCr3UploadSchema>;
+export type NonCr3Upload = z.infer<typeof NonCr3UploadSchema>;
+
+/**
+ * Validation function which checks for duplicate `case_ids`
+ */
+const noDuplicateCaseIds = (array: NonCr3Upload[]) => {
+  const caseIds = new Set();
+  return !array.some((item) => {
+    if (caseIds.has(item.case_id)) {
+      return true;
+    }
+    caseIds.add(item.case_id);
+    return false;
+  });
+};
+
+/**
+ * Adds a dupe case ID test to the NonCr3Upload schema
+ */
+export const NonCr3UploadDedupedSchema = z
+  .array(NonCr3UploadSchema)
+  .refine(noDuplicateCaseIds, "Duplicate case IDs (case_id) detected");
 
 /**
  * Non-CR3 validation error object
