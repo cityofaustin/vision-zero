@@ -1,5 +1,6 @@
 "use client";
 import { useState, useCallback } from "react";
+import Link from "next/link";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
@@ -59,7 +60,7 @@ export default function UploadNonCr3() {
             // CSV has been parsed — run schema validations
             console.log(results.data);
             try {
-              let parsedData: NonCr3Upload[] = z
+              const parsedData: NonCr3Upload[] = z
                 .array(nonCr3UploadSchema)
                 .parse(results.data);
               setData(parsedData);
@@ -106,7 +107,7 @@ export default function UploadNonCr3() {
         <Card.Body>
           {!data && (
             <Row>
-              <Col xs={12} md={5} className="d-flex justify-content-start">
+              <Col xs={12} md={6} lg={3}>
                 <Form onSubmit={(e) => e.preventDefault()}>
                   <Form.Control
                     type="file"
@@ -125,13 +126,15 @@ export default function UploadNonCr3() {
                   ></Form.Control>
                 </Form>
               </Col>
-              <Col className="text-end">
-                <Button variant="outline-primary">
-                  <AlignedLabel>
-                    <FaFileCsv className="me-2" />
-                    Download CSV template
-                  </AlignedLabel>
-                </Button>
+              <Col className="my-auto">
+                <Link
+                  href="/files/non_cr3_template.csv"
+                  download="non_cr3_template.csv"
+                  className="text-decoration-none ms-3 text-nowrap d-flex align-items-center"
+                >
+                  <FaFileCsv className="me-1" />
+                  Download CSV template
+                </Link>
               </Col>
             </Row>
           )}
