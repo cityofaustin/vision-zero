@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
@@ -7,73 +7,44 @@ import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
+import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
 import Papa, { ParseResult } from "papaparse";
 import { z, ZodError } from "zod";
-import { FaExclamationTriangle } from "react-icons/fa";
 import AlignedLabel from "@/components/AlignedLabel";
 import { useMutation } from "@/utils/graphql";
 import { INSERT_NON_CR3 } from "@/queries/nonCr3s";
+import {
+  NonCr3Upload,
+  nonCr3UploadSchema,
+  NonCr3ValidationError,
+} from "@/types/nonCr3";
+import {
+  FaFileCsv,
+  FaCircleCheck,
+  FaCircleInfo,
+  FaTriangleExclamation,
+} from "react-icons/fa6";
 
-const MAX_ERRORS_TO_DISPLAY = 25;
-
-const nonCr3Schema = z.object({
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date is missing or invalid"),
-  case_id: z.string().regex(/^\d+$/, "Case ID is missing or invalid"),
-  address: z
-    .string()
-    /**
-     * Remove all characters except letters, digits, whitespace, and these: `\/-.,&`.
-     */
-    .transform((val) => val.replace(/[^A-Za-z0-9\\/\-\s.,&]/g, ""))
-    .refine((value) => value.trim() !== "", {
-      message: "Address is missing or invalid",
-    }),
-  longitude: z.coerce
-    .number()
-    .min(-99.7404, {
-      message: `Longitude is less than the minimum bounds (${-99.7404})`,
-    })
-    .max(-95.7404, {
-      message: `Longitude is greater than the maximum bounds (${-95.7404})`,
-    }),
-  latitude: z.coerce
-    .number()
-    .min(28.2747, {
-      message: `Latitude is less than the maximum bounds (${28.2747})`,
-    })
-    .max(32.2747, {
-      message: `Latitude is greater than the maximum bounds (${32.2747})`,
-    }),
-  hour: z.coerce.number().int().min(0).max(23, "Hour must be between 0 and 23"),
-});
-
-type NonCr3 = z.infer<typeof nonCr3Schema>;
-
-type NonCr3ValidationError = {
-  rowNumber: number;
-  fieldName: string;
-  message: string;
-};
+const MAX_ERRORS_TO_DISPLAY = 50;
 
 export default function UploadNonCr3() {
-  const [file, setFile] = useState<File | null>(null);
   const [parsing, setParsing] = useState(false);
-  const [data, setData] = useState<NonCr3[] | null>(null);
-  const [errors, setErrors] = useState<NonCr3ValidationError[] | null>();
+  const [data, setData] = useState<NonCr3Upload[] | null>(null);
+  const [validationErrors, setValidationErrors] = useState<
+    NonCr3ValidationError[] | null
+  >();
+  const [uploadError, setUploadError] = useState(false);
   const [success, setSuccess] = useState(false);
   const { mutate, loading: isMutating } = useMutation(INSERT_NON_CR3);
 
-  const onClickContinue = () => {
-    setSuccess(false);
-    setParsing(true);
-    const fileType = file?.type;
-    if (file && fileType?.includes("csv")) {
-      Papa.parse<NonCr3>(file, {
+  const onSelectFile = useCallback(
+    (file: File) => {
+      Papa.parse<NonCr3Upload>(file, {
         delimiter: ",",
         header: true,
         skipEmptyLines: true,
-        complete: (results: ParseResult<NonCr3>) => {
+        complete: (results: ParseResult<NonCr3Upload>) => {
           if (results.errors.length > 0) {
             // handle CSV parsing errors
             const formattedErrors: NonCr3ValidationError[] = results.errors.map(
@@ -83,13 +54,15 @@ export default function UploadNonCr3() {
                 message: issue.message,
               })
             );
-            setErrors(formattedErrors);
+            setValidationErrors(formattedErrors);
           } else {
-            // CSV has been parsed — now run schema validations
-            let parsedData: NonCr3[] | undefined;
+            // CSV has been parsed — run schema validations
             console.log(results.data);
             try {
-              parsedData = z.array(nonCr3Schema).parse(results.data);
+              let parsedData: NonCr3Upload[] = z
+                .array(nonCr3UploadSchema)
+                .parse(results.data);
+              setData(parsedData);
             } catch (err) {
               if (err instanceof ZodError) {
                 const formattedErrors = err.issues.map((issue) => {
@@ -101,29 +74,26 @@ export default function UploadNonCr3() {
                     message,
                   };
                 });
-                setErrors(formattedErrors);
+                setValidationErrors(formattedErrors);
               }
-            }
-            if (parsedData) {
-              setData(parsedData);
             }
           }
           setParsing(false);
         },
       });
-    }
-  };
-
-  useEffect(() => {
-    if (file) {
-      onClickContinue();
-    }
-  }, [file]);
+    },
+    [setValidationErrors, setParsing, setData]
+  );
 
   const onUpload = async () => {
-    const stuff = await mutate({ objects: data });
-    setSuccess(true);
-    console.log("stuffresponse", stuff);
+    try {
+      await mutate({ objects: data });
+      setSuccess(true);
+    } catch (err) {
+      console.error(err);
+      setUploadError(true);
+      setSuccess(false);
+    }
   };
 
   return (
@@ -134,102 +104,147 @@ export default function UploadNonCr3() {
           Upload Non-CR3 records
         </Card.Header>
         <Card.Body>
-          <Row>
-            <Col>
-              {!data && (
+          {!data && (
+            <Row>
+              <Col xs={12} md={5} className="d-flex justify-content-start">
                 <Form onSubmit={(e) => e.preventDefault()}>
-                  <Row>
-                    <Col>
-                      <Form.Control
-                        type="file"
-                        name="file"
-                        accept=".csv"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          if (errors) {
-                            setErrors(null);
-                          }
-                          if (e.target?.files) {
-                            setFile(e.target.files[0]);
-                          }
-                        }}
-                      ></Form.Control>
-                    </Col>
-                  </Row>
+                  <Form.Control
+                    type="file"
+                    name="file"
+                    accept=".csv"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      if (validationErrors) {
+                        setValidationErrors(null);
+                      }
+                      if (e.target?.files) {
+                        setSuccess(false);
+                        setParsing(true);
+                        onSelectFile(e.target?.files[0]);
+                      }
+                    }}
+                  ></Form.Control>
                 </Form>
-              )}
-              {data && !errors && !success && (
-                <>
-                  <Row>
-                    <Col>
-                      <p>{`You will import ${data.length} rows!`}</p>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <Button
-                        role="submit"
-                        disabled={!data.length || isMutating}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          onUpload();
-                        }}
-                      >
-                        Continue
-                      </Button>
-                    </Col>
-                  </Row>
-                </>
-              )}
-              <Row className="mt-3">
-                <Col>
-                  {parsing && <p>Processing...</p>}
-                  {!errors && isMutating && <p>Uploading...</p>}
-                  {success && <p>Success!</p>}
-                  {errors && (
-                    <Alert
-                      variant="danger"
-                      className="d-flex justify-content-between"
-                    >
+              </Col>
+              <Col className="text-end">
+                <Button variant="outline-primary">
+                  <AlignedLabel>
+                    <FaFileCsv className="me-2" />
+                    Download CSV template
+                  </AlignedLabel>
+                </Button>
+              </Col>
+            </Row>
+          )}
+          {data &&
+            !validationErrors &&
+            !uploadError &&
+            !success &&
+            !isMutating && (
+              <>
+                <Row>
+                  <Col>
+                    <Alert variant="info">
                       <AlignedLabel>
-                        <FaExclamationTriangle className="me-2" />
-                        <span>
-                          Your file is invalid — please correct the below errors
-                          and try again.
-                        </span>
+                        <FaCircleInfo className="me-2" />
+                        {`${data.length.toLocaleString()} records will be imported`}
                       </AlignedLabel>
                     </Alert>
-                  )}
-                  {errors && (
-                    <Table responsive hover>
-                      <thead>
-                        <tr>
-                          <th>Row #</th>
-                          <th>Field</th>
-                          <th>Error</th>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <Button
+                      role="submit"
+                      disabled={!data.length || isMutating}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onUpload();
+                      }}
+                    >
+                      Continue
+                    </Button>
+                  </Col>
+                </Row>
+              </>
+            )}
+          <Row className="mt-3">
+            <Col>
+              {parsing && (
+                <AlignedLabel>
+                  <Spinner variant="primary" className="me-2" />
+                  <span>Processing...</span>
+                </AlignedLabel>
+              )}
+              {!validationErrors && isMutating && (
+                <AlignedLabel>
+                  <Spinner variant="primary" className="me-2" />
+                  <span>Uploading records...</span>
+                </AlignedLabel>
+              )}
+              {success && (
+                <Alert variant="success">
+                  <AlignedLabel>
+                    <FaCircleCheck className="me-2" />
+                    <span>Records successfully imported</span>
+                  </AlignedLabel>
+                </Alert>
+              )}
+              {validationErrors && (
+                <Alert
+                  variant="danger"
+                  className="d-flex justify-content-between"
+                >
+                  <AlignedLabel>
+                    <FaTriangleExclamation className="me-2" />
+                    <span>
+                      Your file is invalid — please correct the below errors and
+                      try again.
+                    </span>
+                  </AlignedLabel>
+                </Alert>
+              )}
+              {uploadError && (
+                <Alert
+                  variant="danger"
+                  className="d-flex justify-content-between"
+                >
+                  <AlignedLabel>
+                    <FaTriangleExclamation className="me-2" />
+                    <span>
+                      There was an error uploading your file - please try again.
+                    </span>
+                  </AlignedLabel>
+                </Alert>
+              )}
+              {validationErrors && (
+                <Table responsive hover>
+                  <thead>
+                    <tr>
+                      <th>Row #</th>
+                      <th>Field</th>
+                      <th>Error</th>
+                    </tr>
+                  </thead>
+                  <tbody className="font-monospace">
+                    {validationErrors
+                      .slice(0, MAX_ERRORS_TO_DISPLAY)
+                      .map(({ fieldName, rowNumber, message }, i) => (
+                        <tr key={i}>
+                          <td>{rowNumber}</td>
+                          <td>{fieldName}</td>
+                          <td>{message}</td>
                         </tr>
-                      </thead>
-                      <tbody className="font-monospace">
-                        {errors
-                          .slice(0, MAX_ERRORS_TO_DISPLAY)
-                          .map(({ fieldName, rowNumber, message }, i) => (
-                            <tr key={i}>
-                              <td>{rowNumber}</td>
-                              <td>{fieldName}</td>
-                              <td>{message}</td>
-                            </tr>
-                          ))}
-                        {errors.length > MAX_ERRORS_TO_DISPLAY && (
-                          <tr>
-                            <td colSpan={3} className="text-center">{`${
-                              errors.length - MAX_ERRORS_TO_DISPLAY
-                            } more errors not shown`}</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </Table>
-                  )}
-                </Col>
-              </Row>
+                      ))}
+                    {validationErrors.length > MAX_ERRORS_TO_DISPLAY && (
+                      <tr>
+                        <td colSpan={3} className="text-center">{`${
+                          validationErrors.length - MAX_ERRORS_TO_DISPLAY
+                        } more errors not shown`}</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </Table>
+              )}
             </Col>
           </Row>
         </Card.Body>
