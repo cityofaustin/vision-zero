@@ -16,7 +16,7 @@ interface DataCardInputProps {
   /**
    * Controls the type of input to be rendered
    */
-  inputType?: InputType;
+  inputType?: InputType; // wondering if this shoudl be required and not optional
   /**
    * Array of lookup table options that will populate a <select> input
    */
