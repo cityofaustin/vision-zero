@@ -1,6 +1,5 @@
 "use client";
 import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import AlignedLabel from "@/components/AlignedLabel";
@@ -9,8 +8,7 @@ import CreateCrashRecordModal from "@/components/CreateCrashRecordModal";
 import TableWrapper from "@/components/TableWrapper";
 import { FaCirclePlus } from "react-icons/fa6";
 import { tempCrashesListViewQueryConfig } from "@/configs/tempCrashesTable";
-import { crashesListViewColumns } from "@/configs/crashesListViewColumns";
-import { Crash } from "@/types/crashes";
+import { tempCrashesListViewColumns } from "@/configs/tempCrashesListViewColumns";
 
 const localStorageKey = "tempCrashesListViewQueryConfig";
 
@@ -40,7 +38,7 @@ export default function CreateCrashRecord() {
           </div>
           {/* todo: create column array for this page */}
           <TableWrapper
-            columns={crashesListViewColumns}
+            columns={tempCrashesListViewColumns}
             initialQueryConfig={tempCrashesListViewQueryConfig}
             localStorageKey={localStorageKey}
             refetch={refetch}

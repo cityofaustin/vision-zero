@@ -1,13 +1,13 @@
-import { crashesListViewColumns } from "@/configs/crashesListViewColumns";
+import { tempCrashesListViewColumns } from "./tempCrashesListViewColumns";
 import { QueryConfig, FilterGroup } from "@/utils/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
-const columns = crashesListViewColumns.map((col) => String(col.path));
+const columns = tempCrashesListViewColumns.map((col) => String(col.path));
 
 const crashesListViewfilterCards: FilterGroup[] = [
   {
     id: "temp_record_filter",
-    label: "Temp record",
+    label: "Temp records",
     groupOperator: "_and",
     filterGroups: [
       {
@@ -23,6 +23,12 @@ const crashesListViewfilterCards: FilterGroup[] = [
             operator: "_eq",
             value: true,
           },
+          {
+            id: "is_deleted",
+            column: "is_deleted",
+            operator: "_eq",
+            value: false,
+          },
         ],
       },
     ],
@@ -31,7 +37,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
 
 export const tempCrashesListViewQueryConfig: QueryConfig = {
   columns,
-  tableName: "crashes_list_view",
+  tableName: "crashes",
   limit: DEFAULT_QUERY_LIMIT,
   offset: 0,
   sortColName: "crash_timestamp",
