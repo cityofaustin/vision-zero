@@ -9,9 +9,22 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 interface FormControlDatePickerProps<TFormValues extends FieldValues> {
+  /**
+   * The field name
+   */
   name: Path<TFormValues>;
+  /**
+   * The react-hook-form `control`
+   */
   control: Control<TFormValues>;
+  /**
+   * Additional optional controller props
+   */
   controllerProps?: Partial<ControllerProps>;
+  /**
+   * Optional invalid state while will cause the `is-invalid` css class
+   * to be applied
+   */
   isInvalid?: boolean;
 }
 

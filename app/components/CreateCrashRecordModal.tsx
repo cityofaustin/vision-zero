@@ -186,6 +186,7 @@ export default function CreateCrashRecordModal({
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit(onSubmit)} id="userForm">
+            {/* Case Id */}
           <Form.Group className="mb-3">
             <Form.Label>Case ID</Form.Label>
             <Form.Control
@@ -201,6 +202,7 @@ export default function CreateCrashRecordModal({
               Case ID is required
             </Form.Control.Feedback>
           </Form.Group>
+          {/* Crash date */}
           <Form.Group className="mb-3">
             <Form.Label>Crash date</Form.Label>
             <FormControlDatePicker<CrashInputs>
@@ -219,6 +221,7 @@ export default function CreateCrashRecordModal({
               Crash date is required
             </Form.Control.Feedback>
           </Form.Group>
+          {/* Primary address */}
           <Form.Group className="mb-3">
             <Form.Label>Primary address</Form.Label>
             <Form.Control
@@ -235,6 +238,7 @@ export default function CreateCrashRecordModal({
               Primary address is required
             </Form.Control.Feedback>
           </Form.Group>
+          {/* Secondary address */}
           <Form.Group className="mb-3">
             <Form.Label>Secondary address</Form.Label>
             <Form.Control
@@ -247,6 +251,7 @@ export default function CreateCrashRecordModal({
               isInvalid={Boolean(errors.rpt_street_name)}
             />
           </Form.Group>
+          {/* Repeatable unit inputs */}
           {fields.map((field, index) => {
             return (
               <Card className="mb-3" key={index}>
