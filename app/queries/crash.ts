@@ -225,3 +225,13 @@ export const UPDATE_CRASH = gql`
     }
   }
 `;
+
+export const CREATE_CRASH = gql`
+  mutation CreateCrash($crash: crashes_cris_insert_input!) {
+    insert_crashes_cris(objects: [$crash]) {
+      returning {
+        id
+      }
+    }
+  }
+`;
