@@ -1,4 +1,3 @@
-import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
@@ -22,9 +21,9 @@ interface CreateCrashModalProps {
    */
   onClose: () => void;
   /**
-   * An async callback fired after the user form is successfully submitted
+   *  Callback fired after the user form is successfully submitted
    */
-  onSubmitCallback: (crash: Crash) => Promise<void>;
+  onSubmitCallback: () => void;
   /**
    * If the modal should be visible or hidden
    */
@@ -76,22 +75,21 @@ const DEFAULT_FORM_VALUES: CrashInputs = {
  * that it can be included in a crash insert mutation
  */
 const makeUnitRecord = (unit: UnitInputs, index: number, userEmail: string) => {
-  const unitRecord = {
-    unit_nbr: index + 1,
+  const unitNumber = index + 1;
+
+  const unitRecord: Record<string, unknown> = {
+    unit_nbr: unitNumber,
     unit_desc_id: unit.unit_desc_id,
     cris_schema_version: "2023",
     updated_by: userEmail,
     created_by: userEmail,
-    people_cris: {
-      data: [],
-    },
   };
 
-  const unitNumber = index + 1;
+  const people = [];
 
   // create fatal injuries
   for (let i = 0; i < Number(unit.fatality_count); i++) {
-    unitRecord.people_cris.data.push({
+    const personRecord = {
       prsn_nbr: i + 1,
       unit_nbr: unitNumber,
       prsn_injry_sev_id: 4,
@@ -99,12 +97,14 @@ const makeUnitRecord = (unit: UnitInputs, index: number, userEmail: string) => {
       is_primary_person: true,
       updated_by: userEmail,
       created_by: userEmail,
-    });
+    };
+
+    people.push(personRecord);
   }
 
   // create other injuries
   for (let i = 0; i < Number(unit.injury_count); i++) {
-    unitRecord.people_cris.data.push({
+    people.push({
       prsn_nbr: unit.fatality_count + i + 1,
       unit_nbr: unitNumber,
       prsn_injry_sev_id: 1,
@@ -114,7 +114,8 @@ const makeUnitRecord = (unit: UnitInputs, index: number, userEmail: string) => {
       created_by: userEmail,
     });
   }
-  return unitRecord;
+
+  return { ...unitRecord, people_cris: { data: people } };
 };
 
 /**
@@ -165,7 +166,7 @@ export default function CreateCrashRecordModal({
     }>({ crash });
 
     if (responseData && responseData.insert_crashes_cris) {
-      await onSubmitCallback(responseData.insert_crashes_cris?.returning[0]);
+    onSubmitCallback();
     }
     reset();
   };
