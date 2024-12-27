@@ -36,7 +36,6 @@ export default function CreateCrashRecord() {
               </AlignedLabel>
             </Button>
           </div>
-          {/* todo: create column array for this page */}
           <TableWrapper
             columns={tempCrashesListViewColumns}
             initialQueryConfig={tempCrashesListViewQueryConfig}
