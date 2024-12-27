@@ -4,7 +4,7 @@ import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
 const columns = tempCrashesListViewColumns.map((col) => String(col.path));
 
-const crashesListViewfilterCards: FilterGroup[] = [
+const tempCrashesListViewfilterCards: FilterGroup[] = [
   {
     id: "temp_record_filter",
     label: "Temp records",
@@ -53,5 +53,5 @@ export const tempCrashesListViewQueryConfig: QueryConfig = {
     { label: "Case ID", value: "case_id" },
     { label: "Address", value: "address_primary" },
   ],
-  filterCards: crashesListViewfilterCards,
+  filterCards: tempCrashesListViewfilterCards,
 };
