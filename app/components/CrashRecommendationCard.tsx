@@ -190,7 +190,7 @@ export default function CrashRecommendationCard({
             {!isEditing && <p>{recommendation?.rec_text || ""}</p>}
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label className="fw-bold">Update</Form.Label>
+            <Form.Label className="fw-bold">Updates</Form.Label>
             {isEditing && (
               <Form.Control
                 {...register("rec_update", {
