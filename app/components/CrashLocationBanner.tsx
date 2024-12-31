@@ -18,7 +18,7 @@ export default function CrashLocationBanner({
   return (
     <Alert variant="warning">
       <AlignedLabel>
-        <FaTriangleExclamation className="me-2" />
+        <FaTriangleExclamation className="me-2 d-none d-lg-inline" />
         <span className="me-3">
           This crash is not included in Vision Zero statistical reporting
           because{" "}
