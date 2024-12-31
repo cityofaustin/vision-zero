@@ -8,13 +8,8 @@ import { useMutation } from "@/utils/graphql";
 import { DELETE_CRIS_CRASH } from "@/queries/crash";
 
 interface CrashIsTemporaryBannerProps {
-  /**
-   * If the crash occurred on a private drive
-   */
   crashId: number;
 }
-
-// const onDelete = (crashId) = {}}
 
 /**
  * Banner that alerts the user when viewing a "temporary" crash record, aka
