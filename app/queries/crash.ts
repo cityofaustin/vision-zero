@@ -129,7 +129,7 @@ export const GET_CRASH = gql`
           sus_serious_injry_count
         }
       }
-      people_list_view {
+      people_list_view (order_by: { unit_nbr: asc }) {
         crash_pk
         id
         unit_nbr
