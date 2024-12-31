@@ -28,15 +28,15 @@ import { useAuth0 } from "@auth0/auth0-react";
  * @param partnersOld - array of RecommendationPartner[] objs
  * @param partnersNew - array of RecommendationPartner's from the form data. it is
  * expected that these objects may only have a `partner_id` property
- * @returns [addPartners, deletePartnerPks]
+ * @returns [partnersToAdd, partnerPksToDelete]
  */
 const getPartnerChanges = (
   recommendationId: number | null,
   partnersOld: Partial<RecommendationPartner>[],
   partnersNew: Partial<RecommendationPartner>[]
 ) => {
-  const addPartners: Partial<RecommendationPartner>[] = [];
-  const deletePartnerPks: number[] = [];
+  const partnersToAdd: Partial<RecommendationPartner>[] = [];
+  const partnerPksToDelete: number[] = [];
 
   if (partnersOld.length > 0) {
     // check if any partners have been removed
@@ -47,7 +47,7 @@ const getPartnerChanges = (
         )
       ) {
         // delete this partner - so grab it's PK
-        deletePartnerPks.push(partnerOld.id!);
+        partnerPksToDelete.push(partnerOld.id!);
       }
     });
   }
@@ -61,7 +61,7 @@ const getPartnerChanges = (
         )
       ) {
         // add this partner
-        addPartners.push({
+        partnersToAdd.push({
           partner_id: partnerNew.partner_id,
           ...(recommendationId && {
             recommendation_id: recommendationId,
@@ -70,7 +70,7 @@ const getPartnerChanges = (
       }
     });
   }
-  return [addPartners, deletePartnerPks];
+  return [partnersToAdd, partnerPksToDelete];
 };
 
 interface CrashRecommendationCardProps {
@@ -142,7 +142,7 @@ export default function CrashRecommendationCard({
       // just use a generic object to make the data structuring easier
       const payload: Record<string, unknown> = data;
 
-      const [addPartners, deletePartnerPks] = getPartnerChanges(
+      const [partnersToAdd, partnerPksToDelete] = getPartnerChanges(
         recommendation?.id || null,
         recommendation?.recommendations_partners || [],
         data.recommendations_partners || []
@@ -154,11 +154,11 @@ export default function CrashRecommendationCard({
         variables = {
           record: payload,
           id: recommendation?.id,
-          addPartners,
-          deletePartnerPks,
+          partnersToAdd,
+          partnerPksToDelete,
         };
       } else {
-        payload.recommendations_partners = { data: addPartners };
+        payload.recommendations_partners = { data: partnersToAdd };
         variables = { record: payload };
       }
       await mutate(variables, { skip_updated_by_setter: true });
