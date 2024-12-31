@@ -174,36 +174,7 @@ export default function CrashRecommendationCard({
       <Card.Header>Fatality Review Board recommendations</Card.Header>
       <Card.Body>
         <Form id="recommendationForm" onSubmit={handleSubmit(onSave)}>
-          <Form.Group className="mb-3">
-            <Form.Label className="fw-bold">Recommendation</Form.Label>
-            {isEditing && (
-              <Form.Control
-                {...register("rec_text", {
-                  // coerce empty fields to null
-                  setValueAs: (v) => v?.trim() || null,
-                })}
-                as="textarea"
-                rows={6}
-                autoFocus={true}
-              />
-            )}
-            {!isEditing && <p>{recommendation?.rec_text || ""}</p>}
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label className="fw-bold">Updates</Form.Label>
-            {isEditing && (
-              <Form.Control
-                {...register("rec_update", {
-                  // coerce empty fields to null
-                  setValueAs: (v) => v?.trim() || null,
-                })}
-                as="textarea"
-                rows={6}
-              />
-            )}
-            {!isEditing && <p>{recommendation?.rec_update || ""}</p>}
-          </Form.Group>
-          <Form.Group className="mb-3">
+        <Form.Group className="mb-3">
             <Form.Label className="fw-bold">Partners</Form.Label>
             {!isEditing && (
               <p>
@@ -249,6 +220,35 @@ export default function CrashRecommendationCard({
                   ?.rec_status_desc || ""}
               </p>
             )}
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-bold">Recommendation</Form.Label>
+            {isEditing && (
+              <Form.Control
+                {...register("rec_text", {
+                  // coerce empty fields to null
+                  setValueAs: (v) => v?.trim() || null,
+                })}
+                as="textarea"
+                rows={6}
+                autoFocus={true}
+              />
+            )}
+            {!isEditing && <p>{recommendation?.rec_text || ""}</p>}
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-bold">Updates</Form.Label>
+            {isEditing && (
+              <Form.Control
+                {...register("rec_update", {
+                  // coerce empty fields to null
+                  setValueAs: (v) => v?.trim() || null,
+                })}
+                as="textarea"
+                rows={6}
+              />
+            )}
+            {!isEditing && <p>{recommendation?.rec_update || ""}</p>}
           </Form.Group>
         </Form>
       </Card.Body>
