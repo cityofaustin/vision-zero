@@ -209,7 +209,7 @@ export default function CrashRecommendationCard({
               <p>
                 {recommendation?.recommendations_partners
                   ?.map(
-                    (x) => x.atd__coordination_partners_lkp?.coord_partner_desc
+                    (rec_partner) => rec_partner.atd__coordination_partners_lkp?.coord_partner_desc
                   )
                   .join(", ") || ""}
               </p>
