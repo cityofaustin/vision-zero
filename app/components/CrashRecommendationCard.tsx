@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form";
 import Spinner from "react-bootstrap/Spinner";
 import { useForm } from "react-hook-form";
 import { useQuery, useMutation } from "@/utils/graphql";
-import CrashRecommendationParters from "./CrashRecommendationPartners";
+import CrashRecommendationPartners from "./CrashRecommendationPartners";
 import {
   RECOMMENDATION_STATUS_QUERY,
   RECOMMENDATION_PARTNERS_QUERY,
@@ -217,7 +217,7 @@ export default function CrashRecommendationCard({
             {isEditing && isLoadingPartners && <Spinner size="sm" />}
             {isEditing && partners && (
               <div style={{ height: "200px", overflowY: "scroll" }}>
-                <CrashRecommendationParters
+                <CrashRecommendationPartners
                   setValue={setValue}
                   watch={watch}
                   partners={partners}
