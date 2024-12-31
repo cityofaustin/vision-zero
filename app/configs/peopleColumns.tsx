@@ -72,6 +72,7 @@ export const ALL_PEOPLE_COLUMNS = {
   prsn_last_name: {
     path: "prsn_last_name",
     label: "Name",
+    // todo: the special combined first/middle/last name field edit component
     valueFormatter: (value, record, column) => {
       const nameFields = [
         record.prsn_first_name,
