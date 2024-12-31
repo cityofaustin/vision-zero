@@ -226,9 +226,23 @@ export const UPDATE_CRASH = gql`
   }
 `;
 
-export const CREATE_CRASH = gql`
+export const CREATE_CRIS_CRASH = gql`
   mutation CreateCrash($crash: crashes_cris_insert_input!) {
     insert_crashes_cris(objects: [$crash]) {
+      returning {
+        id
+      }
+    }
+  }
+`;
+
+export const DELETE_CRIS_CRASH = gql`
+  mutation DeleteCrisCrash($id: Int!) {
+    update_crashes_cris(
+      where: { id: { _eq: $id }, is_temp_record: { _eq: true } }
+      _set: { is_deleted: true }
+    ) {
+      affected_rows
       returning {
         id
       }
