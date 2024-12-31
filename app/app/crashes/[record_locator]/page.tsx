@@ -7,6 +7,7 @@ import Card from "react-bootstrap/Card";
 import CrashMapCard from "@/components/CrashMapCard";
 import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { UPDATE_UNIT } from "@/queries/unit";
+import { UPDATE_PERSON } from "@/queries/person";
 import { useQuery } from "@/utils/graphql";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import CrashHeader from "@/components/CrashHeader";
@@ -173,7 +174,7 @@ export default function CrashDetailsPage({
             isValidating={isValidating}
             title="People"
             columns={peopleRelatedRecordCols}
-            mutation={""}
+            mutation={UPDATE_PERSON}
             onSaveCallback={onSaveCallback}
           />
         </Col>

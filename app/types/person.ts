@@ -4,13 +4,13 @@ export type Person = {
   crash_pk: number;
   drvr_city_name: string;
   drvr_ethncty: LookupTableOption;
-  drvr_ethncty_id: number;
+  prsn_ethnicity_id: number;
   drvr_zip: string;
   gndr: LookupTableOption;
-  gndr_id: number;
+  prsn_gndr_id: number;
   id: number;
   injry_sev: LookupTableOption;
-  injry_sev_id: number;
+  prsn_injry_sev_id: number;
   is_primary_person: boolean;
   prsn_age: number;
   prsn_exp_homelessness: boolean;

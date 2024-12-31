@@ -18,7 +18,7 @@ export const ALL_PEOPLE_COLUMNS = {
     relationship: {
       tableSchema: "lookups",
       tableName: "injry_sev",
-      foreignKey: "injry_sev_id",
+      foreignKey: "prsn_injry_sev_id",
       idColumnName: "id",
       labelColumnName: "label",
     },
@@ -41,7 +41,7 @@ export const ALL_PEOPLE_COLUMNS = {
     relationship: {
       tableSchema: "lookups",
       tableName: "gndr",
-      foreignKey: "gndr_id",
+      foreignKey: "prsn_gndr_id",
       idColumnName: "id",
       labelColumnName: "label",
     },
@@ -54,7 +54,7 @@ export const ALL_PEOPLE_COLUMNS = {
     relationship: {
       tableSchema: "lookups",
       tableName: "drvr_ethncty",
-      foreignKey: "drvr_ethncty_id",
+      foreignKey: "prsn_ethnicity_id",
       idColumnName: "id",
       labelColumnName: "label",
     },
