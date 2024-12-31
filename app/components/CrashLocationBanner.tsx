@@ -1,4 +1,6 @@
 import Alert from "react-bootstrap/Alert";
+import { FaTriangleExclamation } from "react-icons/fa6";
+import AlignedLabel from "./AlignedLabel";
 
 interface CrashLocationBannerProps {
   /**
@@ -15,10 +17,16 @@ export default function CrashLocationBanner({
 }: CrashLocationBannerProps) {
   return (
     <Alert variant="warning">
-      This crash is not included in Vision Zero statistical reporting because{" "}
-      {privateDriveFlag
-        ? "it occurred on a private drive"
-        : "it is located outside of the Austin full purpose jurisdiction"}
+      <AlignedLabel>
+        <FaTriangleExclamation className="me-2" />
+        <span className="me-3">
+          This crash is not included in Vision Zero statistical reporting
+          because{" "}
+          {privateDriveFlag
+            ? "it occurred on a private drive"
+            : "it is located outside of the Austin full purpose jurisdiction"}
+        </span>
+      </AlignedLabel>
     </Alert>
   );
 }
