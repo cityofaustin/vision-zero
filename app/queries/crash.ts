@@ -141,6 +141,7 @@ export const GET_CRASH = gql`
         prsn_first_name
         prsn_mid_name
         prsn_last_name
+        prsn_injry_sev_id
         injry_sev {
           id
           label
@@ -149,10 +150,12 @@ export const GET_CRASH = gql`
           id
           label
         }
+        prsn_gndr_id
         gndr {
           id
           label
         }
+        prsn_ethnicity_id
         drvr_ethncty {
           id
           label
