@@ -158,11 +158,11 @@ export default function CrashDetailsPage({
       <Row>
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
-            records={crash.charges_cris || []}
+            records={crash.people_list_view || []}
             isValidating={isValidating}
-            title="Charges"
-            columns={chargeRelatedRecordCols}
-            mutation={""}
+            title="People"
+            columns={peopleRelatedRecordCols}
+            mutation={UPDATE_PERSON}
             onSaveCallback={onSaveCallback}
           />
         </Col>
@@ -170,11 +170,11 @@ export default function CrashDetailsPage({
       <Row>
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
-            records={crash.people_list_view || []}
+            records={crash.charges_cris || []}
             isValidating={isValidating}
-            title="People"
-            columns={peopleRelatedRecordCols}
-            mutation={UPDATE_PERSON}
+            title="Charges"
+            columns={chargeRelatedRecordCols}
+            mutation={""}
             onSaveCallback={onSaveCallback}
           />
         </Col>
