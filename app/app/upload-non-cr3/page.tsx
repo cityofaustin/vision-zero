@@ -113,16 +113,20 @@ export default function UploadNonCr3() {
                     name="file"
                     accept=".csv"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setSuccess(false);
                       if (validationErrors) {
                         setValidationErrors(null);
                       }
-                      if (e.target?.files) {
-                        setSuccess(false);
+                      if (e.target?.files && e.target?.files.length > 0) {
                         setParsing(true);
                         onSelectFile(e.target?.files[0]);
+                        // reset file input
+                        e.target.value = "";
+                      } else {
+                        setParsing(false);
                       }
                     }}
-                  ></Form.Control>
+                  />
                 </Form>
               </Col>
               <Col className="my-auto">
