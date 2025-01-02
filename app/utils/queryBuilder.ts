@@ -307,17 +307,20 @@ const getWhereExp = (filterGroups: FilterGroup[]): string => {
  *    }
  *  }
  */
-const buildQuery = ({
-  columns,
-  tableName,
-  limit,
-  offset,
-  sortColName,
-  sortAsc,
-  filterCards,
-  dateFilter,
-  searchFilter,
-}: QueryConfig): string => {
+const buildQuery = (
+  {
+    columns,
+    tableName,
+    limit,
+    offset,
+    sortColName,
+    sortAsc,
+    filterCards,
+    dateFilter,
+    searchFilter,
+  }: QueryConfig,
+  contextFilters?: Filter[]
+): string => {
   const columnString = columns.join("\n");
 
   /**
@@ -345,6 +348,18 @@ const buildQuery = ({
     allFilterGroups.push({
       id: "date_filters",
       filters: dateFilter.filters,
+      groupOperator: "_and",
+    });
+  }
+
+  /**
+   * Shape context filters like a FilterGroup and add
+   * to all filters
+   */
+  if (contextFilters) {
+    allFilterGroups.push({
+      id: "context_filters",
+      filters: contextFilters,
       groupOperator: "_and",
     });
   }
@@ -387,10 +402,18 @@ const buildQuery = ({
 };
 
 /**
- * Hook which memoizes the graphql query from the
- * provided queryConfig
+ * Hook which builds a memoized graphql query from the query configuration
+ * @param {QueryConfig} queryConfig - the QueryConfig object
+ * @param {Filter[]} contextFilters - an optional filter array to be included the
+ * query's `where` expression. It is expected that these filters would be set from
+ * an app context that is not wanted to be kepts in local storage, such as a
+ * URL query param
+ * @returns {string} a graphql querry
  */
-export const useQueryBuilder = (queryConfig: QueryConfig): string =>
+export const useQueryBuilder = (
+  queryConfig: QueryConfig,
+  contextFilters?: Filter[]
+): string =>
   useMemo(() => {
-    return buildQuery(queryConfig);
+    return buildQuery(queryConfig, contextFilters);
   }, [queryConfig]);

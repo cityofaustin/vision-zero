@@ -1,84 +1,90 @@
 import { ColDataCardDef } from "@/types/types";
-import { Unit } from "@/schema/units";
+import { Unit } from "@/types/unit";
 
-export const ALL_UNIT_COLUMNS: { [name: string]: ColDataCardDef<Unit> } = {
+export const ALL_UNIT_COLUMNS = {
   unit_nbr: {
-    name: "unit_nbr",
+    path: "unit_nbr",
     label: "Unit",
   },
-  unit_desc_id: {
-    name: "unit_desc_id",
+  unit_desc: {
+    path: "unit_desc.label",
     label: "Type",
     editable: true,
     inputType: "select",
-    relationshipName: "unit_desc",
-    lookupTable: {
+    relationship: {
       tableSchema: "lookups",
       tableName: "unit_desc",
+      foreignKey: "unit_desc_id",
+      idColumnName: "id",
+      labelColumnName: "label",
     },
   },
-  veh_body_styl_id: {
-    name: "veh_body_styl_id",
+  veh_body_styl: {
+    path: "veh_body_styl.label",
     label: "Body style",
     editable: true,
     inputType: "select",
-    relationshipName: "veh_body_styl",
-    lookupTable: {
+    relationship: {
       tableSchema: "lookups",
       tableName: "veh_body_styl",
+      foreignKey: "veh_body_styl_id",
+      idColumnName: "id",
+      labelColumnName: "label",
     },
   },
   veh_mod_year: {
-    name: "veh_mod_year",
+    path: "veh_mod_year",
     label: "Year",
   },
-  veh_make_id: {
-    name: "veh_make_id",
+  veh_make: {
+    path: "veh_make.label",
     label: "Make",
     editable: false,
     inputType: "select",
-    relationshipName: "veh_make",
   },
-  veh_mod_id: {
-    name: "veh_mod_id",
+  veh_mod: {
+    path: "veh_mod.label",
     label: "Model",
     editable: false,
     inputType: "select",
-    relationshipName: "veh_mod",
   },
-
-  veh_trvl_dir_id: {
-    name: "veh_trvl_dir_id",
+  trvl_dir: {
+    path: "trvl_dir.label",
     label: "Direction",
     editable: true,
     inputType: "select",
-    relationshipName: "trvl_dir",
-    lookupTable: {
+    relationship: {
       tableSchema: "lookups",
       tableName: "trvl_dir",
+      foreignKey: "veh_trvl_dir_id",
+      idColumnName: "id",
+      labelColumnName: "label",
     },
   },
-
-  movement_id: {
-    name: "movement_id",
+  movt: {
+    path: "movt.label",
     label: "Movement",
     editable: true,
     inputType: "select",
-    relationshipName: "movt",
-    lookupTable: {
+    relationship: {
       tableSchema: "lookups",
       tableName: "movt",
+      foreignKey: "movement_id",
+      idColumnName: "id",
+      labelColumnName: "label",
     },
   },
-  contrib_factr_1_id: {
-    name: "contrib_factr_1_id",
+  contrib_factr: {
+    path: "contrib_factr.label",
     label: "Primary contrib factor",
     editable: true,
     inputType: "select",
-    relationshipName: "contrib_factr",
-    lookupTable: {
+    relationship: {
       tableSchema: "lookups",
       tableName: "contrib_factr",
+      foreignKey: "contrib_factr_1_id",
+      idColumnName: "id",
+      labelColumnName: "label",
     },
   },
-};
+} satisfies Record<string, ColDataCardDef<Unit>>;

@@ -1,26 +1,26 @@
 import { useState, useEffect } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+import Spinner from "react-bootstrap/Spinner";
 import isEqual from "lodash/isEqual";
-import { useQuery, useDataCache } from "@/utils/graphql";
+import { useQuery } from "@/utils/graphql";
 import Table from "@/components/Table";
 import TableSearch, { SearchSettings } from "@/components/TableSearch";
 import TableDateSelector from "@/components/TableDateSelector";
 import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
-import { QueryConfig, useQueryBuilder } from "@/utils/queryBuilder";
+import { QueryConfig, useQueryBuilder, Filter } from "@/utils/queryBuilder";
 import { ColDataCardDef } from "@/types/types";
 import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
 import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFilterToggle";
 import TablePaginationControls from "@/components/TablePaginationControls";
 import { useActiveSwitchFilterCount } from "@/components/TableAdvancedSearchFilterToggle";
 import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
-import { ZodSchema } from "zod";
 
 interface TableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
   initialQueryConfig: QueryConfig;
   localStorageKey: string;
-  schema: ZodSchema<T>;
+  contextFilters?: Filter[] 
 }
 
 /**
@@ -31,7 +31,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   initialQueryConfig,
   columns,
   localStorageKey,
-  schema,
+  contextFilters
 }: TableProps<T>) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [areFiltersDirty, setAreFiltersDirty] = useState(false);
@@ -44,12 +44,11 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     ...initialQueryConfig,
   });
 
-  const query = useQueryBuilder(queryConfig);
+  const query = useQueryBuilder(queryConfig, contextFilters);
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<T>({
     // dont fire first query until localstorage is loaded
     query: isLocalStorageLoaded ? query : null,
-    schema,
     typename: queryConfig.tableName,
   });
 
@@ -59,8 +58,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   const activeFilterCount = useActiveSwitchFilterCount(queryConfig);
 
-  const cachedData = useDataCache(data);
-  const rows = cachedData || [];
+  const rows = data || [];
 
   /**
    * Load query config from local storage
@@ -71,7 +69,6 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       const queryConfigFromStorage = JSON.parse(
         configFromStorageString
       ) as QueryConfig;
-      // todo: validate with Zod
       // todo: bugs lurking here because the ytd/1y/5y filters need to be refreshed
       setIsLocalStorageLoaded(true);
       setQueryConfig(queryConfigFromStorage);
@@ -110,7 +107,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   /**
    * wait until the localstorage hook resolves to render anything
-   * to prevent filter UI elements from jump
+   * to prevent filter UI elements from jumping
    */
   if (!isLocalStorageLoaded) {
     return;
@@ -131,7 +128,11 @@ export default function TableWrapper<T extends Record<string, unknown>>({
                   setSearchSettings={setSearchSettings}
                 />
               </Col>
-              <Col xs={12} md="auto" className="mt-sm-3 mt-md-0">
+              <Col
+                xs={12}
+                md="auto"
+                className="align-items-center"
+              >
                 <TableDateSelector
                   queryConfig={queryConfig}
                   setQueryConfig={setQueryConfig}
@@ -141,7 +142,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           </Col>
         </Row>
         <Row className="mb-3">
-          <Col xs={12} md={6} className="d-flex justify-content-between">
+          <Col xs={12} md={6} className="d-flex justify-content-start mt-2">
             {queryConfig.filterCards?.length > 0 && (
               <TableAdvancedSearchFilterToggle
                 setIsFilterOpen={setIsFilterOpen}
@@ -155,15 +156,18 @@ export default function TableWrapper<T extends Record<string, unknown>>({
               setSearchSettings={setSearchSettings}
             />
           </Col>
-          <Col xs="auto">
-            {areFiltersDirty && (
+          {areFiltersDirty && (
+            <Col className="px-0 mt-2" xs="auto">
               <TableResetFiltersToggle
                 queryConfig={initialQueryConfig}
                 setQueryConfig={setQueryConfig}
               />
-            )}
+            </Col>
+          )}
+          <Col className="d-flex justify-content-end align-items-center mt-2">
+            {isLoading && <Spinner variant="primary" />}
           </Col>
-          <Col className="d-flex justify-content-end">
+          <Col className="d-flex justify-content-end mt-2" xs="auto">
             <TablePaginationControls
               queryConfig={queryConfig}
               setQueryConfig={setQueryConfig}

@@ -29,7 +29,7 @@ npm install
 npm run dev
 ```
 
-6. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Open [http://localhost:3002](http://localhost:3002) with your browser to see the result.
 
 ## This app vs the old VZE
 
@@ -78,13 +78,19 @@ npm run dev
   - filters are preserved (in local storage) when refreshing the page or navigating back to it
 - Location details page
   - Location polygon map
-  - Location data card displays the location ID
+  - Location data card displays the location ID, crash counts and comp costs
+  - combined cr3 and noncr3 crashes list
 - Navabar:
   - Vision Zero logo displays on left side
   - Avatar image displays on right side with dropdown items
     - email address (disabled/not clickable)
     - sighout link
     - external links to report a bug, request enhancement, and TxDOT's CR3 codesheet
+- Users
+  - user list view
+  - user details card
+  - add a new user
+  - edit a user
 
 ## Todo
 
@@ -113,17 +119,12 @@ npm run dev
 - locations
   - export records
 - location details
-  - data card: crash counts and comp costs
-  - cr3 crashes list
-  - noncr3 crashes list
   - crash charts and widgets
 - create crash record
 - upload non-cr3
 - dashboard
-
 - users
-  - user list
-  - add/edit/delete uers
+  - delete users
   - copy user emails
 - login page: make it look nice
 - versioned localstorage

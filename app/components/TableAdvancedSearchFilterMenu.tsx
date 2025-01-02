@@ -53,13 +53,9 @@ export default function TableAdvancedSearchFilterMenu({
     <Row className="p-2 bg-light">
       {queryConfig.filterCards.map((filterCard) => {
         return (
-          <Col key={filterCard.id}>
+          <Col key={filterCard.id} xs={12} md={3}>
             <Card>
-              <Card.Header>
-                {filterCard.label}
-                {/* todo: showing the group operator here just for debug help */}
-                <span className="ms-2">{`(match: ${filterCard.groupOperator})`}</span>
-              </Card.Header>
+              <Card.Header>{filterCard.label}</Card.Header>
               <Card.Body>
                 <Form>
                   {filterCard.filterGroups?.map((switchFilterGroup) => {

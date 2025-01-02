@@ -17,7 +17,7 @@ import RelatedRecordTable from "@/components/RelatedRecordTable";
 import ChangeLog from "@/components/ChangeLog";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
-import { crashSchema } from "@/schema/crashes";
+import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
 import { Crash } from "@/types/crashes";
 
 const typename = "crashes";
@@ -29,10 +29,9 @@ export default function CrashDetailsPage({
 }) {
   const recordLocator = params.record_locator;
 
-  const { data, error, refetch, isValidating } = useQuery({
+  const { data, error, refetch, isValidating } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
     variables: { recordLocator },
-    schema: crashSchema,
     typename,
   });
 
@@ -150,6 +149,18 @@ export default function CrashDetailsPage({
             title="Units"
             columns={unitRelatedRecordCols}
             mutation={UPDATE_UNIT}
+            onSaveCallback={onSaveCallback}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12} className="mb-3">
+          <RelatedRecordTable
+            records={crash.charges_cris || []}
+            isValidating={isValidating}
+            title="Charges"
+            columns={chargeRelatedRecordCols}
+            mutation={""}
             onSaveCallback={onSaveCallback}
           />
         </Col>
