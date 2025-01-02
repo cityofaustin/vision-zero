@@ -7,7 +7,7 @@ import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/utils/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
-import { HasuraAggregateData } from "@/types/types";
+import { HasuraAggregateData } from "@/types/graphql";
 
 interface PaginationControlProps {
   queryConfig: QueryConfig;

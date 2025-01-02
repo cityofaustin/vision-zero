@@ -8,11 +8,8 @@ import {
   Variables,
 } from "graphql-request";
 import { getRolesArray, getHasuraRoleName, useToken } from "./auth";
-import {
-  MutationVariables,
-  HasuraAggregateData,
-  HasuraGraphQLResponse,
-} from "@/types/types";
+import { MutationVariables } from "@/types/types";
+import { HasuraAggregateData, HasuraGraphQLResponse } from "@/types/graphql";
 import { Relationship } from "@/types/relationships";
 import { useAuth0 } from "@auth0/auth0-react";
 
