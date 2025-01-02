@@ -20,7 +20,7 @@ interface TableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
   initialQueryConfig: QueryConfig;
   localStorageKey: string;
-  contextFilters?: Filter[] 
+  contextFilters?: Filter[];
 }
 
 /**
@@ -31,7 +31,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   initialQueryConfig,
   columns,
   localStorageKey,
-  contextFilters
+  contextFilters,
 }: TableProps<T>) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [areFiltersDirty, setAreFiltersDirty] = useState(false);
@@ -46,10 +46,11 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   const query = useQueryBuilder(queryConfig, contextFilters);
 
-  const { data, isLoading, error } = useQuery<T>({
+  const { data, aggregateData, isLoading, error } = useQuery<T>({
     // dont fire first query until localstorage is loaded
     query: isLocalStorageLoaded ? query : null,
     typename: queryConfig.tableName,
+    hasAggregates: true,
   });
 
   if (error) {
@@ -128,11 +129,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
                   setSearchSettings={setSearchSettings}
                 />
               </Col>
-              <Col
-                xs={12}
-                md="auto"
-                className="align-items-center"
-              >
+              <Col xs={12} md="auto" className="align-items-center">
                 <TableDateSelector
                   queryConfig={queryConfig}
                   setQueryConfig={setQueryConfig}
@@ -173,6 +170,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
               setQueryConfig={setQueryConfig}
               recordCount={rows.length}
               isLoading={isLoading}
+              aggregateData={aggregateData}
             />
           </Col>
         </Row>

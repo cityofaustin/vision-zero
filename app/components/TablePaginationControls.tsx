@@ -6,13 +6,15 @@ import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/utils/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaCircleArrowRight, FaCircleArrowLeft } from "react-icons/fa6";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+import { HasuraAggregateData } from "@/types/types";
 
 interface PaginationControlProps {
   queryConfig: QueryConfig;
   setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
   recordCount: number;
   isLoading: boolean;
+  aggregateData?: HasuraAggregateData;
 }
 
 /**
@@ -20,14 +22,23 @@ interface PaginationControlProps {
  * QueryConfig offset
  */
 export default function TablePaginationControls({
+  aggregateData,
   queryConfig,
   setQueryConfig,
   recordCount,
   isLoading,
 }: PaginationControlProps) {
   const currentPageNum = queryConfig.offset / queryConfig.limit + 1;
+  const totalRecords = aggregateData?.aggregate?.count || 0;
+
   return (
     <ButtonToolbar>
+      <div className="text-nowrap text-secondary d-flex align-items-center me-2">
+        {totalRecords > 0 && (
+          <span>{`${totalRecords.toLocaleString()} records`}</span>
+        )}
+        {totalRecords <= 0 && <span>No results</span>}
+      </div>
       <ButtonGroup className="me-2" aria-label="Date filter preset buttons">
         <Button
           variant="outline-primary"
@@ -47,8 +58,7 @@ export default function TablePaginationControls({
           }}
         >
           <AlignedLabel>
-            <FaCircleArrowLeft />
-            <span className="ms-2">Prev</span>
+            <FaAngleLeft />
           </AlignedLabel>
         </Button>
         <Button
@@ -71,8 +81,7 @@ export default function TablePaginationControls({
           }}
         >
           <AlignedLabel>
-            <span className="me-2">Next</span>
-            <FaCircleArrowRight />
+            <FaAngleRight />
           </AlignedLabel>
         </Button>
       </ButtonGroup>
