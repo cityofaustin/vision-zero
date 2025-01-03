@@ -252,4 +252,5 @@ export const crashesListViewQueryConfig: QueryConfig = {
     }),
   },
   filterCards: crashesListViewfilterCards,
+  exportable: true,
 };
