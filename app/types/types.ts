@@ -35,6 +35,14 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    */
   relationship?: Relationship<T>;
   sortable?: boolean;
+  /**
+   * If the column should be visibily hidden - does not affect record exporting
+   */
+  hidden?: boolean;
+  /**
+   * if the column should be included in record exports
+   */
+  exportable?: boolean;
   valueFormatter?: (
     value: unknown,
     record: T,
