@@ -6,15 +6,16 @@ import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/utils/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
-import { HasuraAggregateData } from "@/types/graphql";
+import { FaAngleLeft, FaAngleRight, FaDownload } from "react-icons/fa6";
 
 interface PaginationControlProps {
   queryConfig: QueryConfig;
   setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
   recordCount: number;
+  totalRecordCount: number;
   isLoading: boolean;
-  aggregateData?: HasuraAggregateData;
+  onClickDownload: () => void;
+  exportable: boolean;
 }
 
 /**
@@ -22,24 +23,39 @@ interface PaginationControlProps {
  * QueryConfig offset
  */
 export default function TablePaginationControls({
-  aggregateData,
   queryConfig,
   setQueryConfig,
   recordCount,
+  totalRecordCount,
   isLoading,
+  onClickDownload,
+  exportable,
 }: PaginationControlProps) {
   const currentPageNum = queryConfig.offset / queryConfig.limit + 1;
-  const totalRecords = aggregateData?.aggregate?.count || 0;
 
   return (
     <ButtonToolbar>
       <div className="text-nowrap text-secondary d-flex align-items-center me-2">
-        {totalRecords > 0 && (
-          <span>{`${totalRecords.toLocaleString()} records`}</span>
+        {totalRecordCount > 0 && (
+          <>
+            <span className="me-2">{`${totalRecordCount.toLocaleString()} records`}</span>
+            {exportable && (
+              <Button
+                variant="outline-primary"
+                style={{ border: "none" }}
+                onClick={onClickDownload}
+              >
+                <AlignedLabel>
+                  <FaDownload className="me-2" />
+                  <span>Download</span>
+                </AlignedLabel>
+              </Button>
+            )}
+          </>
         )}
-        {totalRecords <= 0 && <span>No results</span>}
+        {totalRecordCount <= 0 && <span>No results</span>}
       </div>
-      <ButtonGroup className="me-2" aria-label="Date filter preset buttons">
+      <ButtonGroup className="me-2" aria-label="Pagination control buttons">
         <Button
           variant="outline-primary"
           style={{ border: "none" }}
