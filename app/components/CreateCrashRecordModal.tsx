@@ -248,7 +248,7 @@ export default function CreateCrashRecordModal({
               autoComplete="off"
               data-1p-ignore
               placeholder="ex: 100 S CONGRESS AVE"
-              isInvalid={Boolean(errors.rpt_street_name)}
+              isInvalid={Boolean(errors.rpt_sec_street_name)}
             />
           </Form.Group>
           {/* Repeatable unit inputs */}
