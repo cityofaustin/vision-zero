@@ -31,7 +31,7 @@ interface FormControlDatePickerProps<TFormValues extends FieldValues> {
 /**
  * Date picker component for react-hook-form
  */
-export default function FormControlDatePickerr<
+export default function FormControlDatePicker<
   TFormValues extends FieldValues
 >({
   name,

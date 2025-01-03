@@ -298,7 +298,7 @@ export default function CreateCrashRecordModal({
                     {isLoadingUnitTypes && <Spinner size="sm" />}
                   </Form.Group>
                   <Form.Group className="mb-3">
-                    <Form.Label>Fatlity count</Form.Label>
+                    <Form.Label>Fatality count</Form.Label>
                     {unitTypes && (
                       <Form.Control
                         {...register(`units_cris.${index}.fatality_count`, {
