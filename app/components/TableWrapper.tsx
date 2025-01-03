@@ -8,10 +8,16 @@ import Table from "@/components/Table";
 import TableSearch, { SearchSettings } from "@/components/TableSearch";
 import TableDateSelector from "@/components/TableDateSelector";
 import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
-import { QueryConfig, useQueryBuilder, Filter } from "@/utils/queryBuilder";
+import {
+  QueryConfig,
+  useQueryBuilder,
+  Filter,
+  useExportQuery,
+} from "@/utils/queryBuilder";
 import { ColDataCardDef } from "@/types/types";
 import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
 import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFilterToggle";
+import TableExportModal from "@/components/TableExportModal";
 import TablePaginationControls from "@/components/TablePaginationControls";
 import { useActiveSwitchFilterCount } from "@/components/TableAdvancedSearchFilterToggle";
 import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
@@ -36,6 +42,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [areFiltersDirty, setAreFiltersDirty] = useState(false);
   const [isLocalStorageLoaded, setIsLocalStorageLoaded] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
   const [searchSettings, setSearchSettings] = useState<SearchSettings>({
     searchString: String(initialQueryConfig.searchFilter.value),
     searchColumn: initialQueryConfig.searchFilter.column,
@@ -45,6 +52,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   });
 
   const query = useQueryBuilder(queryConfig, contextFilters);
+  const exportQuery = useExportQuery(queryConfig, columns, contextFilters);
 
   const { data, aggregateData, isLoading, error } = useQuery<T>({
     // dont fire first query until localstorage is loaded
@@ -170,7 +178,9 @@ export default function TableWrapper<T extends Record<string, unknown>>({
               setQueryConfig={setQueryConfig}
               recordCount={rows.length}
               isLoading={isLoading}
-              aggregateData={aggregateData}
+              totalRecordCount={aggregateData?.aggregate?.count || 0}
+              onClickDownload={() => setShowExportModal(true)}
+              exportable={Boolean(queryConfig.exportable)}
             />
           </Col>
         </Row>
@@ -200,6 +210,15 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           />
         </Col>
       </Row>
+      {queryConfig.exportable && (
+        <TableExportModal<T>
+          onClose={() => setShowExportModal(false)}
+          query={exportQuery}
+          show={showExportModal}
+          totalRecordCount={aggregateData?.aggregate?.count || 0}
+          typename={queryConfig.tableName}
+        />
+      )}
     </>
   );
 }
