@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { gql } from "graphql-request";
-
+import { produce } from "immer";
+import { ColDataCardDef } from "@/types/types";
 // todo: test quote escape
 
 const BASE_QUERY_STRING = `
@@ -181,6 +182,10 @@ export interface QueryConfig {
    * managed by the advanced filter component
    */
   filterCards: FilterGroup[];
+  /**
+   * Enables the export functionality
+   */
+  exportable?: boolean;
 }
 
 /**
@@ -417,3 +422,27 @@ export const useQueryBuilder = (
   useMemo(() => {
     return buildQuery(queryConfig, contextFilters);
   }, [queryConfig]);
+
+/**
+ * Hook which builds a graphql query for record exporting
+ */
+export const useExportQuery = <T extends Record<string, unknown>>(
+  queryConfig: QueryConfig,
+  columns: ColDataCardDef<T>[],
+  contextFilters?: Filter[]
+): string => {
+  const newQueryConfig = useMemo(() => {
+    // update the provided query with export settings
+    return produce(queryConfig, (newQueryConfig) => {
+      // get exportable columns
+      newQueryConfig.columns = columns
+        .filter((col) => col.exportable)
+        .map((col) => col.path);
+      // reset limit and offset
+      newQueryConfig.limit = 1_000_000;
+      newQueryConfig.offset = 0;
+      return newQueryConfig;
+    });
+  }, [queryConfig]);
+  return useQueryBuilder(newQueryConfig, contextFilters);
+};
