@@ -56,6 +56,7 @@ export default function FormControlDatePicker<
           dateFormat="MM/dd/yyyy h:mm aa"
           timeFormat="h:mm aa"
           timeIntervals={15}
+          placeholderText="1/1/2025 00:00"
         />
       )}
     />
