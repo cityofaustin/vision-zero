@@ -237,14 +237,29 @@ export const CREATE_CRIS_CRASH = gql`
 `;
 
 export const DELETE_CRIS_CRASH = gql`
-  mutation DeleteCrisCrash($id: Int!) {
+  mutation SoftDeleteCrisCrash($id: Int!, $updated_by: String!) {
     update_crashes_cris(
       where: { id: { _eq: $id }, is_temp_record: { _eq: true } }
-      _set: { is_deleted: true }
+      _set: { is_deleted: true, updated_by: $updated_by }
     ) {
       affected_rows
       returning {
         id
+      }
+    }
+    update_units_cris(
+      where: { crash_pk: { _eq: $id } }
+      _set: { is_deleted: true, updated_by: $updated_by }
+    ) {
+      affected_rows
+    }
+    update_people_cris(
+      where: { units_cris: { crash_pk: { _eq: $id } } }
+      _set: { is_deleted: true, updated_by: $updated_by }
+    ) {
+      returning {
+        id
+        unit_id
       }
     }
   }

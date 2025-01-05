@@ -1,4 +1,5 @@
 import { useRouter } from "next/navigation";
+import { useAuth0 } from "@auth0/auth0-react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
@@ -18,6 +19,7 @@ interface CrashIsTemporaryBannerProps {
 export default function CrashIsTemporaryBanner({
   crashId,
 }: CrashIsTemporaryBannerProps) {
+  const { user } = useAuth0();
   const { mutate, loading: isMutating } = useMutation(DELETE_CRIS_CRASH);
   const router = useRouter();
 
@@ -43,7 +45,7 @@ export default function CrashIsTemporaryBanner({
                 "Are you sure you want to delete this crash record?"
               )
             ) {
-              await mutate({ id: crashId });
+              await mutate({ id: crashId, updated_by: user?.email });
               router.push("/create-crash-record");
             }
           }}
