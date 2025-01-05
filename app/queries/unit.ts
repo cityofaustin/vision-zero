@@ -7,3 +7,12 @@ export const UPDATE_UNIT = gql`
     }
   }
 `;
+
+export const UNIT_TYPES_QUERY = gql`
+  query UnitTypes {
+    lookups_unit_desc {
+      id
+      label
+    }
+  }
+`;

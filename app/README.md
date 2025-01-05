@@ -93,7 +93,10 @@ npm run dev
   - add a new user
   - edit a user
   - delete a user
-
+- create crash records
+  - view + search for temp records
+  - create crash record form
+  
 ## Todo
 
 - permissions-based features:
@@ -124,6 +127,8 @@ npm run dev
   - noncr3 crashes list
   - crash charts and widgets
 - create crash record
+  - delete crash record
+  - hide page from read-only users
 - upload non-cr3
 - dashboard
 - users

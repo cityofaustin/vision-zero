@@ -11,6 +11,7 @@ import { useQuery } from "@/utils/graphql";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import CrashHeader from "@/components/CrashHeader";
 import CrashLocationBanner from "@/components/CrashLocationBanner";
+import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import DataCard from "@/components/DataCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
@@ -65,6 +66,10 @@ export default function CrashDetailsPage({
         (crash.private_dr_fl || !crash.in_austin_full_purpose) && (
           <CrashLocationBanner privateDriveFlag={crash.private_dr_fl} />
         )
+      }
+      {
+        // show alert if crash is a temp record
+        crash.is_temp_record && <CrashIsTemporaryBanner crashId={crash.id} />
       }
       <Row>
         <Col sm={12} md={6} lg={4} className="mb-3">
