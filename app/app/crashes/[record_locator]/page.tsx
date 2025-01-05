@@ -7,6 +7,7 @@ import Card from "react-bootstrap/Card";
 import CrashMapCard from "@/components/CrashMapCard";
 import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { UPDATE_UNIT } from "@/queries/unit";
+import { UPDATE_PERSON } from "@/queries/person";
 import { useQuery } from "@/utils/graphql";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import CrashHeader from "@/components/CrashHeader";
@@ -19,6 +20,7 @@ import ChangeLog from "@/components/ChangeLog";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
 import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
+import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
 import { Crash } from "@/types/crashes";
 import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 
@@ -155,6 +157,18 @@ export default function CrashDetailsPage({
             title="Units"
             columns={unitRelatedRecordCols}
             mutation={UPDATE_UNIT}
+            onSaveCallback={onSaveCallback}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12} className="mb-3">
+          <RelatedRecordTable
+            records={crash.people_list_view || []}
+            isValidating={isValidating}
+            title="People"
+            columns={peopleRelatedRecordCols}
+            mutation={UPDATE_PERSON}
             onSaveCallback={onSaveCallback}
           />
         </Col>

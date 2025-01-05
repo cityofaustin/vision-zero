@@ -3,6 +3,7 @@ import { LookupTableOption } from "./relationships";
 import { ChangeLogEntry } from "./changeLog";
 import { Unit } from "./unit";
 import { Charge } from "./charge";
+import { Person } from "./person";
 import { Recommendation } from "./recommendation";
 
 export type Crash = {
@@ -62,4 +63,5 @@ export type Crash = {
   change_logs: ChangeLogEntry[] | null;
   units: Unit[] | null;
   charges_cris: Charge[] | null;
+  people_list_view: Person[] | null;
 };
