@@ -18,9 +18,25 @@ import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
 
 interface TableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
+  /**
+   * An initial QueryConfig to be used by default — will be overwritten
+   * by config fetched from localstorage
+   */
   initialQueryConfig: QueryConfig;
+  /**
+   * The key to use when saving + loading the QueryConfig from localstorage
+   */
   localStorageKey: string;
-  contextFilters?: Filter[] 
+  /**
+   *  an optional filter array to be included the query's `where` expression.
+   * It is expected that these filters would be set from an app context that
+   * is not wanted to be kepts in local storage, such as a URL query param
+   */
+  contextFilters?: Filter[];
+  /**
+   * A switch that can be used to force a refetch() of the data - refect()
+   * will be called anytime this prop changes
+   */
   refetch?: boolean;
 }
 
