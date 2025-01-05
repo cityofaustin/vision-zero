@@ -40,7 +40,7 @@ export const getStartOfYearDate = (): Date => {
  * Get start/end DateRange for x years ago
  * [now - numYears, null] - in local time
  */
-const getYearsAgoDate = (numYears: number): Date => {
+export const getYearsAgoDate = (numYears: number): Date => {
   const targetStartDate = new Date();
   targetStartDate.setFullYear(targetStartDate.getFullYear() - numYears);
   return targetStartDate;
