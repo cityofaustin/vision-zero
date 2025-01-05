@@ -9,7 +9,7 @@ import { FaCirclePlus, FaCircleMinus } from "react-icons/fa6";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
 import { useQuery, useMutation } from "@/utils/graphql";
 import { UNIT_TYPES_QUERY } from "@/queries/unit";
-import { CREATE_CRASH } from "@/queries/crash";
+import { CREATE_CRIS_CRASH } from "@/queries/crash";
 import { LookupTableOption } from "@/types/relationships";
 import { Crash } from "@/types/crashes";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -132,7 +132,7 @@ export default function CreateCrashRecordModal({
       query: UNIT_TYPES_QUERY,
       typename: "lookups_unit_desc",
     });
-  const { mutate, loading: isSubmitting } = useMutation(CREATE_CRASH);
+  const { mutate, loading: isSubmitting } = useMutation(CREATE_CRIS_CRASH);
 
   const {
     register,
