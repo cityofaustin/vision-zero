@@ -166,7 +166,7 @@ export default function CreateCrashRecordModal({
     }>({ crash });
 
     if (responseData && responseData.insert_crashes_cris) {
-    onSubmitCallback();
+      onSubmitCallback();
     }
     reset();
   };
@@ -186,7 +186,7 @@ export default function CreateCrashRecordModal({
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit(onSubmit)} id="userForm">
-            {/* Case Id */}
+          {/* Case Id */}
           <Form.Group className="mb-3">
             <Form.Label>Case ID</Form.Label>
             <Form.Control
@@ -227,7 +227,7 @@ export default function CreateCrashRecordModal({
             <Form.Control
               {...register("rpt_street_name", {
                 required: true,
-                setValueAs: (v) => v?.trim() || null,
+                setValueAs: (v) => v?.trim().toUpperCase() || null,
               })}
               autoComplete="off"
               data-1p-ignore
@@ -243,7 +243,7 @@ export default function CreateCrashRecordModal({
             <Form.Label>Secondary address</Form.Label>
             <Form.Control
               {...register("rpt_sec_street_name", {
-                setValueAs: (v) => v?.trim() || null,
+                setValueAs: (v) => v?.trim().toUpperCase() || null,
               })}
               autoComplete="off"
               data-1p-ignore
@@ -302,16 +302,21 @@ export default function CreateCrashRecordModal({
                     {unitTypes && (
                       <Form.Control
                         {...register(`units_cris.${index}.fatality_count`, {
-                          required: true,
-                          setValueAs: (v) => Number(v),
+                          required: "Fatality count is required",
+                          min: { value: 0, message: "Cannot be less than 0" },
+                          pattern: {
+                            value: /^\d+$/,
+                            message: "Must be a number",
+                          },
                         })}
                         isInvalid={Boolean(
                           errors.units_cris?.[index]?.fatality_count
                         )}
+                        inputMode="numeric"
                       />
                     )}
                     <Form.Control.Feedback type="invalid">
-                      Fatality count is required
+                      {errors?.units_cris?.[index]?.fatality_count?.message}
                     </Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group className="mb-3">
@@ -319,16 +324,21 @@ export default function CreateCrashRecordModal({
                     {unitTypes && (
                       <Form.Control
                         {...register(`units_cris.${index}.injury_count`, {
-                          required: true,
-                          setValueAs: (v) => Number(v),
+                          required: "Injury count is required",
+                          min: { value: 0, message: "Cannot be less than 0" },
+                          pattern: {
+                            value: /^\d+$/,
+                            message: "Must be a number",
+                          },
                         })}
                         isInvalid={Boolean(
                           errors.units_cris?.[index]?.injury_count
                         )}
+                        inputMode="numeric"
                       />
                     )}
                     <Form.Control.Feedback type="invalid">
-                      Injury count is required
+                      {errors?.units_cris?.[index]?.injury_count?.message}
                     </Form.Control.Feedback>
                   </Form.Group>
                 </Card.Body>
