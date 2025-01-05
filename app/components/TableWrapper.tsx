@@ -8,7 +8,7 @@ import Table from "@/components/Table";
 import TableSearch, { SearchSettings } from "@/components/TableSearch";
 import TableDateSelector from "@/components/TableDateSelector";
 import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
-import { QueryConfig, useQueryBuilder } from "@/utils/queryBuilder";
+import { QueryConfig, useQueryBuilder, Filter } from "@/utils/queryBuilder";
 import { ColDataCardDef } from "@/types/types";
 import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
 import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFilterToggle";
@@ -20,6 +20,8 @@ interface TableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
   initialQueryConfig: QueryConfig;
   localStorageKey: string;
+  contextFilters?: Filter[] 
+  refetch?: boolean;
 }
 
 /**
@@ -30,6 +32,8 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   initialQueryConfig,
   columns,
   localStorageKey,
+  contextFilters,
+  refetch: _refetch,
 }: TableProps<T>) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [areFiltersDirty, setAreFiltersDirty] = useState(false);
@@ -42,9 +46,9 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     ...initialQueryConfig,
   });
 
-  const query = useQueryBuilder(queryConfig);
+  const query = useQueryBuilder(queryConfig, contextFilters);
 
-  const { data, isLoading, error } = useQuery<T>({
+  const { data, isLoading, error, refetch } = useQuery<T>({
     // dont fire first query until localstorage is loaded
     query: isLocalStorageLoaded ? query : null,
     typename: queryConfig.tableName,
@@ -104,8 +108,14 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   }, [queryConfig, initialQueryConfig]);
 
   /**
+   * Hook to trigger refetch
+   */
+  useEffect(() => {
+    refetch();
+  }, [_refetch, refetch]);
+  /**
    * wait until the localstorage hook resolves to render anything
-   * to prevent filter UI elements from jump
+   * to prevent filter UI elements from jumping
    */
   if (!isLocalStorageLoaded) {
     return;
@@ -126,11 +136,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
                   setSearchSettings={setSearchSettings}
                 />
               </Col>
-              <Col
-                xs={12}
-                md="auto"
-                className="align-items-center"
-              >
+              <Col xs={12} md="auto" className="align-items-center">
                 <TableDateSelector
                   queryConfig={queryConfig}
                   setQueryConfig={setQueryConfig}

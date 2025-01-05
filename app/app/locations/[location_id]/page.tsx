@@ -1,16 +1,42 @@
 "use client";
+import { useMemo } from "react";
 import { notFound } from "next/navigation";
-import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import Row from "react-bootstrap/Row";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import DataCard from "@/components/DataCard";
 import LocationMapCard from "@/components/LocationMapCard";
+import TableWrapper from "@/components/TableWrapper";
 import { useQuery } from "@/utils/graphql";
 import { GET_LOCATION } from "@/queries/location";
 import { Location } from "@/types/locations";
+import { Filter } from "@/utils/queryBuilder";
 import { locationCardColumns } from "@/configs/locationDataCard";
+import { locationCrashesColumns } from "@/configs/locationCrashesColumns";
+import { locationCrashesQueryConfig } from "@/configs/locationCrashesTable";
 
 const typename = "atd_txdot_locations";
+
+/**
+ * Hook which returns builds a Filter array with the `location_id` param.
+ * This can be passed as a `contextFilter` to the TableWrapper so that the
+ * location's crashes table is filtered by location.
+ * @param {string} locationId - the location ID string from the page route
+ * @returns {Filter[]} the Filter array with the single location filter
+ */
+const useLocationIdFilter = (locationId: string): Filter[] =>
+  useMemo(
+    () => [
+      {
+        id: "location_id",
+        value: locationId,
+        column: "location_id",
+        operator: "_eq",
+      },
+    ],
+    [locationId]
+  );
 
 export default function LocationDetailsPage({
   params,
@@ -19,6 +45,7 @@ export default function LocationDetailsPage({
 }) {
   const locationId = params.location_id;
 
+  const locationIdFilter = useLocationIdFilter(locationId);
   const { data, error } = useQuery<Location>({
     query: locationId ? GET_LOCATION : null,
     variables: { locationId },
@@ -58,6 +85,21 @@ export default function LocationDetailsPage({
             onSaveCallback={() => Promise.resolve()}
             record={location}
           />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Card>
+            <Card.Header>Crashes</Card.Header>
+            <Card.Body>
+              <TableWrapper
+                columns={locationCrashesColumns}
+                initialQueryConfig={locationCrashesQueryConfig}
+                localStorageKey="locationCrashesQueryConfig"
+                contextFilters={locationIdFilter}
+              />
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
     </>

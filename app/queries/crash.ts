@@ -188,6 +188,7 @@ export const GET_CRASH = gql`
         created_by
         crash_pk
         rec_update
+        recommendation_status_id
         atd__recommendation_status_lkp {
           rec_status_desc
         }
@@ -223,6 +224,45 @@ export const UPDATE_CRASH = gql`
       affected_rows
       returning {
         id
+      }
+    }
+  }
+`;
+
+export const CREATE_CRIS_CRASH = gql`
+  mutation CreateCrash($crash: crashes_cris_insert_input!) {
+    insert_crashes_cris(objects: [$crash]) {
+      returning {
+        id
+      }
+    }
+  }
+`;
+
+export const DELETE_CRIS_CRASH = gql`
+  mutation SoftDeleteCrisCrash($id: Int!, $updated_by: String!) {
+    update_crashes_cris(
+      where: { id: { _eq: $id }, is_temp_record: { _eq: true } }
+      _set: { is_deleted: true, updated_by: $updated_by }
+    ) {
+      affected_rows
+      returning {
+        id
+      }
+    }
+    update_units_cris(
+      where: { crash_pk: { _eq: $id } }
+      _set: { is_deleted: true, updated_by: $updated_by }
+    ) {
+      affected_rows
+    }
+    update_people_cris(
+      where: { units_cris: { crash_pk: { _eq: $id } } }
+      _set: { is_deleted: true, updated_by: $updated_by }
+    ) {
+      returning {
+        id
+        unit_id
       }
     }
   }
