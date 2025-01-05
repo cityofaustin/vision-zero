@@ -13,7 +13,7 @@ import {
   FaLocationDot,
   FaAngleRight,
   FaUserGroup,
-  FaCirclePlus,
+  FaFileCirclePlus,
 } from "react-icons/fa6";
 import AppNavBar from "./AppNavBar";
 import SideBarListItem from "./SideBarListItem";
@@ -167,7 +167,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
               <SideBarListItem
                 isCollapsed={isCollapsed}
                 isCurrentPage={segments.includes("create-crash-record")}
-                Icon={FaCirclePlus}
+                Icon={FaFileCirclePlus}
                 label="Create crash"
                 href="/create-crash-record"
               />
