@@ -1,8 +1,10 @@
 import { CrashInjuryMetric } from "./crashInjuryMetrics";
-import { LookupTableOption } from "./lookupTables";
+import { LookupTableOption } from "./relationships";
 import { ChangeLogEntry } from "./changeLog";
 import { Unit } from "./unit";
-import { Charge } from "./charge"
+import { Charge } from "./charge";
+import { Person } from "./person";
+import { Recommendation } from "./recommendation";
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
@@ -31,6 +33,7 @@ export type Crash = {
   onsys_fl: boolean | null;
   private_dr_fl: boolean | null;
   record_locator: string;
+  recommendation: Recommendation | null;
   road_constr_zone_fl: boolean | null;
   rpt_block_num: string | null;
   rpt_city_id: number | null;
@@ -60,4 +63,5 @@ export type Crash = {
   change_logs: ChangeLogEntry[] | null;
   units: Unit[] | null;
   charges_cris: Charge[] | null;
+  people_list_view: Person[] | null;
 };

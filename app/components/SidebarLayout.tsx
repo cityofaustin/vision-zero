@@ -13,6 +13,8 @@ import {
   FaLocationDot,
   FaAngleRight,
   FaUserGroup,
+  FaCloudArrowUp,
+  FaFileCirclePlus,
 } from "react-icons/fa6";
 import AppNavBar from "./AppNavBar";
 import SideBarListItem from "./SideBarListItem";
@@ -114,6 +116,20 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
                 Icon={FaLocationDot}
                 label="Locations"
                 href="/locations"
+              />
+              <SideBarListItem
+                isCollapsed={isCollapsed}
+                isCurrentPage={segments.includes("create-crash-record")}
+                Icon={FaFileCirclePlus}
+                label="Create crash"
+                href="/create-crash-record"
+              />
+              <SideBarListItem
+                isCollapsed={isCollapsed}
+                isCurrentPage={segments.includes("upload-non-cr3")}
+                Icon={FaCloudArrowUp}
+                label="Upload Non-CR3"
+                href="/upload-non-cr3"
               />
               <SideBarListItem
                 isCollapsed={isCollapsed}

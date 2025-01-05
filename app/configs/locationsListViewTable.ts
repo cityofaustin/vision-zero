@@ -2,7 +2,7 @@ import { locationsListViewColumns } from "./locationsListViewColumns";
 import { QueryConfig, FilterGroup } from "@/utils/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
-const columns = locationsListViewColumns.map((col) => String(col.name));
+const columns = locationsListViewColumns.map((col) => String(col.path));
 
 const locationsListViewFiltercards: FilterGroup[] = [
   {

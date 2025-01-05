@@ -12,6 +12,7 @@ select_permissions:
         - tot_injry_count
         - unkn_injry_count
         - vz_fatality_count
+        - record_locator
         - cris_crash_id
         - crash_sev_id
         - est_comp_cost_crash_based
@@ -23,6 +24,7 @@ select_permissions:
         - collsn_desc
         - crash_date
         - crash_time
+        - crash_timestamp
         - day_of_week
         - location_id
         - movement_desc
@@ -43,6 +45,7 @@ select_permissions:
         - tot_injry_count
         - unkn_injry_count
         - vz_fatality_count
+        - record_locator
         - cris_crash_id
         - crash_sev_id
         - est_comp_cost_crash_based
@@ -54,6 +57,7 @@ select_permissions:
         - collsn_desc
         - crash_date
         - crash_time
+        - crash_timestamp
         - day_of_week
         - location_id
         - movement_desc
@@ -74,6 +78,7 @@ select_permissions:
         - tot_injry_count
         - unkn_injry_count
         - vz_fatality_count
+        - record_locator
         - cris_crash_id
         - crash_sev_id
         - est_comp_cost_crash_based
@@ -85,6 +90,7 @@ select_permissions:
         - collsn_desc
         - crash_date
         - crash_time
+        - crash_timestamp
         - day_of_week
         - location_id
         - movement_desc
