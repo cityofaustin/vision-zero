@@ -48,6 +48,9 @@ object_relationships:
   - name: road_part
     using:
       foreign_key_constraint_on: rpt_road_part_id
+  - name: rwy_sys
+    using:
+      foreign_key_constraint_on: rpt_rdwy_sys_id
   - name: traffic_cntl
     using:
       foreign_key_constraint_on: traffic_cntl_id

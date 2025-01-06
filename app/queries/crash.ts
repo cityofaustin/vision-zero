@@ -50,6 +50,10 @@ export const GET_CRASH = gql`
         label
       }
       rpt_rdwy_sys_id
+      rwy_sys {
+        id
+        label
+      }
       rpt_hwy_num
       rpt_street_pfx
       rpt_street_name

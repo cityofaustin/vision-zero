@@ -142,11 +142,18 @@ export const crashesColumns = {
     editable: true,
     inputType: "text",
   },
-  rpt_rdwy_sys_id: {
-    path: "rpt_rdwy_sys_id",
+  rwy_sys: {
+    path: "rwy_sys.label",
     label: "Roadway system",
     editable: true,
-    inputType: "number",
+    inputType: "select",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "rwy_sys",
+      idColumnName: "id",
+      labelColumnName: "label",
+      foreignKey: "rpt_rdwy_sys_id",
+    }
   },
   road_part: {
     path: "road_part.label",
