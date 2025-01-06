@@ -39,8 +39,8 @@ export const crashDataCards = {
     crashesColumns.rpt_sec_street_name,
     crashesColumns.rpt_sec_street_sfx,
     crashesColumns.rpt_sec_street_desc,
-    crashesColumns.rpt_sec_road_part_id,
-    crashesColumns.rpt_sec_rdwy_sys_id,
+    crashesColumns.road_part_sec,
+    crashesColumns.rwy_sys_sec,
     crashesColumns.rpt_sec_hwy_num,
   ],
 };

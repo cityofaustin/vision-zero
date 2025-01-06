@@ -47,7 +47,9 @@ export type Crash = {
   rpt_sec_block_num: string | null;
   rpt_sec_hwy_num: string | null;
   rpt_sec_rdwy_sys_id: number | null;
+  rwy_sys_sec: LookupTableOption | null;
   rpt_sec_road_part_id: number | null;
+  road_part_sec: LookupTableOption | null;
   rpt_sec_street_desc: string | null;
   rpt_sec_street_name: string | null;
   rpt_sec_street_pfx: string | null;

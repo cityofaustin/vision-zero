@@ -63,7 +63,15 @@ export const GET_CRASH = gql`
       rpt_sec_street_name
       rpt_sec_street_desc
       rpt_sec_road_part_id
+      road_part_sec {
+        id
+        label
+      }
       rpt_sec_rdwy_sys_id
+      rwy_sys_sec {
+        id
+        label
+      }
       rpt_sec_hwy_num
       rpt_sec_street_pfx
       rpt_sec_street_sfx
