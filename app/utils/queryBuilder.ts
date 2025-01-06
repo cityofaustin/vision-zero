@@ -434,7 +434,6 @@ export const useQueryBuilder = (
  */
 export const useExportQuery = <T extends Record<string, unknown>>(
   queryConfig: QueryConfig,
-  columns: ColDataCardDef<T>[],
   contextFilters?: Filter[]
 ): string => {
   const newQueryConfig = useMemo(() => {

@@ -70,7 +70,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   });
 
   const query = useQueryBuilder(queryConfig, contextFilters);
-  const exportQuery = useExportQuery(queryConfig, columns, contextFilters);
+  const exportQuery = useExportQuery(queryConfig, contextFilters);
 
   const { data, aggregateData, isLoading, error, refetch } = useQuery<T>({
     // dont fire first query until localstorage is loaded
