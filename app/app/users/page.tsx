@@ -73,7 +73,7 @@ export default function Users() {
           </div>
           {/* todo: standardize the way we show error messages and use error boundary */}
           {Boolean(error) && (
-            <Alert variant="dange">
+            <Alert variant="danger">
               <p>Something went wrong</p>
               <p>
                 <details>
