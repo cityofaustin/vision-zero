@@ -57,6 +57,7 @@ export default function TableExportModal<T extends Record<string, unknown>>({
 }: TableExportModalProps) {
   /**
    * TODO: exclude aggregations from export
+   * https://github.com/cityofaustin/atd-data-tech/issues/20481
    */
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const { data, isLoading, error } = useQuery<T>({
