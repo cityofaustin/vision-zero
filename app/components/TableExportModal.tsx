@@ -126,6 +126,17 @@ export default function TableExportModal<T extends Record<string, unknown>>({
             </AlignedLabel>
           </Button>
         )}
+        {error && (
+          <Alert variant="danger">
+            <p>Something went wrong</p>
+            <p>
+              <details>
+                <summary>Error</summary>
+                {String(error)}
+              </details>
+            </p>
+          </Alert>
+        )}
         {isLoading && (
           <Button disabled variant="outline-primary">
             <AlignedLabel>
