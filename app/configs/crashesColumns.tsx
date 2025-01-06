@@ -180,18 +180,6 @@ export const crashesColumns = {
     editable: true,
     inputType: "text",
   },
-  // rpt_sec_rdwy_sys_id: {
-  //   path: "rpt_sec_rdwy_sys_id",
-  //   label: "Roadway system",
-  //   editable: true,
-  //   inputType: "number",
-  // },
-  // rpt_sec_road_part_id: {
-  //   path: "rpt_sec_road_part_id",
-  //   label: "Roadway part",
-  //   editable: true,
-  //   inputType: "number",
-  // },
   rwy_sys_sec: {
     path: "rwy_sys_sec.label",
     label: "Roadway system",
