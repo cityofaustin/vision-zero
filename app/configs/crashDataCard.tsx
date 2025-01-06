@@ -29,7 +29,7 @@ export const crashDataCards = {
     crashesColumns.rpt_street_name,
     crashesColumns.rpt_street_sfx,
     crashesColumns.rpt_street_desc,
-    crashesColumns.rpt_road_part_id,
+    crashesColumns.road_part,
     crashesColumns.rpt_rdwy_sys_id,
     crashesColumns.rpt_hwy_num,
   ],

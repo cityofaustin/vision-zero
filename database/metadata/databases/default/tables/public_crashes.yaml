@@ -45,6 +45,9 @@ object_relationships:
         table:
           name: recommendations
           schema: public
+  - name: road_part
+    using:
+      foreign_key_constraint_on: rpt_road_part_id
   - name: traffic_cntl
     using:
       foreign_key_constraint_on: traffic_cntl_id
