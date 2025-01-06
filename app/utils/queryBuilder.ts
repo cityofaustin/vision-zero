@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { gql } from "graphql-request";
 import { produce } from "immer";
-import { ColDataCardDef } from "@/types/types";
 import { MAX_RECORD_EXPORT_LIMIT } from "./constants";
 // todo: test quote escape
 
