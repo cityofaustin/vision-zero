@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { gql } from "graphql-request";
 import { produce } from "immer";
 import { ColDataCardDef } from "@/types/types";
+import { MAX_RECORD_EXPORT_LIMIT } from "./constants";
 // todo: test quote escape
 
 const BASE_QUERY_STRING = `
@@ -440,7 +441,7 @@ export const useExportQuery = <T extends Record<string, unknown>>(
     // update the provided query with export settings
     return produce(queryConfig, (newQueryConfig) => {
       // reset limit and offset
-      newQueryConfig.limit = 1_000_000;
+      newQueryConfig.limit = MAX_RECORD_EXPORT_LIMIT;
       newQueryConfig.offset = 0;
       return newQueryConfig;
     });
