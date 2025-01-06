@@ -416,4 +416,4 @@ export const useQueryBuilder = (
 ): string =>
   useMemo(() => {
     return buildQuery(queryConfig, contextFilters);
-  }, [queryConfig]);
+  }, [queryConfig, contextFilters]);

@@ -18,9 +18,26 @@ import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
 
 interface TableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
+  /**
+   * An initial QueryConfig to be used by default — will be overwritten
+   * by config fetched from localstorage
+   */
   initialQueryConfig: QueryConfig;
+  /**
+   * The key to use when saving + loading the QueryConfig from localstorage
+   */
   localStorageKey: string;
+  /**
+   *  an optional filter array to be included the query's `where` expression.
+   * It is expected that these filters would be set from an app context that
+   * is not wanted to be kepts in local storage, such as a URL query param
+   */
   contextFilters?: Filter[];
+  /**
+   * A switch that can be used to force a refetch() of the data - refect()
+   * will be called anytime this prop changes
+   */
+  refetch?: boolean;
 }
 
 /**
@@ -32,6 +49,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   columns,
   localStorageKey,
   contextFilters,
+  refetch: _refetch,
 }: TableProps<T>) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [areFiltersDirty, setAreFiltersDirty] = useState(false);
@@ -46,7 +64,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   const query = useQueryBuilder(queryConfig, contextFilters);
 
-  const { data, aggregateData, isLoading, error } = useQuery<T>({
+  const { data, aggregateData, isLoading, error, refetch } = useQuery<T>({
     // dont fire first query until localstorage is loaded
     query: isLocalStorageLoaded ? query : null,
     typename: queryConfig.tableName,
@@ -106,6 +124,12 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     setAreFiltersDirty(!isEqual(queryConfig, initialQueryConfig));
   }, [queryConfig, initialQueryConfig]);
 
+  /**
+   * Hook to trigger refetch
+   */
+  useEffect(() => {
+    refetch();
+  }, [_refetch, refetch]);
   /**
    * wait until the localstorage hook resolves to render anything
    * to prevent filter UI elements from jumping
