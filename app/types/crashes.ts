@@ -26,6 +26,7 @@ export type Crash = {
   latitude: number | null;
   law_enforcement_ytd_fatality_num: string | null;
   light_cond_id: number | null;
+  light_cond: LookupTableOption | null;
   location_id: string | null;
   longitude: number | null;
   obj_struck_id: number | null;

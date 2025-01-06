@@ -67,11 +67,18 @@ export const crashesColumns = {
     editable: true,
     inputType: "text",
   },
-  light_cond_id: {
-    path: "light_cond_id",
+  light_cond: {
+    path: "light_cond.label",
     label: "Light condition",
     editable: true,
-    inputType: "number",
+    inputType: "select",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "light_cond",
+      idColumnName: "id",
+      labelColumnName: "label",
+      foreignKey: "light_cond_id",
+    }
   },
   longitude: {
     path: "longitude",

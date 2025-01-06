@@ -18,7 +18,7 @@ export const crashDataCards = {
     crashesColumns.toll_road_fl,
   ],
   other: [
-    crashesColumns.light_cond_id,
+    crashesColumns.light_cond,
     crashesColumns.crash_speed_limit,
     crashesColumns.obj_struck,
     crashesColumns.law_enforcement_ytd_fatality_num,

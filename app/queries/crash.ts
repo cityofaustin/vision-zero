@@ -28,6 +28,10 @@ export const GET_CRASH = gql`
         label
       }
       light_cond_id
+      light_cond {
+        id
+        label
+      }
       wthr_cond_id
       obj_struck {
         id
