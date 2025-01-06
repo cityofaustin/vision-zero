@@ -7,10 +7,12 @@ import Card from "react-bootstrap/Card";
 import CrashMapCard from "@/components/CrashMapCard";
 import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { UPDATE_UNIT } from "@/queries/unit";
+import { UPDATE_PERSON } from "@/queries/person";
 import { useQuery } from "@/utils/graphql";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import CrashHeader from "@/components/CrashHeader";
 import CrashLocationBanner from "@/components/CrashLocationBanner";
+import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import DataCard from "@/components/DataCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
@@ -18,7 +20,9 @@ import ChangeLog from "@/components/ChangeLog";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
 import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
+import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
 import { Crash } from "@/types/crashes";
+import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 
 const typename = "crashes";
 
@@ -64,6 +68,10 @@ export default function CrashDetailsPage({
         (crash.private_dr_fl || !crash.in_austin_full_purpose) && (
           <CrashLocationBanner privateDriveFlag={crash.private_dr_fl} />
         )
+      }
+      {
+        // show alert if crash is a temp record
+        crash.is_temp_record && <CrashIsTemporaryBanner crashId={crash.id} />
       }
       <Row>
         <Col sm={12} md={6} lg={4} className="mb-3">
@@ -156,11 +164,32 @@ export default function CrashDetailsPage({
       <Row>
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
+            records={crash.people_list_view || []}
+            isValidating={isValidating}
+            title="People"
+            columns={peopleRelatedRecordCols}
+            mutation={UPDATE_PERSON}
+            onSaveCallback={onSaveCallback}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12} className="mb-3">
+          <RelatedRecordTable
             records={crash.charges_cris || []}
             isValidating={isValidating}
             title="Charges"
             columns={chargeRelatedRecordCols}
             mutation={""}
+            onSaveCallback={onSaveCallback}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12} md={6} className="mb-3">
+          <CrashRecommendationCard
+            recommendation={crash.recommendation}
+            crash_pk={crash.id}
             onSaveCallback={onSaveCallback}
           />
         </Col>

@@ -21,7 +21,7 @@ const typename = "atd_txdot_locations";
 /**
  * Hook which returns builds a Filter array with the `location_id` param.
  * This can be passed as a `contextFilter` to the TableWrapper so that the
- * location's crashes table is filtered by location.
+ * location's crashes table is filtered by location
  * @param {string} locationId - the location ID string from the page route
  * @returns {Filter[]} the Filter array with the single location filter
  */
@@ -96,6 +96,10 @@ export default function LocationDetailsPage({
                 columns={locationCrashesColumns}
                 initialQueryConfig={locationCrashesQueryConfig}
                 localStorageKey="locationCrashesQueryConfig"
+                /**
+                 * Pass in location ID filter as a contextFilter so
+                 * that it is not saved in the local storage config
+                 */
                 contextFilters={locationIdFilter}
               />
             </Card.Body>

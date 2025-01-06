@@ -2,7 +2,7 @@ import { locationCrashesColumns } from "./locationCrashesColumns";
 import { QueryConfig, FilterGroup } from "@/utils/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 import {
-  getStartOfYearDate,
+  getYearsAgoDate,
   makeDateFilters,
 } from "@/components/TableDateSelector";
 
@@ -75,7 +75,7 @@ export const locationCrashesQueryConfig: QueryConfig = {
     mode: "5y",
     column: "crash_timestamp",
     filters: makeDateFilters("crash_timestamp", {
-      start: getStartOfYearDate(),
+      start: getYearsAgoDate(5),
       end: null,
     }),
   },

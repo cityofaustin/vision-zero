@@ -107,7 +107,7 @@ export const useQuery = <T extends Record<string, unknown>>({
     Variables
   ]): Promise<HasuraGraphQLResponse<T, typeof typename>> => {
     const hasuraRoleName = getHasuraRoleName(getRolesArray(user));
-    return fetcher([query, variables, token, hasuraRoleName]);
+    return fetcher([query, variables, token || "", hasuraRoleName]);
   };
 
   // todo: document falsey query handling

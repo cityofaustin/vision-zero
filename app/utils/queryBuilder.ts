@@ -426,7 +426,8 @@ export const useQueryBuilder = (
 ): string =>
   useMemo(() => {
     return buildQuery(queryConfig, contextFilters);
-  }, [queryConfig]);
+
+  }, [queryConfig, contextFilters]);
 
 /**
  * Hook which builds a graphql query for record exporting
