@@ -226,6 +226,8 @@ const crashesListViewfilterCards: FilterGroup[] = [
 
 export const crashesListViewQueryConfig: QueryConfig = {
   columns,
+  exportable: true,
+  exportFilename: "crashes",
   tableName: "crashes_list_view",
   limit: DEFAULT_QUERY_LIMIT,
   offset: 0,
@@ -252,5 +254,4 @@ export const crashesListViewQueryConfig: QueryConfig = {
     }),
   },
   filterCards: crashesListViewfilterCards,
-  exportable: true,
 };

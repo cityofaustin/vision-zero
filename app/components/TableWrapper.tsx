@@ -212,6 +212,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       </Row>
       {queryConfig.exportable && (
         <TableExportModal<T>
+          exportFilename={queryConfig.exportFilename}
           onClose={() => setShowExportModal(false)}
           query={exportQuery}
           show={showExportModal}

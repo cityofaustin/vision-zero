@@ -186,6 +186,11 @@ export interface QueryConfig {
    * Enables the export functionality
    */
   exportable?: boolean;
+  /**
+   * The name that will be given to the exported file, excluding
+   * the file extension
+   */
+  exportFilename?: string;
 }
 
 /**
@@ -434,10 +439,6 @@ export const useExportQuery = <T extends Record<string, unknown>>(
   const newQueryConfig = useMemo(() => {
     // update the provided query with export settings
     return produce(queryConfig, (newQueryConfig) => {
-      // get exportable columns
-      newQueryConfig.columns = columns
-        .filter((col) => col.exportable)
-        .map((col) => col.path);
       // reset limit and offset
       newQueryConfig.limit = 1_000_000;
       newQueryConfig.offset = 0;

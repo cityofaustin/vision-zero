@@ -7,8 +7,20 @@ import { useQuery } from "@/utils/graphql";
 import { unparse } from "papaparse";
 import AlignedLabel from "./AlignedLabel";
 import { FaCircleInfo, FaDownload } from "react-icons/fa6";
+import { formatDate } from "@/utils/formatters";
+
+/**
+ * Generate the CSV export filename
+ */
+const formatFileName = (exportFilename?: string) =>
+  `${exportFilename || "export"}-${formatDate(new Date().toISOString())}.csv`;
 
 interface TableExportModalProps {
+  /**
+   * The name that will be given to the exported file, excluding
+   * the file extension
+   */
+  exportFilename?: string;
   /**
    * A callback fired when either the modal backdrop is clicked, or the
    * escape key is pressed
@@ -36,6 +48,7 @@ interface TableExportModalProps {
  * UI component which provides a CSV download of the provided query
  */
 export default function TableExportModal<T extends Record<string, unknown>>({
+  exportFilename,
   onClose,
   query,
   totalRecordCount,
@@ -85,7 +98,12 @@ export default function TableExportModal<T extends Record<string, unknown>>({
           className="d-flex justify-content-between align-items-center"
         >
           <FaCircleInfo className="me-3 fs-4" />
-          <div>{`You are about to download ${totalRecordCount.toLocaleString()} records — this may take a few minutes for larger downloads`}</div>
+          <div>
+            You are about to download{" "}
+            <span className="fw-bold">{`${totalRecordCount.toLocaleString()} `}</span>
+            <span>{`record${totalRecordCount === 1 ? "" : "s"}`}</span> — this
+            may take a few minutes for larger downloads
+          </div>
         </Alert>
       </Modal.Body>
       <Modal.Footer>
@@ -93,7 +111,11 @@ export default function TableExportModal<T extends Record<string, unknown>>({
           Cancel
         </Button>
         {downloadUrl && (
-          <Button href={downloadUrl || "#"} download={"filename.csv"} as="a">
+          <Button
+            href={downloadUrl || "#"}
+            download={formatFileName(exportFilename)}
+            as="a"
+          >
             <AlignedLabel>
               <FaDownload className="me-2" />
               Download

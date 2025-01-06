@@ -38,7 +38,9 @@ export default function TablePaginationControls({
       <div className="text-nowrap text-secondary d-flex align-items-center me-2">
         {totalRecordCount > 0 && (
           <>
-            <span className="me-2">{`${totalRecordCount.toLocaleString()} records`}</span>
+            <span className="me-2">{`${totalRecordCount.toLocaleString()} record${
+              totalRecordCount === 1 ? "" : "s"
+            }`}</span>
             {exportable && (
               <Button
                 variant="outline-primary"
