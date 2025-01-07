@@ -3,6 +3,7 @@ import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
 import DataCardInput from "./DataCardInput";
+import SwapAddressButton from "./SwapAddressButton";
 import { useMutation, useQuery, useLookupQuery } from "@/utils/graphql";
 import {
   getRecordValue,
@@ -74,7 +75,16 @@ export default function DataCard<T extends Record<string, unknown>>({
 
   return (
     <Card>
-      <Card.Header>{title}</Card.Header>
+      <Card.Header className="d-flex justify-content-between">
+        {title}
+        {title === "Primary address" && (
+          <SwapAddressButton
+            record={record}
+            mutation={mutation}
+            onSaveCallback={onSaveCallback}
+          />
+        )}
+      </Card.Header>
       <Card.Body>
         <Table responsive hover>
           <tbody>
