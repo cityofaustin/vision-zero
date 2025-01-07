@@ -13,8 +13,8 @@ import {
 
 // Our initial query configuration
 let queryConf = {
-  table: "crashes_list_view",
-  dateField: "crash_date_ct",
+  table: "crashes",
+  dateField: "crash_timestamp",
   single_item: "crashes",
   showDateRange: true,
   columns: crashGridTableColumns,
