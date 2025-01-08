@@ -1,5 +1,7 @@
 import Button from "react-bootstrap/Button";
 import { useMutation } from "@/utils/graphql";
+import AlignedLabel from "./AlignedLabel";
+import { FaArrowRightArrowLeft } from "react-icons/fa6";
 
 interface SwapAddressButtonProps<T extends Record<string, unknown>> {
   record: T;
@@ -58,7 +60,10 @@ export default function SwapAddressButton<T extends Record<string, unknown>>({
           }
         }}
       >
-        Swap Addresses
+        <AlignedLabel>
+          <FaArrowRightArrowLeft className="me-2" />
+          <span>Swap addresses</span>
+        </AlignedLabel>
       </Button>
     </div>
   );
