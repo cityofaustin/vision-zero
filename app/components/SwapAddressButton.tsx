@@ -7,12 +7,16 @@ interface SwapAddressButtonProps<T extends Record<string, unknown>> {
   onSaveCallback: () => Promise<void>;
 }
 
+/**
+ * Button on the primary address data card that allows users to swap
+ * the primary and secondary addresses of a crash
+ */
 export default function SwapAddressButton<T extends Record<string, unknown>>({
   record,
   mutation,
   onSaveCallback,
 }: SwapAddressButtonProps<T>) {
-  // switching all primary and secondary values here
+  // switching all primary and secondary address values here
   const mutationVariables = {
     rpt_block_num: record.rpt_sec_block_num,
     rpt_street_name: record.rpt_sec_street_name,
