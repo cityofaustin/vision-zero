@@ -119,13 +119,6 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
               />
               <SideBarListItem
                 isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("create-crash-record")}
-                Icon={FaFileCirclePlus}
-                label="Create crash"
-                href="/create-crash-record"
-              />
-              <SideBarListItem
-                isCollapsed={isCollapsed}
                 isCurrentPage={segments.includes("upload-non-cr3")}
                 Icon={FaCloudArrowUp}
                 label="Upload Non-CR3"
