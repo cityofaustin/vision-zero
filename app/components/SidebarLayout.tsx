@@ -14,7 +14,6 @@ import {
   FaAngleRight,
   FaUserGroup,
   FaCloudArrowUp,
-  FaFileCirclePlus,
 } from "react-icons/fa6";
 import AppNavBar from "./AppNavBar";
 import SideBarListItem from "./SideBarListItem";
