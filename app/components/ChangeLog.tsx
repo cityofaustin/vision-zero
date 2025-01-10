@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
+import Accordion from "react-bootstrap/Accordion";
 import { formatDateTime } from "@/utils/formatters";
 import ChangeLogDetails from "./ChangeLogDetails";
 import {
@@ -8,6 +8,9 @@ import {
   ChangeLogDiff,
   ChangeLogEntryEnriched,
 } from "@/types/changeLog";
+
+// used to track the accordion expanded state of the change log
+const localStorageKey = "expandedItem";
 
 const KEYS_TO_IGNORE = ["updated_at", "updated_by", "position"];
 
@@ -77,59 +80,72 @@ const isNewRecordEvent = (change: ChangeLogEntryEnriched) =>
 export default function ChangeLog({ logs }: { logs: ChangeLogEntry[] }) {
   const [selectedChange, setSelectedChange] =
     useState<ChangeLogEntryEnriched | null>(null);
+  const [expandedItem, setExpandedItem] = useState<string | null>(
+    localStorage.getItem(localStorageKey)
+  );
 
   const changes = useChangeLogData(logs);
 
   return (
-    <Card>
-      <Card.Header>Record history</Card.Header>
-      <Card.Body>
-        <Table striped hover>
-          <thead>
-            <tr>
-              <th>Record type</th>
-              <th>Event</th>
-              <th>Affected fields</th>
-              <th>Edited by</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody className="font-monospace">
-            {changes.length === 0 && (
-              // this should only happen in local dev where change log is not downloaded from replica
+    <Accordion
+      defaultActiveKey={expandedItem}
+      // on accordion click save new expanded item state to local storage
+      onSelect={(e) => {
+        const localStorageValue = e !== null ? "0" : JSON.stringify(null); // local storage value must be a string type
+        localStorage.setItem(localStorageKey, localStorageValue);
+        setExpandedItem(localStorageValue);
+      }}
+    >
+      <Accordion.Item eventKey="0">
+        <Accordion.Header>Record history</Accordion.Header>
+        <Accordion.Body>
+          <Table striped hover>
+            <thead>
               <tr>
-                <td colSpan={5} className="text-center">
-                  No changes found
-                </td>
+                <th>Record type</th>
+                <th>Event</th>
+                <th>Affected fields</th>
+                <th>Edited by</th>
+                <th>Date</th>
               </tr>
-            )}
-            {changes.map((change) => (
-              <tr
-                key={change.id}
-                onClick={() => setSelectedChange(change)}
-                style={{ cursor: "pointer" }}
-              >
-                <td>{change.record_type}</td>
-                <td>{change.operation_type}</td>
-                <td>
-                  {isNewRecordEvent(change)
-                    ? ""
-                    : change.affected_fields.join(", ")}
-                </td>
-                <td>{change.created_by}</td>
-                <td>{formatDateTime(change.created_at)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-        {/* Modal with change details table */}
-        {selectedChange && (
-          <ChangeLogDetails
-            selectedChange={selectedChange}
-            setSelectedChange={setSelectedChange}
-          />
-        )}
-      </Card.Body>
-    </Card>
+            </thead>
+            <tbody className="font-monospace">
+              {changes.length === 0 && (
+                // this should only happen in local dev where change log is not downloaded from replica
+                <tr>
+                  <td colSpan={5} className="text-center">
+                    No changes found
+                  </td>
+                </tr>
+              )}
+              {changes.map((change) => (
+                <tr
+                  key={change.id}
+                  onClick={() => setSelectedChange(change)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <td>{change.record_type}</td>
+                  <td>{change.operation_type}</td>
+                  <td>
+                    {isNewRecordEvent(change)
+                      ? ""
+                      : change.affected_fields.join(", ")}
+                  </td>
+                  <td>{change.created_by}</td>
+                  <td>{formatDateTime(change.created_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          {/* Modal with change details table */}
+          {selectedChange && (
+            <ChangeLogDetails
+              selectedChange={selectedChange}
+              setSelectedChange={setSelectedChange}
+            />
+          )}
+        </Accordion.Body>
+      </Accordion.Item>
+    </Accordion>
   );
 }
