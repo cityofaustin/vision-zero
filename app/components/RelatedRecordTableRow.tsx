@@ -96,7 +96,6 @@ export default function RelatedRecordTableRow<
               col.customComponent &&
                 col.customComponent(
                   record,
-                  isMutating,
                   onCancel,
                   mutation,
                   isEditingThisColumn

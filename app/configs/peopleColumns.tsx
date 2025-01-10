@@ -76,14 +76,12 @@ export const ALL_PEOPLE_COLUMNS = {
     editable: true,
     customComponent: (
       record,
-      isMutating,
       onCancel,
       mutation,
       isEditingThisColumn
     ) => (
       <PersonNameField
         record={record}
-        isMutating={isMutating}
         onCancel={onCancel}
         mutation={mutation}
         isEditingThisColumn={isEditingThisColumn}
