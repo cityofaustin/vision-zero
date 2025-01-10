@@ -92,8 +92,20 @@ export default function RelatedRecordTableRow<
               }
             }}
           >
-            {!isEditingThisColumn && renderColumnValue(record, col)}
-            {isEditingThisColumn && (
+            {
+              col.customComponent &&
+                col.customComponent(
+                  record,
+                  isMutating,
+                  onCancel,
+                  mutation,
+                  isEditingThisColumn
+                ) // on save or mutate?
+            }
+            {!isEditingThisColumn &&
+              !col.customComponent &&
+              renderColumnValue(record, col)}
+            {isEditingThisColumn && !col?.customComponent && (
               <>
                 {isLoadingLookups && <Spinner size="sm" />}
                 {!isLoadingLookups && (

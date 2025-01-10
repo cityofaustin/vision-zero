@@ -41,6 +41,14 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
     column: ColDataCardDef<T>
   ) => string;
   valueRenderer?: (record: T, column: ColDataCardDef<T>) => ReactNode;
+  customComponent?: (
+    record: T,
+    isMutating: boolean,
+    onCancel: () => void,
+    // onSave: (value: string) => Promise<void>
+    mutation: string,
+    isEditingThisColumn: boolean,
+  ) => ReactNode;
 }
 
 export interface MutationVariables extends Variables {
