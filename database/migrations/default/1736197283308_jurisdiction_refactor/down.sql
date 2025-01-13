@@ -1,9 +1,11 @@
 alter table geo.atd_jurisdictions drop column jurisdictions_id;
 
-CREATE OR REPLACE FUNCTION public.crashes_set_spatial_attributes()
- RETURNS trigger
- LANGUAGE plpgsql
-AS $function$
+alter table geo.jurisdictions rename to atd_jurisdictions;
+
+create or replace function public.crashes_set_spatial_attributes()
+returns trigger
+language plpgsql
+as $function$
 begin
     if (new.latitude is not null and new.longitude is not null) then
         -- save lat/lon into geometry col
@@ -135,3 +137,92 @@ begin
     return new;
 end;
 $function$;
+
+
+
+
+--
+-- restore this function
+--
+create function public.find_crash_jurisdictions(
+    given_crash_id integer
+) returns setof public.atd_jurisdictions
+language sql stable
+as $$
+(
+    SELECT aj.*
+    FROM atd_txdot_crashes AS atc
+        INNER JOIN atd_jurisdictions aj
+        ON ( 1=1
+            AND (aj.geometry && atc.position)
+            AND ST_Contains(aj.geometry, atc.position)
+        )
+    WHERE 1=1
+    AND atc.crash_id = given_crash_id
+)
+$$;
+
+
+--
+-- revert jurisdiction table name in ems_incidents_trigger function
+--
+create or replace function public.ems_incidents_trigger()
+returns trigger
+language plpgsql
+as $function$
+BEGIN
+  update ems__incidents set
+    austin_full_purpose = (
+      select ST_Contains(jurisdiction.geometry, incidents.geometry)
+      from ems__incidents incidents
+      left join geo.atd_jurisdictions jurisdiction on (jurisdiction.jurisdiction_label = 'AUSTIN FULL PURPOSE')
+      where incidents.id = new.id),
+    location_id = (
+      select locations.location_id
+      from ems__incidents incidents
+      join atd_txdot_locations locations on (locations.location_group = 1 and incidents.geometry && locations.geometry and ST_Contains(locations.geometry, incidents.geometry))
+      where incidents.id = new.id),
+    latitude = ST_Y(ems__incidents.geometry),
+    longitude = ST_X(ems__incidents.geometry),
+    apd_incident_number_1 = ems__incidents.apd_incident_numbers[1],
+    apd_incident_number_2 = ems__incidents.apd_incident_numbers[2],
+    mvc_form_date = date(ems__incidents.mvc_form_extrication_datetime),
+    mvc_form_time = ems__incidents.mvc_form_extrication_datetime::time
+    where ems__incidents.id = new.id;
+RETURN NEW;
+END;
+$function$;
+
+--
+-- revert rename jurisdiction table in afd_incidents_trigger function
+---
+CREATE FUNCTION public.afd_incidents_trigger() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  update afd__incidents set
+    austin_full_purpose = (
+      select ST_Contains(jurisdiction.geometry, incidents.geometry)
+      from afd__incidents incidents
+      left join atd_jurisdictions jurisdiction on (jurisdiction.jurisdiction_label = 'AUSTIN FULL PURPOSE')
+      where incidents.id = new.id),
+    location_id = (
+      select locations.location_id
+      from afd__incidents incidents
+      join atd_txdot_locations locations on (
+        true
+        and locations.location_group = 1 -- this was added to rule out old level 5s
+        and incidents.geometry && locations.geometry
+        and ST_Contains(locations.geometry, incidents.geometry)
+      )
+      where incidents.id = new.id),
+    latitude = ST_Y(afd__incidents.geometry),
+    longitude = ST_X(afd__incidents.geometry),
+    ems_incident_number_1 = afd__incidents.ems_incident_numbers[1],
+    ems_incident_number_2 = afd__incidents.ems_incident_numbers[2],
+    call_date = date(afd__incidents.call_datetime),
+    call_time = afd__incidents.call_datetime::time
+    where afd__incidents.id = new.id;
+RETURN NEW;
+END;
+$$;
