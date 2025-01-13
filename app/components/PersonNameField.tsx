@@ -62,7 +62,6 @@ const PersonNameField = ({
       });
       // what is skip updated by setter?
       // await mutate(variables, { skip_updated_by_setter: true });
-      reset();
       await onSaveCallback();
       onCancel(); // closes edit, should I rename this
     },
@@ -129,8 +128,8 @@ const PersonNameField = ({
             <Button
               size="sm"
               onClick={() => {
-                onCancel();
                 reset();
+                onCancel();
               }}
               disabled={isMutating}
               variant="danger"
