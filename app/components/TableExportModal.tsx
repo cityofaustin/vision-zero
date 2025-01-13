@@ -119,6 +119,7 @@ export default function TableExportModal<T extends Record<string, unknown>>({
             href={downloadUrl || "#"}
             download={formatFileName(exportFilename)}
             as="a"
+            onClick={onClose}
           >
             <AlignedLabel>
               <FaDownload className="me-2" />
