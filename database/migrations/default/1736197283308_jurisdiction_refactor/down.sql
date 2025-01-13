@@ -1,4 +1,4 @@
-alter table geo.atd_jurisdictions drop column jurisdictions_id;
+alter table geo.jurisdictions drop column jurisdictions_id;
 
 alter table geo.jurisdictions rename to atd_jurisdictions;
 
