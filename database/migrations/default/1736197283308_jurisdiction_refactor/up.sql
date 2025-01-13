@@ -179,9 +179,9 @@ $function$;
 --
 -- rename jurisdiction table in afd_incidents_trigger function
 ---
-CREATE FUNCTION public.afd_incidents_trigger() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
+create or replace function public.afd_incidents_trigger() returns trigger
+language plpgsql
+as $$
 BEGIN
   update afd__incidents set
     austin_full_purpose = (
