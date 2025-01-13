@@ -36,7 +36,7 @@ interface TableProps<T extends Record<string, unknown>> {
   /**
    *  an optional filter array to be included the query's `where` expression.
    * It is expected that these filters would be set from an app context that
-   * is not wanted to be kepts in local storage, such as a URL query param
+   * is not wanted to be kept in local storage, such as a URL query param
    */
   contextFilters?: Filter[];
   /**
@@ -73,7 +73,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   const exportQuery = useExportQuery(queryConfig, contextFilters);
 
   const { data, aggregateData, isLoading, error, refetch } = useQuery<T>({
-    // dont fire first query until localstorage is loaded
+    // don't fire first query until localstorage is loaded
     query: isLocalStorageLoaded ? query : null,
     typename: queryConfig.tableName,
     hasAggregates: true,
