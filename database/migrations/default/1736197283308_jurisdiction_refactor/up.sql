@@ -119,7 +119,7 @@ begin
             new.is_coa_roadway = false;
         end if;
         else
-            raise debug 'reseting spatial attributes due to null latitude and/or longitude values';
+            raise debug 'resetting spatial attributes due to null latitude and/or longitude values';
             -- nullify position column
             new.position = null;
             -- reset location id
