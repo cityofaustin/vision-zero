@@ -14,6 +14,7 @@ interface PersonNameFieldProps {
    * to set control the parent component's edit state
    */
   onCancel: () => void;
+  onSaveCallback: () => Promise<void>;
   isEditingThisColumn: boolean;
 }
 
@@ -28,7 +29,7 @@ type PersonNameFormInputs = {
  */
 const PersonNameField = ({
   record,
-  // onSave,
+  onSaveCallback,
   onCancel,
   mutation,
   isEditingThisColumn,
@@ -50,11 +51,19 @@ const PersonNameField = ({
 
   const onSave = useCallback(
     async (data: PersonNameFormInputs) => {
-      console.log(data);
-      // this is where i fix the payload
-      // do i need the record.crash_pk here?
+      console.log(data, record);
+      await mutate({
+        id: record.id,
+        updates: {
+          prsn_first_name: data.first_name,
+          prsn_mid_name: data.middle_name,
+          prsn_last_name: data.last_name,
+        },
+      });
+      // what is skip updated by setter?
       // await mutate(variables, { skip_updated_by_setter: true });
-      // await onSaveCallback();
+      reset();
+      await onSaveCallback();
       onCancel(); // closes edit, should I rename this
     },
     [] // how come im not seeing any warnings for missing stuff?
@@ -74,7 +83,7 @@ const PersonNameField = ({
       <Form id="personNameForm" onSubmit={handleSubmit(onSave)}>
         <div className="mb-2">
           <Form.Group>
-          {/* <Form.Label>First</Form.Label> */}
+            {/* <Form.Label>First</Form.Label> */}
             <Form.Control
               {...register("first_name", {
                 // coerce empty fields to null
@@ -82,7 +91,7 @@ const PersonNameField = ({
               })}
               size="sm"
               as="input"
-              placeholder="First" 
+              placeholder="First"
             />
             <Form.Control
               {...register("middle_name", {
@@ -91,7 +100,7 @@ const PersonNameField = ({
               })}
               size="sm"
               as="input"
-              placeholder="Middle" 
+              placeholder="Middle"
             />
             <Form.Control
               {...register("last_name", {
@@ -100,7 +109,7 @@ const PersonNameField = ({
               })}
               size="sm"
               as="input"
-              placeholder="Last" 
+              placeholder="Last"
             />
           </Form.Group>
         </div>

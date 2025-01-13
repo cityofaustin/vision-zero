@@ -98,6 +98,7 @@ export default function RelatedRecordTableRow<
                   record,
                   onCancel,
                   mutation,
+                  onSaveCallback,
                   isEditingThisColumn
                 ) // on save or mutate?
             }

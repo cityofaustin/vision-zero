@@ -78,12 +78,14 @@ export const ALL_PEOPLE_COLUMNS = {
       record,
       onCancel,
       mutation,
-      isEditingThisColumn
+      onSaveCallback,
+      isEditingThisColumn,
     ) => (
       <PersonNameField
         record={record}
         onCancel={onCancel}
         mutation={mutation}
+        onSaveCallback={onSaveCallback}
         isEditingThisColumn={isEditingThisColumn}
       />
     ),

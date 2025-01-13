@@ -44,8 +44,8 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
   customComponent?: (
     record: T,
     onCancel: () => void,
-    // onSave: (value: string) => Promise<void>
     mutation: string,
+    onSaveCallback: () => Promise<void>,
     isEditingThisColumn: boolean,
   ) => ReactNode;
 }
