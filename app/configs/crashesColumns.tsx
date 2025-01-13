@@ -67,11 +67,18 @@ export const crashesColumns = {
     editable: true,
     inputType: "text",
   },
-  light_cond_id: {
-    path: "light_cond_id",
+  light_cond: {
+    path: "light_cond.label",
     label: "Light condition",
     editable: true,
-    inputType: "number",
+    inputType: "select",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "light_cond",
+      idColumnName: "id",
+      labelColumnName: "label",
+      foreignKey: "light_cond_id",
+    }
   },
   longitude: {
     path: "longitude",
@@ -135,17 +142,31 @@ export const crashesColumns = {
     editable: true,
     inputType: "text",
   },
-  rpt_rdwy_sys_id: {
-    path: "rpt_rdwy_sys_id",
+  rwy_sys: {
+    path: "rwy_sys.label",
     label: "Roadway system",
     editable: true,
-    inputType: "number",
+    inputType: "select",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "rwy_sys",
+      idColumnName: "id",
+      labelColumnName: "label",
+      foreignKey: "rpt_rdwy_sys_id",
+    }
   },
-  rpt_road_part_id: {
-    path: "rpt_road_part_id",
+  road_part: {
+    path: "road_part.label",
     label: "Roadway part",
     editable: true,
-    inputType: "number",
+    inputType: "select",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "road_part",
+      idColumnName: "id",
+      labelColumnName: "label",
+      foreignKey: "rpt_road_part_id",
+    }
   },
   rpt_sec_block_num: {
     path: "rpt_sec_block_num",
@@ -159,17 +180,31 @@ export const crashesColumns = {
     editable: true,
     inputType: "text",
   },
-  rpt_sec_rdwy_sys_id: {
-    path: "rpt_sec_rdwy_sys_id",
+  rwy_sys_sec: {
+    path: "rwy_sys_sec.label",
     label: "Roadway system",
     editable: true,
-    inputType: "number",
+    inputType: "select",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "rwy_sys",
+      idColumnName: "id",
+      labelColumnName: "label",
+      foreignKey: "rpt_sec_rdwy_sys_id",
+    }
   },
-  rpt_sec_road_part_id: {
-    path: "rpt_sec_road_part_id",
+  road_part_sec: {
+    path: "road_part_sec.label",
     label: "Roadway part",
     editable: true,
-    inputType: "number",
+    inputType: "select",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "road_part",
+      idColumnName: "id",
+      labelColumnName: "label",
+      foreignKey: "rpt_sec_road_part_id",
+    }
   },
   rpt_sec_street_desc: {
     path: "rpt_sec_street_desc",

@@ -94,7 +94,8 @@ const calculateHourBlockTotals = (records, crashType) => {
  * @returns {String} The query url for the Socrata query
  */
 const getFatalitiesByYearsAgoUrl = (activeTab, crashType) => {
-  const yearsAgoDate = format(sub(new Date(), { years: activeTab }), "yyyy");
+  // subtract years ago (based on activeTab) from current year
+  const yearsAgoDate = format(sub(parseISO(summaryCurrentYearStartDate), { years: activeTab }), "yyyy");
   let queryUrl =
     activeTab === 0
       ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_timestamp_ct between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
