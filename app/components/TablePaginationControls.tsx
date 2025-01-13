@@ -3,7 +3,6 @@ import { produce } from "immer";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
-import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/utils/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
@@ -31,6 +30,10 @@ export default function TablePaginationControls({
   const currentPageNum = queryConfig.offset / queryConfig.limit + 1;
   const totalRecords = aggregateData?.aggregate?.count || 0;
 
+  const pageLeftButtonDisabled =
+    recordCount === 0 || queryConfig.offset === 0 || isLoading;
+  const pageRightButtonDisabled = recordCount < queryConfig.limit || isLoading;
+
   return (
     <ButtonToolbar>
       <div className="text-nowrap text-secondary d-flex align-items-center me-2">
@@ -39,11 +42,13 @@ export default function TablePaginationControls({
         )}
         {totalRecords <= 0 && <span>No results</span>}
       </div>
-      <ButtonGroup className="me-2" aria-label="Date filter preset buttons">
+      <ButtonGroup className="me-2" aria-label="Table pagniation controls">
         <Button
-          variant="outline-primary"
+          variant={
+            pageLeftButtonDisabled ? "outline-secondary" : "outline-primary"
+          }
           style={{ border: "none" }}
-          disabled={recordCount === 0 || queryConfig.offset === 0 || isLoading}
+          disabled={pageLeftButtonDisabled}
           onClick={() => {
             const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
               newQueryConfig.offset =
@@ -57,20 +62,21 @@ export default function TablePaginationControls({
             setQueryConfig(newQueryConfig);
           }}
         >
-          <AlignedLabel>
-            <FaAngleLeft />
-          </AlignedLabel>
+          <FaAngleLeft />
         </Button>
-        <Button
-          variant="outline-primary"
-          style={{ border: "none", pointerEvents: "none" }}
+        <span
+          aria-label="Current page number"
+          className="btn text-secondary mx-2 text-nowrap"
+          style={{ pointerEvents: "none" }}
         >
-          <span className="mx-2 text-nowrap">{`Page ${currentPageNum}`}</span>
-        </Button>
+          {`Page ${currentPageNum}`}
+        </span>
         <Button
-          variant="outline-primary"
+          variant={
+            pageRightButtonDisabled ? "outline-secondary" : "outline-primary"
+          }
           style={{ border: "none" }}
-          disabled={recordCount < queryConfig.limit || isLoading}
+          disabled={pageRightButtonDisabled}
           onClick={() => {
             const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
               newQueryConfig.offset =
@@ -80,9 +86,7 @@ export default function TablePaginationControls({
             setQueryConfig(newQueryConfig);
           }}
         >
-          <AlignedLabel>
-            <FaAngleRight />
-          </AlignedLabel>
+          <FaAngleRight />
         </Button>
       </ButtonGroup>
     </ButtonToolbar>
