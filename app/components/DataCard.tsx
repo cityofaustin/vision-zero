@@ -2,8 +2,7 @@ import { useState } from "react";
 import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
-import DataCardInput from "./DataCardInput";
-import SwapAddressButton from "./SwapAddressButton";
+import DataCardInput from "@/components/DataCardInput";
 import { useMutation, useQuery, useLookupQuery } from "@/utils/graphql";
 import {
   getRecordValue,
@@ -13,6 +12,7 @@ import {
 } from "@/utils/formHelpers";
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
+import { CrashSwapAddressButtonProps } from "@/components/CrashSwapAddressButton";
 
 interface DataCardProps<T extends Record<string, unknown>> {
   record: T;
@@ -21,6 +21,7 @@ interface DataCardProps<T extends Record<string, unknown>> {
   isValidating: boolean;
   title: string;
   onSaveCallback: () => Promise<void>;
+  HeaderActionButton?: React.ComponentType<CrashSwapAddressButtonProps<T>>;
 }
 
 /**
@@ -33,6 +34,7 @@ export default function DataCard<T extends Record<string, unknown>>({
   isValidating,
   title,
   onSaveCallback,
+  HeaderActionButton,
 }: DataCardProps<T>) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
@@ -77,8 +79,8 @@ export default function DataCard<T extends Record<string, unknown>>({
     <Card>
       <Card.Header className="d-flex justify-content-between">
         {title}
-        {title === "Primary address" && (
-          <SwapAddressButton
+        {HeaderActionButton && (
+          <HeaderActionButton
             record={record}
             mutation={mutation}
             onSaveCallback={onSaveCallback}
