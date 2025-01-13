@@ -41,6 +41,10 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
     column: ColDataCardDef<T>
   ) => string;
   valueRenderer?: (record: T, column: ColDataCardDef<T>) => ReactNode;
+  /**
+   * Function that returns a custom component, used for display and/or editing
+   * when the column is dependent on other columns of the same record
+   */
   customComponent?: (
     record: T,
     onCancel: () => void,
