@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { ColDataCardDef, InputType } from "@/types/types";
-import { LookupTableOption } from "@/types/relationships";
 
 /**
  * Retrieve a value from an object given a dot-noted path string.
