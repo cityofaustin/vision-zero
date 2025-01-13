@@ -3,6 +3,7 @@ import { produce } from "immer";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
+import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/utils/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaAngleLeft, FaAngleRight, FaDownload } from "react-icons/fa6";
@@ -47,7 +48,7 @@ export default function TablePaginationControls({
             {exportable && (
               <Button
                 variant="outline-primary"
-                style={{ border: "none" }}
+                className="border-0"
                 onClick={onClickDownload}
               >
                 <AlignedLabel>
@@ -65,7 +66,7 @@ export default function TablePaginationControls({
           variant={
             pageLeftButtonDisabled ? "outline-secondary" : "outline-primary"
           }
-          style={{ border: "none" }}
+          className="border-0"
           disabled={pageLeftButtonDisabled}
           onClick={() => {
             const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
@@ -84,8 +85,7 @@ export default function TablePaginationControls({
         </Button>
         <span
           aria-label="Current page number"
-          className="btn text-secondary mx-2 text-nowrap"
-          style={{ pointerEvents: "none" }}
+          className="btn text-secondary mx-2 text-nowrap border-0"
         >
           {`Page ${currentPageNum}`}
         </span>
@@ -93,7 +93,7 @@ export default function TablePaginationControls({
           variant={
             pageRightButtonDisabled ? "outline-secondary" : "outline-primary"
           }
-          style={{ border: "none" }}
+          className="border-0"
           disabled={pageRightButtonDisabled}
           onClick={() => {
             const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
