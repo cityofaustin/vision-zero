@@ -138,31 +138,6 @@ begin
 end;
 $function$;
 
-
-
-
---
--- restore this function
---
-create function public.find_crash_jurisdictions(
-    given_crash_id integer
-) returns setof public.atd_jurisdictions
-language sql stable
-as $$
-(
-    SELECT aj.*
-    FROM atd_txdot_crashes AS atc
-        INNER JOIN atd_jurisdictions aj
-        ON ( 1=1
-            AND (aj.geometry && atc.position)
-            AND ST_Contains(aj.geometry, atc.position)
-        )
-    WHERE 1=1
-    AND atc.crash_id = given_crash_id
-)
-$$;
-
-
 --
 -- revert jurisdiction table name in ems_incidents_trigger function
 --

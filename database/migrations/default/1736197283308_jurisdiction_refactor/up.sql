@@ -212,6 +212,6 @@ $$;
 
 
 --
--- remove unused find_crash_jurisdictions function
+-- remove unused / outdated find_crash_jurisdictions function
 ---
 drop function if exists find_crash_jurisdictions;
