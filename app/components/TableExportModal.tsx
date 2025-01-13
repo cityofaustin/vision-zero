@@ -68,7 +68,7 @@ export default function TableExportModal<T extends Record<string, unknown>>({
   });
 
   /**
-   * Hook which updates creates the CSV download blob when data becomes available
+   * Hook which creates the CSV download blob when data becomes available
    */
   useEffect(() => {
     if (!isLoading && data) {
