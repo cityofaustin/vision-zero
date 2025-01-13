@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Accordion from "react-bootstrap/Accordion";
 import { formatDateTime } from "@/utils/formatters";
-import ChangeLogDetails from "./ChangeLogDetails";
+import ChangeLogDetails from "@/components/ChangeLogDetails";
 import {
   ChangeLogEntry,
   ChangeLogDiff,
@@ -10,7 +10,8 @@ import {
 } from "@/types/changeLog";
 
 // used to track the accordion expanded state of the change log
-const localStorageKey = "expandedItem";
+const localStorageKey = "crashHistoryCardExpandedItem";
+const recordHistoryItemName = "recordHistory";
 
 const KEYS_TO_IGNORE = ["updated_at", "updated_by", "position"];
 
@@ -80,6 +81,7 @@ const isNewRecordEvent = (change: ChangeLogEntryEnriched) =>
 export default function ChangeLog({ logs }: { logs: ChangeLogEntry[] }) {
   const [selectedChange, setSelectedChange] =
     useState<ChangeLogEntryEnriched | null>(null);
+  // tracks the accordion expanded state, if null then the accordion is closed
   const [expandedItem, setExpandedItem] = useState<string | null>(
     localStorage.getItem(localStorageKey)
   );
@@ -88,15 +90,16 @@ export default function ChangeLog({ logs }: { logs: ChangeLogEntry[] }) {
 
   return (
     <Accordion
-      defaultActiveKey={expandedItem}
+      activeKey={expandedItem}
       // on accordion click save new expanded item state to local storage
-      onSelect={(e) => {
-        const localStorageValue = e !== null ? "0" : JSON.stringify(null); // local storage value must be a string type
+      onSelect={(eventKey) => {
+        const localStorageValue =
+          eventKey !== null ? recordHistoryItemName : String(null); // local storage value must be a string type
         localStorage.setItem(localStorageKey, localStorageValue);
         setExpandedItem(localStorageValue);
       }}
     >
-      <Accordion.Item eventKey="0">
+      <Accordion.Item eventKey={recordHistoryItemName}>
         <Accordion.Header>Record history</Accordion.Header>
         <Accordion.Body>
           <Table striped hover>
