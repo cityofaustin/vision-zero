@@ -100,7 +100,7 @@ export default function RelatedRecordTableRow<
                   mutation,
                   onSaveCallback,
                   isEditingThisColumn
-                ) // on save or mutate?
+                )
             }
             {!isEditingThisColumn &&
               !col.customComponent &&

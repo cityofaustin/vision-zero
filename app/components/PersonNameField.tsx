@@ -6,15 +6,26 @@ import { Person } from "@/types/person";
 import { useMutation } from "@/utils/graphql";
 
 interface PersonNameFieldProps {
-  // dont forget the comments chia
+  /**
+   * Record corresponding to row being edited
+   */
   record: Person;
+  /**
+   * Name of record mutation
+   */
   mutation: string;
   /**
    * The function to call on cancel button click, which is expected
-   * to set control the parent component's edit state
+   * to set the parent component's edit state
    */
   onCancel: () => void;
+  /**
+   * Function that is an async wrapper around data refetch
+   */
   onSaveCallback: () => Promise<void>;
+  /**
+   * This column's edit state
+   */
   isEditingThisColumn: boolean;
 }
 
@@ -25,7 +36,7 @@ type PersonNameFormInputs = {
 };
 
 /**
- * Component that manages the form UI for multiple input fields
+ * Component that manages the form UI for editing a Person's name, first, middle and last
  */
 const PersonNameField = ({
   record,
@@ -51,7 +62,6 @@ const PersonNameField = ({
 
   const onSave = useCallback(
     async (data: PersonNameFormInputs) => {
-      console.log(data, record);
       await mutate({
         id: record.id,
         updates: {
@@ -60,10 +70,9 @@ const PersonNameField = ({
           prsn_last_name: data.last_name,
         },
       });
-      // what is skip updated by setter?
-      // await mutate(variables, { skip_updated_by_setter: true });
       await onSaveCallback();
-      onCancel(); // closes edit, should I rename this
+      // onCancel resets the current edit column to null
+      onCancel();
     },
     [] // how come im not seeing any warnings for missing stuff?
   );
@@ -82,7 +91,6 @@ const PersonNameField = ({
       <Form id="personNameForm" onSubmit={handleSubmit(onSave)}>
         <div className="mb-2">
           <Form.Group>
-            {/* <Form.Label>First</Form.Label> */}
             <Form.Control
               {...register("first_name", {
                 // coerce empty fields to null
