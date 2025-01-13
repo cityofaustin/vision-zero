@@ -7,13 +7,13 @@ import { useQuery } from "@/utils/graphql";
 import { unparse } from "papaparse";
 import AlignedLabel from "./AlignedLabel";
 import { FaCircleInfo, FaDownload } from "react-icons/fa6";
-import { formatDate } from "@/utils/formatters";
+import { formatFileTimestamp } from "@/utils/formatters";
 
 /**
  * Generate the CSV export filename
  */
 const formatFileName = (exportFilename?: string) =>
-  `${exportFilename || "export"}-${formatDate(new Date().toISOString())}.csv`;
+  `${exportFilename || "export"} ${formatFileTimestamp(new Date())}.csv`;
 
 interface TableExportModalProps {
   /**
