@@ -74,7 +74,7 @@ const PersonNameField = ({
       // onCancel resets the current edit column to null
       onCancel();
     },
-    [] // how come im not seeing any warnings for missing stuff?
+    [mutate, onSaveCallback, onCancel]
   );
 
   if (!isEditingThisColumn) {
