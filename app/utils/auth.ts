@@ -38,6 +38,12 @@ export const getHasuraRoleName = (roles?: string[]): string => {
   }
 };
 
+/**
+ * Check if a user has any of the provide the role names
+ * @param {string[]} roles - an array of roles to check for
+ * @param {CustomUser} user - the user object
+ * @returns True if the user has any of the provided roles
+ */
 export const hasRole = (roles: string[], user: CustomUser) =>
   roles.includes(getHasuraRoleName(getRolesArray(user)));
 
