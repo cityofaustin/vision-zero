@@ -74,19 +74,27 @@ export const ALL_PEOPLE_COLUMNS = {
     path: "prsn_last_name",
     label: "Name",
     editable: true,
+    valueFormatter: (value, record, column) => {
+      const nameFields = [
+        record.prsn_first_name,
+        record.prsn_mid_name,
+        record.prsn_last_name,
+      ];
+      // filter out null fields then join into a string
+      const displayName = nameFields.filter((n) => n).join(" ");
+      return displayName;
+    },
     customComponent: (
       record,
       onCancel,
       mutation,
       onSaveCallback,
-      isEditingThisColumn,
     ) => (
       <PersonNameField
         record={record}
         onCancel={onCancel}
         mutation={mutation}
         onSaveCallback={onSaveCallback}
-        isEditingThisColumn={isEditingThisColumn}
       />
     ),
   },

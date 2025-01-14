@@ -23,10 +23,6 @@ interface PersonNameFieldProps {
    * Function that is an async wrapper around data refetch
    */
   onSaveCallback: () => Promise<void>;
-  /**
-   * This column's edit state
-   */
-  isEditingThisColumn: boolean;
 }
 
 type PersonNameFormInputs = {
@@ -43,7 +39,6 @@ const PersonNameField = ({
   onSaveCallback,
   onCancel,
   mutation,
-  isEditingThisColumn,
 }: PersonNameFieldProps) => {
   const { mutate, loading: isMutating } = useMutation(mutation);
 
@@ -74,81 +69,70 @@ const PersonNameField = ({
       // onCancel resets the current edit column to null
       onCancel();
     },
-    [mutate, onSaveCallback, onCancel]
+    [mutate, onSaveCallback, onCancel, record]
   );
 
-  if (!isEditingThisColumn) {
-    // filter out null fields then join into a string
-    const nameFields = [
-      record.prsn_first_name,
-      record.prsn_mid_name,
-      record.prsn_last_name,
-    ];
-    const displayName = nameFields.filter((n) => n).join(" ");
-    return displayName;
-  } else {
-    return (
-      <Form id="personNameForm" onSubmit={handleSubmit(onSave)}>
-        <div className="mb-2">
-          <Form.Group>
-            <Form.Control
-              {...register("prsn_first_name", {
-                // coerce empty fields to null
-                setValueAs: (v) => v?.trim() || null,
-              })}
-              size="sm"
-              as="input"
-              placeholder="First"
-            />
-            <Form.Control
-              {...register("prsn_mid_name", {
-                // coerce empty fields to null
-                setValueAs: (v) => v?.trim() || null,
-              })}
-              size="sm"
-              as="input"
-              placeholder="Middle"
-            />
-            <Form.Control
-              {...register("prsn_last_name", {
-                // coerce empty fields to null
-                setValueAs: (v) => v?.trim() || null,
-              })}
-              size="sm"
-              as="input"
-              placeholder="Last"
-            />
-          </Form.Group>
-        </div>
+  return (
+    <Form id="personNameForm" onSubmit={handleSubmit(onSave)}>
+      <div className="mb-2">
+        <Form.Group>
+          <Form.Control
+            {...register("prsn_first_name", {
+              // coerce empty fields to null
+              setValueAs: (v) => v?.trim() || null,
+            })}
+            size="sm"
+            as="input"
+            placeholder="First"
+          />
+          <Form.Control
+            {...register("prsn_mid_name", {
+              // coerce empty fields to null
+              setValueAs: (v) => v?.trim() || null,
+            })}
+            size="sm"
+            as="input"
+            placeholder="Middle"
+          />
+          <Form.Control
+            {...register("prsn_last_name", {
+              // coerce empty fields to null
+              setValueAs: (v) => v?.trim() || null,
+            })}
+            size="sm"
+            as="input"
+            placeholder="Last"
+          />
+        </Form.Group>
+      </div>
 
-        <div className="text-end">
-          <span className="me-2">
-            <Button
-              size="sm"
-              type="submit"
-              disabled={isMutating || !isDirty}
-              form="personNameForm"
-            >
-              Save
-            </Button>
-          </span>
-          <span>
-            <Button
-              size="sm"
-              onClick={() => {
-                reset();
-                onCancel();
-              }}
-              disabled={isMutating}
-              variant="danger"
-            >
-              Cancel
-            </Button>
-          </span>
-        </div>
-      </Form>
-    );
-  }
+      <div className="text-end">
+        <span className="me-2">
+          <Button
+            size="sm"
+            type="submit"
+            disabled={isMutating || !isDirty}
+            form="personNameForm"
+          >
+            Save
+          </Button>
+        </span>
+        <span>
+          <Button
+            size="sm"
+            onClick={() => {
+              reset();
+              onCancel();
+            }}
+            disabled={isMutating}
+            variant="danger"
+          >
+            Cancel
+          </Button>
+        </span>
+      </div>
+    </Form>
+  );
 };
 
 export default PersonNameField;

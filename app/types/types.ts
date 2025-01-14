@@ -50,7 +50,6 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
     onCancel: () => void,
     mutation: string,
     onSaveCallback: () => Promise<void>,
-    isEditingThisColumn: boolean,
   ) => ReactNode;
 }
 
