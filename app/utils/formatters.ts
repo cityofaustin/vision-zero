@@ -29,3 +29,10 @@ export const formatDate = (value: unknown): string => {
   }
   return format(parseISO(value), "yyyy-MM-dd") || "";
 };
+
+/**
+ * Format date as: 2025-01-13 4.33.36 PM
+ */
+export const formatFileTimestamp = (date: Date): string => {
+  return format(date, "yyyy-MM-dd h.mm.ss a");
+};

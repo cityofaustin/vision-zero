@@ -1,5 +1,6 @@
 import {
   getStartOfYearDate,
+  getYearsAgoDate,
   makeDateFilters,
 } from "@/components/TableDateSelector";
 import { crashesListViewColumns } from "@/configs/crashesListViewColumns";
@@ -226,6 +227,8 @@ const crashesListViewfilterCards: FilterGroup[] = [
 
 export const crashesListViewQueryConfig: QueryConfig = {
   columns,
+  exportable: true,
+  exportFilename: "crashes",
   tableName: "crashes_list_view",
   limit: DEFAULT_QUERY_LIMIT,
   offset: 0,
@@ -244,10 +247,10 @@ export const crashesListViewQueryConfig: QueryConfig = {
     { label: "Address", value: "address_primary" },
   ],
   dateFilter: {
-    mode: "ytd",
+    mode: "1y",
     column: "crash_timestamp",
     filters: makeDateFilters("crash_timestamp", {
-      start: getStartOfYearDate(),
+      start: getYearsAgoDate(1),
       end: null,
     }),
   },
