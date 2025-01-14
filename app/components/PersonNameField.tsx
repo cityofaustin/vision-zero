@@ -30,9 +30,9 @@ interface PersonNameFieldProps {
 }
 
 type PersonNameFormInputs = {
-  first_name: string | null;
-  middle_name: string | null;
-  last_name: string | null;
+  prsn_first_name: string | null;
+  prsn_mid_name: string | null;
+  prsn_last_name: string | null;
 };
 
 /**
@@ -54,9 +54,9 @@ const PersonNameField = ({
     formState: { isDirty },
   } = useForm<PersonNameFormInputs>({
     defaultValues: {
-      first_name: record.prsn_first_name,
-      middle_name: record.prsn_mid_name,
-      last_name: record.prsn_last_name,
+      prsn_first_name: record.prsn_first_name,
+      prsn_mid_name: record.prsn_mid_name,
+      prsn_last_name: record.prsn_last_name,
     },
   });
 
@@ -65,9 +65,9 @@ const PersonNameField = ({
       await mutate({
         id: record.id,
         updates: {
-          prsn_first_name: data.first_name,
-          prsn_mid_name: data.middle_name,
-          prsn_last_name: data.last_name,
+          prsn_first_name: data.prsn_first_name,
+          prsn_mid_name: data.prsn_mid_name,
+          prsn_last_name: data.prsn_last_name,
         },
       });
       await onSaveCallback();
@@ -92,7 +92,7 @@ const PersonNameField = ({
         <div className="mb-2">
           <Form.Group>
             <Form.Control
-              {...register("first_name", {
+              {...register("prsn_first_name", {
                 // coerce empty fields to null
                 setValueAs: (v) => v?.trim() || null,
               })}
@@ -101,7 +101,7 @@ const PersonNameField = ({
               placeholder="First"
             />
             <Form.Control
-              {...register("middle_name", {
+              {...register("prsn_mid_name", {
                 // coerce empty fields to null
                 setValueAs: (v) => v?.trim() || null,
               })}
@@ -110,7 +110,7 @@ const PersonNameField = ({
               placeholder="Middle"
             />
             <Form.Control
-              {...register("last_name", {
+              {...register("prsn_last_name", {
                 // coerce empty fields to null
                 setValueAs: (v) => v?.trim() || null,
               })}
