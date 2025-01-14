@@ -83,7 +83,8 @@ const ZoomResetControls = ({
         </Button>
       </ButtonGroup>
       <Button size="sm" variant="primary" onClick={handleReset} title="Reset">
-        <SlActionUndo />
+        <SlActionUndo className="me-2" />
+        Reset
       </Button>
     </div>
   );
