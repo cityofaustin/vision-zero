@@ -5,7 +5,11 @@ import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
-import { FaMagnifyingGlassPlus, FaMagnifyingGlassMinus } from "react-icons/fa6";
+import {
+  FaMagnifyingGlassPlus,
+  FaMagnifyingGlassMinus,
+  FaRotate,
+} from "react-icons/fa6";
 import { SlActionUndo } from "react-icons/sl";
 import {
   TransformWrapper,
@@ -104,7 +108,6 @@ const RotateControls = ({
         value={rotation}
         id="formControlRange"
         onChange={rotate}
-        style={{ width: "70%" }}
         title="Rotate Diagram"
       />
     </div>
@@ -162,7 +165,14 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
       </Card.Body>
       {!diagramError && (
         <Card.Footer className="text-center">
-          <RotateControls rotation={rotation} setRotation={setRotation} />
+          <div className="d-flex align-items-center w-100">
+            <div className="me-3 text-primary fs-5">
+              <FaRotate />
+            </div>
+            <div className="flex-grow-1">
+              <RotateControls rotation={rotation} setRotation={setRotation} />
+            </div>
+          </div>
         </Card.Footer>
       )}
     </Card>
