@@ -17,6 +17,35 @@ import { Crash } from "@/types/crashes";
 
 const CR3_DIAGRAM_BASE_URL = process.env.NEXT_PUBLIC_CR3_DIAGRAM_BASE_URL!;
 
+interface DiagramAlertProps {
+  variant: "info" | "danger" | "success" | "warning";
+  message: React.ReactNode;
+  link?: {
+    href: string;
+    text: string;
+  };
+}
+
+const DiagramAlert: React.FC<DiagramAlertProps> = ({
+  variant,
+  message,
+  link,
+}) => (
+  <Alert variant={variant} className="mt-3">
+    {message}
+    {link && (
+      <p>
+        For additional assistance, you can&nbsp;
+        <a href={link.href} target="_blank" rel="noopener noreferrer">
+          {link.text}
+          <i className="fa fa-external-link"></i>
+        </a>
+        .
+      </p>
+    )}
+  </Alert>
+);
+
 const ZoomResetControls = ({
   setRotation,
 }: {
