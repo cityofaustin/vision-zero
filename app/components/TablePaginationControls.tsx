@@ -3,17 +3,19 @@ import { produce } from "immer";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
+import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/utils/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
-import { HasuraAggregateData } from "@/types/graphql";
+import { FaAngleLeft, FaAngleRight, FaDownload } from "react-icons/fa6";
 
 interface PaginationControlProps {
   queryConfig: QueryConfig;
   setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
   recordCount: number;
+  totalRecordCount: number;
   isLoading: boolean;
-  aggregateData?: HasuraAggregateData;
+  onClickDownload: () => void;
+  exportable: boolean;
 }
 
 /**
@@ -21,14 +23,15 @@ interface PaginationControlProps {
  * QueryConfig offset
  */
 export default function TablePaginationControls({
-  aggregateData,
   queryConfig,
   setQueryConfig,
   recordCount,
+  totalRecordCount,
   isLoading,
+  onClickDownload,
+  exportable,
 }: PaginationControlProps) {
   const currentPageNum = queryConfig.offset / queryConfig.limit + 1;
-  const totalRecords = aggregateData?.aggregate?.count || 0;
 
   const pageLeftButtonDisabled =
     recordCount === 0 || queryConfig.offset === 0 || isLoading;
@@ -37,17 +40,33 @@ export default function TablePaginationControls({
   return (
     <ButtonToolbar>
       <div className="text-nowrap text-secondary d-flex align-items-center me-2">
-        {totalRecords > 0 && (
-          <span>{`${totalRecords.toLocaleString()} records`}</span>
+        {totalRecordCount > 0 && (
+          <>
+            <span className="me-2">{`${totalRecordCount.toLocaleString()} record${
+              totalRecordCount === 1 ? "" : "s"
+            }`}</span>
+            {exportable && (
+              <Button
+                variant="outline-primary"
+                className="border-0"
+                onClick={onClickDownload}
+              >
+                <AlignedLabel>
+                  <FaDownload className="me-2" />
+                  <span>Download</span>
+                </AlignedLabel>
+              </Button>
+            )}
+          </>
         )}
-        {totalRecords <= 0 && <span>No results</span>}
+        {totalRecordCount <= 0 && <span>No results</span>}
       </div>
       <ButtonGroup className="me-2" aria-label="Table pagniation controls">
         <Button
           variant={
             pageLeftButtonDisabled ? "outline-secondary" : "outline-primary"
           }
-          style={{ border: "none" }}
+          className="border-0"
           disabled={pageLeftButtonDisabled}
           onClick={() => {
             const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
@@ -66,8 +85,7 @@ export default function TablePaginationControls({
         </Button>
         <span
           aria-label="Current page number"
-          className="btn text-secondary mx-2 text-nowrap"
-          style={{ pointerEvents: "none" }}
+          className="btn text-secondary mx-2 text-nowrap border-0"
         >
           {`Page ${currentPageNum}`}
         </span>
@@ -75,7 +93,7 @@ export default function TablePaginationControls({
           variant={
             pageRightButtonDisabled ? "outline-secondary" : "outline-primary"
           }
-          style={{ border: "none" }}
+          className="border-0"
           disabled={pageRightButtonDisabled}
           onClick={() => {
             const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
