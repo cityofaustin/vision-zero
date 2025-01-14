@@ -128,15 +128,13 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
     <Card>
       <Card.Header>Diagram</Card.Header>
       <Card.Body className="crash-header-card-body text-center d-flex flex-column">
-        <TransformWrapper initialScale={1}>
-          {!diagramError && <ZoomResetControls setRotation={setRotation} />}
-          <TransformComponent>
-            {!diagramError && (
+        {!diagramError && (
+          <TransformWrapper initialScale={1}>
+            <ZoomResetControls setRotation={setRotation} />
+            <TransformComponent>
               <Image
                 fluid
-                style={{
-                  transform: `rotate(${rotation}deg)`,
-                }}
+                style={{ transform: `rotate(${rotation}deg)` }}
                 src={`${CR3_DIAGRAM_BASE_URL}/${crash.record_locator}.jpeg`}
                 alt="crash diagram"
                 onError={() => {
@@ -144,38 +142,32 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
                   setDiagramError(true);
                 }}
               />
-            )}
+            </TransformComponent>
+          </TransformWrapper>
+        )}
 
-            {diagramError && crash.is_temp_record && (
-              <div
-                className="d-flex align-items-start justify-content-center h-100 mt-3"
-                style={{ width: "490px" }}
-              >
-                <Alert variant="info" className="mx-auto">
-                  <i className="fa fa-info-circle" />
-                  Crash diagrams are not available for temporary crash records
-                </Alert>
-              </div>
-            )}
-            {diagramError && !crash.is_temp_record && (
-              <Alert variant="danger" style={{ marginTop: "20px" }}>
-                <p>The crash diagram is not available.</p>
-                <p>
-                  For additional assistance, you can&nbsp;
-                  <a
-                    href="https://atd.knack.com/dts#new-service-request/?view_249_vars=%7B%22field_398%22%3A%22Bug%20Report%20%E2%80%94%20Something%20is%20not%20working%22%2C%22field_399%22%3A%22Vision%20Zero%20Editor%22%7D"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    report a bug
-                    <i className="fa fa-external-link"></i>
-                  </a>
-                  .
-                </p>
-              </Alert>
-            )}
-          </TransformComponent>
-        </TransformWrapper>
+        {diagramError && crash.is_temp_record && (
+          <DiagramAlert
+            variant="info"
+            message={
+              <>
+                <i className="fa fa-info-circle" />
+                Crash diagrams are not available for temporary crash records
+              </>
+            }
+          />
+        )}
+
+        {diagramError && !crash.is_temp_record && (
+          <DiagramAlert
+            variant="danger"
+            message={<p>The crash diagram is not available.</p>}
+            link={{
+              href: "https://atd.knack.com/dts#new-service-request/?view_249_vars=%7B%22field_398%22%3A%22Bug%20Report%20%E2%80%94%20Something%20is%20not%20working%22%2C%22field_399%22%3A%22Vision%20Zero%20Editor%22%7D",
+              text: "report a bug",
+            }}
+          />
+        )}
       </Card.Body>
       {!diagramError && (
         <Card.Footer className="text-center">
