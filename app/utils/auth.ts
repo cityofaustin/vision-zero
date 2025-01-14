@@ -38,6 +38,9 @@ export const getHasuraRoleName = (roles?: string[]): string => {
   }
 };
 
+export const hasRole = (roles: string[], user: CustomUser) =>
+  roles.includes(getHasuraRoleName(getRolesArray(user)));
+
 export const formatRoleName = (role: string): string => {
   switch (role) {
     case "readonly":
