@@ -28,6 +28,10 @@ export const GET_CRASH = gql`
         label
       }
       light_cond_id
+      light_cond {
+        id
+        label
+      }
       wthr_cond_id
       obj_struck {
         id
@@ -41,7 +45,15 @@ export const GET_CRASH = gql`
       rpt_street_name
       rpt_street_desc
       rpt_road_part_id
+      road_part {
+        id
+        label
+      }
       rpt_rdwy_sys_id
+      rwy_sys {
+        id
+        label
+      }
       rpt_hwy_num
       rpt_street_pfx
       rpt_street_name
@@ -51,7 +63,15 @@ export const GET_CRASH = gql`
       rpt_sec_street_name
       rpt_sec_street_desc
       rpt_sec_road_part_id
+      road_part_sec {
+        id
+        label
+      }
       rpt_sec_rdwy_sys_id
+      rwy_sys_sec {
+        id
+        label
+      }
       rpt_sec_hwy_num
       rpt_sec_street_pfx
       rpt_sec_street_sfx
@@ -129,7 +149,7 @@ export const GET_CRASH = gql`
           sus_serious_injry_count
         }
       }
-      people_list_view {
+      people_list_view (order_by: { unit_nbr: asc, prsn_nbr: asc }) {
         crash_pk
         id
         unit_nbr
@@ -141,6 +161,7 @@ export const GET_CRASH = gql`
         prsn_first_name
         prsn_mid_name
         prsn_last_name
+        prsn_injry_sev_id
         injry_sev {
           id
           label
@@ -149,10 +170,12 @@ export const GET_CRASH = gql`
           id
           label
         }
+        prsn_gndr_id
         gndr {
           id
           label
         }
+        prsn_ethnicity_id
         drvr_ethncty {
           id
           label
@@ -185,6 +208,7 @@ export const GET_CRASH = gql`
         created_by
         crash_pk
         rec_update
+        recommendation_status_id
         atd__recommendation_status_lkp {
           rec_status_desc
         }
@@ -220,6 +244,45 @@ export const UPDATE_CRASH = gql`
       affected_rows
       returning {
         id
+      }
+    }
+  }
+`;
+
+export const CREATE_CRIS_CRASH = gql`
+  mutation CreateCrash($crash: crashes_cris_insert_input!) {
+    insert_crashes_cris(objects: [$crash]) {
+      returning {
+        id
+      }
+    }
+  }
+`;
+
+export const DELETE_CRIS_CRASH = gql`
+  mutation SoftDeleteCrisCrash($id: Int!, $updated_by: String!) {
+    update_crashes_cris(
+      where: { id: { _eq: $id }, is_temp_record: { _eq: true } }
+      _set: { is_deleted: true, updated_by: $updated_by }
+    ) {
+      affected_rows
+      returning {
+        id
+      }
+    }
+    update_units_cris(
+      where: { crash_pk: { _eq: $id } }
+      _set: { is_deleted: true, updated_by: $updated_by }
+    ) {
+      affected_rows
+    }
+    update_people_cris(
+      where: { units_cris: { crash_pk: { _eq: $id } } }
+      _set: { is_deleted: true, updated_by: $updated_by }
+    ) {
+      returning {
+        id
+        unit_id
       }
     }
   }

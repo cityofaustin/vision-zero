@@ -13,6 +13,7 @@
     "@turf/center": "^7.1.0",
     "@types/lodash": "^4.17.13",
     "@types/mapbox-gl": "^3.4.0",
+    "@types/papaparse": "^5.3.15",
     "bootstrap": "^5.3.3",
     "date-fns": "^4.1.0",
     "graphql": "^16.9.0",
@@ -21,6 +22,7 @@
     "lodash": "^4.17.21",
     "mapbox-gl": "^3.7.0",
     "next": "14.2.13",
+    "papaparse": "^5.4.1",
     "react": "^18",
     "react-bootstrap": "^2.10.4",
     "react-datepicker": "^7.5.0",
@@ -29,7 +31,8 @@
     "react-icons": "^5.4.0",
     "react-map-gl": "^7.1.7",
     "react-zoom-pan-pinch": "^3.6.1",
-    "swr": "^2.2.5"
+    "swr": "^2.2.5",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "^20",

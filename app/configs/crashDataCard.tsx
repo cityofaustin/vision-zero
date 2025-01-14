@@ -1,13 +1,11 @@
 import { crashesColumns } from "./crashesColumns";
 
-
-/** Construct card-specific arrays of columns */
 export const crashDataCards = {
   summary: [
     crashesColumns.case_id,
     crashesColumns.crash_timestamp,
-    crashesColumns.fhe_collsn_id,
-    crashesColumns.rpt_city_id,
+    crashesColumns.collsn,
+    crashesColumns.city,
   ],
   flags: [
     crashesColumns.private_dr_fl,
@@ -20,9 +18,9 @@ export const crashDataCards = {
     crashesColumns.toll_road_fl,
   ],
   other: [
-    crashesColumns.light_cond_id,
+    crashesColumns.light_cond,
     crashesColumns.crash_speed_limit,
-    crashesColumns.obj_struck_id,
+    crashesColumns.obj_struck,
     crashesColumns.law_enforcement_ytd_fatality_num,
   ],
   address: [
@@ -31,8 +29,8 @@ export const crashDataCards = {
     crashesColumns.rpt_street_name,
     crashesColumns.rpt_street_sfx,
     crashesColumns.rpt_street_desc,
-    crashesColumns.rpt_road_part_id,
-    crashesColumns.rpt_rdwy_sys_id,
+    crashesColumns.road_part,
+    crashesColumns.rwy_sys,
     crashesColumns.rpt_hwy_num,
   ],
   address_secondary: [
@@ -41,8 +39,8 @@ export const crashDataCards = {
     crashesColumns.rpt_sec_street_name,
     crashesColumns.rpt_sec_street_sfx,
     crashesColumns.rpt_sec_street_desc,
-    crashesColumns.rpt_sec_road_part_id,
-    crashesColumns.rpt_sec_rdwy_sys_id,
+    crashesColumns.road_part_sec,
+    crashesColumns.rwy_sys_sec,
     crashesColumns.rpt_sec_hwy_num,
   ],
 };

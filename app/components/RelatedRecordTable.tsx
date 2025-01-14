@@ -31,7 +31,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
           <thead>
             <tr>
               {columns.map((col) => (
-                <th key={String(col.name)} style={{ textWrap: "nowrap" }}>
+                <th key={String(col.path)} style={{ textWrap: "nowrap" }}>
                   {col.label}
                 </th>
               ))}
