@@ -2,14 +2,7 @@ import Button from "react-bootstrap/Button";
 import { useMutation } from "@/utils/graphql";
 import AlignedLabel from "@/components/AlignedLabel";
 import { FaArrowRightArrowLeft } from "react-icons/fa6";
-
-export interface CrashSwapAddressButtonProps<
-  T extends Record<string, unknown>
-> {
-  record: T;
-  mutation: string;
-  onSaveCallback: () => Promise<void>;
-}
+import { HeaderActionButtonProps } from "@/components/DataCard";
 
 /**
  * Button on the primary address data card that allows users to swap
@@ -17,7 +10,7 @@ export interface CrashSwapAddressButtonProps<
  */
 export default function CrashSwapAddressButton<
   T extends Record<string, unknown>
->({ record, mutation, onSaveCallback }: CrashSwapAddressButtonProps<T>) {
+>({ record, mutation, onSaveCallback }: HeaderActionButtonProps<T>) {
   // switching all primary and secondary address values here
   const mutationVariables = {
     rpt_block_num: record.rpt_sec_block_num,
