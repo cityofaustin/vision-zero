@@ -12,7 +12,12 @@ import {
 } from "@/utils/formHelpers";
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
-import { CrashSwapAddressButtonProps } from "@/components/CrashSwapAddressButton";
+
+export interface HeaderActionButtonProps<T extends Record<string, unknown>> {
+  record: T;
+  mutation: string;
+  onSaveCallback: () => Promise<void>;
+}
 
 interface DataCardProps<T extends Record<string, unknown>> {
   record: T;
@@ -21,7 +26,7 @@ interface DataCardProps<T extends Record<string, unknown>> {
   isValidating: boolean;
   title: string;
   onSaveCallback: () => Promise<void>;
-  HeaderActionButton?: React.ComponentType<CrashSwapAddressButtonProps<T>>;
+  HeaderActionButton?: React.ComponentType<HeaderActionButtonProps<T>>;
 }
 
 /**
