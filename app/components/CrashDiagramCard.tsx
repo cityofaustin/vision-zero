@@ -67,10 +67,7 @@ const ZoomResetControls = ({
           onClick={() => zoomIn()}
           title="Zoom In"
         >
-          <AlignedLabel>
-            <FaMagnifyingGlassPlus className="me-2" />
-            <span>Zoom In</span>
-          </AlignedLabel>
+          <FaMagnifyingGlassPlus />
         </Button>
         <Button
           size="sm"
@@ -78,17 +75,11 @@ const ZoomResetControls = ({
           onClick={() => zoomOut()}
           title="Zoom Out"
         >
-          <AlignedLabel>
-            <FaMagnifyingGlassMinus className="me-2" />
-            <span>Zoom Out</span>
-          </AlignedLabel>
+          <FaMagnifyingGlassMinus />
         </Button>
       </ButtonGroup>
       <Button size="sm" variant="primary" onClick={handleReset} title="Reset">
-        <AlignedLabel>
-          <SlActionUndo className="me-2" />
-          <span>Reset</span>
-        </AlignedLabel>
+        <SlActionUndo />
       </Button>
     </div>
   );
