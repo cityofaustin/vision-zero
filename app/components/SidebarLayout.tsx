@@ -92,7 +92,10 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
             </div>
             <ListGroup variant="flush">
               {routes.map((route) => (
-                <PermissionsRequired allowedRoles={route.allowedRoles}>
+                <PermissionsRequired
+                  allowedRoles={route.allowedRoles}
+                  key={route.path}
+                >
                   <SideBarListItem
                     isCollapsed={isCollapsed}
                     isCurrentPage={segments.includes(route.path)}
