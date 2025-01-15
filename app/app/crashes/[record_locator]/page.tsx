@@ -193,6 +193,7 @@ export default function CrashDetailsPage({
           <NotesCard
             notes={crash.crash_notes || []}
             onSaveCallback={onSaveCallback}
+            crashPk={crash.id}
           />
         </Col>
       </Row>
