@@ -2,9 +2,9 @@
 import Card from "react-bootstrap/Card";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import { fatalitiesListViewColumns } from "@/configs/fatalitiesListViewColumns";
-import { fatalitiesListViewQueryConfig } from "@/configs/fatalitiesListViewQueryConfig";
+import { fatalitiesListViewQueryConfig } from "@/configs/fatalitiesListViewTable";
 import TableWrapper from "@/components/TableWrapper";
-const localStorageKey = "fatalitiesListViewQueryConfig";
+const localStorageKey = "crashesListViewQueryConfig";
 
 export default function Crashes() {
   return (
