@@ -67,7 +67,7 @@ const ZoomResetControls = ({
         <Button
           size="sm"
           variant="primary"
-          onClick={() => zoomIn()}
+          onClick={() => zoomIn(0.25)}
           title="Zoom In"
         >
           <FaMagnifyingGlassPlus />
@@ -75,7 +75,7 @@ const ZoomResetControls = ({
         <Button
           size="sm"
           variant="primary"
-          onClick={() => zoomOut()}
+          onClick={() => zoomOut(0.25)}
           title="Zoom Out"
         >
           <FaMagnifyingGlassMinus />
