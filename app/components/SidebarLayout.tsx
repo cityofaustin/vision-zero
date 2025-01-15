@@ -15,6 +15,7 @@ import {
   FaUserGroup,
   FaCloudArrowUp,
   FaFileCirclePlus,
+  FaHeart,
 } from "react-icons/fa6";
 import AppNavBar from "./AppNavBar";
 import SideBarListItem from "./SideBarListItem";
@@ -116,6 +117,13 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
                 Icon={FaLocationDot}
                 label="Locations"
                 href="/locations"
+              />
+              <SideBarListItem
+                isCollapsed={isCollapsed}
+                isCurrentPage={segments.includes("fatalities")}
+                Icon={FaHeart}
+                label="Fatalities"
+                href="/fatalities"
               />
               <SideBarListItem
                 isCollapsed={isCollapsed}
