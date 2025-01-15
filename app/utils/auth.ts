@@ -39,7 +39,7 @@ export const getHasuraRoleName = (roles?: string[]): string => {
 };
 
 /**
- * Check if a user has any of the provide the role names
+ * Check if a user has any of the provided role names
  * @param {string[]} roles - an array of roles to check for
  * @param {CustomUser} user - the user object
  * @returns True if the user has any of the provided roles
