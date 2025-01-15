@@ -17,7 +17,6 @@ import { User } from "@/types/users";
 import { useToken, formatRoleName } from "@/utils/auth";
 
 export default function Users() {
-  console.log("rendering");
   const token = useToken();
   const router = useRouter();
   const { users, isLoading, isValidating, error, mutate } =
