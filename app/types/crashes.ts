@@ -1,8 +1,10 @@
 import { CrashInjuryMetric } from "./crashInjuryMetrics";
-import { LookupTableOption } from "./lookupTables";
+import { LookupTableOption } from "./relationships";
 import { ChangeLogEntry } from "./changeLog";
 import { Unit } from "./unit";
-import { Charge } from "./charge"
+import { Charge } from "./charge";
+import { Person } from "./person";
+import { Recommendation } from "./recommendation";
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
@@ -24,6 +26,7 @@ export type Crash = {
   latitude: number | null;
   law_enforcement_ytd_fatality_num: string | null;
   light_cond_id: number | null;
+  light_cond: LookupTableOption | null;
   location_id: string | null;
   longitude: number | null;
   obj_struck_id: number | null;
@@ -31,17 +34,22 @@ export type Crash = {
   onsys_fl: boolean | null;
   private_dr_fl: boolean | null;
   record_locator: string;
+  recommendation: Recommendation | null;
   road_constr_zone_fl: boolean | null;
   rpt_block_num: string | null;
   rpt_city_id: number | null;
   city: LookupTableOption | null;
   rpt_hwy_num: string | null;
   rpt_rdwy_sys_id: number | null;
+  rwy_sys: LookupTableOption | null;
   rpt_road_part_id: number | null;
+  road_part: LookupTableOption | null;
   rpt_sec_block_num: string | null;
   rpt_sec_hwy_num: string | null;
   rpt_sec_rdwy_sys_id: number | null;
+  rwy_sys_sec: LookupTableOption | null;
   rpt_sec_road_part_id: number | null;
+  road_part_sec: LookupTableOption | null;
   rpt_sec_street_desc: string | null;
   rpt_sec_street_name: string | null;
   rpt_sec_street_pfx: string | null;
@@ -60,4 +68,5 @@ export type Crash = {
   change_logs: ChangeLogEntry[] | null;
   units: Unit[] | null;
   charges_cris: Charge[] | null;
+  people_list_view: Person[] | null;
 };

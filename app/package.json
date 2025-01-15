@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3002",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -13,6 +13,7 @@
     "@turf/center": "^7.1.0",
     "@types/lodash": "^4.17.13",
     "@types/mapbox-gl": "^3.4.0",
+    "@types/papaparse": "^5.3.15",
     "bootstrap": "^5.3.3",
     "date-fns": "^4.1.0",
     "graphql": "^16.9.0",
@@ -21,6 +22,7 @@
     "lodash": "^4.17.21",
     "mapbox-gl": "^3.7.0",
     "next": "14.2.13",
+    "papaparse": "^5.4.1",
     "react": "^18",
     "react-bootstrap": "^2.10.4",
     "react-datepicker": "^7.5.0",
@@ -28,7 +30,8 @@
     "react-hook-form": "^7.53.2",
     "react-icons": "^5.3.0",
     "react-map-gl": "^7.1.7",
-    "swr": "^2.2.5"
+    "swr": "^2.2.5",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "^20",

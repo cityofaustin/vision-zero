@@ -1,12 +1,18 @@
 import { useMemo } from "react";
 import { gql } from "graphql-request";
-
+import { produce } from "immer";
+import { MAX_RECORD_EXPORT_LIMIT } from "./constants";
 // todo: test quote escape
 
 const BASE_QUERY_STRING = `
     query $queryName {
         $tableName(limit: $limit, offset: $offset, order_by: $orderBy where: $where) {
             $columns
+        }
+        $tableName_aggregate(where: $where) {
+            aggregate {
+                count
+            }
         }
     }`;
 
@@ -176,6 +182,15 @@ export interface QueryConfig {
    * managed by the advanced filter component
    */
   filterCards: FilterGroup[];
+  /**
+   * Enables the export functionality
+   */
+  exportable?: boolean;
+  /**
+   * The name that will be given to the exported file, excluding
+   * the file extension
+   */
+  exportFilename?: string;
 }
 
 /**
@@ -302,17 +317,20 @@ const getWhereExp = (filterGroups: FilterGroup[]): string => {
  *    }
  *  }
  */
-const buildQuery = ({
-  columns,
-  tableName,
-  limit,
-  offset,
-  sortColName,
-  sortAsc,
-  filterCards,
-  dateFilter,
-  searchFilter,
-}: QueryConfig): string => {
+const buildQuery = (
+  {
+    columns,
+    tableName,
+    limit,
+    offset,
+    sortColName,
+    sortAsc,
+    filterCards,
+    dateFilter,
+    searchFilter,
+  }: QueryConfig,
+  contextFilters?: Filter[]
+): string => {
   const columnString = columns.join("\n");
 
   /**
@@ -345,6 +363,18 @@ const buildQuery = ({
   }
 
   /**
+   * Shape context filters like a FilterGroup and add
+   * to all filters
+   */
+  if (contextFilters) {
+    allFilterGroups.push({
+      id: "context_filters",
+      filters: contextFilters,
+      groupOperator: "_and",
+    });
+  }
+
+  /**
    * Add enabled switch filters to the filter group
    */
   if (filterCards) {
@@ -370,22 +400,50 @@ const buildQuery = ({
     "$queryName",
     "BuildQuery_" + tableName
   )
-    .replace("$tableName", tableName)
+    .replaceAll("$tableName", tableName)
     .replace("$limit", String(limit))
     .replace("$offset", String(offset))
     .replace("$orderBy", getOrderByExp(sortColName, sortAsc))
     .replace("$columns", columnString)
-    .replace("$where", where);
+    .replaceAll("$where", where);
   return gql`
     ${queryString}
   `;
 };
 
 /**
- * Hook which memoizes the graphql query from the
- * provided queryConfig
+ * Hook which builds a memoized graphql query from the query configuration
+ * @param {QueryConfig} queryConfig - the QueryConfig object
+ * @param {Filter[]} contextFilters - an optional filter array to be included the
+ * query's `where` expression. It is expected that these filters would be set from
+ * an app context that is not wanted to be kepts in local storage, such as a
+ * URL query param
+ * @returns {string} a graphql querry
  */
-export const useQueryBuilder = (queryConfig: QueryConfig): string =>
+export const useQueryBuilder = (
+  queryConfig: QueryConfig,
+  contextFilters?: Filter[]
+): string =>
   useMemo(() => {
-    return buildQuery(queryConfig);
+    return buildQuery(queryConfig, contextFilters);
+
+  }, [queryConfig, contextFilters]);
+
+/**
+ * Hook which builds a graphql query for record exporting
+ */
+export const useExportQuery = <T extends Record<string, unknown>>(
+  queryConfig: QueryConfig,
+  contextFilters?: Filter[]
+): string => {
+  const newQueryConfig = useMemo(() => {
+    // update the provided query with export settings
+    return produce(queryConfig, (newQueryConfig) => {
+      // reset limit and offset
+      newQueryConfig.limit = MAX_RECORD_EXPORT_LIMIT;
+      newQueryConfig.offset = 0;
+      return newQueryConfig;
+    });
   }, [queryConfig]);
+  return useQueryBuilder(newQueryConfig, contextFilters);
+};

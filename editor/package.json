@@ -1,6 +1,6 @@
 {
   "name": "vision-zero-editor",
-  "version": "2.4.1",
+  "version": "2.4.3",
   "homepage": "./",
   "description": "ATD Vision Zero Editor",
   "author": "ATD Data & Technology Services",
@@ -65,7 +65,7 @@
     "react-scripts": "^3.4.4"
   },
   "scripts": {
-    "start": "export HTTPS=false && react-scripts start",
+    "start": "export HTTPS=false && export PORT=3002 && react-scripts start",
     "build": "CI= react-scripts build && cp _redirects build && cp -r build editor && mv editor build",
     "build:production": "env-cmd -f .env.production npm run build",
     "build:staging": "env-cmd -f .env.staging npm run build",

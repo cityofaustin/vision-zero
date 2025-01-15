@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
-import useSWR, { SWRConfiguration, KeyedMutator } from "swr";
+import { useState, useCallback, useMemo } from "react";
+import useSWR, { SWRConfiguration } from "swr";
 import {
   gql,
   GraphQLClient,
@@ -9,7 +9,8 @@ import {
 } from "graphql-request";
 import { getRolesArray, getHasuraRoleName, useToken } from "./auth";
 import { MutationVariables } from "@/types/types";
-import { LookupTableDef } from "@/types/lookupTables";
+import { HasuraAggregateData, HasuraGraphQLResponse } from "@/types/graphql";
+import { Relationship } from "@/types/relationships";
 import { useAuth0 } from "@auth0/auth0-react";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_HASURA_ENDPOINT!;
@@ -48,14 +49,43 @@ const fetcher = <T>([query, variables, token, hasuraRoleName]: [
     },
   });
 
+interface UseQueryProps {
+  /**
+   * The graphql query
+   */
+  query: RequestDocument | null;
+  /**
+   * Query variables
+   */
+  variables?: Variables;
+  /**
+   * SWR configuration options
+   */
+  options?: SWRConfiguration;
+  /** The typename of the query root that will be used to access the
+   * rows returned by the query
+   */
+  typename: string;
+  /**
+   * If the query includes aggregate fields. If true, the aggregates will
+   * be accessed using the provided typename and will made available in the
+   * `aggregateData` return value.
+   *
+   * See: https://hasura.io/docs/2.0/queries/postgres/aggregation-queries/
+   */
+  hasAggregates?: boolean;
+}
+
 interface UseQueryResponse<T> {
   data?: T[];
+  aggregateData: HasuraAggregateData | undefined;
   error: any;
   isLoading: boolean;
   isError: boolean;
   refetch: () => Promise<any>;
   isValidating: boolean;
 }
+
 /**
  * Hook which wraps `useSWR` and provides auth
  *
@@ -67,33 +97,31 @@ export const useQuery = <T extends Record<string, unknown>>({
   variables,
   options,
   typename,
-}: {
-  query: RequestDocument | null;
-  variables?: Variables;
-  options?: SWRConfiguration;
-  typename: string;
-}): UseQueryResponse<T> => {
+  hasAggregates,
+}: UseQueryProps): UseQueryResponse<T> => {
   const { user } = useAuth0();
   const token = useToken();
 
   const fetchWithAuth = async ([query, variables]: [
     RequestDocument,
     Variables
-  ]): Promise<{ [K in typeof typename]: T[] }> => {
+  ]): Promise<HasuraGraphQLResponse<T, typeof typename>> => {
     const hasuraRoleName = getHasuraRoleName(getRolesArray(user));
-    return fetcher([query, variables, token, hasuraRoleName]);
+    return fetcher([query, variables, token || "", hasuraRoleName]);
   };
 
   // todo: document falsey query handling
-  const { data, error, isLoading, mutate, isValidating } = useSWR<{
-    [K in typeof typename]: T[];
-  }>(token && query ? [query, variables] : null, fetchWithAuth, {
+  const { data, error, isLoading, mutate, isValidating } = useSWR<
+    HasuraGraphQLResponse<T, typeof typename>
+  >(token && query ? [query, variables] : null, fetchWithAuth, {
     ...DEFAULT_SWR_OPTIONS,
     ...(options || {}),
   });
 
   return {
     data: data ? data[typename] : data,
+    aggregateData:
+      hasAggregates && data ? data[`${typename}_aggregate`] : undefined,
     error,
     isLoading,
     isError: !!error,
@@ -153,31 +181,38 @@ export const useMutation = (mutation: RequestDocument) => {
 };
 
 /**
- * Hook which constructs a graphql query string to fetch data from a lookup table
+ * Hook which constructs a graphql query string to fetch data from a lookup table.
+ *
+ * The query returned by this hook uses field name aliasing to ensure so that it
+ * always returns an array of objects with an `id` and `label` property, which
+ * makes the results of this query compatible with our lookup value editing
+ * component.
  */
-export const useLookupQuery = (lookupTableDef: LookupTableDef | undefined) =>
+export const useLookupQuery = <T extends Record<string, unknown>>(
+  relationship?: Relationship<T>
+) =>
   useMemo(() => {
-    if (!lookupTableDef) {
+    if (!relationship) {
       return [];
     }
     // construct the Hasura typename, which is prefixed with the schema name
     // if schema is not public
     const prefix =
-      lookupTableDef.tableSchema === "public"
+      relationship.tableSchema === "public"
         ? ""
-        : lookupTableDef.tableSchema + "_";
+        : relationship.tableSchema + "_";
 
-    const typename = `${prefix}${lookupTableDef.tableName}`;
+    const typename = `${prefix}${relationship.tableName}`;
 
     return [
       gql`
         query LookupTableQuery {
-          ${typename}(order_by: {label: asc}) {
-            id
-            label
+          ${typename}(order_by: {${relationship.labelColumnName}: asc}) {
+            id: ${relationship.idColumnName}
+            label: ${relationship.labelColumnName}
           }
         }
       `,
       typename,
     ];
-  }, [lookupTableDef]);
+  }, [relationship]);
