@@ -5,6 +5,7 @@ import { Unit } from "./unit";
 import { Charge } from "./charge";
 import { Person } from "./person";
 import { Recommendation } from "./recommendation";
+import { CrashNote } from "./crashNote";
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
@@ -13,6 +14,7 @@ export type Crash = {
   at_intrsct_fl: boolean | null;
   case_id: string | null;
   crash_injury_metrics_view: CrashInjuryMetric | null;
+  crash_notes: CrashNote[];
   cr3_stored_fl: boolean | null;
   crash_speed_limit: number | null;
   crash_timestamp: string | null;
