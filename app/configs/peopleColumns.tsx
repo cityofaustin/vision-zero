@@ -84,7 +84,7 @@ export const ALL_PEOPLE_COLUMNS = {
       const displayName = nameFields.filter((n) => n).join(" ");
       return displayName;
     },
-    customComponent: (
+    customEditComponent: (
       record,
       onCancel,
       mutation,

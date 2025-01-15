@@ -45,7 +45,7 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    * Function that returns a custom component, used for display and/or editing
    * when the column is dependent on other columns of the same record
    */
-  customComponent?: (
+  customEditComponent?: (
     record: T,
     onCancel: () => void,
     mutation: string,
