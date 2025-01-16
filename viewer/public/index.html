@@ -51,7 +51,7 @@
     <script>
       // enables VZE to disable x overflow
       window.addEventListener("message", (event) => {
-        const { type, overflow } = event.data;
+        const { type } = event.data;
         if (type === "HIDE_OVERFLOW_X") {
           document.body.style.overflowX = "hidden";
         }
