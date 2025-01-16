@@ -174,13 +174,15 @@ export default function CrashRecommendationCard({
       <Card.Header>Fatality Review Board recommendations</Card.Header>
       <Card.Body>
         <Form id="recommendationForm" onSubmit={handleSubmit(onSave)}>
-        <Form.Group className="mb-3">
+          <Form.Group className="mb-3">
             <Form.Label className="fw-bold">Partners</Form.Label>
             {!isEditing && (
               <p>
                 {recommendation?.recommendations_partners
                   ?.map(
-                    (rec_partner) => rec_partner.atd__coordination_partners_lkp?.coord_partner_desc
+                    (rec_partner) =>
+                      rec_partner.atd__coordination_partners_lkp
+                        ?.coord_partner_desc
                   )
                   .join(", ") || ""}
               </p>
