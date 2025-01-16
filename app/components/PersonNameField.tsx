@@ -81,6 +81,8 @@ const PersonNameField = ({
               // coerce empty fields to null
               setValueAs: (v) => v?.trim() || null,
             })}
+            autoComplete="off"
+            data-1p-ignore
             size="sm"
             as="input"
             placeholder="First"
@@ -90,6 +92,8 @@ const PersonNameField = ({
               // coerce empty fields to null
               setValueAs: (v) => v?.trim() || null,
             })}
+            autoComplete="off"
+            data-1p-ignore
             size="sm"
             as="input"
             placeholder="Middle"
@@ -99,6 +103,8 @@ const PersonNameField = ({
               // coerce empty fields to null
               setValueAs: (v) => v?.trim() || null,
             })}
+            autoComplete="off"
+            data-1p-ignore
             size="sm"
             as="input"
             placeholder="Last"
