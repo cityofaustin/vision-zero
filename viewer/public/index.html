@@ -49,8 +49,7 @@
       content="https://visionzero.austin.gov/viewer/summary_img.png"
     />
     <script>
-      // enables VZE to disabled x overflow for embedded
-      // summary view
+      // enables VZE to disable x overflow
       window.addEventListener("message", (event) => {
         const { type, overflow } = event.data;
         if (type === "HIDE_OVERFLOW_X") {
