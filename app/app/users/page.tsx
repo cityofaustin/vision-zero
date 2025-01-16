@@ -6,9 +6,7 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
-import { FaUserPlus, FaCopy } from "react-icons/fa6";
+import { FaUserPlus, FaCopy, FaCheck } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import UserModal from "@/components/UserModal";
@@ -29,7 +27,8 @@ export default function Users() {
     console.error(error);
   }
 
-  const handleCopyUserEmails = useCallback(async () => {
+  // copy emails to clipboard and set copied state so that the button updates
+  const handleCopyUserEmails = useCallback(() => {
     let userEmails = "";
     users
       // exclude test accounts
@@ -39,11 +38,11 @@ export default function Users() {
       .forEach((user) => {
         userEmails += `${user.email}; `;
       });
+    // only display the copied button state for a moment
     navigator.clipboard.writeText(userEmails).then(() => {
       setCopyUserEmailsClicked(true);
-      const popOverTime = 2000;
-      setTimeout(() => setCopyUserEmailsClicked(false), popOverTime);
-      return navigator.clipboard.writeText(userEmails);
+      const copiedStateTime = 1000;
+      setTimeout(() => setCopyUserEmailsClicked(false), copiedStateTime);
     });
   }, [users]);
 
@@ -69,26 +68,29 @@ export default function Users() {
                 <Button
                   className="me-2"
                   onClick={() => setShowNewUserModal(true)}
+                  disabled={isValidating}
                 >
                   <AlignedLabel>
                     <FaUserPlus className="me-2" />
                     <span>Add user</span>
                   </AlignedLabel>
                 </Button>
-                <OverlayTrigger
-                  trigger="click"
-                  show={copyUserEmailsClicked}
-                  overlay={<Tooltip>User emails copied</Tooltip>}
+                <Button
+                  onClick={handleCopyUserEmails}
+                  disabled={isValidating || copyUserEmailsClicked}
                 >
-                  <Button onClick={handleCopyUserEmails}>
+                  {copyUserEmailsClicked ? (
+                    <AlignedLabel>
+                      <FaCheck className="me-2" />
+                      <span>Copied</span>
+                    </AlignedLabel>
+                  ) : (
                     <AlignedLabel>
                       <FaCopy className="me-2" />
                       <span>Copy user emails</span>
                     </AlignedLabel>
-                  </Button>
-                </OverlayTrigger>
-                {/* show the spinner when revalidating - this is important user feedback after a 
-                user has been deleted and the user list is being refetched */}
+                  )}
+                </Button>
                 {isValidating && (
                   <span className="ms-2">
                     <Spinner variant="primary" />
