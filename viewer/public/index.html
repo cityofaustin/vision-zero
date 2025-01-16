@@ -48,11 +48,21 @@
       name="twitter:image"
       content="https://visionzero.austin.gov/viewer/summary_img.png"
     />
+    <script>
+      // enables VZE to disabled x overflow for embedded
+      // summary view
+      window.addEventListener("message", (event) => {
+        const { type, overflow } = event.data;
+        if (type === "HIDE_OVERFLOW_X") {
+          document.body.style.overflowX = "hidden";
+        }
+      });
+    </script>
     <!-- DO NOT ALTER "BELOW" THIS LINE FOR AUTOMATED ENVIRONMENT SNIPPETS -->
     <!--VZV_HEADER_SNIPPETS-->
     <!-- DO NOT ALTER "ABOVE" THIS LINE FOR AUTOMATED ENVIRONMENT SNIPPETS -->
   </head>
-  <body style="background: #fff;">
+  <body style="background: #fff">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--
