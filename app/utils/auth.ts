@@ -38,7 +38,7 @@ export const getHasuraRoleName = (roles?: string[]): string => {
 };
 
 /**
- * Make the hasura rule name human-friendly
+ * Make the hasura role name human-friendly
  */
 export const formatRoleName = (role: string): string => {
   switch (role) {
