@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { useAuth0 } from "@auth0/auth0-react";
-import { User } from "@auth0/auth0-react";
+import { useAuth0, User } from "@auth0/auth0-react";
 
 /**
  * Add our claims to the Auth0 ID token—these are
@@ -38,6 +37,9 @@ export const getHasuraRoleName = (roles?: string[]): string => {
   }
 };
 
+/**
+ * Make the hasura rule name human-friendly
+ */
 export const formatRoleName = (role: string): string => {
   switch (role) {
     case "readonly":
@@ -51,6 +53,17 @@ export const formatRoleName = (role: string): string => {
     default:
       return role;
   }
+};
+
+/**
+ * Return the text from an email up to the first `.`
+ *
+ * @example
+ * // returns "John"
+ * formatFirstNameFromEmail("john.c@austintexas.gov")
+ */
+export const formatFirstNameFromEmail = (email: string): string => {
+  return email?.split(".")[0] || "";
 };
 
 /**

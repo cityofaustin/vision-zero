@@ -36,3 +36,20 @@ export const formatDate = (value: unknown): string => {
 export const formatFileTimestamp = (date: Date): string => {
   return format(date, "yyyy-MM-dd h.mm.ss a");
 };
+
+/**
+ * Return morning, afternoon, or evening
+ */
+export const formatGreetingTime = (
+  date: Date
+): "morning" | "afternoon" | "evening" => {
+  const hours = date.getHours();
+  if (hours >= 5 && hours < 12) {
+    return "morning";
+  } else if (hours >= 12 && hours < 18) {
+    return "afternoon";
+  } else {
+    return "evening";
+  }
+};
+
