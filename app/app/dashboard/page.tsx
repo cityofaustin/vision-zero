@@ -70,9 +70,11 @@ export default function Dashboard() {
     const handleIframeLoad = () => {
       sendOverflowMessage();
     };
-    iframeRef?.current?.addEventListener("load", handleIframeLoad);
+    const currentRef = iframeRef?.current;
+
+    currentRef?.addEventListener("load", handleIframeLoad);
     return () => {
-      iframeRef?.current?.removeEventListener("load", handleIframeLoad);
+      currentRef?.removeEventListener("load", handleIframeLoad);
     };
   }, []);
 
@@ -88,7 +90,7 @@ export default function Dashboard() {
           </h4>
           <p>
             Welcome to the Vision Zero Editor, which provides access to the City
-            of Austin's traffic crash data.
+            of Austin&apos;s traffic crash data.
           </p>
         </Col>
       </Row>
@@ -110,7 +112,7 @@ export default function Dashboard() {
       </Row>
       <Row>
         {dashboardLinks.map((item) => (
-          <Col md={6}>
+          <Col md={6} key={item.href}>
             <DashboardLinkCard {...item} />
           </Col>
         ))}
