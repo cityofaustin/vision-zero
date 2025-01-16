@@ -91,6 +91,8 @@ export default function Users() {
                     </AlignedLabel>
                   )}
                 </Button>
+                {/* show the spinner when revalidating - this is important user feedback after a 
+                user has been deleted and the user list is being refetched */}
                 {isValidating && (
                   <span className="ms-2">
                     <Spinner variant="primary" />
