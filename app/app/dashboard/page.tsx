@@ -67,6 +67,9 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    /**
+     * This messenger prevents a horizontal scrollbar from appearing inside
+     */
     const handleIframeLoad = () => {
       sendOverflowMessage();
     };

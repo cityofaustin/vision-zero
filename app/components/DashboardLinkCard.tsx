@@ -22,7 +22,7 @@ export default function DashboardLinkCard({
           <div className="d-flex align-items-center me-4 py-3 px-3 bg-dark rounded fs-3 fw-bold text-white">
             <Icon />
           </div>
-          <div className="d-flex flex-column">
+          <div className="d-flex flex-column text-dark">
             <span className="fs-5 fw-bold">{title}</span>
             <span className="">{description}</span>
           </div>
