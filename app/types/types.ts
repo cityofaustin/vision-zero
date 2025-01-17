@@ -3,7 +3,7 @@ import { Variables } from "graphql-request";
 import { Relationship } from "./relationships";
 import { Path } from "./utils";
 
-export type InputType = "text" | "number" | "yes_no" | "select";
+export type InputType = "text" | "number" | "yes_no" | "select" | "textarea";
 
 /**
  * Metadata for a database column referenced by our app — where
