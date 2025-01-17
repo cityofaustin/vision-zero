@@ -39,7 +39,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
     []
   );
 
-  /** Check local storage for initialsidebar state */
+  /** Check local storage for initial sidebar state */
   useEffect(() => {
     const collapsedFromStorage =
       localStorage.getItem(localStorageKey) === "true";
