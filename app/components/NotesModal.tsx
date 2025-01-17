@@ -3,6 +3,9 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useForm } from "react-hook-form";
 import { CrashNote } from "@/types/crashNote";
+import { INSERT_CRASH_NOTE } from "@/queries/notes";
+import { useMutation } from "@/utils/graphql";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface NotesModalProps {
   show: boolean;
@@ -12,20 +15,29 @@ interface NotesModalProps {
 }
 
 export default function NotesModal({ show, onClose, onSubmitCallback, crashPk }: NotesModalProps) {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { user } = useAuth0();
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const { mutate, loading: isSubmitting } = useMutation(INSERT_CRASH_NOTE);
 
   const onSubmit = async (data: any) => {
     const noteData = {
       ...data,
-      crash_pk: crashPk,
-      user_email: "current_user@email.com", // You'll need to get this from your auth system
+      crashPk: crashPk,
+      userEmail: user?.email,
     };
-    onSubmitCallback(noteData);
+    const responseData = await mutate<{
+      insert_crash_notes_one: { returning: CrashNote };
+    }>( noteData );
+    if (responseData && responseData.insert_crash_notes_one) {
+      onSubmitCallback(responseData.insert_crash_notes_one.returning);
+    }
+    reset();
+    onClose();
   };
 
   return (
     <Modal show={show} onHide={onClose}>
-      <Form onSubmit={handleSubmit(onSubmit)}>
+      <Form onSubmit={handleSubmit(onSubmit)} id="noteForm">
         <Modal.Header closeButton>
           <Modal.Title>Add Note</Modal.Title>
         </Modal.Header>
@@ -38,6 +50,7 @@ export default function NotesModal({ show, onClose, onSubmitCallback, crashPk }:
               placeholder="Enter note text..."
               isInvalid={Boolean(errors.text)}
               autoFocus
+              {...register("text", { required: true })}
             />
             {errors.text && (
               <Form.Control.Feedback type="invalid">
