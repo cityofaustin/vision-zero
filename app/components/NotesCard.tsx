@@ -1,14 +1,15 @@
 import Card from "react-bootstrap/Card";
-import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import { useState } from "react";
 import { CrashNote } from "@/types/crashNote";
 import { FaCirclePlus } from "react-icons/fa6";
 import NotesModal from "./NotesModal";
-import { INSERT_CRASH_NOTE } from "@/queries/notes";
+import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/notes";
+import RelatedRecordTable from "./RelatedRecordTable";
+import { ColDataCardDef } from "@/types/types";
 
 // ✅ A new "Notes" card on the crash details page with a table that displays notes
-// Ability to add a new note
+// Ability to add a new note inline
 // Ability to edit an existing note by clicking on the note text
 // And show the save/cancel buttons in the card footer while editing. Save should be disabled unless the note value has changed 
 
@@ -16,6 +17,7 @@ import { INSERT_CRASH_NOTE } from "@/queries/notes";
 // - react-hook-form? 
 // - col width should be tidy
 // - empty state
+// - format datetime
 
 
 interface NotesCardProps {
@@ -24,20 +26,35 @@ interface NotesCardProps {
   onSaveCallback: () => Promise<void>;
 }
 
-  const columns = [ 
-    { "name": "Date", "key": "date" },
-    { "name": "User", "key": "user_email" },
-    { "name": "Note", "key": "text" }
+const notesColumns: ColDataCardDef<CrashNote>[] = [
+  {
+    path: "date",
+    label: "Date",
+    editable: false,
+  },
+  {
+    path: "user_email",
+    label: "User",
+    editable: false,
+  },
+  {
+    path: "text",
+    label: "Note",
+    editable: true,
+    inputType: "textarea",
+  },
 ];
 
 export default function NotesCard({ notes, crashPk, onSaveCallback }: NotesCardProps) {
   const [showModal, setShowModal] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
   const handleSaveNote = async (data: CrashNote) => {
     try {
+      setIsValidating(true);
       const response = await fetch('/api/graphql', {
         method: 'POST',
         headers: {
@@ -59,50 +76,34 @@ export default function NotesCard({ notes, crashPk, onSaveCallback }: NotesCardP
         return;
       }
 
-      // Trigger refresh of notes list
-      onSaveCallback(result.data.insert_crash_notes_one);
+      await onSaveCallback();
     } catch (error) {
       console.error('Error saving note:', error);
+    } finally {
+      setIsValidating(false);
     }
   };
 
   return (
     <>
-      <Card>
-        <Card.Header>Notes</Card.Header>
-        <Card.Body>
-          <Table striped hover>
-            <thead>
-              <tr>
-                {columns.map((column) => (
-                  <th key={column.key}>{column.name}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {notes.map((note, index) => (
-                <tr key={`note-${index}`}>
-                  {columns.map((column) => (
-                    <td key={`${column.key}-${index}`}>
-                      {note[column.key as keyof CrashNote]}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Card.Body>
-        <Card.Footer className="text-end">
-          <Button
+        <RelatedRecordTable
+          records={notes}
+          columns={notesColumns}
+          mutation={UPDATE_CRASH_NOTE}
+          isValidating={isValidating}
+          title="Notes"
+          onSaveCallback={onSaveCallback}
+          footer={
+            <Button
             size="sm"
             variant="primary"
             onClick={handleShow}
           >
             <FaCirclePlus className="me-2" />
-            Add Note
-          </Button>
-        </Card.Footer>
-      </Card>
+              Add Note
+            </Button>
+          }
+        />
 
       <NotesModal
         show={showModal}

@@ -9,6 +9,7 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
   mutation: string;
   isValidating: boolean;
   title: string;
+  footer?: React.ReactNode;
   onSaveCallback: () => Promise<void>;
 }
 
@@ -21,6 +22,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
   mutation,
   isValidating,
   title,
+  footer,
   onSaveCallback,
 }: RelatedRecordTableProps<T>) {
   return (
@@ -58,7 +60,9 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
             )}
           </tbody>
         </Table>
+
       </Card.Body>
+        {footer && <Card.Footer className="text-end">{footer}</Card.Footer>}
     </Card>
   );
 }
