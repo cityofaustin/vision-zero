@@ -50,7 +50,7 @@ export default function NotesModal({ show, onClose, onSubmitCallback, crashPk }:
           <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" form="noteForm" disabled={isSubmitting}>
             Save Note
           </Button>
         </Modal.Footer>

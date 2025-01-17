@@ -23,7 +23,7 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
  * Generic component which renders editable fields in a table row
  *
  * // todo: there is much shared code between this component and
- * the DataCard component. Essenetially the only diff between the
+ * the DataCard component. Essentially the only diff between the
  * two is row vs column layout 🤔
  */
 export default function RelatedRecordTableRow<
