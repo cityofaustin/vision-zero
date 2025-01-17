@@ -93,8 +93,7 @@ export default function ChangeLog({ logs }: { logs: ChangeLogEntry[] }) {
       activeKey={expandedItem}
       // on accordion click save new expanded item state to local storage
       onSelect={(eventKey) => {
-        const localStorageValue =
-          eventKey !== null ? recordHistoryItemName : String(null); // local storage value must be a string type
+        const localStorageValue = String(eventKey); // local storage value must be a string type
         localStorage.setItem(localStorageKey, localStorageValue);
         setExpandedItem(localStorageValue);
       }}
