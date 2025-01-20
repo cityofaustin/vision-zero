@@ -9,6 +9,7 @@ import RelatedRecordTable from "./RelatedRecordTable";
 import { ColDataCardDef } from "@/types/types";
 import { useAuth0 } from "@auth0/auth0-react";
 import { gql } from "graphql-request";
+import { formatDate } from "@/utils/formatters";
 
 // ✅ A new "Notes" card on the crash details page with a table that displays notes
 // ✅ Ability to add a new note via modal
@@ -18,9 +19,9 @@ import { gql } from "graphql-request";
 
 // additional self imposed requirements:
 // ✅ - react-hook-form? 
-// - col width should be tidy
-// ✅- empty state
-// - format datetime
+// ✅ - col width should be tidy
+// ✅ - empty state
+// ✅ - format datetime
 
 
 interface NotesCardProps {
@@ -35,6 +36,7 @@ const notesColumns: ColDataCardDef<CrashNote>[] = [
     path: "date",
     label: "Date",
     editable: false,
+    valueFormatter: formatDate,
   },
   {
     path: "user_email",
@@ -46,6 +48,7 @@ const notesColumns: ColDataCardDef<CrashNote>[] = [
     label: "Note",
     editable: true,
     inputType: "textarea",
+    style: { minWidth: "350px" },
   },
 ];
 
@@ -73,22 +76,12 @@ const NotesCard = ({ notes, crashPk, refetch, onSaveCallback }: NotesCardProps) 
     await onSaveCallback();
   };
 
-  const handleEditNote = async (data: CrashNote) => {
-    await onSaveCallback();
-  };
-
   return (
     <>
         <RelatedRecordTable
           records={notes}
           columns={notesColumns}
           mutation={UPDATE_CRASH_NOTE}
-          variables={{
-            crashPk: crashPk,
-            text: "",
-            userEmail: user?.email,
-          }}
-          refetch={refetch}
           isValidating={isValidating}
           title="Notes"
           onSaveCallback={onSaveCallback}

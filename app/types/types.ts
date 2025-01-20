@@ -41,6 +41,7 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
     column: ColDataCardDef<T>
   ) => string;
   valueRenderer?: (record: T, column: ColDataCardDef<T>) => ReactNode;
+  style?: React.CSSProperties;
 }
 
 export interface MutationVariables extends Variables {

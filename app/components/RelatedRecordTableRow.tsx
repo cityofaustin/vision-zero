@@ -82,6 +82,7 @@ export default function RelatedRecordTableRow<
             key={String(col.path)}
             style={{
               cursor: col.editable && !isEditingThisColumn ? "pointer" : "auto",
+              ...(col.style || {}),
             }}
             onClick={() => {
               if (!col.editable) {
