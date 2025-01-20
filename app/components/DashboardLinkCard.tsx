@@ -9,6 +9,10 @@ export interface DashboardLinkCardProps {
   icon: IconType;
 }
 
+/**
+ * A clickable card that renders an anchor tag with an icon,
+ * title, and description
+ */
 export default function DashboardLinkCard({
   title,
   description,
