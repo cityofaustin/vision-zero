@@ -194,6 +194,7 @@ export default function CrashDetailsPage({
             notes={crash.crash_notes || []}
             onSaveCallback={onSaveCallback}
             crashPk={crash.id}
+            refetch={refetch}
           />
         </Col>
       </Row>

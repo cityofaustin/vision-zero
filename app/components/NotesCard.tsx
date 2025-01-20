@@ -7,17 +7,19 @@ import NotesModal from "./NotesModal";
 import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/notes";
 import RelatedRecordTable from "./RelatedRecordTable";
 import { ColDataCardDef } from "@/types/types";
+import { useAuth0 } from "@auth0/auth0-react";
+import { gql } from "graphql-request";
 
 // ✅ A new "Notes" card on the crash details page with a table that displays notes
 // ✅ Ability to add a new note via modal
 // Ability to add a new note inline
 // Ability to edit an existing note by clicking on the note text
-// And show the save/cancel buttons in the card footer while editing. Save should be disabled unless the note value has changed 
+// ✅ And show the save/cancel buttons in the card footer while editing. Save should be disabled unless the note value has changed 
 
 // additional self imposed requirements:
-// - react-hook-form? 
+// ✅ - react-hook-form? 
 // - col width should be tidy
-// - empty state
+// ✅- empty state
 // - format datetime
 
 
@@ -25,6 +27,7 @@ interface NotesCardProps {
   notes: CrashNote[];
   crashPk: number;
   onSaveCallback: () => Promise<void>;
+  refetch: () => Promise<any>;
 }
 
 const notesColumns: ColDataCardDef<CrashNote>[] = [
@@ -59,14 +62,18 @@ const AddNoteButton = (handleShow: () => void) => {
   );
 };
 
-export default function NotesCard({ notes, crashPk, onSaveCallback }: NotesCardProps) {
+const NotesCard = ({ notes, crashPk, refetch, onSaveCallback }: NotesCardProps) => {
   const [showModal, setShowModal] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
-
+  const { user } = useAuth0();
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
   const handleSaveNote = async (data: CrashNote) => {
+    await onSaveCallback();
+  };
+
+  const handleEditNote = async (data: CrashNote) => {
     await onSaveCallback();
   };
 
@@ -76,6 +83,12 @@ export default function NotesCard({ notes, crashPk, onSaveCallback }: NotesCardP
           records={notes}
           columns={notesColumns}
           mutation={UPDATE_CRASH_NOTE}
+          variables={{
+            crashPk: crashPk,
+            text: "",
+            userEmail: user?.email,
+          }}
+          refetch={refetch}
           isValidating={isValidating}
           title="Notes"
           onSaveCallback={onSaveCallback}
@@ -92,3 +105,4 @@ export default function NotesCard({ notes, crashPk, onSaveCallback }: NotesCardP
   );
 }
 
+export default NotesCard;
