@@ -223,7 +223,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
       },
       {
         id: "is_temp_record",
-        label: "Temporary records",
+        label: "Temporary records only",
         groupOperator: "_and",
         enabled: false,
         filters: [
