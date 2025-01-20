@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatDate } from "@/utils/formatters";
+import { formatDate, formatDollars } from "@/utils/formatters";
 import { ColDataCardDef } from "@/types/types";
 import { CrashesListRow } from "@/types/crashesList";
 
@@ -34,5 +34,21 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     path: "collsn_desc",
     label: "Collision",
     sortable: true,
+  },
+  {
+    path: "vz_fatality_count",
+    label: "Fatalities",
+    sortable: true,
+  },
+  {
+    path: "sus_serious_injry_count",
+    label: "Sus serious injuries",
+    sortable: true,
+  },
+  {
+    path: "est_comp_cost_crash_based",
+    label: "Est Comp Cost",
+    sortable: true,
+    valueFormatter: formatDollars,
   },
 ];
