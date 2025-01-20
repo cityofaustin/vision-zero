@@ -8,12 +8,8 @@ import Table from "@/components/Table";
 import TableSearch, { SearchSettings } from "@/components/TableSearch";
 import TableDateSelector from "@/components/TableDateSelector";
 import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
-import {
-  QueryConfig,
-  useQueryBuilder,
-  Filter,
-  useExportQuery,
-} from "@/utils/queryBuilder";
+import { useQueryBuilder, useExportQuery } from "@/utils/queryBuilder";
+import { QueryConfig, Filter } from "@/types/queryBuilder";
 import { ColDataCardDef } from "@/types/types";
 import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
 import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFilterToggle";
@@ -69,8 +65,8 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     ...initialQueryConfig,
   });
 
-  const query = useQueryBuilder(queryConfig, contextFilters);
-  const exportQuery = useExportQuery(queryConfig, contextFilters);
+  const query = useQueryBuilder(queryConfig, columns, contextFilters);
+  const exportQuery = useExportQuery(queryConfig, columns, contextFilters);
 
   const { data, aggregateData, isLoading, error, refetch } = useQuery<T>({
     // don't fire first query until localstorage is loaded

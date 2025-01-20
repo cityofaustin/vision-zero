@@ -1,5 +1,5 @@
 import { locationsListViewColumns } from "./locationsListViewColumns";
-import { QueryConfig, FilterGroup } from "@/utils/queryBuilder";
+import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
 const columns = locationsListViewColumns.map((col) => String(col.path));

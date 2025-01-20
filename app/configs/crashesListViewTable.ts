@@ -4,7 +4,7 @@ import {
   makeDateFilters,
 } from "@/components/TableDateSelector";
 import { crashesListViewColumns } from "@/configs/crashesListViewColumns";
-import { QueryConfig, FilterGroup } from "@/utils/queryBuilder";
+import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
 const columns = crashesListViewColumns.map((col) => String(col.path));

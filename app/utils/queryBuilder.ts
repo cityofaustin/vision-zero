@@ -2,6 +2,14 @@ import { useMemo } from "react";
 import { gql } from "graphql-request";
 import { produce } from "immer";
 import { MAX_RECORD_EXPORT_LIMIT } from "./constants";
+import {
+  Filter,
+  FilterValue,
+  FilterGroup,
+  QueryConfig,
+} from "@/types/queryBuilder";
+import { ColDataCardDef } from "@/types/types";
+
 // todo: test quote escape
 
 const BASE_QUERY_STRING = `
@@ -15,183 +23,6 @@ const BASE_QUERY_STRING = `
             }
         }
     }`;
-
-/**
- * The types we currently support as filter values
- *
- */
-type FilterValue = string | number | boolean | number[];
-
-/**
- * Interface for a single filter that can be
- * converted into a graphql `where` expression
- */
-export interface Filter {
-  /**
-   * Arbitrary but must uniquely identify the filter by name amongst all
-   * other filters in the same group
-   */
-  id: string;
-  /**
-   * Hasura comparison operator, e.g. _eq, _gte
-   */
-  operator:
-    | "_gte"
-    | "_lte"
-    | "_gt"
-    | "_eq"
-    | "_neq"
-    | "_is_null"
-    | "_ilike"
-    | "_in"
-    | "_nin";
-  /**
-   * The filter value
-   */
-  value: FilterValue;
-  /**
-   * The db column name to filter on
-   */
-  column: string;
-  /**
-   * The optional name of a relationship to use when constructing the filter string
-   */
-  relationshipName?: string;
-  /**
-   * If the filter should be wrapped with `%`
-   * --should only be used with string types
-   */
-  wildcard?: boolean;
-}
-
-interface FilterGroupBase {
-  /**
-   * The arbitrary ID must uniquely identifier of this group amongst
-   * all other filter groups
-   */
-  id: string;
-  /**
-   * Optional label that can be used to label the filter cards
-   */
-  label?: string;
-  /**
-   * Applies to FilterCard's filter groups only—aka switches - it enables
-   * switch filtegroups to be present in the config and ignored
-   * by the queryBuilder until they are enabled. So this setting
-   * is also used to control the switch UI component state
-   */
-  enabled?: boolean;
-  /**
-   *  Applies to FilterCard's filter groups only—aka switches—and causes
-   * the switch behavior to render as checked/on when disabled and
-   * unchecked/off when enabled. The main use case atm is to apply
-   * the in_austin_full_purpose by default
-   */
-  inverted?: boolean;
-  /**
-   * The and/or operator that will be applied to this group of filters
-   * when constructing the `where` expression
-   */
-  groupOperator: "_and" | "_or";
-}
-
-interface FilterGroupWithFilters extends FilterGroupBase {
-  filters: Filter[];
-  filterGroups?: never;
-}
-
-interface FilterGroupWithFilterGroups extends FilterGroupBase {
-  filters?: never;
-  filterGroups: FilterGroup[];
-}
-
-// todo: more documentation here
-// todo: actually, make filters a union of FilterGroup[] or Filter[]? seems easier to grok
-export type FilterGroup = FilterGroupWithFilterGroups | FilterGroupWithFilters;
-
-/**
- * Defines the fields available to be selected from the search field selector
- */
-export interface SearchFilterField {
-  label: string;
-  value: string;
-}
-
-/**
- * Used by the date selector component to keep shorthand
- * `mode` buttons (YTD, 1Y, etc) in sync with the actual
- * DateFilter[] array
- */
-export type DateFilterMode = "ytd" | "all" | "5y" | "1y" | "custom";
-
-/**
- * Configuration object for the graphql
- * query builder
- */
-export interface QueryConfig {
-  /**
-   * Column names to be returned by query
-   */
-  columns: string[];
-  /**
-   * Table (or view) name to query - todo: specify table schema?
-   */
-  tableName: string;
-  /**
-   * The record limit
-   */
-  limit: number;
-  /**
-   * The query offset (for pagination)
-   */
-  offset: number;
-  /**
-   * The column name to be used in the `order_by` directive
-   */
-  sortColName: string;
-  /**
-   * Sort results ascending (true) or descending (false)
-   */
-  sortAsc: boolean;
-  /**
-   * The filter to be managed by the search component.
-   * The query buildler has special handling to apply this
-   * filter when its value is not an empty string
-   */
-  searchFilter: Filter;
-  /**
-   * The search fields that are available to select from when searching
-   */
-  searchFields: SearchFilterField[];
-  /**
-   * The filter settings for filtering by date. Designed to
-   * be compatible with the DateSeletor component which uses
-   * pre-defiend date ranges as well as custom input
-   */
-  dateFilter?: {
-    mode: DateFilterMode;
-    /** Column name setting here will determine which column
-     * name will will be used in the DateFilters[] that
-     * are constructed by the UI component
-     */
-    column: string;
-    filters: Filter[];
-  };
-  /**
-   * Groups of filter card configs, which are meant to hold the filters
-   * managed by the advanced filter component
-   */
-  filterCards: FilterGroup[];
-  /**
-   * Enables the export functionality
-   */
-  exportable?: boolean;
-  /**
-   * The name that will be given to the exported file, excluding
-   * the file extension
-   */
-  exportFilename?: string;
-}
 
 /**
  * Wrap a string in `%`
@@ -317,9 +148,12 @@ const getWhereExp = (filterGroups: FilterGroup[]): string => {
  *    }
  *  }
  */
-const buildQuery = (
-  {
-    columns,
+const buildQuery = <T extends Record<string, unknown>>(
+  queryConfig: QueryConfig,
+  columns: ColDataCardDef<T>[],
+  contextFilters?: Filter[]
+): string => {
+  const {
     tableName,
     limit,
     offset,
@@ -328,11 +162,10 @@ const buildQuery = (
     filterCards,
     dateFilter,
     searchFilter,
-  }: QueryConfig,
-  contextFilters?: Filter[]
-): string => {
-  const columnString = columns.join("\n");
+  } = queryConfig;
 
+  const columnString = columns.map((col) => col.path).join("\n");
+ 
   /**
    * Collect all filters into one big FilterGroup
    */
@@ -420,13 +253,13 @@ const buildQuery = (
  * URL query param
  * @returns {string} a graphql querry
  */
-export const useQueryBuilder = (
+export const useQueryBuilder = <T extends Record<string, unknown>>(
   queryConfig: QueryConfig,
+  columns: ColDataCardDef<T>[],
   contextFilters?: Filter[]
 ): string =>
   useMemo(() => {
-    return buildQuery(queryConfig, contextFilters);
-
+    return buildQuery(queryConfig, columns, contextFilters);
   }, [queryConfig, contextFilters]);
 
 /**
@@ -434,6 +267,7 @@ export const useQueryBuilder = (
  */
 export const useExportQuery = <T extends Record<string, unknown>>(
   queryConfig: QueryConfig,
+  columns: ColDataCardDef<T>[],
   contextFilters?: Filter[]
 ): string => {
   const newQueryConfig = useMemo(() => {
@@ -445,5 +279,5 @@ export const useExportQuery = <T extends Record<string, unknown>>(
       return newQueryConfig;
     });
   }, [queryConfig]);
-  return useQueryBuilder(newQueryConfig, contextFilters);
+  return useQueryBuilder(newQueryConfig, columns, contextFilters);
 };

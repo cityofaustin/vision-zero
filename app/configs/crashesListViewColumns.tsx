@@ -51,4 +51,9 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     sortable: true,
     valueFormatter: formatDollars,
   },
+  {
+    path: "nonincap_injry_count",
+    label: "nonincap_injry_count",
+    exportOnly: true,
+  },
 ];

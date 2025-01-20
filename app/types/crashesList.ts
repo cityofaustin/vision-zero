@@ -7,4 +7,5 @@ export type CrashesListRow = {
   record_locator: string;
   sus_serious_injry_count: number | null;
   vz_fatality_count: number | null;
+  nonincap_injry_count: number | null;
 };

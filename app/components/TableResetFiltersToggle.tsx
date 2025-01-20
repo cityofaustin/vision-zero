@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import Button from "react-bootstrap/Button";
 import { FaXmark } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
-import { QueryConfig } from "@/utils/queryBuilder";
+import { QueryConfig } from "@/types/queryBuilder";
 
 interface Props {
   queryConfig: QueryConfig;

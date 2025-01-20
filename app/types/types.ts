@@ -26,6 +26,11 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    */
   editable?: boolean;
   /**
+   * If the field should only be available in the table exporting -
+   * only affects when column is used in a table config
+   */
+  exportOnly?: boolean;
+  /**
    * Determines the UI component that will be used to edit the column
    */
   inputType?: InputType;
