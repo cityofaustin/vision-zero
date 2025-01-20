@@ -117,7 +117,7 @@ export default function RelatedRecordTableRow<
                       getRecordValue(record, col, true),
                       col
                     )}
-                    onSave={(value: string, context) =>
+                    onSave={(value: string) =>
                       onSave(
                         Number(record.id),
                         handleFormValueOutput(
@@ -128,7 +128,6 @@ export default function RelatedRecordTableRow<
                         { type: col.label === "Note" ? "note" : "default" }
                       )
                     }
-                    context={{ type: col.label === "Note" ? "note" : "default" }}
                     onCancel={onCancel}
                     inputType={col.inputType}
                     selectOptions={selectOptions}

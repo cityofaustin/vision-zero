@@ -25,16 +25,12 @@ interface DataCardInputProps {
    * The function to call on save button click, which is expected to mutate the field
    * with the current `editValue`
    */
-  onSave: (value: string, context?: { type: string; [key: string]: any }) => Promise<void>;
+  onSave: (value: string) => Promise<void>;
   /**
    * The function to call on cancel button click, which is expected
    * to set control the parent component's edit state
    */
   onCancel: () => void;
-  context?: {
-    type: string;
-    [key: string]: any;
-  };
 }
 
 /**
@@ -48,7 +44,6 @@ const DataCardInput = ({
   selectOptions,
   onSave,
   onCancel,
-  context,
 }: DataCardInputProps) => {
   // todo: input validation; input type = number
   const [editValue, setEditValue] = useState<string>(initialValue);
@@ -59,7 +54,7 @@ const DataCardInput = ({
     <Form
       onSubmit={async (e) => {
         e.preventDefault();
-        await onSave(editValue, context);
+        await onSave(editValue);
       }}
     >
       <div className="mb-2">
