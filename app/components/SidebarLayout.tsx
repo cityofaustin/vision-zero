@@ -33,9 +33,9 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
 
   const toggleSidebar = useCallback(
     () =>
-      setIsCollapsed((prevSate) => {
-        localStorage.setItem(localStorageKey, String(!prevSate));
-        return !prevSate;
+      setIsCollapsed((prevState) => {
+        localStorage.setItem(localStorageKey, String(!prevState));
+        return !prevState;
       }),
     []
   );
