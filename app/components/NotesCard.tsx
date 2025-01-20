@@ -78,15 +78,21 @@ const NotesCard = ({ notes, crashPk, refetch, onSaveCallback }: NotesCardProps) 
 
   return (
     <>
-        <RelatedRecordTable
-          records={notes}
-          columns={notesColumns}
-          mutation={UPDATE_CRASH_NOTE}
-          isValidating={isValidating}
-          title="Notes"
-          onSaveCallback={onSaveCallback}
-          footer={AddNoteButton(handleShow)}
-        />
+      <RelatedRecordTable
+        records={notes}
+        columns={notesColumns}
+        mutation={UPDATE_CRASH_NOTE}
+        mutationVariables={(variables: { id: number; updates: Record<string, unknown> }) => ({
+          id: variables.id,
+          updates: {
+            text: variables.updates.text,
+          },
+        })}
+        isValidating={isValidating}
+        title="Notes"
+        onSaveCallback={onSaveCallback}
+        footer={AddNoteButton(handleShow)}
+      />
 
       <NotesModal
         show={showModal}

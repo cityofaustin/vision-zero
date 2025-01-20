@@ -20,12 +20,17 @@ export const INSERT_CRASH_NOTE = gql`
 `;
 
 export const UPDATE_CRASH_NOTE = gql`
-  mutation UpdateCrashNote($crashPk: Int!, $text: String!, $userEmail: String!) {
-    updateCrashNote(crashPk: $crashPk, text: $text, userEmail: $userEmail) {
-      id
-      date
-      text
-      user_email
+  mutation UpdateCrashNote($id: Int!, $updates: crash_notes_set_input!) {
+    update_crash_notes(
+      where: { id: { _eq: $id } }
+      _set: $updates
+    ) {
+      returning {
+        id
+        date
+        text
+        user_email
+      }
     }
   }
 `;

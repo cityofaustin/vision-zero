@@ -11,6 +11,7 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
   title: string;
   footer?: React.ReactNode;
   onSaveCallback: () => Promise<void>;
+  mutationVariables?: (variables: { id: number; updates: Record<string, unknown> }) => { id: number; updates: Record<string, unknown> };
 }
 
 /**
@@ -24,6 +25,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
   title,
   footer,
   onSaveCallback,
+  mutationVariables,
 }: RelatedRecordTableProps<T>) {
   return (
     <Card>
@@ -55,6 +57,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
                   onSaveCallback={onSaveCallback}
                   record={record}
                   mutation={mutation}
+                  mutationVariables={mutationVariables}
                 />
               ))
             )}

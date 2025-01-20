@@ -17,6 +17,7 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   mutation: string;
   isValidating: boolean;
   onSaveCallback: () => Promise<void>;
+  mutationVariables?: (variables: { id: number; updates: Record<string, unknown> }) => { id: number; updates: Record<string, unknown> };
 }
 
 /**
@@ -34,6 +35,7 @@ export default function RelatedRecordTableRow<
   mutation,
   isValidating,
   onSaveCallback,
+  mutationVariables,
 }: RelatedRecordTableRowProps<T>) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
@@ -52,7 +54,11 @@ export default function RelatedRecordTableRow<
       typename,
     });
 
-  const onSave = async (recordId: number, value: unknown) => {
+  const onSave = async (
+    recordId: number, 
+    value: unknown, 
+    context?: { type: string; [key: string]: any }
+  ) => {
     if (!editColumn) {
       // not possible
       return;
@@ -61,12 +67,20 @@ export default function RelatedRecordTableRow<
     const saveColumnName = editColumn.relationship?.foreignKey
       ? editColumn.relationship?.foreignKey
       : editColumn.path;
-    await mutate({
+
+    const variables = {
       id: recordId,
       updates: {
         [saveColumnName]: value,
       },
-    });
+    }; 
+
+    if (context?.type === "note") {
+      await mutate(mutationVariables ? mutationVariables(variables) : variables, { skip_updated_by_setter: true });
+    } else {
+      await mutate(variables);
+    }
+
     await onSaveCallback();
     setEditColumn(null);
   };
@@ -103,16 +117,18 @@ export default function RelatedRecordTableRow<
                       getRecordValue(record, col, true),
                       col
                     )}
-                    onSave={(value: string) =>
+                    onSave={(value: string, context) =>
                       onSave(
                         Number(record.id),
                         handleFormValueOutput(
                           value,
                           !!col.relationship,
                           col.inputType
-                        )
+                        ),
+                        { type: col.label === "Note" ? "note" : "default" }
                       )
                     }
+                    context={{ type: col.label === "Note" ? "note" : "default" }}
                     onCancel={onCancel}
                     inputType={col.inputType}
                     selectOptions={selectOptions}
