@@ -1,5 +1,4 @@
 "use client";
-import { useRef, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -55,42 +54,16 @@ const dashboardLinks: DashboardLinkCardProps[] = [
 
 export default function Dashboard() {
   const { user } = useAuth0();
-  const iframeRef = useRef<HTMLIFrameElement | null>(null);
-
-  const sendOverflowMessage = () => {
-    if (iframeRef?.current?.contentWindow) {
-      iframeRef.current.contentWindow.postMessage(
-        { type: "HIDE_OVERFLOW_X" },
-        VZV_ENDPOINT
-      );
-    }
-  };
-
-  useEffect(() => {
-    /**
-     * This messenger prevents a horizontal scrollbar from appearing inside
-     */
-    const handleIframeLoad = () => {
-      sendOverflowMessage();
-    };
-    const currentRef = iframeRef?.current;
-
-    currentRef?.addEventListener("load", handleIframeLoad);
-    return () => {
-      currentRef?.removeEventListener("load", handleIframeLoad);
-    };
-  }, []);
-
   const firstName = formatFirstNameFromEmail(user?.email || "");
 
   return (
     <>
       <Row className="mb-3">
         <Col md={6}>
-          <h4 className="display-4">
+          <h6 className="display-6">
             <span>{`Good ${formatGreetingTime(new Date())}, `}</span>
             <span className="text-capitalize">{firstName}</span>!
-          </h4>
+          </h6>
           <p>
             Welcome to the Vision Zero Editor, which provides access to the City
             of Austin&apos;s traffic crash data.
@@ -100,8 +73,7 @@ export default function Dashboard() {
       <Row>
         <Col>
           <iframe
-            ref={iframeRef}
-            src="http://localhost:3000/viewer/measures"
+            src={`${VZV_ENDPOINT}/viewer/measures`}
             title="Vision Zero Viewer Stats"
             style={{
               width: "100%",
