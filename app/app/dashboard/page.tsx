@@ -66,14 +66,18 @@ export default function Dashboard() {
           </h6>
           <p>
             Welcome to the Vision Zero Editor, which provides access to the City
-            of Austin&apos;s traffic crash data.
+            of Austin&apos;s traffic crash data. The below metrics reflect our&nbsp;
+            <a href={VZV_ENDPOINT} target="_blank" rel="noreferrer">
+              public crash data
+            </a>
+            , which excludes crashes which occurred within the last 14 days.
           </p>
         </Col>
       </Row>
       <Row>
         <Col>
           <iframe
-            src={`${VZV_ENDPOINT}/viewer/measures`}
+            src={`${VZV_ENDPOINT}/measures`}
             title="Vision Zero Viewer Stats"
             style={{
               width: "100%",
