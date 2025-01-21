@@ -32,7 +32,7 @@ const notesColumns: ColDataCardDef<CrashNote>[] = [
     path: "text",
     label: "Note",
     editable: true,
-    editableCheck: (record: CrashNote, currentUserEmail?: string) => 
+    editableCheck: (record: CrashNote, currentUserEmail?: string) =>
       record.user_email === currentUserEmail,
     inputType: "textarea",
     style: { minWidth: "350px" },
@@ -42,16 +42,12 @@ const notesColumns: ColDataCardDef<CrashNote>[] = [
     label: "",
     editable: false,
     style: { width: "50px" },
-  }
+  },
 ];
 
 const AddNoteButton = (handleShow: () => void) => {
   return (
-    <Button
-      size="sm"
-      variant="primary"
-      onClick={handleShow}
-    >
+    <Button size="sm" variant="primary" onClick={handleShow}>
       <FaCirclePlus className="me-2" />
       Add Note
     </Button>
@@ -76,7 +72,10 @@ const NotesCard = ({ notes, crashPk, onSaveCallback }: NotesCardProps) => {
         columns={notesColumns}
         mutation={UPDATE_CRASH_NOTE}
         deleteMutation={DELETE_CRASH_NOTE}
-        mutationVariables={(variables: { id: number; updates: Record<string, unknown> }) => ({
+        mutationVariables={(variables: {
+          id: number;
+          updates: Record<string, unknown>;
+        }) => ({
           id: variables.id,
           updates: {
             text: variables.updates.text,
@@ -98,6 +97,6 @@ const NotesCard = ({ notes, crashPk, onSaveCallback }: NotesCardProps) => {
       />
     </>
   );
-}
+};
 
 export default NotesCard;
