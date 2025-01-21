@@ -54,7 +54,7 @@ WITH jurisdiction_union AS (
     austin_full_purpose = (
       select ST_Contains(jurisdiction.geometry, incidents.geometry)
       from ems__incidents incidents
-      left join jurisdiction_union jurisdiction on (jurisdiction.jurisdiction_label = 'AUSTIN FULL PURPOSE')
+      left join jurisdiction_union jurisdiction on TRUE
       where incidents.id = new.id),
     location_id = (
       select locations.location_id
