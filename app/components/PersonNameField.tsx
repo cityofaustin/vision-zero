@@ -34,12 +34,12 @@ type PersonNameFormInputs = {
 /**
  * Component that manages the form UI for editing a Person's name, first, middle and last
  */
-const PersonNameField = ({
+export default function PersonNameField({
   record,
   onSaveCallback,
   onCancel,
   mutation,
-}: PersonNameFieldProps) => {
+}: PersonNameFieldProps) {
   const { mutate, loading: isMutating } = useMutation(mutation);
 
   const {
@@ -139,6 +139,4 @@ const PersonNameField = ({
       </div>
     </Form>
   );
-};
-
-export default PersonNameField;
+}
