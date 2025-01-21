@@ -1,12 +1,9 @@
-import { locationCrashesColumns } from "./locationCrashesColumns";
 import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 import {
   getYearsAgoDate,
   makeDateFilters,
 } from "@/components/TableDateSelector";
-
-const columns = locationCrashesColumns.map((col) => String(col.path));
 
 const locationCrashesFiltercards: FilterGroup[] = [
   {
@@ -49,7 +46,6 @@ const locationCrashesFiltercards: FilterGroup[] = [
 ];
 
 export const locationCrashesQueryConfig: QueryConfig = {
-  columns,
   exportable: true,
   exportFilename: "location-crashes",
   tableName: "location_crashes_view",

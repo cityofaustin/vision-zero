@@ -114,10 +114,6 @@ export type DateFilterMode = "ytd" | "all" | "5y" | "1y" | "custom";
  */
 export interface QueryConfig {
   /**
-   * Column names to be returned by query
-   */
-  columns: string[];
-  /**
    * Table (or view) name to query - todo: specify table schema?
    */
   tableName: string;
