@@ -6,6 +6,7 @@ import {
   Filter,
   FilterValue,
   FilterGroup,
+  GraphQLFieldTree,
   QueryConfig,
 } from "@/types/queryBuilder";
 import { ColDataCardDef } from "@/types/types";
@@ -130,35 +131,10 @@ const getWhereExp = (filterGroups: FilterGroup[]): string => {
 };
 
 /**
- * Given an array of column paths, construct the Hasura
- * graphql query column string by nesting fields from
- * related objects
+ * Recursively stringify a field tree object into a nested graphql
+ *  field selection set
  */
-// const getColumns = (columnPaths: string[]): string => {
-//   const keys = { _root: [] };
-//   const stu = ["home", "colors.green", "colors.blue", "colors.red.brick"];
-//   const dave = gql`
-//     {
-//       home
-//       colors {
-//         green
-//         red {
-//           brick
-//         }
-//         blue
-//       }
-//     }
-//   `;
-//   debugger;
-//   return "hello";
-// };
-
-type GraphQLTree = {
-  [key: string]: GraphQLTree;
-};
-
-// Recursively stringify graphql tree of columns
-function stringify(tree: GraphQLTree): string {
+function stringify(tree: GraphQLFieldTree): string {
   const fields = Object.keys(tree).map((key) => {
     const value = tree[key];
     const isEmpty = Object.keys(value).length === 0;
@@ -167,11 +143,30 @@ function stringify(tree: GraphQLTree): string {
   return `{ ${fields.join(" ")} }`;
 }
 
+/**
+ * Given an array of dot-notaed column paths, generate
+ * a query string the is a graphql-compatible field
+ * selection set string
+ *
+ * @example
+ * const paths = ["record_locator", "est_comp_cost_crash_based", "recommendation.rec_text"]
+ * getColumnQueryString(paths)
+ * // returns
+ * `{
+ *  record_locator
+ *   est_comp_cost_crash_based
+ *   recommendation {
+ *     rec_text
+ *   }
+ * }`
+ */
 const getColumnQueryString = (paths: string[]): string => {
-  // Build the tree structure
-  const tree: GraphQLTree = {};
+  // build the tree structure, where each entry is a field name
+  const tree: GraphQLFieldTree = {};
   paths.forEach((path) => {
     let current = tree;
+    // split the path parts and save field names under their
+    // parent path part
     path.split(".").forEach((part) => {
       if (!current[part]) current[part] = {};
       current = current[part];

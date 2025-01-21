@@ -1,6 +1,5 @@
 import { ColDataCardDef } from "@/types/types";
 
-
 /**
  * The types we currently support as filter values
  *
@@ -176,4 +175,23 @@ export interface QueryConfig {
    * the file extension
    */
   exportFilename?: string;
+}
+
+/**
+ * Recursive type to loosely describe a graphQL field
+ * selection set as JSON. This type is used when
+ * building out the column string for a graphql query
+ * based on the columns' paths
+ *
+ * @example
+ * {
+ *    "record_locator": {},
+ *    "est_comp_cost_crash_based": {},
+ *    "recommendation": {
+ *        "rec_text": {}
+ *    }
+ * }
+ */
+export interface GraphQLFieldTree {
+  [key: string]: GraphQLFieldTree;
 }
