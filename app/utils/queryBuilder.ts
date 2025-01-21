@@ -17,12 +17,15 @@ const BASE_QUERY_STRING = `
     query $queryName {
         $tableName(limit: $limit, offset: $offset, order_by: $orderBy where: $where) 
         $columns
-        $tableName_aggregate(where: $where) {
-            aggregate {
-                count
-            }
-        }
+        $aggregationQuery
     }`;
+
+const AGGREGATION_QUERY_STRING = `
+ $tableName_aggregate(where: $where) {
+    aggregate {
+        count
+    }
+}`;
 
 /**
  * Wrap a string in `%`
@@ -196,6 +199,7 @@ const getColumnQueryString = (paths: string[]): string => {
 const buildQuery = <T extends Record<string, unknown>>(
   queryConfig: QueryConfig,
   columns: ColDataCardDef<T>[],
+  includeAggregates: boolean,
   contextFilters?: Filter[]
 ): string => {
   const {
@@ -276,16 +280,29 @@ const buildQuery = <T extends Record<string, unknown>>(
 
   const where = getWhereExp(allFilterGroups);
 
-  const queryString = BASE_QUERY_STRING.replace(
-    "$queryName",
-    "BuildQuery_" + tableName
-  )
+  /**
+   * If using aggregates, patch in the aggregation query
+   *  - must do this before we patch in the other template
+   * vars
+   */
+  let queryString = BASE_QUERY_STRING.replace(
+    "$aggregationQuery",
+    includeAggregates ? AGGREGATION_QUERY_STRING : ""
+  );
+
+  /**
+   * Replace other placeholder values
+   */
+
+  queryString = queryString
+    .replace("$queryName", "BuildQuery_" + tableName)
     .replaceAll("$tableName", tableName)
     .replace("$limit", String(limit))
     .replace("$offset", String(offset))
     .replace("$orderBy", getOrderByExp(sortColName, sortAsc))
     .replace("$columns", columnQueryString)
     .replaceAll("$where", where);
+
   return gql`
     ${queryString}
   `;
@@ -303,13 +320,14 @@ const buildQuery = <T extends Record<string, unknown>>(
 export const useQueryBuilder = <T extends Record<string, unknown>>(
   queryConfig: QueryConfig,
   columns: ColDataCardDef<T>[],
+  includeAggregates: boolean,
   contextFilters?: Filter[]
 ): string =>
   useMemo(() => {
-    return buildQuery(queryConfig, columns, contextFilters);
+    return buildQuery(queryConfig, columns, includeAggregates, contextFilters);
   }, [queryConfig, contextFilters, columns]);
 
-/**
+/**e
  * Hook which builds a graphql query for record exporting
  */
 export const useExportQuery = <T extends Record<string, unknown>>(
@@ -326,5 +344,6 @@ export const useExportQuery = <T extends Record<string, unknown>>(
       return newQueryConfig;
     });
   }, [queryConfig]);
-  return useQueryBuilder(newQueryConfig, columns, contextFilters);
+  // note that we exclude aggregates from the export query
+  return useQueryBuilder(newQueryConfig, columns, false, contextFilters);
 };

@@ -69,7 +69,12 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     () => columns.filter((col) => !col.exportOnly),
     [columns]
   );
-  const query = useQueryBuilder(queryConfig, visibleColumns, contextFilters);
+  const query = useQueryBuilder(
+    queryConfig,
+    visibleColumns,
+    true,
+    contextFilters
+  );
   const exportQuery = useExportQuery(queryConfig, columns, contextFilters);
 
   const { data, aggregateData, isLoading, error, refetch } = useQuery<T>({
