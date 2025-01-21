@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
@@ -65,7 +65,11 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     ...initialQueryConfig,
   });
 
-  const query = useQueryBuilder(queryConfig, columns, contextFilters);
+  const visibleColumns = useMemo(
+    () => columns.filter((col) => !col.exportOnly),
+    [columns]
+  );
+  const query = useQueryBuilder(queryConfig, visibleColumns, contextFilters);
   const exportQuery = useExportQuery(queryConfig, columns, contextFilters);
 
   const { data, aggregateData, isLoading, error, refetch } = useQuery<T>({
@@ -224,7 +228,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
         <Col>
           <Table<T>
             rows={rows}
-            columns={columns}
+            columns={visibleColumns}
             queryConfig={queryConfig}
             setQueryConfig={setQueryConfig}
           />

@@ -167,8 +167,7 @@ function stringify(tree: GraphQLTree): string {
   return `{ ${fields.join(" ")} }`;
 }
 
-const getColumns = (paths: string[]): string => {
-  throw "Actually we don't think this is necessary?";
+const getColumnQueryString = (paths: string[]): string => {
   // Build the tree structure
   const tree: GraphQLTree = {};
   paths.forEach((path) => {
@@ -215,9 +214,9 @@ const buildQuery = <T extends Record<string, unknown>>(
     searchFilter,
   } = queryConfig;
 
-  const columnString = getColumns(columns.map((col) => col.path));
-
-  console.log("COLUMNSTRING", columnString);
+  const columnQueryString = getColumnQueryString(
+    columns.map((col) => col.path)
+  );
 
   /**
    * Collect all filters into one big FilterGroup
@@ -290,7 +289,7 @@ const buildQuery = <T extends Record<string, unknown>>(
     .replace("$limit", String(limit))
     .replace("$offset", String(offset))
     .replace("$orderBy", getOrderByExp(sortColName, sortAsc))
-    .replace("$columns", columnString)
+    .replace("$columns", columnQueryString)
     .replaceAll("$where", where);
   return gql`
     ${queryString}
@@ -313,7 +312,7 @@ export const useQueryBuilder = <T extends Record<string, unknown>>(
 ): string =>
   useMemo(() => {
     return buildQuery(queryConfig, columns, contextFilters);
-  }, [queryConfig, contextFilters]);
+  }, [queryConfig, contextFilters, columns]);
 
 /**
  * Hook which builds a graphql query for record exporting
