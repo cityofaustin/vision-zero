@@ -27,7 +27,7 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
  * two is row vs column layout 🤔
  */
 export default function RelatedRecordTableRow<
-  T extends Record<string, unknown>
+  T extends Record<string, unknown>,
 >({
   record,
   columns,

@@ -53,7 +53,7 @@ npm run dev
   - sortable table columns with icon indicating sort direction
 - Crash details page
   - Crash map: crash map displays crash location with nearmap aerials
-  - Crash map: ability to edit crash location  
+  - Crash map: ability to edit crash location
   - Crash diagram: diagrams render
   - Crash diagram: info alert shows when no diagram is available and is temp record
   - Crash diagram: danger alert shows when no diagram is available and is not temp record
@@ -97,7 +97,7 @@ npm run dev
 - create crash records
   - view + search for temp records
   - create crash record form
-  
+
 ## Todo
 
 - permissions-based features:
