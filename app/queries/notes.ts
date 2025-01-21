@@ -34,3 +34,13 @@ export const UPDATE_CRASH_NOTE = gql`
     }
   }
 `;
+
+export const DELETE_CRASH_NOTE = gql`
+  mutation DeleteCrashNote($id: Int!) {
+    delete_crash_notes(where: { id: { _eq: $id } }) {
+      returning {
+        id
+      }
+    }
+  }
+`;
