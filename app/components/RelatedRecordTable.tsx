@@ -7,6 +7,7 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
   records: T[];
   columns: ColDataCardDef<T>[];
   mutation: string;
+  deleteMutation?: string;
   isValidating: boolean;
   title: string;
   footer?: React.ReactNode;
@@ -22,6 +23,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
   records,
   columns,
   mutation,
+  deleteMutation,
   isValidating,
   title,
   footer,
@@ -59,6 +61,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
                   onSaveCallback={onSaveCallback}
                   record={record}
                   mutation={mutation}
+                  deleteMutation={deleteMutation}
                   mutationVariables={mutationVariables}
                   currentUserEmail={currentUserEmail}
                 />

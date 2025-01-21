@@ -1,7 +1,10 @@
 import { useState } from "react";
 import Spinner from "react-bootstrap/Spinner";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import DataCardInput from "./DataCardInput";
 import { useMutation, useQuery, useLookupQuery } from "@/utils/graphql";
+import { FaTrash } from "react-icons/fa6";
 import {
   getRecordValue,
   renderColumnValue,
@@ -15,6 +18,7 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   record: T;
   columns: ColDataCardDef<T>[];
   mutation: string;
+  deleteMutation?: string;
   isValidating: boolean;
   onSaveCallback: () => Promise<void>;
   mutationVariables?: (variables: { id: number; updates: Record<string, unknown> }) => { id: number; updates: Record<string, unknown> };
@@ -34,6 +38,7 @@ export default function RelatedRecordTableRow<
   record,
   columns,
   mutation,
+  deleteMutation,
   isValidating,
   onSaveCallback,
   mutationVariables,
@@ -42,7 +47,9 @@ export default function RelatedRecordTableRow<
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
   const [editColumn, setEditColumn] = useState<ColDataCardDef<T> | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { mutate, loading: isMutating } = useMutation(mutation);
+  const { mutate: deleteRecord } = useMutation(deleteMutation || "");
   const [query, typename] = useLookupQuery(
     editColumn?.editable && editColumn?.relationship
       ? editColumn.relationship
@@ -89,63 +96,106 @@ export default function RelatedRecordTableRow<
 
   const onCancel = () => setEditColumn(null);
 
+  const handleDelete = async () => {
+    if (!deleteMutation) return;
+    await deleteRecord({ id: Number(record.id) });
+    await onSaveCallback();
+    setShowDeleteModal(false);
+  };
+
   return (
-    <tr>
-      {columns.map((col) => {
-        const isEditingThisColumn = col.path === editColumn?.path;
+    <>
+      <tr>
+        {columns.map((col) => {
+          const isEditingThisColumn = col.path === editColumn?.path;
+          const isEditable = col.editable && 
+            (!col.editableCheck || col.editableCheck(record, currentUserEmail));
 
-        const isEditable = col.editable && 
-          (!col.editableCheck || col.editableCheck(record, currentUserEmail));
-
-
-        return (
-          <td
-            key={String(col.path)}
-            style={{
-              cursor: isEditable && !isEditingThisColumn ? "pointer" : "auto",
-              ...(col.style || {}),
-            }}
-            onClick={() => {
-              if (!isEditable) {
-                return;
-              }
-              if (!isEditingThisColumn) {
-                setEditColumn(col);
-              }
-            }}
-          >
-            {!isEditingThisColumn && renderColumnValue(record, col)}
-            {isEditingThisColumn && (
-              <>
-                {isLoadingLookups && <Spinner size="sm" />}
-                {!isLoadingLookups && (
-                  <DataCardInput
-                    initialValue={valueToString(
-                      getRecordValue(record, col, true),
-                      col
-                    )}
-                    onSave={(value: string) =>
-                      onSave(
-                        Number(record.id),
-                        handleFormValueOutput(
-                          value,
-                          !!col.relationship,
-                          col.inputType
-                        ),
-                        { type: col.label === "Note" ? "note" : "default" }
-                      )
-                    }
-                    onCancel={onCancel}
-                    inputType={col.inputType}
-                    selectOptions={selectOptions}
-                    isMutating={isMutating || isValidating}
-                  />
+          if (col.path === "actions") {
+            return (
+              <td key={String(col.path)} style={col.style}>
+                {record.user_email === currentUserEmail && (
+                  <Button
+                    variant="link"
+                    className="text-danger p-0"
+                    onClick={() => setShowDeleteModal(true)}
+                  >
+                    <FaTrash />
+                  </Button>
                 )}
-              </>
-            )}
-          </td>
-        );
-      })}
-    </tr>
+              </td>
+            );
+          }
+
+          return (
+            <td
+              key={String(col.path)}
+              style={{
+                cursor: isEditable && !isEditingThisColumn ? "pointer" : "auto",
+                ...(col.style || {}),
+              }}
+              onClick={() => {
+                if (!isEditable) {
+                  return;
+                }
+                if (!isEditingThisColumn) {
+                  setEditColumn(col);
+                }
+              }}
+            >
+              {!isEditingThisColumn && renderColumnValue(record, col)}
+              {isEditingThisColumn && (
+                <>
+                  {isLoadingLookups && <Spinner size="sm" />}
+                  {!isLoadingLookups && (
+                    <DataCardInput
+                      initialValue={valueToString(
+                        getRecordValue(record, col, true),
+                        col
+                      )}
+                      onSave={(value: string) =>
+                        onSave(
+                          Number(record.id),
+                          handleFormValueOutput(
+                            value,
+                            !!col.relationship,
+                            col.inputType
+                          ),
+                          { type: col.label === "Note" ? "note" : "default" }
+                        )
+                      }
+                      onCancel={onCancel}
+                      inputType={col.inputType}
+                      selectOptions={selectOptions}
+                      isMutating={isMutating || isValidating}
+                    />
+                  )}
+                </>
+              )}
+            </td>
+          );
+        })}
+      </tr>
+
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Note</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete this note?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+          <Button 
+            variant="danger" 
+            onClick={handleDelete}
+          >
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 }
