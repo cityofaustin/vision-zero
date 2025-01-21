@@ -14,9 +14,10 @@ export type InputType = "text" | "number" | "yes_no" | "select" | "textarea";
  */
 export interface ColDataCardDef<T extends Record<string, unknown>> {
   /**
-   * the dot-notated string path to accessing the property on the given type
+   * the dot-notated string path to accessing the property on the given type,
+   * or "actions" for special action buttons column
    */
-  path: Path<T>;
+  path: Path<T> | "actions";
   /**
    * label which will be rendered wherever this value is displayed in the app
    */
