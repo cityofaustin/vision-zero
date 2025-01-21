@@ -7,9 +7,17 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
   records: T[];
   columns: ColDataCardDef<T>[];
   mutation: string;
+  deleteMutation?: string;
   isValidating: boolean;
   title: string;
+  footer?: React.ReactNode;
   onSaveCallback: () => Promise<void>;
+  mutationVariables?: (variables: {
+    id: number;
+    updates: Record<string, unknown>;
+  }) => { id: number; updates: Record<string, unknown> };
+  currentUserEmail?: string;
+  quickEditColumn?: string;
 }
 
 /**
@@ -19,9 +27,14 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
   records,
   columns,
   mutation,
+  deleteMutation,
   isValidating,
   title,
+  footer,
   onSaveCallback,
+  mutationVariables,
+  currentUserEmail,
+  quickEditColumn,
 }: RelatedRecordTableProps<T>) {
   return (
     <Card>
@@ -53,12 +66,17 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
                   onSaveCallback={onSaveCallback}
                   record={record}
                   mutation={mutation}
+                  deleteMutation={deleteMutation}
+                  mutationVariables={mutationVariables}
+                  currentUserEmail={currentUserEmail}
+                  quickEditColumn={quickEditColumn}
                 />
               ))
             )}
           </tbody>
         </Table>
       </Card.Body>
+      {footer && <Card.Footer className="text-end">{footer}</Card.Footer>}
     </Card>
   );
 }

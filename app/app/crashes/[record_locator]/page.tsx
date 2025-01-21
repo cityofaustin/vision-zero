@@ -15,6 +15,7 @@ import CrashLocationBanner from "@/components/CrashLocationBanner";
 import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import DataCard from "@/components/DataCard";
+import NotesCard from "@/components/NotesCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
 import ChangeLog from "@/components/ChangeLog";
 import { crashDataCards } from "@/configs/crashDataCard";
@@ -184,6 +185,16 @@ export default function CrashDetailsPage({
             columns={chargeRelatedRecordCols}
             mutation={""}
             onSaveCallback={onSaveCallback}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12} className="mb-3">
+          <NotesCard
+            notes={crash.crash_notes || []}
+            onSaveCallback={onSaveCallback}
+            crashPk={crash.id}
+            refetch={refetch}
           />
         </Col>
       </Row>

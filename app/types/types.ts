@@ -3,7 +3,7 @@ import { Variables } from "graphql-request";
 import { Relationship } from "./relationships";
 import { Path } from "./utils";
 
-export type InputType = "text" | "number" | "yes_no" | "select";
+export type InputType = "text" | "number" | "yes_no" | "select" | "textarea";
 
 /**
  * Metadata for a database column referenced by our app — where
@@ -14,9 +14,10 @@ export type InputType = "text" | "number" | "yes_no" | "select";
  */
 export interface ColDataCardDef<T extends Record<string, unknown>> {
   /**
-   * the dot-notated string path to accessing the property on the given type
+   * the dot-notated string path to accessing the property on the given type,
+   * or "actions" for special action buttons column
    */
-  path: Path<T>;
+  path: Path<T> | "actions";
   /**
    * label which will be rendered wherever this value is displayed in the app
    */
@@ -25,6 +26,10 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    * If the column is editable
    */
   editable?: boolean;
+  /**
+   * Function to check if the column is editable based on the current user's email
+   */
+  editableCheck?: (record: T, currentUserEmail?: string) => boolean;
   /**
    * Determines the UI component that will be used to edit the column
    */
@@ -41,6 +46,7 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
     column: ColDataCardDef<T>
   ) => string;
   valueRenderer?: (record: T, column: ColDataCardDef<T>) => ReactNode;
+  style?: React.CSSProperties;
 }
 
 export interface MutationVariables extends Variables {

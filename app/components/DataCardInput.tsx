@@ -68,6 +68,15 @@ const DataCardInput = ({
             inputMode={inputType === "number" ? "numeric" : undefined}
           />
         )}
+        {inputType === "textarea" && (
+          <Form.Control
+            autoFocus
+            size="sm"
+            as="textarea"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+          />
+        )}
         {inputType === "select" && selectOptions && (
           <Form.Select
             autoFocus
