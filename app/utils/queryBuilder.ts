@@ -14,9 +14,8 @@ import { ColDataCardDef } from "@/types/types";
 
 const BASE_QUERY_STRING = `
     query $queryName {
-        $tableName(limit: $limit, offset: $offset, order_by: $orderBy where: $where) {
-            $columns
-        }
+        $tableName(limit: $limit, offset: $offset, order_by: $orderBy where: $where) 
+        $columns
         $tableName_aggregate(where: $where) {
             aggregate {
                 count
@@ -131,6 +130,58 @@ const getWhereExp = (filterGroups: FilterGroup[]): string => {
 };
 
 /**
+ * Given an array of column paths, construct the Hasura
+ * graphql query column string by nesting fields from
+ * related objects
+ */
+// const getColumns = (columnPaths: string[]): string => {
+//   const keys = { _root: [] };
+//   const stu = ["home", "colors.green", "colors.blue", "colors.red.brick"];
+//   const dave = gql`
+//     {
+//       home
+//       colors {
+//         green
+//         red {
+//           brick
+//         }
+//         blue
+//       }
+//     }
+//   `;
+//   debugger;
+//   return "hello";
+// };
+
+type GraphQLTree = {
+  [key: string]: GraphQLTree;
+};
+
+// Recursively stringify graphql tree of columns
+function stringify(tree: GraphQLTree): string {
+  const fields = Object.keys(tree).map((key) => {
+    const value = tree[key];
+    const isEmpty = Object.keys(value).length === 0;
+    return isEmpty ? key : `${key} ${stringify(value)}`;
+  });
+  return `{ ${fields.join(" ")} }`;
+}
+
+const getColumns = (paths: string[]): string => {
+  throw "Actually we don't think this is necessary?";
+  // Build the tree structure
+  const tree: GraphQLTree = {};
+  paths.forEach((path) => {
+    let current = tree;
+    path.split(".").forEach((part) => {
+      if (!current[part]) current[part] = {};
+      current = current[part];
+    });
+  });
+  return stringify(tree);
+};
+
+/**
  * Build a graphql query from the query config
  *
  * returns something like this:
@@ -164,8 +215,10 @@ const buildQuery = <T extends Record<string, unknown>>(
     searchFilter,
   } = queryConfig;
 
-  const columnString = columns.map((col) => col.path).join("\n");
- 
+  const columnString = getColumns(columns.map((col) => col.path));
+
+  console.log("COLUMNSTRING", columnString);
+
   /**
    * Collect all filters into one big FilterGroup
    */
