@@ -12,7 +12,10 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
   title: string;
   footer?: React.ReactNode;
   onSaveCallback: () => Promise<void>;
-  mutationVariables?: (variables: { id: number; updates: Record<string, unknown> }) => { id: number; updates: Record<string, unknown> };
+  mutationVariables?: (variables: {
+    id: number;
+    updates: Record<string, unknown>;
+  }) => { id: number; updates: Record<string, unknown> };
   currentUserEmail?: string;
   quickEditColumn?: string;
 }
@@ -72,9 +75,8 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
             )}
           </tbody>
         </Table>
-
       </Card.Body>
-        {footer && <Card.Footer className="text-end">{footer}</Card.Footer>}
+      {footer && <Card.Footer className="text-end">{footer}</Card.Footer>}
     </Card>
   );
 }

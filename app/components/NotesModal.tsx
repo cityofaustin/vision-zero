@@ -18,9 +18,19 @@ interface NoteFormInputs {
   text: string;
 }
 
-export default function NotesModal({ show, onClose, onSubmitCallback, crashPk }: NotesModalProps) {
+export default function NotesModal({
+  show,
+  onClose,
+  onSubmitCallback,
+  crashPk,
+}: NotesModalProps) {
   const { user } = useAuth0();
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<NoteFormInputs>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<NoteFormInputs>();
   const { mutate, loading: isSubmitting } = useMutation(INSERT_CRASH_NOTE);
 
   const onSubmit: SubmitHandler<NoteFormInputs> = async (data) => {
@@ -67,11 +77,16 @@ export default function NotesModal({ show, onClose, onSubmitCallback, crashPk }:
           <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-          <Button variant="primary" type="submit" form="noteForm" disabled={isSubmitting}>
+          <Button
+            variant="primary"
+            type="submit"
+            form="noteForm"
+            disabled={isSubmitting}
+          >
             Save Note
           </Button>
         </Modal.Footer>
       </Form>
     </Modal>
   );
-} 
+}

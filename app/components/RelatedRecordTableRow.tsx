@@ -21,7 +21,10 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   deleteMutation?: string;
   isValidating: boolean;
   onSaveCallback: () => Promise<void>;
-  mutationVariables?: (variables: { id: number; updates: Record<string, unknown> }) => { id: number; updates: Record<string, unknown> };
+  mutationVariables?: (variables: {
+    id: number;
+    updates: Record<string, unknown>;
+  }) => { id: number; updates: Record<string, unknown> };
   currentUserEmail?: string;
   quickEditColumn?: string;
 }
@@ -34,7 +37,7 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
  * two is row vs column layout 🤔
  */
 export default function RelatedRecordTableRow<
-  T extends Record<string, unknown>
+  T extends Record<string, unknown>,
 >({
   record,
   columns,
@@ -66,8 +69,8 @@ export default function RelatedRecordTableRow<
     });
 
   const onSave = async (
-    recordId: number, 
-    value: unknown, 
+    recordId: number,
+    value: unknown,
     context?: { type: string; [key: string]: unknown }
   ) => {
     if (!editColumn) {
@@ -84,10 +87,13 @@ export default function RelatedRecordTableRow<
       updates: {
         [saveColumnName]: value,
       },
-    }; 
+    };
 
     if (context?.type === "note") {
-      await mutate(mutationVariables ? mutationVariables(variables) : variables, { skip_updated_by_setter: true });
+      await mutate(
+        mutationVariables ? mutationVariables(variables) : variables,
+        { skip_updated_by_setter: true }
+      );
     } else {
       await mutate(variables);
     }
@@ -110,7 +116,8 @@ export default function RelatedRecordTableRow<
       <tr>
         {columns.map((col) => {
           const isEditingThisColumn = col.path === editColumn?.path;
-          const isEditable = col.editable && 
+          const isEditable =
+            col.editable &&
             (!col.editableCheck || col.editableCheck(record, currentUserEmail));
 
           if (col.path === "actions") {
@@ -122,7 +129,9 @@ export default function RelatedRecordTableRow<
                       variant="link"
                       className="text-primary p-0 me-2"
                       onClick={() => {
-                        const editableColumn = columns.find(c => c.path === quickEditColumn);
+                        const editableColumn = columns.find(
+                          (c) => c.path === quickEditColumn
+                        );
                         if (editableColumn) {
                           setEditColumn(editableColumn);
                         }
@@ -197,17 +206,12 @@ export default function RelatedRecordTableRow<
         <Modal.Header closeButton>
           <Modal.Title>Delete Note</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          Are you sure you want to delete this note?
-        </Modal.Body>
+        <Modal.Body>Are you sure you want to delete this note?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
             Cancel
           </Button>
-          <Button 
-            variant="danger" 
-            onClick={handleDelete}
-          >
+          <Button variant="danger" onClick={handleDelete}>
             Delete
           </Button>
         </Modal.Footer>
