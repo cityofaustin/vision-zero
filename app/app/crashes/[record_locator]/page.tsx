@@ -60,8 +60,6 @@ export default function CrashDetailsPage({
 
   const crash = data[0];
 
-  console.log("crash data:", crash);
-
   return (
     <>
       <AppBreadCrumb />

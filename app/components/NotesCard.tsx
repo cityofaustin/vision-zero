@@ -4,25 +4,11 @@ import { useState } from "react";
 import { CrashNote } from "@/types/crashNote";
 import { FaCirclePlus } from "react-icons/fa6";
 import NotesModal from "./NotesModal";
-import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/notes";
+import { UPDATE_CRASH_NOTE } from "@/queries/notes";
 import RelatedRecordTable from "./RelatedRecordTable";
 import { ColDataCardDef } from "@/types/types";
 import { useAuth0 } from "@auth0/auth0-react";
-import { gql } from "graphql-request";
 import { formatDate } from "@/utils/formatters";
-
-// ✅ A new "Notes" card on the crash details page with a table that displays notes
-// ✅ Ability to add a new note via modal
-// Ability to add a new note inline
-// Ability to edit an existing note by clicking on the note text
-// ✅ And show the save/cancel buttons in the card footer while editing. Save should be disabled unless the note value has changed 
-
-// additional self imposed requirements:
-// ✅ - react-hook-form? 
-// ✅ - col width should be tidy
-// ✅ - empty state
-// ✅ - format datetime
-
 
 interface NotesCardProps {
   notes: CrashNote[];
@@ -68,7 +54,6 @@ const AddNoteButton = (handleShow: () => void) => {
 const NotesCard = ({ notes, crashPk, refetch, onSaveCallback }: NotesCardProps) => {
   const [showModal, setShowModal] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
-  const { user } = useAuth0();
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
