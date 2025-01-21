@@ -1,9 +1,14 @@
-DROP FUNCTION public.afd_incidents_trigger ();
+drop trigger if exists afd_incidents_trigger_insert on public.afd__incidents;
 
-CREATE OR REPLACE FUNCTION public.afd_incidents_trigger()
-RETURNS trigger
-LANGUAGE plpgsql
-AS $function$
+drop trigger if exists afd_incidents_trigger_update on public.afd__incidents;
+
+
+drop function public.afd_incidents_trigger ();
+
+create or replace function public.afd_incidents_trigger()
+returns trigger
+language plpgsql
+as $function$
 BEGIN
   update afd__incidents set
     austin_full_purpose = (
@@ -31,3 +36,35 @@ BEGIN
 RETURN NEW;
 END;
 $function$;
+
+
+create trigger afd_incidents_trigger_insert after
+insert
+on
+public.afd__incidents for each row execute function afd_incidents_trigger();
+
+
+create trigger afd_incidents_trigger_update after
+update
+on
+public.afd__incidents for each row
+when (
+    (
+        false
+        or (
+            old.geometry is distinct
+            from
+            new.geometry
+        )
+        or (
+            old.ems_incident_numbers is distinct
+            from
+            new.ems_incident_numbers
+        )
+        or (
+            old.call_datetime is distinct
+            from
+            new.call_datetime
+        )
+    )
+) execute function afd_incidents_trigger();
