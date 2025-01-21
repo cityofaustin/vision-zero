@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import DataCardInput from "./DataCardInput";
 import { useMutation, useQuery, useLookupQuery } from "@/utils/graphql";
-import { FaTrash } from "react-icons/fa6";
+import { FaTrash, FaPencil } from "react-icons/fa6";
 import {
   getRecordValue,
   renderColumnValue,
@@ -23,6 +23,7 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   onSaveCallback: () => Promise<void>;
   mutationVariables?: (variables: { id: number; updates: Record<string, unknown> }) => { id: number; updates: Record<string, unknown> };
   currentUserEmail?: string;
+  quickEditColumn?: string;
 }
 
 /**
@@ -43,6 +44,7 @@ export default function RelatedRecordTableRow<
   onSaveCallback,
   mutationVariables,
   currentUserEmail,
+  quickEditColumn,
 }: RelatedRecordTableRowProps<T>) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
@@ -114,14 +116,28 @@ export default function RelatedRecordTableRow<
           if (col.path === "actions") {
             return (
               <td key={String(col.path)} style={col.style}>
-                {record.user_email === currentUserEmail && (
-                  <Button
-                    variant="link"
-                    className="text-danger p-0"
-                    onClick={() => setShowDeleteModal(true)}
-                  >
-                    <FaTrash />
-                  </Button>
+                {record.user_email === currentUserEmail && !editColumn && (
+                  <div className="d-flex">
+                    <Button
+                      variant="link"
+                      className="text-primary p-0 me-2"
+                      onClick={() => {
+                        const editableColumn = columns.find(c => c.path === quickEditColumn);
+                        if (editableColumn) {
+                          setEditColumn(editableColumn);
+                        }
+                      }}
+                    >
+                      <FaPencil />
+                    </Button>
+                    <Button
+                      variant="link"
+                      className="text-danger p-0"
+                      onClick={() => setShowDeleteModal(true)}
+                    >
+                      <FaTrash />
+                    </Button>
+                  </div>
                 )}
               </td>
             );

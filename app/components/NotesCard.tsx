@@ -87,6 +87,7 @@ const NotesCard = ({ notes, crashPk, onSaveCallback }: NotesCardProps) => {
         onSaveCallback={onSaveCallback}
         footer={AddNoteButton(handleShow)}
         currentUserEmail={user?.email}
+        quickEditColumn="text"
       />
 
       <NotesModal

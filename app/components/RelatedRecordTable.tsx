@@ -14,6 +14,7 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
   onSaveCallback: () => Promise<void>;
   mutationVariables?: (variables: { id: number; updates: Record<string, unknown> }) => { id: number; updates: Record<string, unknown> };
   currentUserEmail?: string;
+  quickEditColumn?: string;
 }
 
 /**
@@ -30,6 +31,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
   onSaveCallback,
   mutationVariables,
   currentUserEmail,
+  quickEditColumn,
 }: RelatedRecordTableProps<T>) {
   return (
     <Card>
@@ -64,6 +66,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
                   deleteMutation={deleteMutation}
                   mutationVariables={mutationVariables}
                   currentUserEmail={currentUserEmail}
+                  quickEditColumn={quickEditColumn}
                 />
               ))
             )}
