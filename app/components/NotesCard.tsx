@@ -7,6 +7,7 @@ import { UPDATE_CRASH_NOTE } from "@/queries/notes";
 import RelatedRecordTable from "./RelatedRecordTable";
 import { ColDataCardDef } from "@/types/types";
 import { formatDate } from "@/utils/formatters";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface NotesCardProps {
   notes: CrashNote[];
@@ -31,6 +32,8 @@ const notesColumns: ColDataCardDef<CrashNote>[] = [
     path: "text",
     label: "Note",
     editable: true,
+    editableCheck: (record: CrashNote, currentUserEmail?: string) => 
+      record.user_email === currentUserEmail,
     inputType: "textarea",
     style: { minWidth: "350px" },
   },
@@ -50,6 +53,7 @@ const AddNoteButton = (handleShow: () => void) => {
 };
 
 const NotesCard = ({ notes, crashPk, onSaveCallback }: NotesCardProps) => {
+  const { user } = useAuth0();
   const [showModal, setShowModal] = useState(false);
   const [isValidating] = useState(false);
   const handleClose = () => setShowModal(false);
@@ -75,6 +79,7 @@ const NotesCard = ({ notes, crashPk, onSaveCallback }: NotesCardProps) => {
         title="Notes"
         onSaveCallback={onSaveCallback}
         footer={AddNoteButton(handleShow)}
+        currentUserEmail={user?.email}
       />
 
       <NotesModal

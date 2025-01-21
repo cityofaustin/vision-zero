@@ -26,6 +26,10 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    */
   editable?: boolean;
   /**
+   * Function to check if the column is editable based on the current user's email
+   */
+  editableCheck?: (record: T, currentUserEmail?: string) => boolean;
+  /**
    * Determines the UI component that will be used to edit the column
    */
   inputType?: InputType;

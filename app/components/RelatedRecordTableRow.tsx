@@ -18,6 +18,7 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   isValidating: boolean;
   onSaveCallback: () => Promise<void>;
   mutationVariables?: (variables: { id: number; updates: Record<string, unknown> }) => { id: number; updates: Record<string, unknown> };
+  currentUserEmail?: string;
 }
 
 /**
@@ -36,6 +37,7 @@ export default function RelatedRecordTableRow<
   isValidating,
   onSaveCallback,
   mutationVariables,
+  currentUserEmail,
 }: RelatedRecordTableRowProps<T>) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
@@ -91,15 +93,20 @@ export default function RelatedRecordTableRow<
     <tr>
       {columns.map((col) => {
         const isEditingThisColumn = col.path === editColumn?.path;
+
+        const isEditable = col.editable && 
+          (!col.editableCheck || col.editableCheck(record, currentUserEmail));
+
+
         return (
           <td
             key={String(col.path)}
             style={{
-              cursor: col.editable && !isEditingThisColumn ? "pointer" : "auto",
+              cursor: isEditable && !isEditingThisColumn ? "pointer" : "auto",
               ...(col.style || {}),
             }}
             onClick={() => {
-              if (!col.editable) {
+              if (!isEditable) {
                 return;
               }
               if (!isEditingThisColumn) {
