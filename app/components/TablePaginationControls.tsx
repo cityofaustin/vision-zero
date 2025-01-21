@@ -6,13 +6,16 @@ import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/utils/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaCircleArrowRight, FaCircleArrowLeft } from "react-icons/fa6";
+import { FaAngleLeft, FaAngleRight, FaDownload } from "react-icons/fa6";
 
 interface PaginationControlProps {
   queryConfig: QueryConfig;
   setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
   recordCount: number;
+  totalRecordCount: number;
   isLoading: boolean;
+  onClickDownload: () => void;
+  exportable: boolean;
 }
 
 /**
@@ -23,16 +26,48 @@ export default function TablePaginationControls({
   queryConfig,
   setQueryConfig,
   recordCount,
+  totalRecordCount,
   isLoading,
+  onClickDownload,
+  exportable,
 }: PaginationControlProps) {
   const currentPageNum = queryConfig.offset / queryConfig.limit + 1;
+
+  const pageLeftButtonDisabled =
+    recordCount === 0 || queryConfig.offset === 0 || isLoading;
+  const pageRightButtonDisabled = recordCount < queryConfig.limit || isLoading;
+
   return (
     <ButtonToolbar>
-      <ButtonGroup className="me-2" aria-label="Date filter preset buttons">
+      <div className="text-nowrap text-secondary d-flex align-items-center me-2">
+        {totalRecordCount > 0 && (
+          <>
+            <span className="me-2">{`${totalRecordCount.toLocaleString()} record${
+              totalRecordCount === 1 ? "" : "s"
+            }`}</span>
+            {exportable && (
+              <Button
+                variant="outline-primary"
+                className="border-0"
+                onClick={onClickDownload}
+              >
+                <AlignedLabel>
+                  <FaDownload className="me-2" />
+                  <span>Download</span>
+                </AlignedLabel>
+              </Button>
+            )}
+          </>
+        )}
+        {totalRecordCount <= 0 && <span>No results</span>}
+      </div>
+      <ButtonGroup className="me-2" aria-label="Table pagniation controls">
         <Button
-          variant="outline-primary"
-          style={{ border: "none" }}
-          disabled={recordCount === 0 || queryConfig.offset === 0 || isLoading}
+          variant={
+            pageLeftButtonDisabled ? "outline-secondary" : "outline-primary"
+          }
+          className="border-0"
+          disabled={pageLeftButtonDisabled}
           onClick={() => {
             const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
               newQueryConfig.offset =
@@ -46,21 +81,20 @@ export default function TablePaginationControls({
             setQueryConfig(newQueryConfig);
           }}
         >
-          <AlignedLabel>
-            <FaCircleArrowLeft />
-            <span className="ms-2">Prev</span>
-          </AlignedLabel>
+          <FaAngleLeft />
         </Button>
-        <Button
-          variant="outline-primary"
-          style={{ border: "none", pointerEvents: "none" }}
+        <span
+          aria-label="Current page number"
+          className="btn text-secondary mx-2 text-nowrap border-0"
         >
-          <span className="mx-2 text-nowrap">{`Page ${currentPageNum}`}</span>
-        </Button>
+          {`Page ${currentPageNum}`}
+        </span>
         <Button
-          variant="outline-primary"
-          style={{ border: "none" }}
-          disabled={recordCount < queryConfig.limit || isLoading}
+          variant={
+            pageRightButtonDisabled ? "outline-secondary" : "outline-primary"
+          }
+          className="border-0"
+          disabled={pageRightButtonDisabled}
           onClick={() => {
             const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
               newQueryConfig.offset =
@@ -70,10 +104,7 @@ export default function TablePaginationControls({
             setQueryConfig(newQueryConfig);
           }}
         >
-          <AlignedLabel>
-            <span className="me-2">Next</span>
-            <FaCircleArrowRight />
-          </AlignedLabel>
+          <FaAngleRight />
         </Button>
       </ButtonGroup>
     </ButtonToolbar>

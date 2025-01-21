@@ -46,6 +46,8 @@ const locationsListViewFiltercards: FilterGroup[] = [
 
 export const locationsListViewQueryConfig: QueryConfig = {
   columns,
+  exportable: true,
+  exportFilename: "locations",
   tableName: "locations_list_view",
   limit: DEFAULT_QUERY_LIMIT,
   offset: 0,

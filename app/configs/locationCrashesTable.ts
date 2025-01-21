@@ -50,6 +50,8 @@ const locationCrashesFiltercards: FilterGroup[] = [
 
 export const locationCrashesQueryConfig: QueryConfig = {
   columns,
+  exportable: true,
+  exportFilename: "location-crashes",
   tableName: "location_crashes_view",
   limit: DEFAULT_QUERY_LIMIT,
   offset: 0,

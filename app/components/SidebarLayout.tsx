@@ -14,7 +14,6 @@ import {
   FaAngleRight,
   FaUserGroup,
   FaCloudArrowUp,
-  FaFileCirclePlus,
 } from "react-icons/fa6";
 import AppNavBar from "./AppNavBar";
 import SideBarListItem from "./SideBarListItem";
@@ -33,14 +32,14 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
 
   const toggleSidebar = useCallback(
     () =>
-      setIsCollapsed((prevSate) => {
-        localStorage.setItem(localStorageKey, String(!prevSate));
-        return !prevSate;
+      setIsCollapsed((prevState) => {
+        localStorage.setItem(localStorageKey, String(!prevState));
+        return !prevState;
       }),
     []
   );
 
-  /** Check local storage for initialsidebar state */
+  /** Check local storage for initial sidebar state */
   useEffect(() => {
     const collapsedFromStorage =
       localStorage.getItem(localStorageKey) === "true";
@@ -116,13 +115,6 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
                 Icon={FaLocationDot}
                 label="Locations"
                 href="/locations"
-              />
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("create-crash-record")}
-                Icon={FaFileCirclePlus}
-                label="Create crash"
-                href="/create-crash-record"
               />
               <SideBarListItem
                 isCollapsed={isCollapsed}

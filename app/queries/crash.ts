@@ -28,6 +28,10 @@ export const GET_CRASH = gql`
         label
       }
       light_cond_id
+      light_cond {
+        id
+        label
+      }
       wthr_cond_id
       obj_struck {
         id
@@ -41,7 +45,15 @@ export const GET_CRASH = gql`
       rpt_street_name
       rpt_street_desc
       rpt_road_part_id
+      road_part {
+        id
+        label
+      }
       rpt_rdwy_sys_id
+      rwy_sys {
+        id
+        label
+      }
       rpt_hwy_num
       rpt_street_pfx
       rpt_street_name
@@ -51,7 +63,15 @@ export const GET_CRASH = gql`
       rpt_sec_street_name
       rpt_sec_street_desc
       rpt_sec_road_part_id
+      road_part_sec {
+        id
+        label
+      }
       rpt_sec_rdwy_sys_id
+      rwy_sys_sec {
+        id
+        label
+      }
       rpt_sec_hwy_num
       rpt_sec_street_pfx
       rpt_sec_street_sfx

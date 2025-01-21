@@ -26,6 +26,7 @@ export type Crash = {
   latitude: number | null;
   law_enforcement_ytd_fatality_num: string | null;
   light_cond_id: number | null;
+  light_cond: LookupTableOption | null;
   location_id: string | null;
   longitude: number | null;
   obj_struck_id: number | null;
@@ -40,11 +41,15 @@ export type Crash = {
   city: LookupTableOption | null;
   rpt_hwy_num: string | null;
   rpt_rdwy_sys_id: number | null;
+  rwy_sys: LookupTableOption | null;
   rpt_road_part_id: number | null;
+  road_part: LookupTableOption | null;
   rpt_sec_block_num: string | null;
   rpt_sec_hwy_num: string | null;
   rpt_sec_rdwy_sys_id: number | null;
+  rwy_sys_sec: LookupTableOption | null;
   rpt_sec_road_part_id: number | null;
+  road_part_sec: LookupTableOption | null;
   rpt_sec_street_desc: string | null;
   rpt_sec_street_name: string | null;
   rpt_sec_street_pfx: string | null;

@@ -1,12 +1,18 @@
 import { useMemo } from "react";
 import { gql } from "graphql-request";
-
+import { produce } from "immer";
+import { MAX_RECORD_EXPORT_LIMIT } from "./constants";
 // todo: test quote escape
 
 const BASE_QUERY_STRING = `
     query $queryName {
         $tableName(limit: $limit, offset: $offset, order_by: $orderBy where: $where) {
             $columns
+        }
+        $tableName_aggregate(where: $where) {
+            aggregate {
+                count
+            }
         }
     }`;
 
@@ -176,6 +182,15 @@ export interface QueryConfig {
    * managed by the advanced filter component
    */
   filterCards: FilterGroup[];
+  /**
+   * Enables the export functionality
+   */
+  exportable?: boolean;
+  /**
+   * The name that will be given to the exported file, excluding
+   * the file extension
+   */
+  exportFilename?: string;
 }
 
 /**
@@ -385,12 +400,12 @@ const buildQuery = (
     "$queryName",
     "BuildQuery_" + tableName
   )
-    .replace("$tableName", tableName)
+    .replaceAll("$tableName", tableName)
     .replace("$limit", String(limit))
     .replace("$offset", String(offset))
     .replace("$orderBy", getOrderByExp(sortColName, sortAsc))
     .replace("$columns", columnString)
-    .replace("$where", where);
+    .replaceAll("$where", where);
   return gql`
     ${queryString}
   `;
@@ -411,4 +426,24 @@ export const useQueryBuilder = (
 ): string =>
   useMemo(() => {
     return buildQuery(queryConfig, contextFilters);
+
   }, [queryConfig, contextFilters]);
+
+/**
+ * Hook which builds a graphql query for record exporting
+ */
+export const useExportQuery = <T extends Record<string, unknown>>(
+  queryConfig: QueryConfig,
+  contextFilters?: Filter[]
+): string => {
+  const newQueryConfig = useMemo(() => {
+    // update the provided query with export settings
+    return produce(queryConfig, (newQueryConfig) => {
+      // reset limit and offset
+      newQueryConfig.limit = MAX_RECORD_EXPORT_LIMIT;
+      newQueryConfig.offset = 0;
+      return newQueryConfig;
+    });
+  }, [queryConfig]);
+  return useQueryBuilder(newQueryConfig, contextFilters);
+};

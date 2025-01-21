@@ -45,6 +45,18 @@ object_relationships:
         table:
           name: recommendations
           schema: public
+  - name: road_part
+    using:
+      foreign_key_constraint_on: rpt_road_part_id
+  - name: road_part_sec
+    using:
+      foreign_key_constraint_on: rpt_sec_road_part_id
+  - name: rwy_sys
+    using:
+      foreign_key_constraint_on: rpt_rdwy_sys_id
+  - name: rwy_sys_sec
+    using:
+      foreign_key_constraint_on: rpt_sec_rdwy_sys_id
   - name: traffic_cntl
     using:
       foreign_key_constraint_on: traffic_cntl_id
@@ -165,6 +177,7 @@ select_permissions:
         - updated_by
         - wthr_cond_id
       filter: {}
+      allow_aggregations: true
     comment: ""
   - role: readonly
     permission:
@@ -254,6 +267,7 @@ select_permissions:
         - updated_at
         - position
       filter: {}
+      allow_aggregations: true
     comment: ""
   - role: vz-admin
     permission:
@@ -342,6 +356,7 @@ select_permissions:
         - updated_at
         - position
       filter: {}
+      allow_aggregations: true
     comment: ""
 update_permissions:
   - role: editor
