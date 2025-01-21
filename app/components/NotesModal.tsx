@@ -1,7 +1,7 @@
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { CrashNote } from "@/types/crashNote";
 import { INSERT_CRASH_NOTE } from "@/queries/notes";
 import { useMutation } from "@/utils/graphql";
@@ -14,12 +14,16 @@ interface NotesModalProps {
   crashPk?: number;
 }
 
+interface NoteFormInputs {
+  text: string;
+}
+
 export default function NotesModal({ show, onClose, onSubmitCallback, crashPk }: NotesModalProps) {
   const { user } = useAuth0();
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<NoteFormInputs>();
   const { mutate, loading: isSubmitting } = useMutation(INSERT_CRASH_NOTE);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit: SubmitHandler<NoteFormInputs> = async (data) => {
     const noteData = {
       ...data,
       crashPk: crashPk,
@@ -27,7 +31,7 @@ export default function NotesModal({ show, onClose, onSubmitCallback, crashPk }:
     };
     const responseData = await mutate<{
       insert_crash_notes_one: { returning: CrashNote };
-    }>( noteData );
+    }>(noteData);
     if (responseData && responseData.insert_crash_notes_one) {
       onSubmitCallback(responseData.insert_crash_notes_one.returning);
     }

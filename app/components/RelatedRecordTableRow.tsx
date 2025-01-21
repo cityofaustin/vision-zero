@@ -57,7 +57,7 @@ export default function RelatedRecordTableRow<
   const onSave = async (
     recordId: number, 
     value: unknown, 
-    context?: { type: string; [key: string]: any }
+    context?: { type: string; [key: string]: unknown }
   ) => {
     if (!editColumn) {
       // not possible

@@ -1,4 +1,3 @@
-import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import { useState } from "react";
 import { CrashNote } from "@/types/crashNote";
@@ -7,14 +6,13 @@ import NotesModal from "./NotesModal";
 import { UPDATE_CRASH_NOTE } from "@/queries/notes";
 import RelatedRecordTable from "./RelatedRecordTable";
 import { ColDataCardDef } from "@/types/types";
-import { useAuth0 } from "@auth0/auth0-react";
 import { formatDate } from "@/utils/formatters";
 
 interface NotesCardProps {
   notes: CrashNote[];
   crashPk: number;
   onSaveCallback: () => Promise<void>;
-  refetch: () => Promise<any>;
+  refetch: () => Promise<void>;
 }
 
 const notesColumns: ColDataCardDef<CrashNote>[] = [
@@ -51,13 +49,13 @@ const AddNoteButton = (handleShow: () => void) => {
   );
 };
 
-const NotesCard = ({ notes, crashPk, refetch, onSaveCallback }: NotesCardProps) => {
+const NotesCard = ({ notes, crashPk, onSaveCallback }: NotesCardProps) => {
   const [showModal, setShowModal] = useState(false);
-  const [isValidating, setIsValidating] = useState(false);
+  const [isValidating] = useState(false);
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
-  const handleSaveNote = async (data: CrashNote) => {
+  const handleSaveNote = async () => {
     await onSaveCallback();
   };
 
