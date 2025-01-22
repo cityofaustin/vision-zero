@@ -71,9 +71,11 @@ npm run dev
     - Edit recommendation
   - Related records - units: click field to edit it
   - Related records - charges
-  - Change log: change log works normally with details modal. But it is not collapseable (yet).
+  - Related records - people
+      - name edit component
+  - Change log: change log works normally with details modal. But it is not collapsible (yet).
 - Sidebar
-  - is exapandable and open/closed state is preserved in localstorage
+  - is expandable and open/closed state is preserved in localstorage
 - Locations list
   - filter using search input and selecting a field to search on
   - reset filters
@@ -107,8 +109,6 @@ npm run dev
 - crash details
   - crash injury widgets
   - swap addresses
-    - Related records - people
-      - name edit component
   - notes
   - misc column editing + placement
   - Crash map: show coordinates and enable editing by tying into input
