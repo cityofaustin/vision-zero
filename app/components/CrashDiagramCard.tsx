@@ -127,7 +127,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const zoomToImage = () => {
     if (transformComponentRef.current) {
       const { zoomToElement } = transformComponentRef.current;
-      zoomToElement("crashDiagramImage");
+      zoomToElement("crashDiagramImage", undefined, 1);
     }
   };
 
