@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
@@ -14,6 +14,7 @@ import { SlActionUndo } from "react-icons/sl";
 import {
   TransformWrapper,
   TransformComponent,
+  ReactZoomPanPinchRef,
   useControls,
 } from "react-zoom-pan-pinch";
 import { Crash } from "@/types/crashes";
@@ -118,6 +119,15 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [diagramError, setDiagramError] = useState(false);
   const [rotation, setRotation] = useState(0);
 
+  const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
+
+  const zoomToImage = () => {
+    if (transformComponentRef.current) {
+      const { zoomToElement } = transformComponentRef.current;
+      zoomToElement("crashDiagramImage");
+    }
+  };
+
   return (
     <Card>
       <Card.Header>Diagram</Card.Header>
@@ -128,9 +138,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             minScale={0.5}
             centerZoomedOut={true}
             centerOnInit={true}
-            onInit={() => {
-              console.log("onInit");
-            }}
+            ref={transformComponentRef}
             wheel={{ activationKeys: [] }}
           >
             <ZoomResetControls setRotation={setRotation} />
@@ -140,6 +148,11 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
                 style={{ transform: `rotate(${rotation}deg)` }}
                 src={`${CR3_DIAGRAM_BASE_URL}/${crash.record_locator}.jpeg`}
                 alt="crash diagram"
+                id="crashDiagramImage"
+                onLoad={() => {
+                  console.log("Image loaded and rendered");
+                  zoomToImage();
+                }}
                 onError={() => {
                   console.error("Error loading CR3 diagram image");
                   setDiagramError(true);
@@ -148,7 +161,6 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             </TransformComponent>
           </TransformWrapper>
         )}
-
         {diagramError && crash.is_temp_record && (
           <DiagramAlert
             variant="info"
