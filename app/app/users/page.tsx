@@ -15,7 +15,7 @@ import { useUsersInfinite } from "@/utils/users";
 import { User } from "@/types/users";
 import { useToken, formatRoleName } from "@/utils/auth";
 
-const allowedRoles = ["vz-admin"];
+const allowedCreateUserRoles = ["vz-admin"];
 
 export default function Users() {
   const token = useToken();
@@ -48,7 +48,7 @@ export default function Users() {
           <div className="mb-3 d-flex align-items-center">
             {!isLoading && (
               <>
-                <PermissionsRequired allowedRoles={allowedRoles}>
+                <PermissionsRequired allowedRoles={allowedCreateUserRoles}>
                   <Button
                     className="me-2"
                     onClick={() => setShowNewUserModal(true)}

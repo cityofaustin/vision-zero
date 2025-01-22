@@ -17,7 +17,7 @@ import { useUser } from "@/utils/users";
 import { User } from "@/types/users";
 import { formatDateTime } from "@/utils/formatters";
 
-const allowedRoles = ["vz-admin"];
+const allowedUserEditRoles = ["vz-admin"];
 
 type UserColumn = {
   name: keyof User;
@@ -119,7 +119,7 @@ export default function UserDetails({
               {!user && <Spinner variant="primary" />}
               <div className="mb-3">
                 {user && (
-                  <PermissionsRequired allowedRoles={allowedRoles}>
+                  <PermissionsRequired allowedRoles={allowedUserEditRoles}>
                     <Button
                       className="me-2"
                       onClick={() => setShowEditUserModal(true)}

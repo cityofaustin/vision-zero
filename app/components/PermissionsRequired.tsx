@@ -9,7 +9,7 @@ interface PermissionsRequiredProps {
 
 /**
  * Component wrapper that renders `null` if the user does not have one of the
- * allwed roles. If the allowedRoles array is undefined then the permission
+ * allowed roles. If the allowedRoles array is undefined then the permission
  * check is skipped
  */
 export default function PermissionsRequired({

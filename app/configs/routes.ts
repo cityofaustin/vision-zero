@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa6";
 import { IconType } from "react-icons";
 
-type Route = {
+interface Route {
   path: string;
   label: string;
   icon: IconType;
