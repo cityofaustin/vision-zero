@@ -123,7 +123,16 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
       <Card.Header>Diagram</Card.Header>
       <Card.Body className="crash-header-card-body text-center d-flex flex-column">
         {!diagramError && (
-          <TransformWrapper initialScale={1} minScale={0.5}>
+          <TransformWrapper
+            initialScale={1}
+            minScale={0.5}
+            centerZoomedOut={true}
+            centerOnInit={true}
+            onInit={() => {
+              console.log("onInit");
+            }}
+            wheel={{ activationKeys: [] }}
+          >
             <ZoomResetControls setRotation={setRotation} />
             <TransformComponent>
               <Image
