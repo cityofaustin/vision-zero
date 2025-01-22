@@ -1,5 +1,5 @@
 "use client";
-import { useCallback } from "react";
+import { useCallback, use } from "react";
 import { notFound } from "next/navigation";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -27,11 +27,12 @@ import CrashSwapAddressButton from "@/components/CrashSwapAddressButton";
 
 const typename = "crashes";
 
-export default function CrashDetailsPage({
-  params,
-}: {
-  params: { record_locator: string };
-}) {
+export default function CrashDetailsPage(
+  props: {
+    params: Promise<{ record_locator: string }>;
+  }
+) {
+  const params = use(props.params);
   const recordLocator = params.record_locator;
 
   const { data, error, refetch, isValidating } = useQuery<Crash>({
