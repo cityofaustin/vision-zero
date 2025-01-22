@@ -192,7 +192,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
       {!diagramError && (
         <Card.Footer className="text-center">
           <div className="d-flex align-items-center w-100">
-            <div className="me-3 text-primary fs-5">
+            <div className="me-3 text-secondary fs-5">
               <FaRotate />
             </div>
             <div className="flex-grow-1">
