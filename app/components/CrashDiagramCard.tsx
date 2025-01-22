@@ -52,14 +52,17 @@ const DiagramAlert: React.FC<DiagramAlertProps> = ({
 
 const ZoomResetControls = ({
   setRotation,
+  zoomToImage,
 }: {
   setRotation: (value: number) => void;
+  zoomToImage: () => void;
 }) => {
   const { zoomIn, zoomOut, resetTransform } = useControls();
 
   const handleReset = () => {
     resetTransform();
     setRotation(0);
+    zoomToImage();
   };
 
   return (
@@ -141,7 +144,10 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             ref={transformComponentRef}
             wheel={{ activationKeys: [] }}
           >
-            <ZoomResetControls setRotation={setRotation} />
+            <ZoomResetControls
+              setRotation={setRotation}
+              zoomToImage={zoomToImage}
+            />
             <TransformComponent>
               <Image
                 fluid
@@ -150,7 +156,6 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
                 alt="crash diagram"
                 id="crashDiagramImage"
                 onLoad={() => {
-                  console.log("Image loaded and rendered");
                   zoomToImage();
                 }}
                 onError={() => {
