@@ -132,7 +132,7 @@ export default function UserDetails({
                       onClick={() => {
                         if (
                           window.confirm(
-                            "Are you user you want to delete this user?"
+                            "Are you sure you want to delete this user?"
                           )
                         ) {
                           onDeleteUser();

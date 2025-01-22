@@ -204,7 +204,8 @@ const crashesListViewfilterCards: FilterGroup[] = [
   {
     id: "internal_filters",
     label: "Internal",
-    groupOperator: "_or",
+    // because one of the filters is enabled and inverted we need to join using the "_and" operator
+    groupOperator: "_and",
     filterGroups: [
       {
         id: "private_drive",
@@ -217,6 +218,20 @@ const crashesListViewfilterCards: FilterGroup[] = [
             id: "private_drive",
             column: "private_dr_fl",
             operator: "_neq",
+            value: true,
+          },
+        ],
+      },
+      {
+        id: "is_temp_record",
+        label: "Temporary records only",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "is_temp_record",
+            column: "is_temp_record",
+            operator: "_eq",
             value: true,
           },
         ],

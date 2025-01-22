@@ -34,14 +34,14 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
 
   const toggleSidebar = useCallback(
     () =>
-      setIsCollapsed((prevSate) => {
-        localStorage.setItem(localStorageKey, String(!prevSate));
-        return !prevSate;
+      setIsCollapsed((prevState) => {
+        localStorage.setItem(localStorageKey, String(!prevState));
+        return !prevState;
       }),
     []
   );
 
-  /** Check local storage for initialsidebar state */
+  /** Check local storage for initial sidebar state */
   useEffect(() => {
     const collapsedFromStorage =
       localStorage.getItem(localStorageKey) === "true";
