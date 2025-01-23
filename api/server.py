@@ -391,33 +391,6 @@ def download_crash_id(crash_id):
     return jsonify(message=url)
 
 
-def isValidUser(user_dict):
-    valid_fields = [
-        "email",
-        "name",
-        "https://hasura.io/jwt/claims",
-        "email_verified",
-        "aud",
-    ]
-
-    user_email = user_dict.get("email", None)
-
-    # Check for valid fields
-    for field in valid_fields:
-        if user_dict.get(field, False) == False:
-            return False
-
-    # Check for verified email
-    if user_dict["email_verified"] != True:
-        return False
-
-    # Check email for austintexas.gov
-    if not str(user_email).endswith("@austintexas.gov"):
-        return False
-
-    return True
-
-
 def hasUserRole(role, user_dict):
     claims = user_dict.get("https://hasura.io/jwt/claims", False)
     if claims != False:
@@ -438,11 +411,7 @@ def hasUserRole(role, user_dict):
 )
 @requires_auth
 def user_test():
-    user_dict = current_user._get_current_object()
-    if isValidUser(user_dict):
-        return jsonify(message=current_user._get_current_object())
-    else:
-        return notAuthorizedError()
+    return jsonify(message=current_user._get_current_object())
 
 
 @APP.route("/user/list_users")
@@ -458,20 +427,18 @@ def user_test():
 def user_list_users():
     user_dict = current_user._get_current_object()
     page = request.args.get("page")
-    per_page = request.args.get("per_page")
-    if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
-        endpoint = (
-            f"https://{AUTH0_DOMAIN}/api/v2/users?page="
-            + page
-            + "&per_page="
-            + per_page
-            + "&include_totals=true&sort=last_login:-1"
-        )
-        headers = {"Authorization": f"Bearer {get_api_token()}"}
-        response = requests.get(endpoint, headers=headers)
-        return jsonify(response.json()), response.status_code
-    else:
-        return notAuthorizedError()
+    per_page = request.args.get("per_page")    
+    endpoint = (
+        f"https://{AUTH0_DOMAIN}/api/v2/users?page="
+        + page
+        + "&per_page="
+        + per_page
+        + "&include_totals=true&sort=last_login:-1"
+    )
+    headers = {"Authorization": f"Bearer {get_api_token()}"}
+    response = requests.get(endpoint, headers=headers)
+    return jsonify(response.json()), response.status_code
+
 
 
 @APP.route("/user/get_user/<id>")
@@ -485,14 +452,10 @@ def user_list_users():
 )
 @requires_auth
 def user_get_user(id):
-    user_dict = current_user._get_current_object()
-    if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
-        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
-        headers = {"Authorization": f"Bearer {get_api_token()}"}
-        response = requests.get(endpoint, headers=headers)
-        return jsonify(response.json()), response.status_code
-    else:
-        return notAuthorizedError()
+    endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
+    headers = {"Authorization": f"Bearer {get_api_token()}"}
+    response = requests.get(endpoint, headers=headers)
+    return jsonify(response.json()), response.status_code
 
 
 @APP.route("/user/create_user", methods=["POST"])
@@ -501,7 +464,7 @@ def user_get_user(id):
 @requires_auth
 def user_create_user():
     user_dict = current_user._get_current_object()
-    if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
+    if hasUserRole(ADMIN_ROLE_NAME, user_dict):
         json_data = request.json
         # set the user's password - user will have to reset it for access
         json_data["password"] = get_secure_password()
@@ -529,7 +492,7 @@ def user_create_user():
 @requires_auth
 def user_update_user(id):
     user_dict = current_user._get_current_object()
-    if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
+    if hasUserRole(ADMIN_ROLE_NAME, user_dict):
         json_data = request.json
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
@@ -551,7 +514,7 @@ def user_update_user(id):
 @requires_auth
 def user_unblock_user(id):
     user_dict = current_user._get_current_object()
-    if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
+    if hasUserRole(ADMIN_ROLE_NAME, user_dict):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/user_blocks/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.delete(endpoint, headers=headers)
@@ -572,7 +535,7 @@ def user_unblock_user(id):
 @requires_auth
 def user_delete_user(id):
     user_dict = current_user._get_current_object()
-    if isValidUser(user_dict) and hasUserRole(ADMIN_ROLE_NAME, user_dict):
+    if hasUserRole(ADMIN_ROLE_NAME, user_dict):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.delete(endpoint, headers=headers)
