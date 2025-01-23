@@ -1,13 +1,9 @@
 import {
-  getStartOfYearDate,
   getYearsAgoDate,
   makeDateFilters,
 } from "@/components/TableDateSelector";
-import { crashesListViewColumns } from "@/configs/crashesListViewColumns";
-import { QueryConfig, FilterGroup } from "@/utils/queryBuilder";
+import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
-
-const columns = crashesListViewColumns.map((col) => String(col.path));
 
 const crashesListViewfilterCards: FilterGroup[] = [
   {
@@ -241,7 +237,6 @@ const crashesListViewfilterCards: FilterGroup[] = [
 ];
 
 export const crashesListViewQueryConfig: QueryConfig = {
-  columns,
   exportable: true,
   exportFilename: "crashes",
   tableName: "crashes_list_view",

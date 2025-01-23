@@ -3,7 +3,7 @@ import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import { FaSliders } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
-import { QueryConfig } from "@/utils/queryBuilder";
+import { QueryConfig } from "@/types/queryBuilder";
 
 /**
  * Count how many switch filters are present

@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import DatePicker from "react-datepicker";
-import { QueryConfig, DateFilterMode, Filter } from "@/utils/queryBuilder";
+import { QueryConfig, DateFilterMode, Filter } from "@/types/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
 
 type DateRange = {

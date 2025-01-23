@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
@@ -8,12 +8,8 @@ import Table from "@/components/Table";
 import TableSearch, { SearchSettings } from "@/components/TableSearch";
 import TableDateSelector from "@/components/TableDateSelector";
 import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
-import {
-  QueryConfig,
-  useQueryBuilder,
-  Filter,
-  useExportQuery,
-} from "@/utils/queryBuilder";
+import { useQueryBuilder, useExportQuery } from "@/utils/queryBuilder";
+import { QueryConfig, Filter } from "@/types/queryBuilder";
 import { ColDataCardDef } from "@/types/types";
 import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
 import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFilterToggle";
@@ -69,8 +65,17 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     ...initialQueryConfig,
   });
 
-  const query = useQueryBuilder(queryConfig, contextFilters);
-  const exportQuery = useExportQuery(queryConfig, contextFilters);
+  const visibleColumns = useMemo(
+    () => columns.filter((col) => !col.exportOnly),
+    [columns]
+  );
+  const query = useQueryBuilder(
+    queryConfig,
+    visibleColumns,
+    true,
+    contextFilters
+  );
+  const exportQuery = useExportQuery(queryConfig, columns, contextFilters);
 
   const { data, aggregateData, isLoading, error, refetch } = useQuery<T>({
     // don't fire first query until localstorage is loaded
@@ -228,7 +233,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
         <Col>
           <Table<T>
             rows={rows}
-            columns={columns}
+            columns={visibleColumns}
             queryConfig={queryConfig}
             setQueryConfig={setQueryConfig}
           />
