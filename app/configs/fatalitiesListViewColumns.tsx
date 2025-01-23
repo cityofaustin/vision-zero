@@ -50,6 +50,10 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     label: "Victim Name",
     sortable: true,
   },
+  // {
+  //   path: "recommendation { atd__recommendation_status_lkp { rec_status_desc } }",
+  //   label: "Recommendation Status",
+  // },
 
   // "recommendation { atd__recommendation_status_lkp { rec_status_desc } }": {
   //   searchable: false,
