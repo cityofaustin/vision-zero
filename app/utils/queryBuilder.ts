@@ -76,7 +76,7 @@ interface FilterGroupBase {
   label?: string;
   /**
    * Applies to FilterCard's filter groups only—aka switches - it enables
-   * switch filtegroups to be present in the config and ignored
+   * switch filter groups to be present in the config and ignored
    * by the queryBuilder until they are enabled. So this setting
    * is also used to control the switch UI component state
    */
@@ -426,7 +426,6 @@ export const useQueryBuilder = (
 ): string =>
   useMemo(() => {
     return buildQuery(queryConfig, contextFilters);
-
   }, [queryConfig, contextFilters]);
 
 /**
