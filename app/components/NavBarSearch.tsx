@@ -21,6 +21,10 @@ export default function NavBarSearch() {
     query: searchClicked ? CRASH_NAV_SEARCH : null,
     variables: { searchTerm: searchValue },
     typename: searchField,
+    // override default config so data isnt reused on re render
+    options: {
+      keepPreviousData: false,
+    },
   });
 
   useEffect(() => {
@@ -69,7 +73,7 @@ export default function NavBarSearch() {
             Crash not found
           </Form.Control.Feedback>
           <Button type="submit">
-            {!isLoading ? <FaMagnifyingGlass /> : <Spinner />}
+            {!isLoading ? <FaMagnifyingGlass /> : <Spinner size="sm" />}
           </Button>
         </InputGroup>
       </Form.Group>
