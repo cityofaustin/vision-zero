@@ -38,14 +38,18 @@ export function useUsersInfinite(token: string | null) {
     isValidating,
     error,
     mutate,
-  } = useSWRInfinite<ListUsersPage>(getKey, (url) => fetcher(url, token || ""), {
-    revalidateOnReconnect: false,
-    revalidateOnFocus: false,
-    revalidateAll: true,
-    // initial size ensures that we fetch up to 10 pages of data. if the user base
-    // grows beyond <INITIAL_PAGE_LIMIT> * <PAGE_SIZE> not all users will be loaded
-    initialSize: INITIAL_PAGE_LIMIT,
-  });
+  } = useSWRInfinite<ListUsersPage>(
+    getKey,
+    (url) => fetcher(url, token || ""),
+    {
+      revalidateOnReconnect: false,
+      revalidateOnFocus: false,
+      revalidateAll: true,
+      // initial size ensures that we fetch up to 10 pages of data. if the user base
+      // grows beyond <INITIAL_PAGE_LIMIT> * <PAGE_SIZE> not all users will be loaded
+      initialSize: INITIAL_PAGE_LIMIT,
+    }
+  );
   // build up our user array from each page and memoize it for good measure
   const users = useMemo(
     () => pages?.flatMap((page) => page.users) || [],
@@ -58,7 +62,7 @@ export function useUsersInfinite(token: string | null) {
 /**
  * Hook to fetch a single user
  */
-export function useUser(userId?: string, token?: string | null ) {
+export function useUser(userId?: string, token?: string | null) {
   const url = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/user/get_user/${userId}`;
   return useSWR<User | UserAPIError>(
     token && userId ? url : null,

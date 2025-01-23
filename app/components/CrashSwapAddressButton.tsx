@@ -9,7 +9,7 @@ import { HeaderActionButtonProps } from "@/components/DataCard";
  * the primary and secondary addresses of a crash
  */
 export default function CrashSwapAddressButton<
-  T extends Record<string, unknown>
+  T extends Record<string, unknown>,
 >({ record, mutation, onSaveCallback }: HeaderActionButtonProps<T>) {
   // switching all primary and secondary address values here
   const mutationVariables = {

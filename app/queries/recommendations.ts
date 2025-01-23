@@ -40,7 +40,9 @@ export const UPDATE_RECOMMENDATION_MUTATION = gql`
     update_recommendations_by_pk(pk_columns: { id: $id }, _set: $record) {
       id
     }
-    delete_recommendations_partners(where: { id: { _in: $partnerPksToDelete } }) {
+    delete_recommendations_partners(
+      where: { id: { _in: $partnerPksToDelete } }
+    ) {
       affected_rows
     }
     insert_recommendations_partners(objects: $partnersToAdd) {

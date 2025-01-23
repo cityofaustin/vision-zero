@@ -1,5 +1,5 @@
 /**
- * A crash recommendation object for the fatality review board 
+ * A crash recommendation object for the fatality review board
  * recommendation component
  */
 export type Recommendation = {
