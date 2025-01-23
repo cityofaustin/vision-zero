@@ -40,7 +40,7 @@ interface TableProps<T extends Record<string, unknown>> {
    */
   contextFilters?: Filter[];
   /**
-   * A switch that can be used to force a refetch() of the data - refect()
+   * A switch that can be used to force a refetch() of the data - refetch()
    * will be called anytime this prop changes
    */
   refetch?: boolean;
