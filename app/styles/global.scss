@@ -1,6 +1,24 @@
 /* see https://github.com/twbs/examples/blob/main/react-nextjs/src/styles/styles.scss */
 @import "bootstrap/scss/bootstrap.scss";
 
+$vz-gold: #edb41e;
+$vz-gold-darker: #b38715;
+$vz-dark: #444444;
+
+.bg-vz-gold {
+  background-color: $vz-gold;
+  border-color: $vz-gold !important;
+}
+
+.bg-vz-gold:hover {
+  background-color: $vz-gold-darker;
+  border-color: $vz-gold-darker !important;
+}
+
+.text-vz-dark {
+  color: $vz-dark;
+}
+
 .app-sidebar {
   height: 100vh;
   overflow-y: auto;
