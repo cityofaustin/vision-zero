@@ -4,9 +4,9 @@ import AppBreadCrumb from "@/components/AppBreadCrumb";
 import { fatalitiesListViewColumns } from "@/configs/fatalitiesListViewColumns";
 import { fatalitiesListViewQueryConfig } from "@/configs/fatalitiesListViewTable";
 import TableWrapper from "@/components/TableWrapper";
-const localStorageKey = "crashesListViewQueryConfig";
+const localStorageKey = "fatalitiesListViewQueryConfig";
 
-export default function Crashes() {
+export default function Fatalities() {
   return (
     <>
       <AppBreadCrumb />
