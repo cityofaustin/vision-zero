@@ -128,7 +128,7 @@ const filterGroupToWhereExp = (
 const getWhereExp = (filterGroups: FilterGroup[]): string => {
   const andExps = filterGroups
     .map((filterGroup) => filterGroupToWhereExp(filterGroup))
-    // remove any null values, which are returned when a fitler group is empty
+    // remove any null values, which are returned when a filter group is empty
     .filter((x) => !!x);
   return andExps.length > 0 ? `{ _and: [ ${andExps.join("\n")} ]}` : "{}";
 };
