@@ -147,7 +147,7 @@ function stringify(tree: GraphQLFieldTree): string {
 }
 
 /**
- * Given an array of dot-notaed column paths, generate
+ * Given an array of dot-noted column paths, generate
  * a query string the is a graphql-compatible field
  * selection set string
  *
