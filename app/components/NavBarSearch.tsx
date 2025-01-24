@@ -32,7 +32,7 @@ export default function NavBarSearch() {
   });
 
   // if data has been fetched or search button clicked check if data is valid
-  // and route to page, otherwise set invalid state to display user feedback
+  // and route to page
   useEffect(() => {
     if (searchClicked) {
       if (data?.length === 1) {
