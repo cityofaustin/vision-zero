@@ -1,5 +1,4 @@
 import {
-  getStartOfYearDate,
   getYearsAgoDate,
   makeDateFilters,
 } from "@/components/TableDateSelector";
