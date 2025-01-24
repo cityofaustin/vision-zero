@@ -1,7 +1,6 @@
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Image from "react-bootstrap/Image";
-import AlignedLabel from "./AlignedLabel";
 import { FaSignOutAlt } from "react-icons/fa";
 
 /**
@@ -32,7 +31,7 @@ export default function LoginContainer({
           </div>
           <div className="mb-3">
             <span className="text-secondary fs-5">
-              Austin's crash data management platform
+              Austin&apos;s crash data management platform
             </span>
           </div>
           <div>
