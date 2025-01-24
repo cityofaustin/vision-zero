@@ -239,11 +239,10 @@ export const GET_CRASH = gql`
 `;
 
 export const CRASH_NAV_SEARCH = gql`
-  query CrashNavigationSearch($searchTerm: String!) {
+  query CrashNavigationSearch($searchValue: String!) {
     record_locator: crashes(
-      limit: 2
       where: {
-        record_locator: { _eq: $searchTerm }
+        record_locator: { _eq: $searchValue }
         is_deleted: { _eq: false }
       }
     ) {
@@ -251,8 +250,7 @@ export const CRASH_NAV_SEARCH = gql`
       record_locator
     }
     case_id: crashes(
-      limit: 2
-      where: { case_id: { _eq: $searchTerm }, is_deleted: { _eq: false } }
+      where: { case_id: { _eq: $searchValue }, is_deleted: { _eq: false } }
     ) {
       id
       record_locator
