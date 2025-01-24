@@ -1,4 +1,5 @@
 export type fatalitiesListRow = {
+  year: number;
   record_locator: string;
   case_id: string;
   law_enforcement_ytd_fatality_num: number;

@@ -5,6 +5,11 @@ import { fatalitiesListRow } from "@/types/fatalitiesList";
 
 export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
   {
+    path: "year",
+    label: "Year",
+    sortable: true,
+  },
+  {
     path: "record_locator",
     label: "Crash ID",
     sortable: true,
