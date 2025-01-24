@@ -19,10 +19,11 @@ const dashboardLinks: DashboardLinkCardProps[] = [
     icon: FaChartPie,
   },
   {
-    title: "High Injury Roadways",
-    description: "Each High Injury Roadway by Polygon with various statistics",
-    href: "https://app.powerbigov.us/links/pdguGuhSGE?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare",
-    icon: FaChartPie,
+    title: "Vision Zero Viewer",
+    description:
+      "Our public-facing dashboard with official Vision Zero statistics",
+    href: "https://visionzero.austin.gov/viewer/",
+    icon: FaMap,
   },
   {
     title: "Emerging Hotspots and Bond Locations",
@@ -38,11 +39,10 @@ const dashboardLinks: DashboardLinkCardProps[] = [
     icon: FaMap,
   },
   {
-    title: "Vision Zero Viewer",
-    description:
-      "Our public-facing dashboard with official Vision Zero statistics",
-    href: "https://visionzero.austin.gov/viewer/",
-    icon: FaMap,
+    title: "High Injury Roadways",
+    description: "Each High Injury Roadway by Polygon with various statistics",
+    href: "https://app.powerbigov.us/links/pdguGuhSGE?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare",
+    icon: FaChartPie,
   },
   {
     title: "Access Management Crashes",
@@ -59,18 +59,18 @@ export default function Dashboard() {
   return (
     <>
       <Row className="mb-3">
-        <Col md={6}>
+        <Col md={9}>
           <h6 className="display-6">
             <span>{`Good ${formatGreetingTime(new Date())}, `}</span>
             <span className="text-capitalize">{firstName}</span>!
           </h6>
           <p>
-            Welcome to the Vision Zero Editor, which provides access to the City
-            of Austin&apos;s traffic crash data. The below metrics reflect our&nbsp;
+            Welcome to the Vision Zero Editor. The below metrics reflect
+            our&nbsp;
             <a href={VZV_ENDPOINT} target="_blank" rel="noreferrer">
               public crash data
             </a>
-            , which excludes crashes which occurred within the last 14 days.
+            , which exclude crashes which occurred within the last 14 days.
           </p>
         </Col>
       </Row>
@@ -85,6 +85,7 @@ export default function Dashboard() {
               transformOrigin: "top left", // Anchor scaling to the top-left corner
               border: "none",
               overflowX: "hidden",
+              scale: ".75",
             }}
           />
         </Col>
