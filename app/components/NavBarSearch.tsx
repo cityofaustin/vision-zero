@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Spinner } from "react-bootstrap";
+import Spinner from "react-bootstrap/Spinner";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -9,24 +9,30 @@ import { CRASH_NAV_SEARCH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
 import { useQuery } from "@/utils/graphql";
 
+/**
+ * Allows users to search for and route to a crash by
+ * typing in its crash id or case id
+ */
 export default function NavBarSearch() {
   const [searchField, setSearchField] = useState("record_locator");
   const [searchValue, setSearchValue] = useState("");
   const [searchClicked, setSearchClicked] = useState(false);
-  const [isInvalid, setIsInvalid] = useState(false);
 
   const router = useRouter();
 
   const { data, isLoading } = useQuery<Crash>({
+    // only will fetch data once search button has been clicked
     query: searchClicked ? CRASH_NAV_SEARCH : null,
     variables: { searchTerm: searchValue },
     typename: searchField,
-    // override default config so data isnt reused on re render
+    // override default config so second search wont navigate to previous crash
     options: {
       keepPreviousData: false,
     },
   });
 
+  // if data has been fetched or search button clicked check if data is valid
+  // and route to page, otherwise set invalid state to display user feedback
   useEffect(() => {
     if (searchClicked) {
       if (data?.length === 1) {
@@ -34,8 +40,6 @@ export default function NavBarSearch() {
         router.push(`/crashes/${recordLocator}`);
         setSearchValue("");
         setSearchClicked(false);
-      } else if (data?.length === 0) {
-        setIsInvalid(true);
       }
     }
   }, [searchClicked, data, router]);
@@ -51,6 +55,9 @@ export default function NavBarSearch() {
     );
   };
 
+  // if length is zero that means data was fetched and returned nothing
+  const isSearchInvalid = data?.length === 0;
+
   return (
     <Form onSubmit={onSearch}>
       <Form.Group>
@@ -61,13 +68,12 @@ export default function NavBarSearch() {
           <Form.Control
             placeholder="Search..."
             onChange={(e) => {
-              setIsInvalid(false);
               setSearchClicked(false);
               setSearchValue(e.target.value.trim());
             }}
             type="search"
             value={searchValue}
-            isInvalid={isInvalid}
+            isInvalid={isSearchInvalid}
           />
           <Form.Control.Feedback type="invalid" tooltip>
             Crash not found
