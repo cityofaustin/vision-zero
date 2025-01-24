@@ -1,4 +1,4 @@
-import { useRef, useMemo, MutableRefObject } from "react";
+import { useMemo, MutableRefObject } from "react";
 import MapGL, {
   FullscreenControl,
   NavigationControl,

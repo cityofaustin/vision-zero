@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import Card from "react-bootstrap/Card";
 import { MapRef } from "react-map-gl";
 import { useResizeObserver } from "@/utils/map";
