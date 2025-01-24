@@ -23,7 +23,7 @@ export default function NavBarSearch() {
   const { data, isLoading } = useQuery<Crash>({
     // only will fetch data once search button has been clicked
     query: searchClicked ? CRASH_NAV_SEARCH : null,
-    variables: { searchTerm: searchValue },
+    variables: { searchValue: searchValue },
     typename: searchField,
     // override default config so second search wont navigate to previous crash
     options: {
