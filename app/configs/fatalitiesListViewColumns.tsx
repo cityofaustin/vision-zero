@@ -26,17 +26,17 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
   },
   {
     path: "law_enforcement_ytd_fatality_num",
-    label: "Law Enforcement YTD Fatality Number",
+    label: "Law Enforcement Number",
     sortable: true,
   },
   {
     path: "ytd_fatal_crash",
-    label: "YTD Fatal Crash",
+    label: "YTD Fatal Crashes",
     sortable: true,
   },
   {
     path: "ytd_fatality",
-    label: "YTD Fatality",
+    label: "YTD Fatalities",
     sortable: true,
   },
   {
