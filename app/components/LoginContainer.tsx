@@ -27,7 +27,7 @@ export default function LoginContainer({
               fluid
               src="/assets/img/brand/vz_logo.png"
               alt="Vision Zero Logo"
-              width="300px"
+              width="350rem"
             />
           </div>
           <div className="mb-3">
@@ -36,7 +36,7 @@ export default function LoginContainer({
             </span>
           </div>
           <div>
-            <Button onClick={onLogin} size="lg" className="w-100 bg-vz-gold text-vz-dark">
+            <Button onClick={onLogin} size="lg" className="w-100 bg-vz-sunshine text-vz-dark">
               <span className="text-nowrap d-flex justify-content-center align-items-center">
                 <FaSignOutAlt className="me-2" />
                 <span>Sign In</span>
