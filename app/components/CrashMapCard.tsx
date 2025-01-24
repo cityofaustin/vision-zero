@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
+import { MapRef } from "react-map-gl";
 import { CrashMap } from "@/components/CrashMap";
 import { useMutation } from "@/utils/graphql";
+import { useResizeObserver } from "@/utils/map";
 import { LatLon } from "@/components/CrashMap";
 
 interface CrashMapCardProps {
@@ -23,6 +25,11 @@ export default function CrashMapCard({
   onSaveCallback,
   mutation,
 }: CrashMapCardProps) {
+  const mapRef = useRef<MapRef | null>(null);
+  const mapContainerRef = useResizeObserver<HTMLDivElement>(() => {
+    mapRef.current?.resize();
+  });
+
   const [isEditingCoordinates, setIsEditingCoordinates] = useState(false);
   const [editCoordinates, setEditCoordinates] = useState<LatLon>({
     latitude: 0,
@@ -30,16 +37,22 @@ export default function CrashMapCard({
   });
   const { mutate, loading: isMutating } = useMutation(mutation);
 
+  /**
+   * Trigger resize() when the map container size changes - this ensures that
+   * the map repaints when the sidebar is collased/expanded.
+   */
+
   return (
     <Card>
       <Card.Header>Location</Card.Header>
-      <Card.Body className="p-1 crash-header-card-body">
+      <Card.Body className="p-1 crash-header-card-body" ref={mapContainerRef}>
         <CrashMap
           savedLatitude={savedLatitude}
           savedLongitude={savedLongitude}
           isEditing={isEditingCoordinates}
           editCoordinates={editCoordinates}
           setEditCoordinates={setEditCoordinates}
+          mapRef={mapRef}
         />
       </Card.Body>
       <Card.Footer>

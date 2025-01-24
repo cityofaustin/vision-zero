@@ -1,4 +1,4 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, MutableRefObject } from "react";
 import MapGL, {
   FullscreenControl,
   NavigationControl,
@@ -14,6 +14,10 @@ import { MultiPolygon } from "@/types/geojson";
 import { LineLayerSpecification } from "mapbox-gl";
 
 interface LocationMapProps {
+  /**
+   * Ref object which will hold the mapbox instance
+   */
+  mapRef: MutableRefObject<MapRef | null>;
   polygon: MultiPolygon;
   locationId: string;
 }
@@ -46,8 +50,11 @@ const usePolygonFeature = (polygon: MultiPolygon, locationId: string) =>
 /**
  * Map component which renders an editable point marker
  */
-export const LocationMap = ({ polygon, locationId }: LocationMapProps) => {
-  const mapRef = useRef<MapRef | null>(null);
+export const LocationMap = ({
+  mapRef,
+  polygon,
+  locationId,
+}: LocationMapProps) => {
   const [polygonFeature, centerFeature] = usePolygonFeature(
     polygon,
     locationId
