@@ -50,28 +50,4 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     label: "Victim Name",
     sortable: true,
   },
-  // {
-  //   path: "recommendation { atd__recommendation_status_lkp { rec_status_desc } }",
-  //   label: "Recommendation Status",
-  // },
-
-  // "recommendation { atd__recommendation_status_lkp { rec_status_desc } }": {
-  //   searchable: false,
-  //   sortable: false,
-  //   label_table: "Current FRB Status",
-  //   type: "String",
-  // },
-  // "recommendation { rec_text }": {
-  //   searchable: false,
-  //   sortable: false,
-  //   label_table: "FRB Recommendation",
-  //   type: "String",
-  // },
-  // "engineering_area { atd_engineer_areas }": {
-  //   searchable: true,
-  //   sortable: true,
-  //   label_table: "Current Engineering Area",
-  //   type: "String",
-  //   label_search: "Current Engineering Area",
-  // },
 ];
