@@ -154,7 +154,7 @@ function stringify(tree: GraphQLFieldTree): string {
  * @example
  * const paths = ["record_locator", "est_comp_cost_crash_based", "recommendation.rec_text"]
  * getColumnQueryString(paths)
- * // returns
+ * returns
  * `{
  *  record_locator
  *   est_comp_cost_crash_based
