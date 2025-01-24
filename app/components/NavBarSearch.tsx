@@ -60,8 +60,8 @@ export default function NavBarSearch() {
 
   return (
     <Form onSubmit={onSearch}>
-      <Form.Group>
-        <InputGroup className="me-4" hasValidation>
+      <Form.Group className="me-4">
+        <InputGroup hasValidation>
           <Button onClick={onSwitchSearchField}>
             {searchField === "record_locator" ? "Crash ID" : "Case ID"}
           </Button>
