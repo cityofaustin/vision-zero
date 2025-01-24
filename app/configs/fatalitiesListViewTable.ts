@@ -27,17 +27,18 @@ export const fatalitiesListViewQueryConfig: QueryConfig = {
     wildcard: true,
   },
   searchFields: [
-    // { label: "Crash ID", value: "record_locator" },
-    // { label: "Case ID", value: "case_id" },
-    // { label: "Address", value: "address_primary" },
+    { label: "Crash ID", value: "record_locator" },
+    { label: "Case ID", value: "case_id" },
+    { label: "Location", value: "location" },
+    { label: "Victim Name", value: "victim_name" },
   ],
-  //   dateFilter: {
-  //     mode: "1y",
-  //     column: "crash_timestamp",
-  //     filters: makeDateFilters("crash_timestamp", {
-  //       start: getYearsAgoDate(1),
-  //       end: null,
-  //     }),
-  //   },
+  dateFilter: {
+    mode: "1y",
+    column: "crash_date_ct",
+    filters: makeDateFilters("crash_date_ct", {
+      start: getYearsAgoDate(1),
+      end: null,
+    }),
+  },
   filterCards: fatalitiesListViewFilterCards,
 };
