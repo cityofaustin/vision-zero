@@ -10,6 +10,10 @@ import { Location } from "@/types/locations";
  */
 export default function LocationMapCard({ location }: { location: Location }) {
   const mapRef = useRef<MapRef | null>(null);
+  /**
+   * Trigger resize() when the map container size changes - this ensures that
+   * the map repaints when the sidebar is collased/expanded.
+   */
   const mapContainerRef = useResizeObserver<HTMLDivElement>(() => {
     mapRef.current?.resize();
   });

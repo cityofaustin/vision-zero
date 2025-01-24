@@ -26,6 +26,10 @@ export default function CrashMapCard({
   mutation,
 }: CrashMapCardProps) {
   const mapRef = useRef<MapRef | null>(null);
+  /**
+   * Trigger resize() when the map container size changes - this ensures that
+   * the map repaints when the sidebar is collased/expanded.
+   */
   const mapContainerRef = useResizeObserver<HTMLDivElement>(() => {
     mapRef.current?.resize();
   });
@@ -36,11 +40,6 @@ export default function CrashMapCard({
     longitude: 0,
   });
   const { mutate, loading: isMutating } = useMutation(mutation);
-
-  /**
-   * Trigger resize() when the map container size changes - this ensures that
-   * the map repaints when the sidebar is collased/expanded.
-   */
 
   return (
     <Card>
