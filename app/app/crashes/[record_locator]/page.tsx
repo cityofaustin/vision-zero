@@ -23,6 +23,7 @@ import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
 import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
 import { Crash } from "@/types/crashes";
 import CrashRecommendationCard from "@/components/CrashRecommendationCard";
+import CrashSwapAddressButton from "@/components/CrashSwapAddressButton";
 
 const typename = "crashes";
 
@@ -136,6 +137,7 @@ export default function CrashDetailsPage({
             columns={crashDataCards.address}
             mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
+            HeaderActionButton={CrashSwapAddressButton}
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
