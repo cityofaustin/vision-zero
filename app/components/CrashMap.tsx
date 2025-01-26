@@ -15,6 +15,7 @@ import MapGL, {
 import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
+import { COLORS } from "@/utils/constants";
 
 export interface LatLon {
   latitude: number | null;
@@ -89,13 +90,17 @@ export const CrashMap = ({
       <FullscreenControl position="top-left" />
       <NavigationControl position="top-left" showCompass={false} />
       {savedLatitude && savedLongitude && !isEditing && (
-        <Marker latitude={savedLatitude} longitude={savedLongitude} color="#226bbf"></Marker>
+        <Marker
+          latitude={savedLatitude}
+          longitude={savedLongitude}
+          color={COLORS.primary}
+        ></Marker>
       )}
       {isEditing && (
         <Marker
           latitude={editCoordinates.latitude || 0}
           longitude={editCoordinates.longitude || 0}
-          color={isEditing ? "#dd0426" : undefined}
+          color={isEditing ? COLORS.danger : undefined}
         />
       )}
       {/* add nearmap raster source and style */}
