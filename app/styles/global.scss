@@ -1,12 +1,45 @@
 /* see https://github.com/twbs/examples/blob/main/react-nextjs/src/styles/styles.scss */
-@import "bootstrap/scss/bootstrap.scss";
 
 // see VZ branding guide: https://cityofaustin.sharepoint.com/sites/tpwPIO/Vision%20Zero%20Branding%20Files/Forms/AllItems.aspx?id=%2Fsites%2FtpwPIO%2FVision%20Zero%20Branding%20Files%2FBranding%20Guide%2FVision%20Zero%20Branding%20Guide%202024%2Epdf&viewid=4b5e3825%2D0fa4%2D431d%2D8f79%2D3a7fd7f57dcc&parent=%2Fsites%2FtpwPIO%2FVision%20Zero%20Branding%20Files%2FBranding%20Guide
 $vz-sunshine: #edb41f;
 $vz-sunshine-darker: #b38715;
 $vz-asphalt: #444444;
 $vz-peacock: #468189;
+$vz-cambridge: #77aca2;
 $vz-sand: #eee6de;
+
+/*  other colors */
+$ghost-white: #f6f8ff;
+$peach: #f6be9a;
+$cornsilk: #faf4d3;
+$timberwolf: #d6dbd2;
+$lavendar: #d6d3f0;
+$platinum: #e5e6e4;
+$battleship: #858881;
+$imperial-red: #f02d3a;
+$early-blue: #0077b6;
+
+/* current pallete */
+$baby-powder: #fbfef9;
+$rich-black: #0b2027;
+$gunmetal: #333745;
+$celtic-blue: #226bbf;
+$slate-gray: #7a8190;
+$anti-flash-white: #f4f5f6;
+$sea-green: #09814a;
+$rojo: #dd0426;
+$jonquil: #ffd22f;
+
+/* bootstrap overrides */
+$white: $baby-powder;
+$primary: $celtic-blue;
+$secondary: $slate-gray;
+$success: $sea-green;
+$info: $celtic-blue;
+$warning: $jonquil;
+$danger: $rojo;
+$light: $anti-flash-white;
+$dark: $rich-black;
 
 .bg-vz-sunshine {
   background-color: $vz-sunshine;
@@ -43,6 +76,11 @@ $vz-sand: #eee6de;
 .crash-header-card-body {
   height: 400px;
   overflow-y: auto;
+  border-radius: 0px !important;
+}
+
+.mapboxgl-map {
+  border-radius: 0px;
 }
 
 .sidebar-toggle-open {
@@ -70,7 +108,26 @@ $vz-sand: #eee6de;
   max-height: 25rem;
 }
 
-.card-header,
-.card-footer {
-  border: none;
+.card {
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
 }
+
+.card-header {
+  padding: 1rem;
+  border: none !important;
+  background-color: inherit !important;
+}
+
+h5.card-title {
+  font-size: 1.3rem !important;
+  font-weight: bold;
+}
+
+
+.card-footer {
+  background-color: inherit !important;
+  border: none !important;
+}
+
+@import "bootstrap/scss/bootstrap.scss";

@@ -31,8 +31,8 @@ export default function CrashMapCard({
   const { mutate, loading: isMutating } = useMutation(mutation);
 
   return (
-    <Card>
-      <Card.Header>Location</Card.Header>
+    <Card className="h-100">
+      <Card.Header> <Card.Title>Location</Card.Title></Card.Header>
       <Card.Body className="p-1 crash-header-card-body">
         <CrashMap
           savedLatitude={savedLatitude}
@@ -65,7 +65,7 @@ export default function CrashMapCard({
                 }
               }}
             >
-              {isEditingCoordinates ? "Save location" : "Edit"}
+              {isEditingCoordinates ? "Save" : "Edit"}
             </Button>
             {isEditingCoordinates && (
               <Button

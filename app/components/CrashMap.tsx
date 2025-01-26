@@ -89,13 +89,13 @@ export const CrashMap = ({
       <FullscreenControl position="top-left" />
       <NavigationControl position="top-left" showCompass={false} />
       {savedLatitude && savedLongitude && !isEditing && (
-        <Marker latitude={savedLatitude} longitude={savedLongitude}></Marker>
+        <Marker latitude={savedLatitude} longitude={savedLongitude} color="#226bbf"></Marker>
       )}
       {isEditing && (
         <Marker
           latitude={editCoordinates.latitude || 0}
           longitude={editCoordinates.longitude || 0}
-          color={isEditing ? "red" : undefined}
+          color={isEditing ? "#dd0426" : undefined}
         />
       )}
       {/* add nearmap raster source and style */}
