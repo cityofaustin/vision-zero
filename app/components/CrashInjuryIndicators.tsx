@@ -1,12 +1,6 @@
 import { CrashInjuryMetric } from "@/types/crashInjuryMetrics";
 import Badge from "react-bootstrap/Badge";
-import {
-  FaBriefcaseMedical,
-  FaCross,
-  FaKitMedical,
-  FaNotesMedical,
-  FaSuitcaseMedical,
-} from "react-icons/fa6";
+import { FaNotesMedical } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
 
 const InjuryBadge = ({
@@ -21,9 +15,7 @@ const InjuryBadge = ({
   return (
     <span className={`${className || ""} text-nowrap me-3`}>
       <AlignedLabel>
-        <span className={`me-1 ${value ? "" : "text-secondary"}`}>
-          {label}
-        </span>
+        <span className={`me-1 ${value ? "" : "text-secondary"}`}>{label}</span>
         {value !== 0 && (
           <Badge bg={`${value ? "dark" : "secondary"}`} pill>
             {value}
