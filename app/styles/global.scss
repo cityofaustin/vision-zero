@@ -5,8 +5,8 @@ $vz-sunshine: #edb41f;
 $vz-sunshine-darker: #b38715;
 $vz-asphalt: #444444;
 $vz-peacock: #468189;
-$vz-cambridge: #77aca2;
 $vz-sand: #eee6de;
+$vzv-teal: #257a8b;
 
 /*  other colors */
 $ghost-white: #f6f8ff;
@@ -16,14 +16,17 @@ $timberwolf: #d6dbd2;
 $lavendar: #d6d3f0;
 $platinum: #e5e6e4;
 $battleship: #858881;
+$gunmetal: #333745;
 $imperial-red: #f02d3a;
-$early-blue: #0077b6;
+$celtic-blue: #226bbf;
+$honolulu-blue: #0077b6;
 
-/* current pallete */
+/* current pallete 
+* https://coolors.co/0b2027-333745-0077b6-7a8190-f4f5f6-09814a-dd0426-ffd22f-fbfef9
+*/
 $baby-powder: #fbfef9;
 $rich-black: #0b2027;
-$gunmetal: #333745;
-$celtic-blue: #226bbf;
+$french-blue: #1176D0;
 $slate-gray: #7a8190;
 $anti-flash-white: #f4f5f6;
 $sea-green: #09814a;
@@ -32,10 +35,10 @@ $jonquil: #ffd22f;
 
 /* bootstrap overrides */
 $white: $baby-powder;
-$primary: $celtic-blue;
+$primary: $french-blue;
 $secondary: $slate-gray;
 $success: $sea-green;
-$info: $celtic-blue;
+$info: $french-blue;
 $warning: $jonquil;
 $danger: $rojo;
 $light: $anti-flash-white;
