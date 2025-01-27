@@ -77,9 +77,8 @@ const stringifyFilterValue = (value: FilterValue, wildcard?: boolean) => {
  */
 const filterToWhereExp = (filter: Filter): string => {
   const comment = `\n # ${filter.id} \n`;
-  const exp = `{ ${comment} ${filter.column}: { ${
-    filter.operator
-  }: ${stringifyFilterValue(filter.value, !!filter.wildcard)} } }`;
+  const exp = `{ ${comment} ${filter.column}: { ${filter.operator
+    }: ${stringifyFilterValue(filter.value, !!filter.wildcard)} } }`;
   if (filter.relationshipName) {
     // wrap filter string in relationship
     return `{ ${filter.relationshipName}:  ${exp} }`;

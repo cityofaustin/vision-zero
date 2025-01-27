@@ -149,7 +149,7 @@ export const GET_CRASH = gql`
           sus_serious_injry_count
         }
       }
-      people_list_view (order_by: { unit_nbr: asc, prsn_nbr: asc }) {
+      people_list_view(order_by: { unit_nbr: asc, prsn_nbr: asc }) {
         crash_pk
         id
         unit_nbr
@@ -237,6 +237,27 @@ export const GET_CRASH = gql`
     }
   }
 `;
+
+export const CRASH_NAV_SEARCH = gql`
+  query CrashNavigationSearch($searchValue: String!) {
+    record_locator: crashes(
+      where: {
+        record_locator: { _eq: $searchValue }
+        is_deleted: { _eq: false }
+      }
+    ) {
+      id
+      record_locator
+    }
+    case_id: crashes(
+      where: { case_id: { _eq: $searchValue }, is_deleted: { _eq: false } }
+    ) {
+      id
+      record_locator
+    }
+  }
+`;
+
 
 export const UPDATE_CRASH = gql`
   mutation update_crashes($id: Int!, $updates: crashes_set_input) {
