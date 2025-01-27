@@ -26,12 +26,12 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
   },
   {
     path: "law_enforcement_ytd_fatality_num",
-    label: "Law Enforcement Number",
+    label: "LE #",
     sortable: true,
   },
   {
     path: "ytd_fatal_crash",
-    label: "YTD Fatal Crashes",
+    label: "YTD Fatal Crash",
     sortable: true,
   },
   {
@@ -44,15 +44,29 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     label: "Crash Date",
     sortable: true,
     valueFormatter: formatDate,
+    style: { whiteSpace: "nowrap" },
   },
   {
     path: "location",
     label: "Location",
     sortable: true,
+    style: { whiteSpace: "nowrap" },
   },
   {
     path: "victim_name",
     label: "Victim Name",
+    sortable: true,
+    style: { whiteSpace: "nowrap" },
+  },
+  {
+    path: "recommendation.rec_text",
+    label: "FRB Recommendation",
+    style: { minWidth: "400px" },
+    sortable: true,
+  },
+  {
+    path: "engineering_area.atd_engineer_areas",
+    label: "Engineering Area",
     sortable: true,
   },
 ];

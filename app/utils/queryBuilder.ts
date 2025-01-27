@@ -15,7 +15,7 @@ import { ColDataCardDef } from "@/types/types";
 
 const BASE_QUERY_STRING = `
     query $queryName {
-        $tableName(limit: $limit, offset: $offset, order_by: $orderBy where: $where) 
+        $tableName(limit: $limit, offset: $offset, order_by: $orderBy, where: $where) 
         $columns
         $aggregationQuery
     }`;
@@ -53,7 +53,7 @@ const arrayToStringRep = (arr: number[]): string => {
  * Get the order_by graphql expression, e.g. `{ case_id: desc }`
  */
 const getOrderByExp = (sortColName: string, sortAsc: boolean): string => {
-  return `{${sortColName}: ${sortAsc ? "asc" : "desc"}}`;
+  return getColumnQueryString([sortColName], sortAsc ? "asc" : "desc");
 };
 
 /**
@@ -135,13 +135,31 @@ const getWhereExp = (filterGroups: FilterGroup[]): string => {
 
 /**
  * Recursively stringify a field tree object into a nested graphql
- *  field selection set
+ *  field selection set.
+ * @param tree - the graphql field tree
+ * @param valueToSet - optional value to be assigned to each field in the tree,
+ * which enables this function to return a string that can be used in an
+ * order_by directive.
+ *
+ * @example
  */
-function stringify(tree: GraphQLFieldTree): string {
+function stringifyTree(tree: GraphQLFieldTree, valueToSet?: string): string {
   const fields = Object.keys(tree).map((key) => {
     const value = tree[key];
     const isEmpty = Object.keys(value).length === 0;
-    return isEmpty ? key : `${key} ${stringify(value)}`;
+    if (isEmpty) {
+      if (valueToSet !== undefined) {
+        return `${key}: ${valueToSet}`;
+      } else {
+        return key;
+      }
+    } else {
+      // todo: nope—this is too gross
+      return `${key}${valueToSet ? ": " : ""} ${stringifyTree(
+        value,
+        valueToSet
+      )}`;
+    }
   });
   return `{ ${fields.join(" ")} }`;
 }
@@ -163,7 +181,7 @@ function stringify(tree: GraphQLFieldTree): string {
  *   }
  * }`
  */
-const getColumnQueryString = (paths: string[]): string => {
+const getColumnQueryString = (paths: string[], valueToSet?: string): string => {
   // build the tree structure, where each entry is a field name
   const tree: GraphQLFieldTree = {};
   paths.forEach((path) => {
@@ -175,7 +193,7 @@ const getColumnQueryString = (paths: string[]): string => {
       current = current[part];
     });
   });
-  return stringify(tree);
+  return stringifyTree(tree, valueToSet);
 };
 
 /**
