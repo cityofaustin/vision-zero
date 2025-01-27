@@ -177,6 +177,7 @@ select_permissions:
         - updated_by
         - wthr_cond_id
       filter: {}
+      allow_aggregations: true
     comment: ""
   - role: readonly
     permission:
@@ -266,6 +267,7 @@ select_permissions:
         - updated_at
         - position
       filter: {}
+      allow_aggregations: true
     comment: ""
   - role: vz-admin
     permission:
@@ -354,6 +356,7 @@ select_permissions:
         - updated_at
         - position
       filter: {}
+      allow_aggregations: true
     comment: ""
 update_permissions:
   - role: editor
