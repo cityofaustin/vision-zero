@@ -8,6 +8,8 @@ select_permissions:
         - bicycle_death_count
         - bicycle_serious_injury_count
         - death_cnt
+        - est_comp_cost_crash_based
+        - est_total_person_comp_cost
         - law_enf_fatality_count
         - micromobility_death_count
         - micromobility_serious_injury_count
@@ -57,6 +59,8 @@ select_permissions:
         - bicycle_death_count
         - bicycle_serious_injury_count
         - death_cnt
+        - est_comp_cost_crash_based
+        - est_total_person_comp_cost
         - law_enf_fatality_count
         - micromobility_death_count
         - micromobility_serious_injury_count
@@ -106,6 +110,8 @@ select_permissions:
         - bicycle_death_count
         - bicycle_serious_injury_count
         - death_cnt
+        - est_comp_cost_crash_based
+        - est_total_person_comp_cost
         - law_enf_fatality_count
         - micromobility_death_count
         - micromobility_serious_injury_count

@@ -14,6 +14,8 @@ query SocrataExportCrashes($limit: Int!, $minId: Int!) {
     crash_sev_id
     crash_speed_limit
     death_cnt
+    est_comp_cost_crash_based
+    est_total_person_comp_cost
     is_deleted
     is_temp_record
     latitude
