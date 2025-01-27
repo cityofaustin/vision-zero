@@ -6,8 +6,6 @@ import { fatalitiesListViewColumns } from "@/configs/fatalitiesListViewColumns";
 import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
-const columns = fatalitiesListViewColumns.map((col) => String(col.path));
-
 const fatalitiesListViewFilterCards: FilterGroup[] = [];
 
 export const fatalitiesListViewQueryConfig: QueryConfig = {
