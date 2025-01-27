@@ -7,16 +7,7 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import ListGroup from "react-bootstrap/ListGroup";
-import {
-  FaShieldHeart,
-  FaGaugeHigh,
-  FaLocationDot,
-  FaAngleRight,
-  FaUserGroup,
-  FaCloudArrowUp,
-  FaFileCirclePlus,
-  FaHeart,
-} from "react-icons/fa6";
+import { FaAngleRight } from "react-icons/fa6";
 import AppNavBar from "@/components/AppNavBar";
 import SideBarListItem from "@/components/SideBarListItem";
 import LoginContainer from "@/components/LoginContainer";
