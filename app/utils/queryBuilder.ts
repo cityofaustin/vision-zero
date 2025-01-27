@@ -128,7 +128,7 @@ const filterGroupToWhereExp = (
 const getWhereExp = (filterGroups: FilterGroup[]): string => {
   const andExps = filterGroups
     .map((filterGroup) => filterGroupToWhereExp(filterGroup))
-    // remove any null values, which are returned when a fitler group is empty
+    // remove any null values, which are returned when a filter group is empty
     .filter((x) => !!x);
   return andExps.length > 0 ? `{ _and: [ ${andExps.join("\n")} ]}` : "{}";
 };
@@ -147,14 +147,14 @@ function stringify(tree: GraphQLFieldTree): string {
 }
 
 /**
- * Given an array of dot-notaed column paths, generate
+ * Given an array of dot-noted column paths, generate
  * a query string the is a graphql-compatible field
  * selection set string
  *
  * @example
  * const paths = ["record_locator", "est_comp_cost_crash_based", "recommendation.rec_text"]
  * getColumnQueryString(paths)
- * // returns
+ * returns
  * `{
  *  record_locator
  *   est_comp_cost_crash_based

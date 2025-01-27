@@ -4,6 +4,7 @@ import {
   FaLocationDot,
   FaUserGroup,
   FaCloudArrowUp,
+  FaHeart,
 } from "react-icons/fa6";
 import { IconType } from "react-icons";
 
@@ -12,7 +13,7 @@ interface Route {
   label: string;
   icon: IconType;
   allowedRoles?: string[];
-};
+}
 
 export const routes: Route[] = [
   {
@@ -24,6 +25,11 @@ export const routes: Route[] = [
     path: "crashes",
     label: "Crashes",
     icon: FaShieldHeart,
+  },
+  {
+    path: "fatalities",
+    label: "Fatalities",
+    icon: FaHeart,
   },
   {
     path: "locations",
