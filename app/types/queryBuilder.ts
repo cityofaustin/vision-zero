@@ -12,7 +12,7 @@ export type FilterValue = string | number | boolean | number[];
  */
 export interface Filter {
   /**
-   * Arbitrary but must uniquely identify the filter by name amongst all
+   * This arbitrary ID must uniquely identify the filter amongst all
    * other filters in the same group
    */
   id: string;
@@ -50,7 +50,7 @@ export interface Filter {
 
 interface FilterGroupBase {
   /**
-   * The arbitrary ID must uniquely identifier of this group amongst
+   * This arbitrary ID must uniquely identify this group amongst
    * all other filter groups
    */
   id: string;
@@ -60,7 +60,7 @@ interface FilterGroupBase {
   label?: string;
   /**
    * Applies to FilterCard's filter groups only—aka switches - it enables
-   * switch filtegroups to be present in the config and ignored
+   * switch filter groups to be present in the config and ignored
    * by the queryBuilder until they are enabled. So this setting
    * is also used to control the switch UI component state
    */
