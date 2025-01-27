@@ -9,10 +9,13 @@ import Table from "react-bootstrap/Table";
 import { FaUserPlus, FaCopy, FaCheck } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
+import PermissionsRequired from "@/components/PermissionsRequired";
 import UserModal from "@/components/UserModal";
 import { useUsersInfinite } from "@/utils/users";
 import { User } from "@/types/users";
 import { useToken, formatRoleName } from "@/utils/auth";
+
+const allowedCreateUserRoles = ["vz-admin"];
 
 export default function Users() {
   const token = useToken();
@@ -65,16 +68,18 @@ export default function Users() {
           <div className="mb-3 d-flex align-items-center">
             {!isLoading && (
               <>
-                <Button
-                  className="me-2"
-                  onClick={() => setShowNewUserModal(true)}
-                  disabled={isValidating}
-                >
-                  <AlignedLabel>
-                    <FaUserPlus className="me-2" />
-                    <span>Add user</span>
-                  </AlignedLabel>
-                </Button>
+                <PermissionsRequired allowedRoles={allowedCreateUserRoles}>
+                  <Button
+                    className="me-2"
+                    onClick={() => setShowNewUserModal(true)}
+                    disabled={isValidating}
+                  >
+                    <AlignedLabel>
+                      <FaUserPlus className="me-2" />
+                      <span>Add user</span>
+                    </AlignedLabel>
+                  </Button>
+                </PermissionsRequired>
                 <Button
                   onClick={handleCopyUserEmails}
                   disabled={isValidating || copyUserEmailsClicked}

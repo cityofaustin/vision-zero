@@ -26,6 +26,11 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    */
   editable?: boolean;
   /**
+   * If the field should only be available in the exported table data -
+   * only affects when column is used in a table config
+   */
+  exportOnly?: boolean;
+  /**
    * Determines the UI component that will be used to edit the column
    */
   inputType?: InputType;
@@ -41,6 +46,16 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
     column: ColDataCardDef<T>
   ) => string;
   valueRenderer?: (record: T, column: ColDataCardDef<T>) => ReactNode;
+  /**
+   * Function that returns a custom component, used for display and/or editing
+   * when the column is dependent on other columns of the same record
+   */
+  customEditComponent?: (
+    record: T,
+    onCancel: () => void,
+    mutation: string,
+    onSaveCallback: () => Promise<void>,
+  ) => ReactNode;
 }
 
 export interface MutationVariables extends Variables {

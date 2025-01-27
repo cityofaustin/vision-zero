@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import AlignedLabel from "./AlignedLabel";
-import { QueryConfig } from "@/utils/queryBuilder";
+import { QueryConfig } from "@/types/queryBuilder";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaAngleLeft, FaAngleRight, FaDownload } from "react-icons/fa6";
 
