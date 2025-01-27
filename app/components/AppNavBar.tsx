@@ -38,7 +38,7 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
             />
           </Navbar.Brand>
         </Col>
-        <Col className="d-flex justify-content-end">
+        <Col className="d-flex justify-content-end align-items-center">
           <NavBarSearch />
           <Dropdown align="end">
             <Dropdown.Toggle id="avatar-toggle" as={DropdownAnchorToggle}>
