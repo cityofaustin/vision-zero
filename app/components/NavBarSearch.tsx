@@ -62,10 +62,11 @@ export default function NavBarSearch() {
     <Form onSubmit={onSearch}>
       <Form.Group className="me-4">
         <InputGroup hasValidation>
-          <Button onClick={onSwitchSearchField}>
+          <Button onClick={onSwitchSearchField} size="sm" variant="secondary">
             {searchField === "record_locator" ? "Crash ID" : "Case ID"}
           </Button>
           <Form.Control
+            size="sm"
             placeholder="Search..."
             onChange={(e) => {
               setSearchClicked(false);
@@ -78,7 +79,12 @@ export default function NavBarSearch() {
           <Form.Control.Feedback type="invalid" tooltip>
             Crash not found
           </Form.Control.Feedback>
-          <Button type="submit">
+          <Button
+            type="submit"
+            size="sm"
+            variant="secondary"
+            disabled={!searchValue}
+          >
             {!isLoading ? <FaMagnifyingGlass /> : <Spinner size="sm" />}
           </Button>
         </InputGroup>
