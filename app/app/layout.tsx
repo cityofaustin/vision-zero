@@ -13,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    // <Html lang="en" style={{fontSize: "14px"}} data-bs-theme="dark">
-    <html lang="en" style={{ fontSize: "12px" }}>
+    // <html lang="en" style={{fontSize: "14px"}} data-bs-theme="dark">
+    <html lang="en" style={{ fontSize: "14px" }}>
       <AuthProvider>
         <body>
           <SidebarLayout>{children}</SidebarLayout>
