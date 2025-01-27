@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import BsTable from "react-bootstrap/Table";
 import { ColDataCardDef } from "@/types/types";
 import { renderColumnValue } from "@/utils/formHelpers";
-import { QueryConfig } from "@/utils/queryBuilder";
+import { QueryConfig } from "@/types/queryBuilder";
 import { FaSortDown, FaSortUp } from "react-icons/fa6";
 
 /**
