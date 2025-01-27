@@ -1,5 +1,4 @@
 "use client";
-import { useAuth0 } from "@auth0/auth0-react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { FaMap, FaChartPie } from "react-icons/fa6";
@@ -51,7 +50,6 @@ const dashboardLinks: DashboardLinkCardProps[] = [
 ];
 
 export default function Dashboard() {
-  const { user } = useAuth0();
 
   return (
     <>
