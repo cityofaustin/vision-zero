@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     // <Html lang="en" style={{fontSize: "14px"}} data-bs-theme="dark">
-    <html lang="en" style={{ fontSize: "14px" }}>
+    <html lang="en" style={{ fontSize: "12px" }}>
       <AuthProvider>
         <body>
           <SidebarLayout>{children}</SidebarLayout>
