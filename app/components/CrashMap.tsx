@@ -1,9 +1,9 @@
 import {
   useCallback,
-  useRef,
   useEffect,
   Dispatch,
   SetStateAction,
+  MutableRefObject,
 } from "react";
 import MapGL, {
   FullscreenControl,
@@ -22,6 +22,10 @@ export interface LatLon {
 }
 
 interface CrashMapProps {
+  /**
+   * Ref object which will hold the mapbox instance
+   */
+  mapRef: MutableRefObject<MapRef | null>;
   /**
    * The initial latitude - used when not editing
    */
@@ -45,14 +49,13 @@ interface CrashMapProps {
  * Map component which renders an editable point marker
  */
 export const CrashMap = ({
+  mapRef,
   savedLatitude,
   savedLongitude,
   isEditing,
   editCoordinates,
   setEditCoordinates,
 }: CrashMapProps) => {
-  const mapRef = useRef<MapRef | null>(null);
-
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
       const latitude = e.viewState.latitude;
@@ -71,6 +74,7 @@ export const CrashMap = ({
       });
     }
   }, [isEditing, setEditCoordinates, savedLatitude, savedLongitude]);
+
   return (
     <MapGL
       ref={mapRef}
