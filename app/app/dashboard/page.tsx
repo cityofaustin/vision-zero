@@ -2,9 +2,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import { formatGreetingTime } from "@/utils/formatters";
 import { FaMap, FaChartPie } from "react-icons/fa6";
-import { formatFirstNameFromEmail } from "@/utils/auth";
 import DashboardLinkCard, {
   DashboardLinkCardProps,
 } from "@/components/DashboardLinkCard";
@@ -54,23 +52,17 @@ const dashboardLinks: DashboardLinkCardProps[] = [
 
 export default function Dashboard() {
   const { user } = useAuth0();
-  const firstName = formatFirstNameFromEmail(user?.email || "");
 
   return (
     <>
-      <Row className="mb-3">
+      <Row>
         <Col md={9}>
-          <h6 className="display-6">
-            <span>{`Good ${formatGreetingTime(new Date())}, `}</span>
-            <span className="text-capitalize">{firstName}</span>!
-          </h6>
           <p>
-            Welcome to the Vision Zero Editor. The below metrics reflect
-            our&nbsp;
+            The below metrics reflect&nbsp;
             <a href={VZV_ENDPOINT} target="_blank" rel="noreferrer">
               public crash data
             </a>
-            , which exclude crashes which occurred within the last 14 days.
+            &nbsp;and exclude crashes that occurred within the last 14 days.
           </p>
         </Col>
       </Row>

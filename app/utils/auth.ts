@@ -56,17 +56,6 @@ export const formatRoleName = (role: string): string => {
 };
 
 /**
- * Return the text from an email up to the first `.`
- *
- * @example
- * // returns "John"
- * formatFirstNameFromEmail("john.c@austintexas.gov")
- */
-export const formatFirstNameFromEmail = (email: string): string => {
-  return email?.split(".")[0] || "";
-};
-
-/**
  * Hook which retrieves the user's access token and redirects to the
  * login page if the user's refresh token has expired
  */
@@ -80,7 +69,6 @@ export const useToken = (): string | null => {
       if (!isAuthenticated) {
         return;
       }
-
       try {
         const accessToken = await getAccessTokenSilently();
         setToken(accessToken);
