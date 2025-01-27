@@ -3,7 +3,6 @@ import { useCallback } from "react";
 import { notFound } from "next/navigation";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Card from "react-bootstrap/Card";
 import CrashMapCard from "@/components/CrashMapCard";
 import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { UPDATE_UNIT } from "@/queries/unit";
@@ -14,6 +13,7 @@ import CrashHeader from "@/components/CrashHeader";
 import CrashLocationBanner from "@/components/CrashLocationBanner";
 import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
+import CrashNarrativeCard from "@/components/CrashNarrativeCard";
 import DataCard from "@/components/DataCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
 import ChangeLog from "@/components/ChangeLog";
@@ -88,12 +88,7 @@ export default function CrashDetailsPage({
           <CrashDiagramCard crash={crash} />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
-          <Card>
-            <Card.Header>Narrative</Card.Header>
-            <Card.Body className="crash-header-card-body">
-              <Card.Text>{crash.investigator_narrative || ""}</Card.Text>
-            </Card.Body>
-          </Card>
+          <CrashNarrativeCard crash={crash} />
         </Col>
       </Row>
       <Row>
