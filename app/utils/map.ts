@@ -19,9 +19,9 @@ export function useResizeObserver<T extends HTMLElement>(
     const observer = new ResizeObserver(() => {
       // This timeout has a debouncing effect that prevents
       // the map from flashing on the screen during sidebar
-      // animation. A more roboust implementation would clear the
+      // animation. A more robust implementation would clear the
       // previous timeout interval but the performance hit
-      // seems neglibile
+      // seems negligible
       setTimeout(() => {
         callback();
       }, debounceDelay);
