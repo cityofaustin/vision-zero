@@ -27,7 +27,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
     <Card>
       <Card.Header>{title}</Card.Header>
       <Card.Body>
-        <Table striped hover>
+        <Table striped hover responsive>
           <thead>
             <tr>
               {columns.map((col) => (

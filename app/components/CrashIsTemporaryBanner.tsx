@@ -46,7 +46,7 @@ export default function CrashIsTemporaryBanner({
               )
             ) {
               await mutate({ id: crashId, updated_by: user?.email });
-              router.push("/create-crash-record");
+              router.push("/crashes");
             }
           }}
           disabled={isMutating}

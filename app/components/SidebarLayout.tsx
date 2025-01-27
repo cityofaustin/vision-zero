@@ -7,18 +7,13 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import ListGroup from "react-bootstrap/ListGroup";
-import {
-  FaShieldHeart,
-  FaGaugeHigh,
-  FaLocationDot,
-  FaAngleRight,
-  FaUserGroup,
-  FaCloudArrowUp,
-  FaFileCirclePlus,
-} from "react-icons/fa6";
-import AppNavBar from "./AppNavBar";
-import SideBarListItem from "./SideBarListItem";
-import LoginContainer from "./LoginContainer";
+import { FaAngleRight } from "react-icons/fa6";
+import AppNavBar from "@/components/AppNavBar";
+import SideBarListItem from "@/components/SideBarListItem";
+import LoginContainer from "@/components/LoginContainer";
+import { routes } from "@/configs/routes";
+import PermissionsRequired from "@/components/PermissionsRequired";
+
 const localStorageKey = "sidebarCollapsed";
 
 /**
@@ -33,14 +28,14 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
 
   const toggleSidebar = useCallback(
     () =>
-      setIsCollapsed((prevSate) => {
-        localStorage.setItem(localStorageKey, String(!prevSate));
-        return !prevSate;
+      setIsCollapsed((prevState) => {
+        localStorage.setItem(localStorageKey, String(!prevState));
+        return !prevState;
       }),
     []
   );
 
-  /** Check local storage for initialsidebar state */
+  /** Check local storage for initial sidebar state */
   useEffect(() => {
     const collapsedFromStorage =
       localStorage.getItem(localStorageKey) === "true";
@@ -96,48 +91,20 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
               </Button>
             </div>
             <ListGroup variant="flush">
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("dashboard")}
-                Icon={FaGaugeHigh}
-                label="Dashboard"
-                href="/dashboard"
-              />
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("crashes")}
-                Icon={FaShieldHeart}
-                label="Crashes"
-                href="/crashes"
-              />
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("locations")}
-                Icon={FaLocationDot}
-                label="Locations"
-                href="/locations"
-              />
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("create-crash-record")}
-                Icon={FaFileCirclePlus}
-                label="Create crash"
-                href="/create-crash-record"
-              />
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("upload-non-cr3")}
-                Icon={FaCloudArrowUp}
-                label="Upload Non-CR3"
-                href="/upload-non-cr3"
-              />
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("users")}
-                Icon={FaUserGroup}
-                label="Users"
-                href="/users"
-              />
+              {routes.map((route) => (
+                <PermissionsRequired
+                  allowedRoles={route.allowedRoles}
+                  key={route.path}
+                >
+                  <SideBarListItem
+                    isCollapsed={isCollapsed}
+                    isCurrentPage={segments.includes(route.path)}
+                    Icon={route.icon}
+                    label={route.label}
+                    href={`/${route.path}`}
+                  />
+                </PermissionsRequired>
+              ))}
             </ListGroup>
           </div>
         </div>

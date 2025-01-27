@@ -11,7 +11,7 @@ import TableWrapper from "@/components/TableWrapper";
 import { useQuery } from "@/utils/graphql";
 import { GET_LOCATION } from "@/queries/location";
 import { Location } from "@/types/locations";
-import { Filter } from "@/utils/queryBuilder";
+import { Filter } from "@/types/queryBuilder";
 import { locationCardColumns } from "@/configs/locationDataCard";
 import { locationCrashesColumns } from "@/configs/locationCrashesColumns";
 import { locationCrashesQueryConfig } from "@/configs/locationCrashesTable";
