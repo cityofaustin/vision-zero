@@ -46,8 +46,11 @@ export default function AppBreadCrumb() {
   const crumbs = useCrumbs(pathName);
   const isDetailsPage = crumbs?.length > 1;
 
+  if (!isDetailsPage) {
+    return null;
+  }
   return (
-    <Row className="mt-2 mb-3">
+    <Row className={"mt-2 mb-3"}>
       <Col>
         {isDetailsPage &&
           crumbs?.map((crumb, i) => {
