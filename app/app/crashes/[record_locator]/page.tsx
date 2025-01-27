@@ -88,8 +88,10 @@ export default function CrashDetailsPage({
           <CrashDiagramCard crash={crash} />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
-          <Card>
-            <Card.Header>Narrative</Card.Header>
+          <Card className="h-100">
+            <Card.Header>
+              <Card.Title>Narrative</Card.Title>
+            </Card.Header>
             <Card.Body className="crash-header-card-body">
               <Card.Text>{crash.investigator_narrative || ""}</Card.Text>
             </Card.Body>
