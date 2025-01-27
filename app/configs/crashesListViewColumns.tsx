@@ -52,7 +52,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
   },
   {
     path: "sus_serious_injry_count",
-    label: "Sus serious injuries",
+    label: "Serious Injuries",
     sortable: true,
   },
   {
