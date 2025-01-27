@@ -11,10 +11,13 @@ import { FaUserEdit, FaUserAltSlash } from "react-icons/fa";
 import AlignedLabel from "@/components/AlignedLabel";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import UserModal from "@/components/UserModal";
+import PermissionsRequired from "@/components/PermissionsRequired";
 import { useToken, formatRoleName } from "@/utils/auth";
 import { useUser } from "@/utils/users";
 import { User } from "@/types/users";
 import { formatDateTime } from "@/utils/formatters";
+
+const allowedUserEditRoles = ["vz-admin"];
 
 type UserColumn = {
   name: keyof User;
@@ -116,7 +119,7 @@ export default function UserDetails({
               {!user && <Spinner variant="primary" />}
               <div className="mb-3">
                 {user && (
-                  <>
+                  <PermissionsRequired allowedRoles={allowedUserEditRoles}>
                     <Button
                       className="me-2"
                       onClick={() => setShowEditUserModal(true)}
@@ -147,7 +150,7 @@ export default function UserDetails({
                         </AlignedLabel>
                       )}
                     </Button>
-                  </>
+                  </PermissionsRequired>
                 )}
               </div>
               {user && (

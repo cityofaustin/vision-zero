@@ -2,7 +2,7 @@ import Container from "react-bootstrap/Container";
 import Navbar from "react-bootstrap/Navbar";
 import Image from "react-bootstrap/Image";
 import Dropdown from "react-bootstrap/Dropdown";
-import { User } from "@auth0/auth0-react";
+import { User, LogoutOptions } from "@auth0/auth0-react";
 import {
   FaRightFromBracket,
   FaUserLarge,
@@ -16,7 +16,7 @@ import AlignedLabel from "./AlignedLabel";
 
 type NavBarProps = {
   user: User;
-  logout: () => void;
+  logout: (options?: LogoutOptions) => void;
 };
 
 /**
@@ -52,7 +52,12 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
                 Account
               </AlignedLabel>
             </Dropdown.Item>
-            <Dropdown.Item eventKey="2" onClick={() => logout()}>
+            <Dropdown.Item
+              eventKey="2"
+              onClick={() =>
+                logout({ logoutParams: { returnTo: window.location.origin } })
+              }
+            >
               <AlignedLabel>
                 <FaRightFromBracket className="me-3" />
                 Sign out

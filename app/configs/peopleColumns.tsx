@@ -1,5 +1,6 @@
 import { ColDataCardDef } from "@/types/types";
 import { Person } from "@/types/person";
+import PersonNameField from "@/components/PersonNameField";
 
 export const ALL_PEOPLE_COLUMNS = {
   drvr_city_name: {
@@ -72,7 +73,7 @@ export const ALL_PEOPLE_COLUMNS = {
   prsn_last_name: {
     path: "prsn_last_name",
     label: "Name",
-    // todo: the special combined first/middle/last name field edit component
+    editable: true,
     valueFormatter: (value, record, column) => {
       const nameFields = [
         record.prsn_first_name,
@@ -83,5 +84,18 @@ export const ALL_PEOPLE_COLUMNS = {
       const displayName = nameFields.filter((n) => n).join(" ");
       return displayName;
     },
+    customEditComponent: (
+      record,
+      onCancel,
+      mutation,
+      onSaveCallback,
+    ) => (
+      <PersonNameField
+        record={record}
+        onCancel={onCancel}
+        mutation={mutation}
+        onSaveCallback={onSaveCallback}
+      />
+    ),
   },
 } satisfies Record<string, ColDataCardDef<Person>>;
