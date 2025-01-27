@@ -17,9 +17,12 @@ import {
   FaFileCirclePlus,
   FaHeart,
 } from "react-icons/fa6";
-import AppNavBar from "./AppNavBar";
-import SideBarListItem from "./SideBarListItem";
-import LoginContainer from "./LoginContainer";
+import AppNavBar from "@/components/AppNavBar";
+import SideBarListItem from "@/components/SideBarListItem";
+import LoginContainer from "@/components/LoginContainer";
+import { routes } from "@/configs/routes";
+import PermissionsRequired from "@/components/PermissionsRequired";
+
 const localStorageKey = "sidebarCollapsed";
 
 /**
@@ -97,55 +100,20 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
               </Button>
             </div>
             <ListGroup variant="flush">
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("dashboard")}
-                Icon={FaGaugeHigh}
-                label="Dashboard"
-                href="/dashboard"
-              />
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("crashes")}
-                Icon={FaShieldHeart}
-                label="Crashes"
-                href="/crashes"
-              />
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("locations")}
-                Icon={FaLocationDot}
-                label="Locations"
-                href="/locations"
-              />
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("fatalities")}
-                Icon={FaHeart}
-                label="Fatalities"
-                href="/fatalities"
-              />
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("create-crash-record")}
-                Icon={FaFileCirclePlus}
-                label="Create crash"
-                href="/create-crash-record"
-              />
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("upload-non-cr3")}
-                Icon={FaCloudArrowUp}
-                label="Upload Non-CR3"
-                href="/upload-non-cr3"
-              />
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes("users")}
-                Icon={FaUserGroup}
-                label="Users"
-                href="/users"
-              />
+              {routes.map((route) => (
+                <PermissionsRequired
+                  allowedRoles={route.allowedRoles}
+                  key={route.path}
+                >
+                  <SideBarListItem
+                    isCollapsed={isCollapsed}
+                    isCurrentPage={segments.includes(route.path)}
+                    Icon={route.icon}
+                    label={route.label}
+                    href={`/${route.path}`}
+                  />
+                </PermissionsRequired>
+              ))}
             </ListGroup>
           </div>
         </div>
