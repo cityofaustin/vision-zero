@@ -1,4 +1,5 @@
 import { Recommendation } from "./recommendation";
+import { EngineeringArea } from "./engineeringArea";
 
 export type fatalitiesListRow = {
   year: number;
@@ -11,4 +12,5 @@ export type fatalitiesListRow = {
   location: string | null;
   victim_name: string | null;
   recommendation: Recommendation | null;
+  engineering_area: EngineeringArea | null;
 };

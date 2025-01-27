@@ -44,19 +44,27 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     label: "Crash Date",
     sortable: true,
     valueFormatter: formatDate,
+    style: { whiteSpace: "nowrap" },
   },
   {
     path: "location",
     label: "Location",
     sortable: true,
+    style: { whiteSpace: "nowrap" },
   },
   {
     path: "victim_name",
     label: "Victim Name",
     sortable: true,
+    style: { whiteSpace: "nowrap" },
   },
   {
     path: "recommendation.rec_text",
     label: "FRB Recommendation",
+    style: { minWidth: "400px" },
+  },
+  {
+    path: "engineering_area.atd_engineer_areas",
+    label: "Engineering Area",
   },
 ];
