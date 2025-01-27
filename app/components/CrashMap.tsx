@@ -1,7 +1,6 @@
 import {
   useCallback,
   useEffect,
-  useMemo,
   Dispatch,
   SetStateAction,
   MutableRefObject,
@@ -13,7 +12,6 @@ import MapGL, {
   ViewStateChangeEvent,
   MapRef,
 } from "react-map-gl";
-import debounce from "lodash/debounce";
 import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
@@ -58,19 +56,13 @@ export const CrashMap = ({
   editCoordinates,
   setEditCoordinates,
 }: CrashMapProps) => {
-  const debouncedSetCoordinates = useMemo(
-    () =>
-      debounce((latitude: number, longitude: number) => {
-        setEditCoordinates({ latitude, longitude });
-      }, 25),
-    [setEditCoordinates]
-  );
-
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
-      debouncedSetCoordinates(e.viewState.latitude, e.viewState.longitude);
+      const latitude = e.viewState.latitude;
+      const longitude = e.viewState.longitude;
+      setEditCoordinates({ latitude, longitude });
     },
-    [debouncedSetCoordinates]
+    [setEditCoordinates]
   );
 
   useEffect(() => {
