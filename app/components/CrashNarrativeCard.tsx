@@ -26,7 +26,7 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
       })
       .then((data) => {
         const win = window.open(data.message, "_blank");
-        win.focus();
+        win?.focus();
       })
       .catch((error) => {
         // Handle any errors that occurred during the request
