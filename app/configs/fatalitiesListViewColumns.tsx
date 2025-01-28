@@ -31,7 +31,7 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
   },
   {
     path: "ytd_fatality",
-    label: "YTD Fatalities",
+    label: "YTD Fatality",
     sortable: true,
   },
   {
