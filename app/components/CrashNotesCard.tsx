@@ -9,7 +9,7 @@ import { ColDataCardDef } from "@/types/types";
 import { formatDate } from "@/utils/formatters";
 import { useAuth0 } from "@auth0/auth0-react";
 
-interface NotesCardProps {
+interface CrashNotesCardProps {
   notes: CrashNote[];
   crashPk: number;
   onSaveCallback: () => Promise<void>;
@@ -54,7 +54,11 @@ const AddNoteButton = (handleShow: () => void) => {
   );
 };
 
-const NotesCard = ({ notes, crashPk, onSaveCallback }: NotesCardProps) => {
+const CrashNotesCard = ({
+  notes,
+  crashPk,
+  onSaveCallback,
+}: CrashNotesCardProps) => {
   const { user } = useAuth0();
   const [showModal, setShowModal] = useState(false);
   const [isValidating] = useState(false);
@@ -99,4 +103,4 @@ const NotesCard = ({ notes, crashPk, onSaveCallback }: NotesCardProps) => {
   );
 };
 
-export default NotesCard;
+export default CrashNotesCard;
