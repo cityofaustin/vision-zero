@@ -58,11 +58,14 @@ export default function NavBarSearch() {
   // if length is zero that means data was fetched and returned nothing
   const isSearchInvalid = data?.length === 0;
 
+  const searchError =
+    searchField === "case_id" ? "Case ID not found" : "Crash ID not found";
+
   return (
     <Form onSubmit={onSearch}>
       <Form.Group className="me-4">
         <InputGroup hasValidation>
-          <Button onClick={onSwitchSearchField} size="sm" variant="secondary">
+          <Button onClick={onSwitchSearchField} size="sm">
             {searchField === "record_locator" ? "Crash ID" : "Case ID"}
           </Button>
           <Form.Control
@@ -77,14 +80,9 @@ export default function NavBarSearch() {
             isInvalid={isSearchInvalid}
           />
           <Form.Control.Feedback type="invalid" tooltip>
-            Crash not found
+            {searchError}
           </Form.Control.Feedback>
-          <Button
-            type="submit"
-            size="sm"
-            variant="secondary"
-            disabled={!searchValue}
-          >
+          <Button type="submit" size="sm" disabled={!searchValue}>
             {!isLoading ? <FaMagnifyingGlass /> : <Spinner size="sm" />}
           </Button>
         </InputGroup>
