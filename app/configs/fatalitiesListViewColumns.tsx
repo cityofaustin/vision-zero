@@ -25,11 +25,6 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     sortable: true,
   },
   {
-    path: "law_enforcement_ytd_fatality_num",
-    label: "LE #",
-    sortable: true,
-  },
-  {
     path: "ytd_fatal_crash",
     label: "YTD Fatal Crash",
     sortable: true,
@@ -37,6 +32,11 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
   {
     path: "ytd_fatality",
     label: "YTD Fatalities",
+    sortable: true,
+  },
+  {
+    path: "law_enforcement_ytd_fatality_num",
+    label: "LE #",
     sortable: true,
   },
   {
