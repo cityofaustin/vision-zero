@@ -10,7 +10,7 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
   deleteMutation?: string;
   isValidating: boolean;
   title: string;
-  footer?: React.ReactNode;
+  headerActionButton?: React.ReactNode;
   onSaveCallback: () => Promise<void>;
   mutationVariables?: (variables: {
     id: number;
@@ -30,7 +30,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
   deleteMutation,
   isValidating,
   title,
-  footer,
+  headerActionButton,
   onSaveCallback,
   mutationVariables,
   currentUserEmail,
@@ -38,7 +38,13 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
 }: RelatedRecordTableProps<T>) {
   return (
     <Card>
-      <Card.Header>{title}</Card.Header>
+      <Card.Header>
+        <div className="d-flex justify-content-between">
+
+        {title}
+        {headerActionButton && headerActionButton}
+        </div>
+      </Card.Header>
       <Card.Body>
         <Table striped hover>
           <thead>
@@ -76,7 +82,6 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
           </tbody>
         </Table>
       </Card.Body>
-      {footer && <Card.Footer className="text-end">{footer}</Card.Footer>}
     </Card>
   );
 }

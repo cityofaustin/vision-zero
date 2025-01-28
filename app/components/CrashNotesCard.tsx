@@ -46,9 +46,9 @@ const notesColumns: ColDataCardDef<CrashNote>[] = [
   },
 ];
 
-const AddNoteButton = (handleShow: () => void) => {
+const AddNoteButton = ({ onClick }: { onClick: () => void }) => {
   return (
-    <Button size="sm" variant="primary" onClick={handleShow}>
+    <Button size="sm" variant="primary" onClick={onClick}>
       <AlignedLabel>
         <FaCirclePlus className="me-2" />
         Add note
@@ -91,7 +91,7 @@ const CrashNotesCard = ({
         isValidating={isValidating}
         title="Notes"
         onSaveCallback={onSaveCallback}
-        footer={AddNoteButton(handleShow)}
+        headerActionButton={<AddNoteButton onClick={handleShow} />}
         currentUserEmail={user?.email}
         quickEditColumn="text"
       />
