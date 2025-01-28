@@ -26,7 +26,7 @@ export default function Palette() {
     <>
       <AppBreadCrumb />
       {colors.map((color) => (
-        <Row className="mb-2">
+        <Row className="mb-2" key={color.name}>
           <Col className={`bg-${color.name} d-flex align-items-center rounded`}>
             <span className={`fs-4 text-${color.textColor}`}>{color.name}</span>
           </Col>
