@@ -53,7 +53,7 @@ const arrayToStringRep = (arr: number[]): string => {
  * Get the order_by graphql expression, e.g. `{ case_id: desc }`
  */
 const getOrderByExp = (sortColName: string, sortAsc: boolean): string => {
-  return getColumnQueryString([sortColName], sortAsc ? "asc" : "desc");
+  return getQueryStringComponent([sortColName], sortAsc ? "asc" : "desc");
 };
 
 /**
@@ -138,8 +138,8 @@ const getWhereExp = (filterGroups: FilterGroup[]): string => {
  *  field selection set.
  * @param tree - the graphql field tree
  * @param valueToSet - optional value to be assigned to each field in the tree,
- * which enables this function to return a string that can be used in an
- * order_by directive.
+ * which enables this function to be used to construct query arguments such as
+ * the order_by setting.
  *
  * @example
  */
@@ -154,7 +154,11 @@ function stringifyTree(tree: GraphQLFieldTree, valueToSet?: string): string {
         return key;
       }
     } else {
-      // todo: nope—this is too gross
+      /**
+       * if a valueToSet is provided, construct the return key to
+       * be a compliant as an argument by including a colon (:)
+       * in the nested field selction
+       */
       return `${key}${valueToSet ? ": " : ""} ${stringifyTree(
         value,
         valueToSet
@@ -166,12 +170,20 @@ function stringifyTree(tree: GraphQLFieldTree, valueToSet?: string): string {
 
 /**
  * Given an array of dot-noted column paths, generate
- * a query string the is a graphql-compatible field
- * selection set string
+ * a query string the is a graphql query component. The
+ * optional `valueToSet` string enables the returned query
+ * string to be formatted as a query argument rather than
+ * a field selection set. See the examples below.
+ *
+ * @param tree - the graphql field tree
+ * @param valueToSet - optional string value to be assigned to each field in the tree,
+ * which enables this function to be used to construct query arguments such as
+ * the order_by setting.
  *
  * @example
+ * // get query field selection set
  * const paths = ["record_locator", "est_comp_cost_crash_based", "recommendation.rec_text"]
- * getColumnQueryString(paths)
+ * getQueryStringComponent(paths)
  * returns
  * `{
  *  record_locator
@@ -180,8 +192,18 @@ function stringifyTree(tree: GraphQLFieldTree, valueToSet?: string): string {
  *     rec_text
  *   }
  * }`
+ *
+ * @example
+ * // get query order_by argument
+ * const sortFieldPath = "recommendation.rec_text"
+ * getQueryStringComponent([sortFieldPath], "asc")
+ * returns
+ * `{ recommendation: { rec_text: asc } }`
  */
-const getColumnQueryString = (paths: string[], valueToSet?: string): string => {
+const getQueryStringComponent = (
+  paths: string[],
+  valueToSet?: string
+): string => {
   // build the tree structure, where each entry is a field name
   const tree: GraphQLFieldTree = {};
   paths.forEach((path) => {
@@ -231,7 +253,7 @@ const buildQuery = <T extends Record<string, unknown>>(
     searchFilter,
   } = queryConfig;
 
-  const columnQueryString = getColumnQueryString(
+  const columnQueryString = getQueryStringComponent(
     columns.map((col) => col.path)
   );
 
