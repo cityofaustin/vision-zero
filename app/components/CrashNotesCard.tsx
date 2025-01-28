@@ -8,6 +8,7 @@ import RelatedRecordTable from "./RelatedRecordTable";
 import { ColDataCardDef } from "@/types/types";
 import { formatDate } from "@/utils/formatters";
 import { useAuth0 } from "@auth0/auth0-react";
+import AlignedLabel from "./AlignedLabel";
 
 interface CrashNotesCardProps {
   notes: CrashNote[];
@@ -48,8 +49,10 @@ const notesColumns: ColDataCardDef<CrashNote>[] = [
 const AddNoteButton = (handleShow: () => void) => {
   return (
     <Button size="sm" variant="primary" onClick={handleShow}>
-      <FaCirclePlus className="me-2" />
-      Add Note
+      <AlignedLabel>
+        <FaCirclePlus className="me-2" />
+        Add note
+      </AlignedLabel>
     </Button>
   );
 };
