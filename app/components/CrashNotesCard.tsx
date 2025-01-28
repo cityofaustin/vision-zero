@@ -19,14 +19,14 @@ interface CrashNotesCardProps {
 
 const notesColumns: ColDataCardDef<CrashNote>[] = [
   {
-    path: "date",
-    label: "Date",
+    path: "updated_at",
+    label: "Updated at",
     editable: false,
     valueFormatter: formatDate,
   },
   {
-    path: "user_email",
-    label: "User",
+    path: "updated_by",
+    label: "Updated by",
     editable: false,
   },
   {
