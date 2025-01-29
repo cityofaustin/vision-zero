@@ -25,6 +25,8 @@ type NavBarProps = {
  * App navbar with branding and a right-aligned dropdown menu
  */
 export default function AppNavBar({ user, logout }: NavBarProps) {
+  const userId = user?.["https://hasura.io/jwt/claims"]?.["x-hasura-user-id"];
+
   return (
     <Navbar expand="lg" className="pe-3">
       <Container fluid>
@@ -52,7 +54,7 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
             <Dropdown.Menu>
               <Dropdown.Header>{user.email}</Dropdown.Header>
               <Dropdown.Divider />
-              <Dropdown.Item eventKey="1">
+              <Dropdown.Item eventKey="1" href={`users/${userId}`}>
                 <AlignedLabel>
                   <FaUserLarge className="me-3" />
                   Account
