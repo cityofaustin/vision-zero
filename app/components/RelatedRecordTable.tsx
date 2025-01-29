@@ -15,7 +15,6 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
     id: number;
     updates: Record<string, unknown>;
   }) => { id: number; updates: Record<string, unknown> };
-  quickEditColumn?: string;
 }
 
 /**
@@ -30,7 +29,6 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
   headerActionButton,
   onSaveCallback,
   mutationVariables,
-  quickEditColumn,
 }: RelatedRecordTableProps<T>) {
   return (
     <Card>
@@ -69,7 +67,6 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
                   record={record}
                   mutation={mutation}
                   mutationVariables={mutationVariables}
-                  quickEditColumn={quickEditColumn}
                 />
               ))
             )}

@@ -78,15 +78,7 @@ export default function RelatedRecordTableRow<
       },
     };
 
-    if (context?.type === "note") {
-      await mutate(
-        mutationVariables ? mutationVariables(variables) : variables,
-        { skip_updated_by_setter: true }
-      );
-    } else {
-      await mutate(variables);
-    }
-
+    await mutate(variables);
     await onSaveCallback();
     setEditColumn(null);
   };

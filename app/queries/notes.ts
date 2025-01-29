@@ -10,14 +10,13 @@ export const INSERT_CRASH_NOTE = gql`
       object: {
         crash_pk: $crashPk
         text: $text
-        user_email: $userEmail
-        date: "now()"
+        updated_by: $userEmail
       }
     ) {
       id
       text
-      date
-      user_email
+      updated_at
+      updated_by
     }
   }
 `;
@@ -27,9 +26,9 @@ export const UPDATE_CRASH_NOTE = gql`
     update_crash_notes(where: { id: { _eq: $id } }, _set: $updates) {
       returning {
         id
-        date
         text
-        user_email
+        updated_at
+        updated_by
       }
     }
   }

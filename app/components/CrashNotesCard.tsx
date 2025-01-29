@@ -77,13 +77,14 @@ const CrashNotesCard = ({
           id: variables.id,
           updates: {
             text: variables.updates.text,
+            updated_by: user?.email,
+            updated_at: "now()",
           },
         })}
         isValidating={isValidating}
         title="Notes"
         onSaveCallback={onSaveCallback}
         headerActionButton={<AddNoteButton onClick={handleShow} />}
-        quickEditColumn="text"
       />
 
       <NotesModal
