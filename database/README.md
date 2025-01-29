@@ -84,6 +84,29 @@ The credentials for our CRIS logins are in the password store, including a note 
 
 Additional information about CRIS access can be found on the [TxDOT website](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html).
 
+##### Extract delivery configuration
+
+CRIS can be configured to deliver files to an AWS S3 bucket. This configuration only needs to be established once, and then it can be re-used whenever an extract file is requested.
+
+You will need to follow these steps to create or update our delivery configuration, which would be necessary if we were using a new/re-activated CRIS user account, our S3 bucket structure changed, etc.
+
+1. Login to CRIS using the appropriate account (see above): https://cris.dot.state.tx.us/
+2. Use the account dropdown menu in the top-right corner of the screen and select **Delivery Options**
+
+![CRIS delivery config - dropdown](../docs/images/delivery_config_1.png)
+
+1. Select `AWS` as the delivery method and fill in the config form as pictured below. See the **CRIS Import** item in 1pass for the current credentials.
+
+2. Note that the **Key Name Prefix** must not begin with a trailing slash: `prod/cris_extracts/inbox/`
+
+3. You can test the configuration by clicking the **Test AWS Connection** button. Although, this will test if the AWS credentials are valid, it will not detect an issue with the **Key Name Prefix**. An invalid **Key Name Prefix** will not result in any error on the CRIS website.
+
+![CRIS delivery config form](../docs/images/delivery_config_2.png)
+
+4. Click **Save** to save your config
+
+##### Extract file configutration
+
 Follow these steps to configure a new extract delivery:
 
 1. Login to CRIS using the appropriate account (see above): https://cris.dot.state.tx.us/
@@ -241,7 +264,7 @@ See also the guidance for creating a new geospatial layer in the common maintanc
 | Table                   | Geometry type  | description                                                                                                      | owner/source                                                         |
 | ----------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | `council_districts`     | `MultiPolygon` | City of Austin council districts                                                                                 | ArcGIS Online authoritative layer owned by CTM GIS                   |
-| `jurisdictions`     | `MultiPolygon` | City of Austin jurisdictions                                                                                     | ArcGIS Online authoritative layer owned by CTM GIS                   |
+| `jurisdictions`         | `MultiPolygon` | City of Austin jurisdictions                                                                                     | ArcGIS Online authoritative layer owned by CTM GIS                   |
 | `engineering_areas`     | `MultiPolygon` | TPW traffic engineering areas                                                                                    | ArcGIS Online authoritative layer owned by DTS GIS                   |
 | `non_coa_roadways`      | `MultiPolygon` | Polygon layer covering roadways which are not maintained by the City of Austin                                   | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
 | `atd_txdot_locations`   | `MultiPolygon` | Aka, "location polygons", these shapes are used to group crashes based on an intersection or road segment        | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
