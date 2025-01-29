@@ -82,7 +82,7 @@ The credentials for our CRIS logins are in the password store, including a note 
 - **Dev/testing extract account**: this account should be used for requesting ad-hoc CRIS extracts for delivery via S3 or manual download.
 - **Query & analyze account**: this account can be used for the CRIS query interface, that enables querying and access to individual crash records.
 
-Additional information about CRIS access can be found on the [TxDOT website](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html).
+Additional information about CRIS access can be found on the [TxDOT website](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html). [This TxDOT guide](https://www.txdot.gov/content/dam/docs/crash-records/cris-guide.pdf) also provides an overview of how CRIS data delivery is configured.
 
 ##### Extract delivery configuration
 
@@ -97,7 +97,7 @@ You will need to follow these steps to create or update our delivery configurati
 
 1. Select `AWS` as the delivery method and fill in the config form as pictured below. See the **CRIS Import** item in 1pass for the current credentials.
 
-2. Note that the **Key Name Prefix** must not begin with a trailing slash: `prod/cris_extracts/inbox/`
+2. Note that the **Key Name Prefix** must not begin with a slash: `prod/cris_extracts/inbox/`
 
 3. You can test the configuration by clicking the **Test AWS Connection** button. Although, this will test if the AWS credentials are valid, it will not detect an issue with the **Key Name Prefix**. An invalid **Key Name Prefix** will not result in any error on the CRIS website.
 
@@ -137,7 +137,7 @@ Any part of the range that is in the future will create daily zips that include 
 
 We receive CRIS data from TxDOT on a nightly basis through the CRIS "automated interface", which delivers an encrypted `.zip` file to an S3 bucket on our AWS premise. The `.zip` file contains all crash records _processed_ in the last 24 hours, and includes both CSV files and crash report PDFs (aka CR3s).
 
-At the time of writing, [this guide](https://www.txdot.gov/content/dam/docs/crash-records/cris-guide.pdf) provides an overview of how CRIS data delivery is configured.
+See [our docs](#cris-extract-configuration-and-accounts) about the extract configuration for more details.
 
 For more details on how we ingest CRIS data into our database, see the [CRIS import ETL documentation](../etl/cris_import/README.md).
 
