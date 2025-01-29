@@ -1,44 +1,49 @@
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import { FaFilePdf } from "react-icons/fa6";
-
 import AlignedLabel from "@/components/AlignedLabel";
 import { Crash } from "@/types/crashes";
 import { useToken } from "@/utils/auth";
 
+/**
+ * Card component that renders the crash narrative and a download CR3 button
+ */
 export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
   const token = useToken();
 
-  const onDownloadCR3 = async () => {
-    const requestUrl = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/cr3/download/${crash.id}`;
+  const isCr3Stored = crash.cr3_stored_fl;
 
-    fetch(requestUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error("Request failed");
-        }
-      })
-      .then((data) => {
-        const win = window.open(data.message, "_blank");
-        win?.focus();
-      })
-      .catch((error) => {
-        // Handle any errors that occurred during the request
-        console.error(error);
+  // Downloads pdf from the CR3 API and opens it in a new tab
+  const onDownloadCR3 = async () => {
+    const requestUrl = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/cr3/download/${crash.record_locator}`;
+
+    try {
+      const response = await fetch(requestUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
+      if (!response.ok) {
+        const responseText = await response.text();
+        console.error(responseText);
+        window.alert(`Failed to download CR3: ${String(responseText)}`);
+      } else {
+        const responseJson = await response.json();
+        const win = window.open(responseJson.message, "_blank");
+        win?.focus();
+      }
+    } catch (error) {
+      console.error(error);
+      window.alert(`Failed to download CR3: An unknown error has occured`);
+    }
   };
 
   return (
     <Card>
       <Card.Header className="d-flex justify-content-between">
         Narrative
-        <Button size="sm" onClick={onDownloadCR3}>
+        <Button size="sm" onClick={onDownloadCR3} disabled={!isCr3Stored}>
           <AlignedLabel>
             <FaFilePdf className="me-2" />
             <span>Download CR3</span>
