@@ -1,10 +1,7 @@
 import { useState } from "react";
 import Spinner from "react-bootstrap/Spinner";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
 import DataCardInput from "./DataCardInput";
 import { useMutation, useQuery, useLookupQuery } from "@/utils/graphql";
-import { FaTrash, FaPencil } from "react-icons/fa6";
 import {
   getRecordValue,
   renderColumnValue,
@@ -18,15 +15,12 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   record: T;
   columns: ColDataCardDef<T>[];
   mutation: string;
-  deleteMutation?: string;
   isValidating: boolean;
   onSaveCallback: () => Promise<void>;
   mutationVariables?: (variables: {
     id: number;
     updates: Record<string, unknown>;
   }) => { id: number; updates: Record<string, unknown> };
-  currentUserEmail?: string;
-  quickEditColumn?: string;
 }
 
 /**
@@ -42,19 +36,14 @@ export default function RelatedRecordTableRow<
   record,
   columns,
   mutation,
-  deleteMutation,
   isValidating,
   onSaveCallback,
   mutationVariables,
-  currentUserEmail,
-  quickEditColumn,
 }: RelatedRecordTableRowProps<T>) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
   const [editColumn, setEditColumn] = useState<ColDataCardDef<T> | null>(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { mutate, loading: isMutating } = useMutation(mutation);
-  const { mutate: deleteRecord } = useMutation(deleteMutation || "");
   const [query, typename] = useLookupQuery(
     editColumn?.editable && editColumn?.relationship
       ? editColumn.relationship
@@ -104,53 +93,12 @@ export default function RelatedRecordTableRow<
 
   const onCancel = () => setEditColumn(null);
 
-  const handleDelete = async () => {
-    if (!deleteMutation) return;
-    await deleteRecord({ id: Number(record.id) });
-    await onSaveCallback();
-    setShowDeleteModal(false);
-  };
-
   return (
     <>
       <tr>
         {columns.map((col) => {
           const isEditingThisColumn = col.path === editColumn?.path;
-          const isEditable =
-            col.editable &&
-            (!col.editableCheck || col.editableCheck(record, currentUserEmail));
-
-          if (col.path === "actions") {
-            return (
-              <td key={String(col.path)} style={col.style}>
-                {record.user_email === currentUserEmail && !editColumn && (
-                  <div className="d-flex">
-                    <Button
-                      variant="link"
-                      className="text-primary p-0 me-2"
-                      onClick={() => {
-                        const editableColumn = columns.find(
-                          (c) => c.path === quickEditColumn
-                        );
-                        if (editableColumn) {
-                          setEditColumn(editableColumn);
-                        }
-                      }}
-                    >
-                      <FaPencil />
-                    </Button>
-                    <Button
-                      variant="link"
-                      className="text-danger p-0"
-                      onClick={() => setShowDeleteModal(true)}
-                    >
-                      <FaTrash />
-                    </Button>
-                  </div>
-                )}
-              </td>
-            );
-          }
+          const isEditable = col.editable
 
           return (
             <td
@@ -201,21 +149,6 @@ export default function RelatedRecordTableRow<
           );
         })}
       </tr>
-
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Delete Note</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Are you sure you want to delete this note?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={handleDelete}>
-            Delete
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </>
   );
 }

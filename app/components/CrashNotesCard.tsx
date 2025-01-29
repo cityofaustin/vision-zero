@@ -3,7 +3,7 @@ import { useState } from "react";
 import { CrashNote } from "@/types/crashNote";
 import { FaCirclePlus } from "react-icons/fa6";
 import NotesModal from "./NotesModal";
-import { UPDATE_CRASH_NOTE, DELETE_CRASH_NOTE } from "@/queries/notes";
+import { UPDATE_CRASH_NOTE } from "@/queries/notes";
 import RelatedRecordTable from "./RelatedRecordTable";
 import { ColDataCardDef } from "@/types/types";
 import { formatDate } from "@/utils/formatters";
@@ -33,16 +33,8 @@ const notesColumns: ColDataCardDef<CrashNote>[] = [
     path: "text",
     label: "Note",
     editable: true,
-    editableCheck: (record: CrashNote, currentUserEmail?: string) =>
-      record.user_email === currentUserEmail,
     inputType: "textarea",
     style: { minWidth: "350px" },
-  },
-  {
-    path: "actions",
-    label: "",
-    editable: false,
-    style: { width: "50px" },
   },
 ];
 
@@ -78,7 +70,6 @@ const CrashNotesCard = ({
         records={notes}
         columns={notesColumns}
         mutation={UPDATE_CRASH_NOTE}
-        deleteMutation={DELETE_CRASH_NOTE}
         mutationVariables={(variables: {
           id: number;
           updates: Record<string, unknown>;
@@ -92,7 +83,6 @@ const CrashNotesCard = ({
         title="Notes"
         onSaveCallback={onSaveCallback}
         headerActionButton={<AddNoteButton onClick={handleShow} />}
-        currentUserEmail={user?.email}
         quickEditColumn="text"
       />
 
