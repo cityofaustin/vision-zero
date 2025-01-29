@@ -17,7 +17,7 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    * the dot-notated string path to accessing the property on the given type,
    * or "actions" for special action buttons column
    */
-  path: Path<T> | "actions";
+  path: Path<T>
   /**
    * label which will be rendered wherever this value is displayed in the app
    */
@@ -26,10 +26,6 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    * If the column is editable
    */
   editable?: boolean;
-  /**
-   * Function to check if the column is editable based on the current user's email
-   */
-  editableCheck?: (record: T, currentUserEmail?: string) => boolean;
   /**
    * Determines the UI component that will be used to edit the column
    */
