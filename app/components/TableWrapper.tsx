@@ -101,7 +101,15 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       const queryConfigFromStorage = JSON.parse(
         configFromStorageString
       ) as QueryConfig;
-      // todo: bugs lurking here because the ytd/1y/5y filters need to be refreshed
+
+      if (
+        queryConfigFromStorage?.dateFilter &&
+        queryConfigFromStorage.dateFilter.mode !== "custom"
+      ) {
+        // todo: bugs lurking here because the ytd/1y/5y filters need to be refreshed
+        console.log("DO SOMETHING HERE");
+      }
+      debugger;
       setIsLocalStorageLoaded(true);
       setQueryConfig(queryConfigFromStorage);
     } catch {
