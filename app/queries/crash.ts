@@ -224,7 +224,7 @@ export const GET_CRASH = gql`
       }
       crash_notes(
         where: { is_deleted: { _eq: false } }
-        order_by: { date: desc }
+        order_by: { updated_at: asc }
       ) {
         id
         updated_at
@@ -255,7 +255,6 @@ export const CRASH_NAV_SEARCH = gql`
     }
   }
 `;
-
 
 export const UPDATE_CRASH = gql`
   mutation update_crashes($id: Int!, $updates: crashes_set_input) {
