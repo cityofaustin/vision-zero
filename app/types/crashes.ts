@@ -1,10 +1,11 @@
-import { CrashInjuryMetric } from "./crashInjuryMetrics";
-import { LookupTableOption } from "./relationships";
-import { ChangeLogEntry } from "./changeLog";
-import { Unit } from "./unit";
-import { Charge } from "./charge";
-import { Person } from "./person";
-import { Recommendation } from "./recommendation";
+import { CrashInjuryMetric } from "@/types/crashInjuryMetrics";
+import { LookupTableOption } from "@/types/relationships";
+import { ChangeLogEntry } from "@/types/changeLog";
+import { Unit } from "@/types/unit";
+import { Charge } from "@/types/charge";
+import { Person } from "@/types/person";
+import { Recommendation } from "@/types/recommendation";
+import { CrashesListRow } from "@/types/crashesList";
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
@@ -69,4 +70,5 @@ export type Crash = {
   units: Unit[] | null;
   charges_cris: Charge[] | null;
   people_list_view: Person[] | null;
+  crashes_list_view: CrashesListRow;
 };
