@@ -1,5 +1,3 @@
-import { ColDataCardDef } from "@/types/types";
-
 /**
  * The types we currently support as filter values
  *
