@@ -194,7 +194,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     ) {
       /**
        * date modes are equal for our purposes - so remove the filter properties before
-       * we pass the two configes through isEqual()
+       * we pass the two configs through isEqual()
        */
       queryConfigMutable.dateFilter = undefined;
       initialQueryConfigMutable.dateFilter = undefined;
