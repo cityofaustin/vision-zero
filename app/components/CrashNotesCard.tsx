@@ -78,7 +78,6 @@ const CrashNotesCard = ({
           updates: {
             text: variables.updates.text,
             updated_by: user?.email,
-            updated_at: "now()",
           },
         })}
         isValidating={isValidating}

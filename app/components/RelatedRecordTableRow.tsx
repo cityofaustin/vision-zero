@@ -38,7 +38,6 @@ export default function RelatedRecordTableRow<
   mutation,
   isValidating,
   onSaveCallback,
-  mutationVariables,
 }: RelatedRecordTableRowProps<T>) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
@@ -57,11 +56,7 @@ export default function RelatedRecordTableRow<
       typename,
     });
 
-  const onSave = async (
-    recordId: number,
-    value: unknown,
-    context?: { type: string; [key: string]: unknown }
-  ) => {
+  const onSave = async (recordId: number, value: unknown) => {
     if (!editColumn) {
       // not possible
       return;
@@ -90,7 +85,7 @@ export default function RelatedRecordTableRow<
       <tr>
         {columns.map((col) => {
           const isEditingThisColumn = col.path === editColumn?.path;
-          const isEditable = col.editable
+          const isEditable = col.editable;
 
           return (
             <td
@@ -125,8 +120,7 @@ export default function RelatedRecordTableRow<
                             value,
                             !!col.relationship,
                             col.inputType
-                          ),
-                          { type: col.label === "Note" ? "note" : "default" }
+                          )
                         )
                       }
                       onCancel={onCancel}
