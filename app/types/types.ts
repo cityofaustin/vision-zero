@@ -17,7 +17,7 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    * the dot-notated string path to accessing the property on the given type,
    * or "actions" for special action buttons column
    */
-  path: Path<T>
+  path: Path<T>;
   /**
    * label which will be rendered wherever this value is displayed in the app
    */
@@ -26,6 +26,11 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    * If the column is editable
    */
   editable?: boolean;
+  /**
+   * If the field should only be available in the exported table data -
+   * only affects when column is used in a table config
+   */
+  exportOnly?: boolean;
   /**
    * Determines the UI component that will be used to edit the column
    */
@@ -43,6 +48,16 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
   ) => string;
   valueRenderer?: (record: T, column: ColDataCardDef<T>) => ReactNode;
   style?: React.CSSProperties;
+  /**
+   * Function that returns a custom component, used for display and/or editing
+   * when the column is dependent on other columns of the same record
+   */
+  customEditComponent?: (
+    record: T,
+    onCancel: () => void,
+    mutation: string,
+    onSaveCallback: () => Promise<void>
+  ) => ReactNode;
 }
 
 export interface MutationVariables extends Variables {

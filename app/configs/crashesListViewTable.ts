@@ -1,13 +1,9 @@
 import {
-  getStartOfYearDate,
   getYearsAgoDate,
   makeDateFilters,
 } from "@/components/TableDateSelector";
-import { crashesListViewColumns } from "@/configs/crashesListViewColumns";
-import { QueryConfig, FilterGroup } from "@/utils/queryBuilder";
+import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
-
-const columns = crashesListViewColumns.map((col) => String(col.path));
 
 const crashesListViewfilterCards: FilterGroup[] = [
   {
@@ -204,7 +200,8 @@ const crashesListViewfilterCards: FilterGroup[] = [
   {
     id: "internal_filters",
     label: "Internal",
-    groupOperator: "_or",
+    // because one of the filters is enabled and inverted we need to join using the "_and" operator
+    groupOperator: "_and",
     filterGroups: [
       {
         id: "private_drive",
@@ -221,12 +218,25 @@ const crashesListViewfilterCards: FilterGroup[] = [
           },
         ],
       },
+      {
+        id: "is_temp_record",
+        label: "Temporary records only",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "is_temp_record",
+            column: "is_temp_record",
+            operator: "_eq",
+            value: true,
+          },
+        ],
+      },
     ],
   },
 ];
 
 export const crashesListViewQueryConfig: QueryConfig = {
-  columns,
   exportable: true,
   exportFilename: "crashes",
   tableName: "crashes_list_view",

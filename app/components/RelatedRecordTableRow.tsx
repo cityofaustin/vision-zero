@@ -104,7 +104,15 @@ export default function RelatedRecordTableRow<
               }}
             >
               {!isEditingThisColumn && renderColumnValue(record, col)}
-              {isEditingThisColumn && (
+              {isEditingThisColumn &&
+                col.customEditComponent &&
+                col.customEditComponent(
+                  record,
+                  onCancel,
+                  mutation,
+                  onSaveCallback
+                )}
+              {isEditingThisColumn && !col?.customEditComponent && (
                 <>
                   {isLoadingLookups && <Spinner size="sm" />}
                   {!isLoadingLookups && (

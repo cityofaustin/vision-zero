@@ -40,7 +40,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
         </div>
       </Card.Header>
       <Card.Body>
-        <Table striped hover>
+        <Table striped hover responsive>
           <thead>
             <tr>
               {columns.map((col) => (
