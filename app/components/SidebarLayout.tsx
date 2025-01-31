@@ -67,7 +67,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
     <div style={{ height: "100vh", overflow: "hidden" }} className="d-flex">
       {/* Sidebar */}
       <div
-        className={`bg-dark text-white app-sidebar app-sidebar-${
+        className={`bg-dark app-sidebar app-sidebar-${
           isCollapsed ? "collapsed" : "expanded"
         }`}
       >

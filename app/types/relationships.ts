@@ -29,5 +29,5 @@ export interface Relationship<T extends Record<string, unknown>> {
 
 export type LookupTableOption = {
   id: string | number;
-  label: string | number;
+  label: string;
 };

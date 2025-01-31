@@ -111,9 +111,14 @@ export default function TableExportModal<T extends Record<string, unknown>>({
         </Alert>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
-          Cancel
-        </Button>
+        {isLoading && (
+          <Button disabled variant="outline-primary">
+            <AlignedLabel>
+              <Spinner size="sm" className="me-2" />
+              <span>Loading...</span>
+            </AlignedLabel>
+          </Button>
+        )}
         {downloadUrl && (
           <Button
             href={downloadUrl || "#"}
@@ -127,6 +132,9 @@ export default function TableExportModal<T extends Record<string, unknown>>({
             </AlignedLabel>
           </Button>
         )}
+        <Button variant="danger" onClick={onClose}>
+          Cancel
+        </Button>
         {error && (
           <Alert variant="danger">
             <p>Something went wrong</p>
@@ -137,14 +145,6 @@ export default function TableExportModal<T extends Record<string, unknown>>({
               </details>
             </p>
           </Alert>
-        )}
-        {isLoading && (
-          <Button disabled variant="outline-primary">
-            <AlignedLabel>
-              <Spinner size="sm" className="me-2" />
-              <span>Loading...</span>
-            </AlignedLabel>
-          </Button>
         )}
       </Modal.Footer>
     </Modal>
