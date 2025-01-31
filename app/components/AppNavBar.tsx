@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Container from "react-bootstrap/Container";
 import Dropdown from "react-bootstrap/Dropdown";
 import { User, LogoutOptions } from "@auth0/auth0-react";
@@ -31,7 +32,7 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
     <Navbar expand="lg" className="pe-3">
       <Container fluid>
         <Col className="d-flex justify-content-start">
-          <Navbar.Brand href="/crashes">
+          <Navbar.Brand href="/crashes" as={Link}>
             <Image
               src="/assets/img/brand/visionzerotext.png"
               alt="Vision Zero Logo"
@@ -54,7 +55,7 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
             <Dropdown.Menu>
               <Dropdown.Header>{user.email}</Dropdown.Header>
               <Dropdown.Divider />
-              <Dropdown.Item eventKey="1" href={`users/${userId}`}>
+              <Dropdown.Item eventKey="1" href={`users/${userId}`} as={Link}>
                 <AlignedLabel>
                   <FaUserLarge className="me-3" />
                   Account
