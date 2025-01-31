@@ -9,7 +9,6 @@ import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { UPDATE_UNIT } from "@/queries/unit";
 import { UPDATE_PERSON } from "@/queries/person";
 import { useQuery } from "@/utils/graphql";
-import AppBreadCrumb from "@/components/AppBreadCrumb";
 import CrashHeader from "@/components/CrashHeader";
 import CrashLocationBanner from "@/components/CrashLocationBanner";
 import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
@@ -62,7 +61,6 @@ export default function CrashDetailsPage({
 
   return (
     <>
-      <AppBreadCrumb />
       <CrashHeader crash={crash} />
       {
         // show alert if crash on private drive or outside of Austin full purpose
@@ -198,7 +196,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row className="mb-5">
+      <Row>
         <Col>{crash && <ChangeLog logs={crash.change_logs || []} />}</Col>
       </Row>
     </>

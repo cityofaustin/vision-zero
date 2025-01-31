@@ -3,7 +3,6 @@ import { useState, useCallback } from "react";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import AlignedLabel from "@/components/AlignedLabel";
-import AppBreadCrumb from "@/components/AppBreadCrumb";
 import CreateCrashRecordModal from "@/components/CreateCrashRecordModal";
 import { FaCirclePlus } from "react-icons/fa6";
 import { crashesListViewColumns } from "@/configs/crashesListViewColumns";
@@ -26,8 +25,7 @@ export default function Crashes() {
 
   return (
     <>
-      <AppBreadCrumb />
-      <Card>
+      <Card className="mt-3">
         <Card.Header className="fs-3 fw-bold d-flex justify-content-between">
           Crashes
           <PermissionsRequired allowedRoles={allowedCreateCrashRecordRoles}>

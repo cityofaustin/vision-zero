@@ -50,7 +50,7 @@ export default function AppBreadCrumb() {
     return null;
   }
   return (
-    <Row className={"mt-2 mb-3"}>
+    <div className="px-3 py-2">
       <Col>
         {isDetailsPage &&
           crumbs?.map((crumb, i) => {
@@ -72,6 +72,6 @@ export default function AppBreadCrumb() {
             }
           })}
       </Col>
-    </Row>
+    </div>
   );
 }
