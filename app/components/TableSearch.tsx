@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { FaMagnifyingGlass } from "react-icons/fa6";
-import { QueryConfig } from "@/utils/queryBuilder";
+import { QueryConfig } from "@/types/queryBuilder";
 
 export interface TableSearchProps {
   queryConfig: QueryConfig;
