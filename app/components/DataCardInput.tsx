@@ -49,11 +49,13 @@ const DataCardInput = ({
   const [editValue, setEditValue] = useState<string>(initialValue);
 
   const isDirty = editValue !== initialValue;
+  const isValid = editValue.trim() !== "";
 
   return (
     <Form
       onSubmit={async (e) => {
         e.preventDefault();
+        if (!isValid) return;
         await onSave(editValue);
       }}
     >
@@ -66,6 +68,15 @@ const DataCardInput = ({
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             inputMode={inputType === "number" ? "numeric" : undefined}
+          />
+        )}
+        {inputType === "textarea" && (
+          <Form.Control
+            autoFocus
+            size="sm"
+            as="textarea"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
           />
         )}
         {inputType === "select" && selectOptions && (
@@ -98,7 +109,11 @@ const DataCardInput = ({
       </div>
       <div className="text-end">
         <span className="me-2">
-          <Button size="sm" type="submit" disabled={isMutating || !isDirty}>
+          <Button
+            size="sm"
+            type="submit"
+            disabled={isMutating || !isDirty || !isValid}
+          >
             Save
           </Button>
         </span>

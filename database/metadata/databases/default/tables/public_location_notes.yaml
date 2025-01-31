@@ -6,81 +6,81 @@ insert_permissions:
     permission:
       check: {}
       columns:
+        - created_by
         - date
-        - user_email
-        - created_at
-        - updated_at
         - text
-        - id
         - location_id
+        - updated_by
+        - user_email
   - role: vz-admin
     permission:
       check: {}
       columns:
+        - created_by
         - date
-        - user_email
-        - created_at
-        - updated_at
         - text
-        - id
         - location_id
+        - updated_by
+        - user_email
 select_permissions:
   - role: editor
     permission:
       columns:
+        - created_at
+        - created_by
+        - date
         - id
         - location_id
         - text
-        - user_email
-        - created_at
-        - date
         - updated_at
+        - updated_by
+        - user_email
       filter: {}
   - role: readonly
     permission:
       columns:
+        - created_at
+        - created_by
+        - date
         - id
         - location_id
         - text
-        - user_email
-        - created_at
-        - date
         - updated_at
+        - updated_by
+        - user_email
       filter: {}
   - role: vz-admin
     permission:
       columns:
+        - created_at
+        - created_by
+        - date
         - id
         - location_id
         - text
-        - user_email
-        - created_at
-        - date
         - updated_at
+        - updated_by
+        - user_email
       filter: {}
 update_permissions:
   - role: editor
     permission:
       columns:
-        - id
+        - date
         - location_id
         - text
+        - updated_by
         - user_email
-        - created_at
-        - date
-        - updated_at
       filter: {}
       check: null
   - role: vz-admin
     permission:
       columns:
-        - id
+        - date
         - location_id
         - text
+        - updated_by
         - user_email
-        - created_at
-        - date
-        - updated_at
       filter: {}
       check: null
 delete_permissions:

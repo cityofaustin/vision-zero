@@ -11,24 +11,22 @@ insert_permissions:
       check: {}
       columns:
         - crash_pk
-        - created_at
+        - created_by
         - date
-        - id
         - is_deleted
         - text
-        - updated_at
+        - updated_by
         - user_email
   - role: vz-admin
     permission:
       check: {}
       columns:
         - crash_pk
-        - created_at
+        - created_by
         - date
-        - id
         - is_deleted
         - text
-        - updated_at
+        - updated_by
         - user_email
 select_permissions:
   - role: editor
@@ -36,11 +34,13 @@ select_permissions:
       columns:
         - crash_pk
         - created_at
+        - created_by
         - date
         - id
         - is_deleted
         - text
         - updated_at
+        - updated_by
         - user_email
       filter: {}
   - role: readonly
@@ -48,49 +48,49 @@ select_permissions:
       columns:
         - crash_pk
         - created_at
+        - created_by
         - date
         - id
         - is_deleted
         - text
         - updated_at
+        - updated_by
         - user_email
       filter: {}
   - role: vz-admin
     permission:
       columns:
-        - is_deleted
         - crash_pk
-        - id
-        - text
-        - user_email
         - created_at
+        - created_by
         - date
+        - id
+        - is_deleted
+        - text
         - updated_at
+        - updated_by
+        - user_email
       filter: {}
 update_permissions:
   - role: editor
     permission:
       columns:
-        - is_deleted
         - crash_pk
-        - id
-        - text
-        - user_email
-        - created_at
         - date
-        - updated_at
+        - is_deleted
+        - text
+        - updated_by
+        - user_email
       filter: {}
       check: null
   - role: vz-admin
     permission:
       columns:
         - crash_pk
-        - created_at
         - date
-        - id
         - is_deleted
         - text
-        - updated_at
+        - updated_by
         - user_email
       filter: {}
       check: null
