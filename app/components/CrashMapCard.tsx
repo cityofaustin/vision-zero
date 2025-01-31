@@ -6,6 +6,9 @@ import { CrashMap } from "@/components/CrashMap";
 import { useMutation } from "@/utils/graphql";
 import { useResizeObserver } from "@/utils/map";
 import { LatLon } from "@/components/CrashMap";
+import PermissionsRequired from "@/components/PermissionsRequired";
+
+const allowedMapEditRoles = ["vz-admin", "editor"];
 
 interface CrashMapCardProps {
   savedLatitude: number | null;
@@ -59,38 +62,40 @@ export default function CrashMapCard({
           <div>
             <span>Geocode provider</span>
           </div>
-          <div>
-            <Button
-              size="sm"
-              variant="primary"
-              disabled={isMutating}
-              onClick={async () => {
-                if (!isEditingCoordinates) {
-                  setIsEditingCoordinates(true);
-                } else {
-                  await mutate({
-                    id: crashId,
-                    updates: { ...editCoordinates },
-                  });
-                  await onSaveCallback();
-                  setIsEditingCoordinates(false);
-                }
-              }}
-            >
-              {isEditingCoordinates ? "Save location" : "Edit"}
-            </Button>
-            {isEditingCoordinates && (
+          <PermissionsRequired allowedRoles={allowedMapEditRoles}>
+            <div>
               <Button
-                className="ms-1"
                 size="sm"
-                variant="danger"
-                onClick={() => setIsEditingCoordinates(false)}
+                variant="primary"
                 disabled={isMutating}
+                onClick={async () => {
+                  if (!isEditingCoordinates) {
+                    setIsEditingCoordinates(true);
+                  } else {
+                    await mutate({
+                      id: crashId,
+                      updates: { ...editCoordinates },
+                    });
+                    await onSaveCallback();
+                    setIsEditingCoordinates(false);
+                  }
+                }}
               >
-                Cancel
+                {isEditingCoordinates ? "Save location" : "Edit"}
               </Button>
-            )}
-          </div>
+              {isEditingCoordinates && (
+                <Button
+                  className="ms-1"
+                  size="sm"
+                  variant="danger"
+                  onClick={() => setIsEditingCoordinates(false)}
+                  disabled={isMutating}
+                >
+                  Cancel
+                </Button>
+              )}
+            </div>
+          </PermissionsRequired>
         </div>
       </Card.Footer>
     </Card>
