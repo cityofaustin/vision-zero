@@ -54,7 +54,6 @@ const DataCardInput = ({
     <Form
       onSubmit={async (e) => {
         e.preventDefault();
-        if (!isValid) return;
         await onSave(editValue);
       }}
     >
