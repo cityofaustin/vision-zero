@@ -1,7 +1,6 @@
 import { CrashInjuryMetric } from "@/types/crashInjuryMetrics";
-import Badge from "react-bootstrap/Badge";
 import { FaNotesMedical } from "react-icons/fa6";
-import AlignedLabel from "./AlignedLabel";
+import AlignedLabel from "@/components/AlignedLabel";
 
 const InjuryBadge = ({
   label,
