@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import Link from "next/link";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import { MapRef } from "react-map-gl";
@@ -13,6 +14,8 @@ interface CrashMapCardProps {
   crashId: number;
   onSaveCallback: () => Promise<void>;
   mutation: string;
+  locationId: string | null;
+  isManualGeocode: boolean | null;
 }
 
 /**
@@ -24,6 +27,8 @@ export default function CrashMapCard({
   savedLongitude,
   onSaveCallback,
   mutation,
+  locationId,
+  isManualGeocode,
 }: CrashMapCardProps) {
   const mapRef = useRef<MapRef | null>(null);
   /**
@@ -41,9 +46,20 @@ export default function CrashMapCard({
   });
   const { mutate, loading: isMutating } = useMutation(mutation);
 
+  const hasCoordinates = !!savedLatitude && !!savedLongitude;
+
+  const hasLocation = !!locationId;
+
   return (
     <Card>
-      <Card.Header>Location</Card.Header>
+      <Card.Header>
+        Location:{" "}
+        {hasLocation ? (
+          <Link href={`/locations/${locationId}`}>{locationId}</Link>
+        ) : (
+          "unassigned"
+        )}
+      </Card.Header>
       <Card.Body className="p-1 crash-header-card-body" ref={mapContainerRef}>
         <CrashMap
           savedLatitude={savedLatitude}
@@ -57,7 +73,14 @@ export default function CrashMapCard({
       <Card.Footer>
         <div className="d-flex justify-content-between">
           <div>
-            <span>Geocode provider</span>
+            <span>
+              Location provider: {""}
+              {hasCoordinates
+                ? isManualGeocode
+                  ? "Manual Q/A"
+                  : "TxDOT CRIS"
+                : "No Primary Coordinates"}
+            </span>
           </div>
           <div>
             <Button
