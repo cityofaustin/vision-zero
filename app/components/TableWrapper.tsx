@@ -3,10 +3,13 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
 import isEqual from "lodash/isEqual";
+import cloneDeep from "lodash/cloneDeep";
 import { useQuery } from "@/utils/graphql";
 import Table from "@/components/Table";
 import TableSearch, { SearchSettings } from "@/components/TableSearch";
-import TableDateSelector from "@/components/TableDateSelector";
+import TableDateSelector, {
+  makeDateFilterFromMode,
+} from "@/components/TableDateSelector";
 import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
 import { useQueryBuilder, useExportQuery } from "@/utils/queryBuilder";
 import { QueryConfig, Filter } from "@/types/queryBuilder";
@@ -17,6 +20,7 @@ import TableExportModal from "@/components/TableExportModal";
 import TablePaginationControls from "@/components/TablePaginationControls";
 import { useActiveSwitchFilterCount } from "@/components/TableAdvancedSearchFilterToggle";
 import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
+import { QueryConfigSchema } from "@/schema/queryBuilder";
 
 interface TableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
@@ -97,15 +101,58 @@ export default function TableWrapper<T extends Record<string, unknown>>({
    */
   useEffect(() => {
     const configFromStorageString = localStorage.getItem(localStorageKey) || "";
+    let queryConfigFromStorage: QueryConfig | undefined;
+
+    /**
+     * Try to parse any config we can find
+     */
     try {
-      const queryConfigFromStorage = JSON.parse(
-        configFromStorageString
-      ) as QueryConfig;
-      // todo: bugs lurking here because the ytd/1y/5y filters need to be refreshed
-      setIsLocalStorageLoaded(true);
-      setQueryConfig(queryConfigFromStorage);
+      queryConfigFromStorage = JSON.parse(configFromStorageString);
     } catch {
+      console.error(
+        "Unable to parse queryConfig from local storage. Using default config instead"
+      );
       setIsLocalStorageLoaded(true);
+      return;
+    }
+
+    /**
+     * Validate the query config we found in local storage
+     */
+    try {
+      QueryConfigSchema.parse(queryConfigFromStorage);
+    } catch (err) {
+      console.error(
+        "Invalid QueryConfig found in local storage. Using default config instead."
+      );
+      console.error(err);
+      setIsLocalStorageLoaded(true);
+      return;
+    }
+
+    /**
+     * If date mode filters (YTD, 1Y, 5Y, etc) are in use, bring them into sync
+     * with current date. We do this by recalculating the date filter start / end
+     * dates and updating them in the config loaded from storage
+     */
+    if (
+      queryConfigFromStorage?.dateFilter &&
+      queryConfigFromStorage.dateFilter.mode !== "custom"
+    ) {
+      const { mode, column } = queryConfigFromStorage.dateFilter;
+
+      const newDateFilter = makeDateFilterFromMode(
+        mode,
+        queryConfigFromStorage,
+        column
+      );
+
+      queryConfigFromStorage.dateFilter = newDateFilter;
+    }
+
+    setIsLocalStorageLoaded(true);
+    if (queryConfigFromStorage) {
+      setQueryConfig(queryConfigFromStorage);
     }
   }, [localStorageKey]);
 
@@ -134,7 +181,25 @@ export default function TableWrapper<T extends Record<string, unknown>>({
    * Manage dirty filter state to enable reset filters button
    */
   useEffect(() => {
-    setAreFiltersDirty(!isEqual(queryConfig, initialQueryConfig));
+    const queryConfigMutable = cloneDeep(queryConfig);
+    const initialQueryConfigMutable = cloneDeep(initialQueryConfig);
+
+    /**
+     * Ignore date timestamps if not using a custom range
+     */
+    if (
+      queryConfig.dateFilter?.mode === initialQueryConfig.dateFilter?.mode &&
+      queryConfigMutable.dateFilter &&
+      queryConfig.dateFilter?.mode !== "custom"
+    ) {
+      /**
+       * date modes are equal for our purposes - so remove the filter properties before
+       * we pass the two configs through isEqual()
+       */
+      queryConfigMutable.dateFilter = undefined;
+      initialQueryConfigMutable.dateFilter = undefined;
+    }
+    setAreFiltersDirty(!isEqual(queryConfigMutable, initialQueryConfigMutable));
   }, [queryConfig, initialQueryConfig]);
 
   /**

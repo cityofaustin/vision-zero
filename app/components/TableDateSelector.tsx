@@ -83,7 +83,9 @@ interface TableSearchProps {
 /**
  * Construct a DateRange from a quey Filter
  */
-const getDateRangeFromDateFilter = (queryConfig: QueryConfig): DateRange => {
+export const getDateRangeFromDateFilter = (
+  queryConfig: QueryConfig
+): DateRange => {
   const filters = queryConfig.dateFilter?.filters || [];
   if (queryConfig.dateFilter?.mode === "all") {
     // build a range 2010 to present - this is to translate `all` mode
@@ -140,6 +142,28 @@ const getDateRange = (
   return dateRange;
 };
 
+/**
+ * Create a new queryConfig.dateFilter based on the provided filter mode
+ */
+export const makeDateFilterFromMode = (
+  mode: DateFilterMode,
+  queryConfig: QueryConfig,
+  dateColumnName: string
+) => {
+  const dateRange = getDateRange(mode, queryConfig);
+
+  const newFilters = makeDateFilters(dateColumnName || "", dateRange);
+
+  return {
+    column: dateColumnName,
+    mode,
+    filters: newFilters,
+  };
+};
+
+/**
+ * Table UI component which provides date filtering
+ */
 export default function TableDateSelector({
   queryConfig,
   setQueryConfig,
@@ -150,15 +174,15 @@ export default function TableDateSelector({
   });
   const [isDatePickerDirty, setIsDatePickerDirty] = useState(false);
 
-  const filter = queryConfig.dateFilter;
+  const currentFilter = queryConfig.dateFilter;
 
   useEffect(() => {
     // keep custom range form in sync with queryConfig
     setCustomDateRange(getDateRangeFromDateFilter(queryConfig));
     setIsDatePickerDirty(false);
-  }, [filter, queryConfig]);
+  }, [currentFilter, queryConfig]);
 
-  if (!filter) return;
+  if (!currentFilter) return;
 
   return (
     <div className="d-flex justify-content-between align-items-center">
@@ -169,24 +193,21 @@ export default function TableDateSelector({
             <Button
               key={button.label}
               variant="light"
-              active={button.value === filter.mode}
+              active={button.value === currentFilter.mode}
               onClick={() => {
-                if (button.value === filter.mode) {
+                if (button.value === currentFilter.mode) {
                   // nothing todo
                   return;
                 }
-                const dateRange = getDateRange(button.value, queryConfig);
 
-                const newFilters = makeDateFilters(
-                  filter.column || "",
-                  dateRange
+                const newDateFilter = makeDateFilterFromMode(
+                  button.value,
+                  queryConfig,
+                  currentFilter.column
                 );
+
                 const newQueryConfig = { ...queryConfig };
-                const newDateFilter = {
-                  column: filter.column,
-                  mode: button.value,
-                  filters: newFilters,
-                };
+
                 newQueryConfig.dateFilter = newDateFilter;
                 // reset offset / pagination
                 newQueryConfig.offset = 0;
@@ -198,7 +219,7 @@ export default function TableDateSelector({
           ))}
         </ButtonGroup>
       </ButtonToolbar>
-      {filter.mode === "custom" && (
+      {currentFilter.mode === "custom" && (
         <div className="d-flex">
           {/* Date range start */}
           <DatePicker
@@ -240,12 +261,12 @@ export default function TableDateSelector({
               variant="outline-primary"
               onClick={() => {
                 const newFilters = makeDateFilters(
-                  filter.column || "",
+                  currentFilter.column || "",
                   customDateRange
                 );
                 const newQueryConfig = { ...queryConfig };
                 const newDateFilter: QueryConfig["dateFilter"] = {
-                  column: filter.column,
+                  column: currentFilter.column,
                   mode: "custom",
                   filters: newFilters,
                 };
