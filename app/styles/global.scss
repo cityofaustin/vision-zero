@@ -72,6 +72,16 @@ $dark: $rich-black;
   border-radius: 0px;
 }
 
+.injury-indicator-badge {
+  border-radius: 50%;
+  font-size: 0.9rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  line-height: 1.5rem;
+  font-weight: bold;
+  color: $white;
+}
+
 .sidebar-toggle-open {
   transform: rotate(180deg);
   transition: transform 0.2s ease-out; /* Optional: Smooth transition */

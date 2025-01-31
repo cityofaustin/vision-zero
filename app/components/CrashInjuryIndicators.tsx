@@ -17,9 +17,13 @@ const InjuryBadge = ({
       <AlignedLabel>
         <span className={`me-1 ${value ? "" : "text-secondary"}`}>{label}</span>
         {value !== 0 && (
-          <Badge bg={`${value ? "dark" : "secondary"}`} pill>
+          <span
+            className={`injury-indicator-badge d-flex justify-content-center align-items-middle bg-${
+              value ? "dark" : "secondary"
+            }`}
+          >
             {value}
-          </Badge>
+          </span>
         )}
         {value === 0 && <span className="text-secondary">-</span>}
       </AlignedLabel>
