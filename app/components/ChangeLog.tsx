@@ -8,6 +8,7 @@ import {
   ChangeLogDiff,
   ChangeLogEntryEnriched,
 } from "@/types/changeLog";
+import CardTitle from "react-bootstrap/CardTitle";
 
 // used to track the accordion expanded state of the change log
 const localStorageKey = "crashHistoryCardExpandedItem";
@@ -99,7 +100,9 @@ export default function ChangeLog({ logs }: { logs: ChangeLogEntry[] }) {
       }}
     >
       <Accordion.Item eventKey={recordHistoryItemName}>
-        <Accordion.Header>Record history</Accordion.Header>
+        <Accordion.Header>
+          <CardTitle>Record history</CardTitle>
+        </Accordion.Header>
         <Accordion.Body>
           <Table striped hover>
             <thead>

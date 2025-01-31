@@ -28,7 +28,7 @@ export default function Crashes() {
     <>
       <AppBreadCrumb />
       <Card>
-        <Card.Header className="fs-5 fw-bold d-flex justify-content-between">
+        <Card.Header className="fs-3 fw-bold d-flex justify-content-between">
           Crashes
           <PermissionsRequired allowedRoles={allowedCreateCrashRecordRoles}>
             <Button className="me-2" onClick={() => setShowNewUserModal(true)}>

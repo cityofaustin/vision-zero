@@ -360,18 +360,6 @@ export default function CreateCrashRecordModal({
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        {!isSubmitting && (
-          <Button
-            variant="secondary"
-            onClick={() => {
-              reset();
-              onClose();
-            }}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-        )}
         <Button
           variant="primary"
           type="submit"
@@ -381,6 +369,18 @@ export default function CreateCrashRecordModal({
           {isSubmitting && <Spinner size="sm" />}
           {!isSubmitting && <span>Create crash record</span>}
         </Button>
+        {!isSubmitting && (
+          <Button
+            variant="danger"
+            onClick={() => {
+              reset();
+              onClose();
+            }}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+        )}
       </Modal.Footer>
     </Modal>
   );

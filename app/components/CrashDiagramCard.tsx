@@ -70,7 +70,7 @@ const ZoomResetControls = ({
       <ButtonGroup>
         <Button
           size="sm"
-          variant="primary"
+          variant="outline-primary"
           onClick={() => zoomIn(0.25)}
           title="Zoom In"
         >
@@ -78,14 +78,19 @@ const ZoomResetControls = ({
         </Button>
         <Button
           size="sm"
-          variant="primary"
+          variant="outline-primary"
           onClick={() => zoomOut(0.25)}
           title="Zoom Out"
         >
           <FaMagnifyingGlassMinus />
         </Button>
       </ButtonGroup>
-      <Button size="sm" variant="primary" onClick={handleReset} title="Reset">
+      <Button
+        size="sm"
+        variant="outline-primary"
+        onClick={handleReset}
+        title="Reset"
+      >
         <SlActionUndo className="me-2" />
         Reset
       </Button>
@@ -132,8 +137,10 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   };
 
   return (
-    <Card>
-      <Card.Header>Diagram</Card.Header>
+    <Card className="h-100">
+      <Card.Header>
+        <Card.Title>Diagram</Card.Title>
+      </Card.Header>
       <Card.Body className="crash-header-card-body text-center d-flex flex-column">
         {!diagramError && (
           <TransformWrapper
@@ -148,7 +155,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               setRotation={setRotation}
               zoomToImage={zoomToImage}
             />
-            <TransformComponent>
+            <TransformComponent contentStyle={{ mixBlendMode: "multiply" }}>
               <Image
                 fluid
                 style={{ transform: `rotate(${rotation}deg)` }}
