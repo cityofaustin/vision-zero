@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Spinner from "react-bootstrap/Spinner";
-import DataCardInput from "./DataCardInput";
+import { useAuth0 } from "@auth0/auth0-react";
+import DataCardInput from "@/components/DataCardInput";
 import { useMutation, useQuery, useLookupQuery } from "@/utils/graphql";
 import {
   getRecordValue,
@@ -10,6 +11,7 @@ import {
 } from "@/utils/formHelpers";
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
+import { hasRole } from "@/utils/auth";
 
 interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   record: T;
@@ -44,6 +46,11 @@ export default function RelatedRecordTableRow<
       ? editColumn.relationship
       : undefined
   );
+
+  const { user } = useAuth0();
+
+  const isReadOnlyUser = user && hasRole(["readonly"], user);
+
   const { data: selectOptions, isLoading: isLoadingLookups } =
     useQuery<LookupTableOption>({
       query,
@@ -81,10 +88,13 @@ export default function RelatedRecordTableRow<
           <td
             key={String(col.path)}
             style={{
-              cursor: col.editable && !isEditingThisColumn ? "pointer" : "auto",
+              cursor:
+                col.editable && !isEditingThisColumn && !isReadOnlyUser
+                  ? "pointer"
+                  : "auto",
             }}
             onClick={() => {
-              if (!col.editable) {
+              if (!col.editable || isReadOnlyUser) {
                 return;
               }
               if (!isEditingThisColumn) {
@@ -95,7 +105,12 @@ export default function RelatedRecordTableRow<
             {!isEditingThisColumn && renderColumnValue(record, col)}
             {isEditingThisColumn &&
               col.customEditComponent &&
-              col.customEditComponent(record, onCancel, mutation, onSaveCallback)}
+              col.customEditComponent(
+                record,
+                onCancel,
+                mutation,
+                onSaveCallback
+              )}
             {isEditingThisColumn && !col?.customEditComponent && (
               <>
                 {isLoadingLookups && <Spinner size="sm" />}
