@@ -26,7 +26,7 @@ type NavBarProps = {
  */
 export default function AppNavBar({ user, logout }: NavBarProps) {
   return (
-    <Navbar expand="lg" className="px-2 bg-light border-bottom">
+    <Navbar expand="lg" className="app-navbar px-2 w-100">
       <Container fluid>
         <Col className="d-flex justify-content-start">
           <Navbar.Brand href="/crashes">

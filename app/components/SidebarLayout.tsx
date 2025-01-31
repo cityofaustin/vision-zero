@@ -109,7 +109,12 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
         <AppNavBar user={user} logout={logout} />
         <main
           className="flex-grow-1 d-flex flex-column"
-          style={{ overflowY: "auto" }}
+          style={{
+            overflowY: "auto",
+            position: "relative",
+            paddingTop: "50px",
+            marginTop: "-50px",
+          }}
         >
           <AppBreadCrumb />
           <div className="flex-grow-1 px-3 pb-3">{children}</div>

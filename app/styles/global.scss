@@ -44,9 +44,15 @@ $danger: $rojo;
 $light: $anti-flash-white;
 $dark: $rich-black;
 
+.app-navbar {
+  background-color: rgba(244, 245, 246, 0.4);
+  z-index: 10000;
+  backdrop-filter: blur(10px);
+}
+
 .app-sidebar {
   transition: width 0.2s ease-out;
-  overflow-X: hidden;
+  overflow-x: hidden;
 }
 
 .app-sidebar-expanded {
