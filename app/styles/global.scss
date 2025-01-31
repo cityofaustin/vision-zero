@@ -23,17 +23,16 @@ $vz-sand: #eee6de;
 }
 
 .app-sidebar {
-  height: 100vh;
-  overflow-y: auto;
   transition: width 0.2s ease-out;
+  overflow-X: hidden;
 }
 
 .app-sidebar-expanded {
-  width: 15rem !important;
+  width: 19rem !important;
 }
 
 .app-sidebar-collapsed {
-  width: 3.5rem !important;
+  width: 4.6rem !important;
 }
 
 .mapboxgl-map {

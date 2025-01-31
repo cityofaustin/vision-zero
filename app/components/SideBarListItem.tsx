@@ -31,7 +31,7 @@ export default function SideBarListItem({
       href={href}
     >
       <>
-        <span className="me-3">
+        <span className={isCollapsed ? "" : "me-3"}>
           <Icon />
         </span>
         {!isCollapsed && <span>{label}</span>}
