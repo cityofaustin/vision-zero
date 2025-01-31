@@ -49,7 +49,6 @@ const DataCardInput = ({
   const [editValue, setEditValue] = useState<string>(initialValue);
 
   const isDirty = editValue !== initialValue;
-  const isValid = editValue.trim() !== "";
 
   return (
     <Form
@@ -112,7 +111,7 @@ const DataCardInput = ({
           <Button
             size="sm"
             type="submit"
-            disabled={isMutating || !isDirty || !isValid}
+            disabled={isMutating || !isDirty}
           >
             Save
           </Button>
