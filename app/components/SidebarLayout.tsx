@@ -10,6 +10,8 @@ import SideBarListItem from "@/components/SideBarListItem";
 import LoginContainer from "@/components/LoginContainer";
 import { routes } from "@/configs/routes";
 import PermissionsRequired from "@/components/PermissionsRequired";
+import AppBreadCrumb from "@/components/AppBreadCrumb";
+import AppFooter from "@/components/AppFooter";
 
 const localStorageKey = "sidebarCollapsed";
 
@@ -105,16 +107,14 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
         style={{ minWidth: 0 }}
       >
         <AppNavBar user={user} logout={logout} />
-        <main className="px-3 flex-grow-1" style={{ overflowY: "auto" }}>
-          {children}
+        <main
+          className="flex-grow-1 d-flex flex-column"
+          style={{ overflowY: "auto" }}
+        >
+          <AppBreadCrumb />
+          <div className="flex-grow-1 px-3 pb-3">{children}</div>
+          <AppFooter />
         </main>
-        <div className="bg-light text-secondary text-center py-2 px-3 border-top d-flex justify-content-between">
-          <span className="">Vision Zero Editor v2.5</span>
-          <span>
-            Built by{" "}
-            <a href="https://austinmobility.io">Data & Technology Services</a>
-          </span>
-        </div>
       </div>
     </div>
   );
