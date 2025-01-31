@@ -172,7 +172,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
           },
         ],
       },
-      // todo: "Other" sitch
+      // todo: "Other" switch
     ],
   },
   {

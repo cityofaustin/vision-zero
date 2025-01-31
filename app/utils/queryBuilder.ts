@@ -15,7 +15,7 @@ import { ColDataCardDef } from "@/types/types";
 
 const BASE_QUERY_STRING = `
     query $queryName {
-        $tableName(limit: $limit, offset: $offset, order_by: $orderBy where: $where) 
+        $tableName(limit: $limit, offset: $offset, order_by: $orderBy, where: $where) 
         $columns
         $aggregationQuery
     }`;
@@ -53,7 +53,7 @@ const arrayToStringRep = (arr: number[]): string => {
  * Get the order_by graphql expression, e.g. `{ case_id: desc }`
  */
 const getOrderByExp = (sortColName: string, sortAsc: boolean): string => {
-  return `{${sortColName}: ${sortAsc ? "asc" : "desc"}}`;
+  return getQueryStringComponent([sortColName], sortAsc ? "asc" : "desc");
 };
 
 /**
@@ -134,25 +134,55 @@ const getWhereExp = (filterGroups: FilterGroup[]): string => {
 
 /**
  * Recursively stringify a field tree object into a nested graphql
- *  field selection set
+ *  field selection set.
+ * @param tree - the graphql field tree
+ * @param valueToSet - optional value to be assigned to each field in the tree,
+ * which enables this function to be used to construct query arguments such as
+ * the order_by setting.
+ *
+ * @example
  */
-function stringify(tree: GraphQLFieldTree): string {
+function stringifyTree(tree: GraphQLFieldTree, valueToSet?: string): string {
   const fields = Object.keys(tree).map((key) => {
     const value = tree[key];
     const isEmpty = Object.keys(value).length === 0;
-    return isEmpty ? key : `${key} ${stringify(value)}`;
+    if (isEmpty) {
+      if (valueToSet !== undefined) {
+        return `${key}: ${valueToSet}`;
+      } else {
+        return key;
+      }
+    } else {
+      /**
+       * if a valueToSet is provided, construct the return key to
+       * be a compliant as an argument by including a colon (:)
+       * in the nested field selction
+       */
+      return `${key}${valueToSet ? ": " : ""} ${stringifyTree(
+        value,
+        valueToSet
+      )}`;
+    }
   });
   return `{ ${fields.join(" ")} }`;
 }
 
 /**
  * Given an array of dot-noted column paths, generate
- * a query string the is a graphql-compatible field
- * selection set string
+ * a query string the is a graphql query component. The
+ * optional `valueToSet` string enables the returned query
+ * string to be formatted as a query argument rather than
+ * a field selection set. See the examples below.
+ *
+ * @param tree - the graphql field tree
+ * @param valueToSet - optional string value to be assigned to each field in the tree,
+ * which enables this function to be used to construct query arguments such as
+ * the order_by setting.
  *
  * @example
+ * // get query field selection set
  * const paths = ["record_locator", "est_comp_cost_crash_based", "recommendation.rec_text"]
- * getColumnQueryString(paths)
+ * getQueryStringComponent(paths)
  * returns
  * `{
  *  record_locator
@@ -161,8 +191,18 @@ function stringify(tree: GraphQLFieldTree): string {
  *     rec_text
  *   }
  * }`
+ *
+ * @example
+ * // get query order_by argument
+ * const sortFieldPath = "recommendation.rec_text"
+ * getQueryStringComponent([sortFieldPath], "asc")
+ * returns
+ * `{ recommendation: { rec_text: asc } }`
  */
-const getColumnQueryString = (paths: string[]): string => {
+const getQueryStringComponent = (
+  paths: string[],
+  valueToSet?: string
+): string => {
   // build the tree structure, where each entry is a field name
   const tree: GraphQLFieldTree = {};
   paths.forEach((path) => {
@@ -174,7 +214,7 @@ const getColumnQueryString = (paths: string[]): string => {
       current = current[part];
     });
   });
-  return stringify(tree);
+  return stringifyTree(tree, valueToSet);
 };
 
 /**
@@ -212,7 +252,7 @@ const buildQuery = <T extends Record<string, unknown>>(
     searchFilter,
   } = queryConfig;
 
-  const columnQueryString = getColumnQueryString(
+  const columnQueryString = getQueryStringComponent(
     columns.map((col) => col.path)
   );
 
