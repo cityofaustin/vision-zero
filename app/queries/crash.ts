@@ -224,7 +224,7 @@ export const GET_CRASH = gql`
       }
       crash_notes(
         where: { is_deleted: { _eq: false } }
-        order_by: { updated_at: asc }
+        order_by: { created_at: asc }
       ) {
         id
         updated_at
