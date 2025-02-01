@@ -227,8 +227,8 @@ export const GET_CRASH = gql`
         order_by: { created_at: asc }
       ) {
         id
-        updated_at
         updated_by
+        created_at
         text
         crash_pk
       }
