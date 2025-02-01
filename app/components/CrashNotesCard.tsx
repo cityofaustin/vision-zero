@@ -7,7 +7,6 @@ import { UPDATE_CRASH_NOTE } from "@/queries/notes";
 import RelatedRecordTable from "./RelatedRecordTable";
 import { ColDataCardDef } from "@/types/types";
 import { formatDate } from "@/utils/formatters";
-import { useAuth0 } from "@auth0/auth0-react";
 import AlignedLabel from "./AlignedLabel";
 
 interface CrashNotesCardProps {
@@ -54,7 +53,6 @@ const CrashNotesCard = ({
   crashPk,
   onSaveCallback,
 }: CrashNotesCardProps) => {
-  const { user } = useAuth0();
   const [showModal, setShowModal] = useState(false);
   const [isValidating] = useState(false);
   const handleClose = () => setShowModal(false);
@@ -70,16 +68,6 @@ const CrashNotesCard = ({
         records={notes}
         columns={notesColumns}
         mutation={UPDATE_CRASH_NOTE}
-        mutationVariables={(variables: {
-          id: number;
-          updates: Record<string, unknown>;
-        }) => ({
-          id: variables.id,
-          updates: {
-            text: variables.updates.text,
-            updated_by: user?.email,
-          },
-        })}
         isValidating={isValidating}
         title="Notes"
         onSaveCallback={onSaveCallback}

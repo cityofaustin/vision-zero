@@ -17,10 +17,6 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   mutation: string;
   isValidating: boolean;
   onSaveCallback: () => Promise<void>;
-  mutationVariables?: (variables: {
-    id: number;
-    updates: Record<string, unknown>;
-  }) => { id: number; updates: Record<string, unknown> };
 }
 
 /**
