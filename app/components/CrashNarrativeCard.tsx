@@ -40,9 +40,9 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
   };
 
   return (
-    <Card  className="h-100">
+    <Card className="h-100">
       <Card.Header className="d-flex justify-content-between">
-      <Card.Title>Narrative</Card.Title>
+        <Card.Title>Narrative</Card.Title>
         <Button size="sm" onClick={onDownloadCR3} disabled={!isCr3Stored}>
           <AlignedLabel>
             <FaFilePdf className="me-2" />
