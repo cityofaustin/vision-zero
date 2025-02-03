@@ -111,9 +111,6 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
           className="flex-grow-1 d-flex flex-column"
           style={{
             overflowY: "auto",
-            position: "relative",
-            paddingTop: "50px",
-            marginTop: "-50px",
           }}
         >
           <AppBreadCrumb />
