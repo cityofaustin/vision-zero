@@ -210,6 +210,21 @@ const crashesListViewfilterCards: FilterGroup[] = [
           },
         ],
       },
+      {
+        id: "is_not_coa_roadway",
+        label: "Non-COA roadway crashes only",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "is_not_coa_roadway",
+            column: "is_coa_roadway",
+            operator: "_eq",
+            value: false,
+          },
+        ],
+      },
     ],
   },
   {
