@@ -28,7 +28,7 @@ interface DataCardProps<T extends Record<string, unknown>> {
   isValidating: boolean;
   title: string;
   onSaveCallback: () => Promise<void>;
-  HeaderActionButton?: React.ComponentType<HeaderActionButtonProps<T>>;
+  headerActionButton?: React.ComponentType<HeaderActionButtonProps<T>>;
 }
 
 /**
@@ -41,7 +41,7 @@ export default function DataCard<T extends Record<string, unknown>>({
   isValidating,
   title,
   onSaveCallback,
-  HeaderActionButton,
+  headerActionButton: HeaderActionButton,
 }: DataCardProps<T>) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
