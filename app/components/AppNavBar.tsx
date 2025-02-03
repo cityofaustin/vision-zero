@@ -55,7 +55,7 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
             <Dropdown.Menu>
               <Dropdown.Header>{user.email}</Dropdown.Header>
               <Dropdown.Divider />
-              <Dropdown.Item eventKey="1" href={`users/${userId}`} as={Link}>
+              <Dropdown.Item eventKey="1" href={`/users/${userId}`} as={Link}>
                 <AlignedLabel>
                   <FaUserLarge className="me-3" />
                   Account
