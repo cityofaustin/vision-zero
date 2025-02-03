@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Spinner from "react-bootstrap/Spinner";
-import DataCardInput from "./DataCardInput";
+import { useAuth0 } from "@auth0/auth0-react";
+import DataCardInput from "@/components/DataCardInput";
 import { useMutation, useQuery, useLookupQuery } from "@/utils/graphql";
 import {
   getRecordValue,
@@ -11,6 +12,7 @@ import {
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
 import { RowActionButtonProps } from "@/components/RelatedRecordTable";
+import { hasRole } from "@/utils/auth";
 
 interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   /**
@@ -67,6 +69,11 @@ export default function RelatedRecordTableRow<
       ? editColumn.relationship
       : undefined
   );
+
+  const { user } = useAuth0();
+
+  const isReadOnlyUser = user && hasRole(["readonly"], user);
+
   const { data: selectOptions, isLoading: isLoadingLookups } =
     useQuery<LookupTableOption>({
       query,
@@ -110,11 +117,14 @@ export default function RelatedRecordTableRow<
             <td
               key={String(col.path)}
               style={{
-                cursor: isEditable && !isEditingThisColumn ? "pointer" : "auto",
+                cursor:
+                  isEditable && !isEditingThisColumn && !isReadOnlyUser
+                    ? "pointer"
+                    : "auto",
                 ...(col.style || {}),
               }}
               onClick={() => {
-                if (!isEditable) {
+                if (!isEditable || isReadOnlyUser) {
                   return;
                 }
                 if (!isEditingThisColumn) {
