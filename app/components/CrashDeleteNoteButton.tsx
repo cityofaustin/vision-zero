@@ -23,7 +23,7 @@ export default function CrashDeleteNoteButton<
       <div>
         <Button
           size="sm"
-          variant="danger"
+          variant="secondary"
           disabled={isMutating}
           onClick={async () => {
             if (window.confirm("Are you sure you want to delete this note?")) {
