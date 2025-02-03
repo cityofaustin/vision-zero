@@ -1,13 +1,13 @@
-CREATE OR REPLACE FUNCTION public.afd_incidents_trigger()
- RETURNS trigger
- LANGUAGE plpgsql
-AS $function$
+create or replace function public.afd_incidents_trigger()
+returns trigger
+language plpgsql
+as $function$
 BEGIN
   update afd__incidents set
     austin_full_purpose = (
       select ST_Contains(jurisdiction.geometry, incidents.geometry)
       from afd__incidents incidents
-      left join atd_jurisdictions jurisdiction on (jurisdiction.jurisdiction_label = 'AUSTIN FULL PURPOSE')
+      left join jurisdictions jurisdiction on (jurisdiction.jurisdiction_label = 'AUSTIN FULL PURPOSE')
       where incidents.id = new.id),
     location_id = (
       select locations.location_id
@@ -15,8 +15,8 @@ BEGIN
       join atd_txdot_locations locations on (
         true
         and locations.location_group = 1 -- this was added to rule out old level 5s
-        and incidents.geometry && locations.shape 
-        and ST_Contains(locations.shape, incidents.geometry)
+        and incidents.geometry && locations.geometry
+        and ST_Contains(locations.geometry, incidents.geometry)
       )
       where incidents.id = new.id),
     latitude = ST_Y(afd__incidents.geometry),
@@ -28,5 +28,4 @@ BEGIN
     where afd__incidents.id = new.id;
 RETURN NEW;
 END;
-$function$
-;
+$function$;

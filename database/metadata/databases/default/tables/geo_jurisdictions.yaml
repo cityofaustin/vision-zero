@@ -1,0 +1,3 @@
+table:
+  name: jurisdictions
+  schema: geo
