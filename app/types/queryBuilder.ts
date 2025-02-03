@@ -124,7 +124,7 @@ export interface QueryConfig {
    */
   offset: number;
   /**
-   * The column name to be used in the `order_by` directive
+   * The column name to be used in the `order_by` argument
    */
   sortColName: string;
   /**
