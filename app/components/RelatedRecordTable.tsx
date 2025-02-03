@@ -85,6 +85,8 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
                   {col.label}
                 </th>
               ))}
+              {/* add an empty row for the row action */}
+              {rowActionButton && <th></th>}
             </tr>
           </thead>
           <tbody>
