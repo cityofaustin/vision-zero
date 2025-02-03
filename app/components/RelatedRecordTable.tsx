@@ -47,7 +47,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
           <tbody>
             {records.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} style={{ textAlign: "center" }}>
+                <td colSpan={columns.length} className="text-center text-secondary">
                   No {title.toLowerCase()} found
                 </td>
               </tr>
