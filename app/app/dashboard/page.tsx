@@ -50,10 +50,9 @@ const dashboardLinks: DashboardLinkCardProps[] = [
 ];
 
 export default function Dashboard() {
-
   return (
     <>
-      <Row>
+      <Row className="mt-3">
         <Col md={9}>
           <p>
             The below metrics reflect&nbsp;

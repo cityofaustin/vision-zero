@@ -26,15 +26,15 @@ type NavBarProps = {
  */
 export default function AppNavBar({ user, logout }: NavBarProps) {
   return (
-    <Navbar expand="lg" className="pe-3">
+    <Navbar className="app-navbar bg-light border-bottom ps-1 pe-3 w-100">
       <Container fluid>
         <Col className="d-flex justify-content-start">
           <Navbar.Brand href="/crashes">
             <Image
-              src="/assets/img/brand/visionzerotext.png"
+              src="/assets/img/brand/vz_logo_transparent_asphalt.png"
               alt="Vision Zero Logo"
-              height="24px"
-              width="140px"
+              height="30px"
+              className="app-brand-img"
             />
           </Navbar.Brand>
         </Col>
