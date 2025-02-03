@@ -12,13 +12,35 @@ import {
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
 import { hasRole } from "@/utils/auth";
+import { RowActionButtonProps } from "@/components/RelatedRecordTable";
 
 interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
+  /**
+   * The records to be rendered in the table
+   */
   record: T;
+  /**
+   * The table's column definitions
+   */
   columns: ColDataCardDef<T>[];
+  /**
+   * Graphql mutation that will be exectuted when a row is edited -
+   * will also be passed to the rowActionButton, if present
+   */
   mutation: string;
+  /**
+   * If the SWR refetcher is (re)validating
+   */
   isValidating: boolean;
+  /**
+   * Callback function to be executed after a row edit is saved
+   */
   onSaveCallback: () => Promise<void>;
+  /**
+   * Optional react component to be rendered in the rightmost column
+   * of every row
+   */
+  rowActionButton?: React.ComponentType<RowActionButtonProps<T>>;
 }
 
 /**
@@ -36,6 +58,7 @@ export default function RelatedRecordTableRow<
   mutation,
   isValidating,
   onSaveCallback,
+  rowActionButton: RowActionButton,
 }: RelatedRecordTableRowProps<T>) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
@@ -145,6 +168,15 @@ export default function RelatedRecordTableRow<
             </td>
           );
         })}
+        {RowActionButton && (
+          <td>
+            <RowActionButton
+              record={record}
+              mutation={mutation}
+              onSaveCallback={onSaveCallback}
+            />
+          </td>
+        )}
       </tr>
     </>
   );
