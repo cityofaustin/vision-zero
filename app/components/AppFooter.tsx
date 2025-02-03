@@ -1,4 +1,4 @@
-var pckg = require("../package.json");
+import pckg from "../package.json";
 
 /**
  * The app footer component
