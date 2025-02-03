@@ -178,7 +178,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
   {
     id: "geography_filter_card",
     label: "Jurisdiction",
-    groupOperator: "_or",
+    groupOperator: "_and",
     filterGroups: [
       {
         id: "in_austin_full_purpose",
@@ -190,6 +190,21 @@ const crashesListViewfilterCards: FilterGroup[] = [
           {
             id: "in_austin_full_purpose",
             column: "in_austin_full_purpose",
+            operator: "_eq",
+            value: true,
+          },
+        ],
+      },
+      {
+        id: "is_coa_roadway",
+        label: "COA roadway crashes only",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "is_coa_roadway",
+            column: "is_coa_roadway",
             operator: "_eq",
             value: true,
           },
