@@ -8,6 +8,7 @@ import RelatedRecordTable from "./RelatedRecordTable";
 import { ColDataCardDef } from "@/types/types";
 import { formatDate } from "@/utils/formatters";
 import AlignedLabel from "./AlignedLabel";
+import CrashDeleteNoteButton from "./CrashDeleteNoteButton";
 
 interface CrashNotesCardProps {
   notes: CrashNote[];
@@ -48,6 +49,9 @@ const AddNoteButton = ({ onClick }: { onClick: () => void }) => {
   );
 };
 
+/**
+ * UI component for adding a note to a crash
+ */
 const CrashNotesCard = ({
   notes,
   crashPk,
@@ -72,6 +76,7 @@ const CrashNotesCard = ({
         title="Notes"
         onSaveCallback={onSaveCallback}
         headerActionButton={<AddNoteButton onClick={handleShow} />}
+        rowActionButton={CrashDeleteNoteButton}
       />
 
       <NotesModal
