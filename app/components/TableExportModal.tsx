@@ -107,7 +107,7 @@ export default function TableExportModal<T extends Record<string, unknown>>({
         setDownloadUrl(null);
       };
     }
-  }, [isLoading, data]);
+  }, [isLoading, data, columns]);
 
   if (error) {
     console.error(error);
