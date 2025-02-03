@@ -133,7 +133,7 @@ export default function CrashDetailsPage({
             columns={crashDataCards.address}
             mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
-            HeaderActionButton={CrashSwapAddressButton}
+            headerActionButton={CrashSwapAddressButton}
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
