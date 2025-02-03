@@ -12,6 +12,8 @@ import {
 } from "@/utils/formHelpers";
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
+import { useAuth0 } from "@auth0/auth0-react";
+import { hasRole } from "@/utils/auth";
 
 export interface HeaderActionButtonProps<T extends Record<string, unknown>> {
   record: T;
@@ -51,6 +53,10 @@ export default function DataCard<T extends Record<string, unknown>>({
       : undefined
   );
 
+  const { user } = useAuth0();
+
+  const isReadOnlyUser = user && hasRole(["readonly"], user);
+
   const { data: selectOptions, isLoading: isLoadingLookups } =
     useQuery<LookupTableOption>({
       query,
@@ -84,7 +90,7 @@ export default function DataCard<T extends Record<string, unknown>>({
     <Card>
       <Card.Header className="d-flex justify-content-between bg-white border-none">
         <Card.Title>{title}</Card.Title>
-        {HeaderActionButton && (
+        {HeaderActionButton && !isReadOnlyUser && (
           <HeaderActionButton
             record={record}
             mutation={mutation}
@@ -102,10 +108,12 @@ export default function DataCard<T extends Record<string, unknown>>({
                   key={String(col.path)}
                   style={{
                     cursor:
-                      col.editable && !isEditingThisColumn ? "pointer" : "auto",
+                      col.editable && !isEditingThisColumn && !isReadOnlyUser
+                        ? "pointer"
+                        : "auto",
                   }}
                   onClick={() => {
-                    if (!col.editable) {
+                    if (!col.editable || isReadOnlyUser) {
                       return;
                     }
                     if (!isEditingThisColumn) {

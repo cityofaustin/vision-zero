@@ -9,6 +9,7 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
   mutation: string;
   isValidating: boolean;
   title: string;
+  headerActionButton?: React.ReactNode;
   onSaveCallback: () => Promise<void>;
 }
 
@@ -21,12 +22,16 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
   mutation,
   isValidating,
   title,
+  headerActionButton,
   onSaveCallback,
 }: RelatedRecordTableProps<T>) {
   return (
     <Card>
       <Card.Header>
+        <div className="d-flex justify-content-between">
         <Card.Title>{title}</Card.Title>
+        {!!headerActionButton && headerActionButton}
+        </div>
       </Card.Header>
       <Card.Body>
         <Table hover responsive>
