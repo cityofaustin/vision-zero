@@ -1,5 +1,3 @@
-import { ColDataCardDef } from "@/types/types";
-
 /**
  * The types we currently support as filter values
  *
@@ -20,15 +18,15 @@ export interface Filter {
    * Hasura comparison operator, e.g. _eq, _gte
    */
   operator:
-    | "_gte"
-    | "_lte"
-    | "_gt"
-    | "_eq"
-    | "_neq"
-    | "_is_null"
-    | "_ilike"
-    | "_in"
-    | "_nin";
+  | "_gte"
+  | "_lte"
+  | "_gt"
+  | "_eq"
+  | "_neq"
+  | "_is_null"
+  | "_ilike"
+  | "_in"
+  | "_nin";
   /**
    * The filter value
    */
@@ -126,7 +124,7 @@ export interface QueryConfig {
    */
   offset: number;
   /**
-   * The column name to be used in the `order_by` directive
+   * The column name to be used in the `order_by` argument
    */
   sortColName: string;
   /**

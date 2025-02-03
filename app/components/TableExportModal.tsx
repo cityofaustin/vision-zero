@@ -8,6 +8,8 @@ import { unparse } from "papaparse";
 import AlignedLabel from "./AlignedLabel";
 import { FaCircleInfo, FaDownload } from "react-icons/fa6";
 import { formatFileTimestamp } from "@/utils/formatters";
+import { getRecordValue } from "@/utils/formHelpers";
+import { ColDataCardDef } from "@/types/types";
 
 /**
  * Generate the CSV export filename
@@ -15,12 +17,16 @@ import { formatFileTimestamp } from "@/utils/formatters";
 const formatFileName = (exportFilename?: string) =>
   `${exportFilename || "export"} ${formatFileTimestamp(new Date())}.csv`;
 
-interface TableExportModalProps {
+interface TableExportModalProps<T extends Record<string, unknown>> {
   /**
    * The name that will be given to the exported file, excluding
    * the file extension
    */
   exportFilename?: string;
+  /**
+   * The table's column array
+   */
+  columns: ColDataCardDef<T>[];
   /**
    * A callback fired when either the modal backdrop is clicked, or the
    * escape key is pressed
@@ -45,16 +51,32 @@ interface TableExportModalProps {
 }
 
 /**
+ * Flatten the input data so that related record values are unnested
+ */
+const formatTableData = <T extends Record<string, unknown>>(
+  data: T[],
+  columns: ColDataCardDef<T>[]
+) => {
+  return data.map((record) => {
+    return columns.reduce<Record<string, unknown>>((newRecord, column) => {
+      newRecord[column.path] = getRecordValue(record, column);
+      return newRecord;
+    }, {});
+  });
+};
+
+/**
  * UI component which provides a CSV download of the provided query
  */
 export default function TableExportModal<T extends Record<string, unknown>>({
   exportFilename,
+  columns,
   onClose,
   query,
   totalRecordCount,
   show,
   typename,
-}: TableExportModalProps) {
+}: TableExportModalProps<T>) {
   /**
    * TODO: exclude aggregations from export
    * https://github.com/cityofaustin/atd-data-tech/issues/20481
@@ -72,7 +94,7 @@ export default function TableExportModal<T extends Record<string, unknown>>({
    */
   useEffect(() => {
     if (!isLoading && data) {
-      const csvContent = unparse(data, {
+      const csvContent = unparse(formatTableData(data, columns), {
         quotes: true,
         header: true,
       });

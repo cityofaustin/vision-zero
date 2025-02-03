@@ -55,7 +55,7 @@ export type RecommendationFormInputs = {
   rec_update?: string | null | undefined;
   recommendation_status_id?: number | null | undefined;
   recommendations_partners?:
-    | Partial<RecommendationPartner>[]
-    | null
-    | undefined;
+  | Partial<RecommendationPartner>[]
+  | null
+  | undefined;
 };

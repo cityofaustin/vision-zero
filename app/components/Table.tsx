@@ -29,6 +29,7 @@ export default function Table<T extends Record<string, unknown>>({
           {columns.map((col) => (
             <th
               key={String(col.path)}
+              className="text-nowrap"
               style={{ cursor: col.sortable ? "pointer" : "auto" }}
               onClick={() => {
                 if (col.sortable) {
@@ -61,7 +62,7 @@ export default function Table<T extends Record<string, unknown>>({
           <tr key={i}>
             {columns.map((col) => (
               // todo: is no-wrap / side-scrolling ok?
-              <td key={String(col.path)} style={{ whiteSpace: "nowrap" }}>
+              <td key={String(col.path)} style={col.style}>
                 {renderColumnValue(row, col)}
               </td>
             ))}
