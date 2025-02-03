@@ -10,7 +10,7 @@ import {
 } from "@/utils/formHelpers";
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
-import { RowActionButtonProps } from "./RelatedRecordTable";
+import { RowActionButtonProps } from "@/components/RelatedRecordTable";
 
 interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   /**

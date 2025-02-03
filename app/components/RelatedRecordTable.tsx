@@ -1,6 +1,6 @@
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
-import RelatedRecordTableRow from "./RelatedRecordTableRow";
+import RelatedRecordTableRow from "@/components/RelatedRecordTableRow";
 import { ColDataCardDef } from "@/types/types";
 
 interface RelatedRecordTableProps<T extends Record<string, unknown>> {
@@ -92,7 +92,10 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
           <tbody>
             {records.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} style={{ textAlign: "center" }}>
+                <td
+                  colSpan={columns.length + (rowActionButton ? 1 : 0)}
+                  style={{ textAlign: "center" }}
+                >
                   No {title.toLowerCase()} found
                 </td>
               </tr>
