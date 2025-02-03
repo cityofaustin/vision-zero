@@ -7,8 +7,11 @@ import { UPDATE_CRASH_NOTE } from "@/queries/notes";
 import RelatedRecordTable from "./RelatedRecordTable";
 import { ColDataCardDef } from "@/types/types";
 import { formatDate } from "@/utils/formatters";
-import AlignedLabel from "./AlignedLabel";
-import CrashDeleteNoteButton from "./CrashDeleteNoteButton";
+import AlignedLabel from "@/components/AlignedLabel";
+import CrashDeleteNoteButton from "@/components/CrashDeleteNoteButton";
+import PermissionsRequired from "@/components/PermissionsRequired";
+
+const allowedAddCrashNoteRoles = ["vz-admin", "editor"];
 
 interface CrashNotesCardProps {
   notes: CrashNote[];
@@ -40,12 +43,14 @@ const notesColumns: ColDataCardDef<CrashNote>[] = [
 
 const AddNoteButton = ({ onClick }: { onClick: () => void }) => {
   return (
-    <Button size="sm" variant="primary" onClick={onClick}>
-      <AlignedLabel>
-        <FaCirclePlus className="me-2" />
-        Add note
-      </AlignedLabel>
-    </Button>
+    <PermissionsRequired allowedRoles={allowedAddCrashNoteRoles}>
+      <Button size="sm" variant="primary" onClick={onClick}>
+        <AlignedLabel>
+          <FaCirclePlus className="me-2" />
+          Add note
+        </AlignedLabel>
+      </Button>
+    </PermissionsRequired>
   );
 };
 
