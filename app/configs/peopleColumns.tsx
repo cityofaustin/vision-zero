@@ -84,12 +84,7 @@ export const ALL_PEOPLE_COLUMNS = {
       const displayName = nameFields.filter((n) => n).join(" ");
       return displayName;
     },
-    customEditComponent: (
-      record,
-      onCancel,
-      mutation,
-      onSaveCallback,
-    ) => (
+    customEditComponent: (record, onCancel, mutation, onSaveCallback) => (
       <PersonNameField
         record={record}
         onCancel={onCancel}

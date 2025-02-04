@@ -1,5 +1,5 @@
 /**
- * A crash recommendation object for the fatality review board 
+ * A crash recommendation object for the fatality review board
  * recommendation component
  */
 export type Recommendation = {
@@ -55,7 +55,7 @@ export type RecommendationFormInputs = {
   rec_update?: string | null | undefined;
   recommendation_status_id?: number | null | undefined;
   recommendations_partners?:
-  | Partial<RecommendationPartner>[]
-  | null
-  | undefined;
+    | Partial<RecommendationPartner>[]
+    | null
+    | undefined;
 };

@@ -7,11 +7,7 @@ export const INSERT_CRASH_NOTE = gql`
     $userEmail: String!
   ) {
     insert_crash_notes_one(
-      object: {
-        crash_pk: $crashPk
-        text: $text
-        updated_by: $userEmail
-      }
+      object: { crash_pk: $crashPk, text: $text, updated_by: $userEmail }
     ) {
       id
       text

@@ -94,7 +94,10 @@ export default function RelatedRecordTableRow<
             <td
               key={String(col.path)}
               style={{
-                cursor: isEditable && !isEditingThisColumn && !isReadOnlyUser ? "pointer" : "auto",
+                cursor:
+                  isEditable && !isEditingThisColumn && !isReadOnlyUser
+                    ? "pointer"
+                    : "auto",
                 ...(col.style || {}),
               }}
               onClick={() => {
