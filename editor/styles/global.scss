@@ -1,0 +1,112 @@
+/*
+* current palette 
+*/
+$baby-powder: #fbfef9;
+$night: #131515;
+$moped-blue: #1276d1;
+$dim-gray: #6B7676;
+$anti-flash-white: #f4f5f6;
+$sea-green: #09814a;
+$rojo: #dd0426;
+$jonquil: #ffd22f;
+
+/* override bootstrap with our palette */
+$white: $baby-powder;
+$primary: $moped-blue;
+$secondary: $dim-gray;
+$success: $sea-green;
+$info: $moped-blue;
+$warning: $jonquil;
+$danger: $rojo;
+$light: $anti-flash-white;
+$dark: $night;
+
+.app-sidebar {
+  height: 100vh;
+  overflow-y: auto;
+  transition: width 0.2s ease-out;
+}
+
+.app-sidebar-expanded {
+  width: 15rem !important;
+}
+
+.app-sidebar-collapsed {
+  width: 3.5rem !important;
+}
+
+.mapboxgl-map {
+  border-radius: 0.375rem;
+}
+
+.crash-header-card-body {
+  height: 400px;
+  overflow-y: auto;
+  border-radius: 0px !important;
+}
+
+.mapboxgl-map {
+  border-radius: 0px;
+}
+
+.injury-indicator-badge {
+  border-radius: 50%;
+  font-size: 0.9rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  line-height: 1.5rem;
+  font-weight: bold;
+  color: $white;
+}
+
+.sidebar-toggle-open {
+  transform: rotate(180deg);
+  transition: transform 0.2s ease-out; /* Optional: Smooth transition */
+}
+
+.sidebar-toggle-closed {
+  transform: rotate(360deg);
+  transition: transform 0.2s ease-out; /* Optional: Smooth transition */
+}
+
+.react-datepicker__calendar-icon {
+  margin-top: 0.2rem;
+}
+
+.special-filter {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.2s ease-out;
+}
+
+.special-filter-open {
+  /* Adjust to be just above content height */
+  max-height: 25rem;
+}
+
+.card {
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  padding: 1rem;
+  border: none !important;
+  background-color: inherit !important;
+}
+
+h5.card-title {
+  font-size: 1.3rem !important;
+  font-weight: bold;
+}
+
+.card-footer {
+  background-color: inherit !important;
+  border: none !important;
+}
+
+.dashboard-link-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+@import "bootstrap/scss/bootstrap.scss";
