@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import BsTable from "react-bootstrap/Table";
 import { ColDataCardDef } from "@/types/types";
 import { renderColumnValue } from "@/utils/formHelpers";
-import { QueryConfig } from "@/utils/queryBuilder";
+import { QueryConfig } from "@/types/queryBuilder";
 import { FaSortDown, FaSortUp } from "react-icons/fa6";
 
 /**
@@ -28,6 +28,7 @@ export default function Table<T extends Record<string, unknown>>({
           {columns.map((col) => (
             <th
               key={String(col.path)}
+              className="text-nowrap"
               style={{ cursor: col.sortable ? "pointer" : "auto" }}
               onClick={() => {
                 if (col.sortable) {
@@ -58,7 +59,7 @@ export default function Table<T extends Record<string, unknown>>({
           <tr key={i}>
             {columns.map((col) => (
               // todo: is no-wrap / side-scrolling ok?
-              <td key={String(col.path)} style={{ whiteSpace: "nowrap" }}>
+              <td key={String(col.path)} style={col.style}>
                 {renderColumnValue(row, col)}
               </td>
             ))}

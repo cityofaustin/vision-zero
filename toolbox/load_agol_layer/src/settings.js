@@ -53,6 +53,13 @@ const LAYERS = {
     fields: ["ENGINEERING_AREA_ID", "ATD_ENGINEER_AREAS"],
     tableName: "engineering_areas",
   },
+  jurisdictions: {
+    service_name: "BOUNDARIES_jurisdictions_planning",
+    layer_id: 0,
+    query_params: { ...DEFAULT_ESRI_QUERY_PARAMS, where: "JURISDICTION_LABEL = 'AUSTIN FULL PURPOSE'" },
+    fields: ["JURISDICTIONS_ID", "CITY_NAME", "JURISDICTION_LABEL"],
+    tableName: "jurisdictions",
+  },
   non_coa_roadways: {
     service_name: "On_System_Polygon_Feature",
     layer_id: 0,

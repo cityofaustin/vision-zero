@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { useAuth0 } from "@auth0/auth0-react";
-import { User } from "@auth0/auth0-react";
+import { useAuth0, User } from "@auth0/auth0-react";
 
 /**
  * Add our claims to the Auth0 ID token—these are
@@ -38,6 +37,18 @@ export const getHasuraRoleName = (roles?: string[]): string => {
   }
 };
 
+/**
+ * Check if a user has any of the provided role names
+ * @param roles - an array of roles to check for
+ * @param user - the user object
+ * @returns True if the user has any of the provided roles
+ */
+export const hasRole = (roles: string[], user: CustomUser) =>
+  roles.includes(getHasuraRoleName(getRolesArray(user)));
+
+/**
+ * Make the hasura role name human-friendly
+ */
 export const formatRoleName = (role: string): string => {
   switch (role) {
     case "readonly":
@@ -67,7 +78,6 @@ export const useToken = (): string | null => {
       if (!isAuthenticated) {
         return;
       }
-
       try {
         const accessToken = await getAccessTokenSilently();
         setToken(accessToken);

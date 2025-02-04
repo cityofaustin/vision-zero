@@ -36,12 +36,8 @@ const CrashesByYearAverage = ({ avgData, currentYearData }) => {
       };
     };
 
-    const isDataFetched = !!avgData.length && !!currentYearData.length;
-
-    if (isDataFetched) {
-      const formattedData = formatChartData(avgData, currentYearData);
-      setChartData(formattedData);
-    }
+    const formattedData = formatChartData(avgData, currentYearData);
+    setChartData(formattedData);
   }, [avgData, currentYearData]);
 
   return (

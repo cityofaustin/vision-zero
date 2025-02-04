@@ -34,7 +34,7 @@ const CrashInjuryIndicators = ({
     <div className="fs-6 d-flex align-items-center bg-light rounded-3 px-3">
       <InjuryBadge
         value={injuries.vz_fatality_count}
-        label="Fatalies"
+        label="Fatalities"
         className="me-3"
       />
       <InjuryBadge

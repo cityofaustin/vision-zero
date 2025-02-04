@@ -3,7 +3,7 @@ import { Variables } from "graphql-request";
 import { Relationship } from "./relationships";
 import { Path } from "./utils";
 
-export type InputType = "text" | "number" | "yes_no" | "select";
+export type InputType = "text" | "number" | "yes_no" | "select" | "textarea";
 
 /**
  * Metadata for a database column referenced by our app — where
@@ -14,7 +14,8 @@ export type InputType = "text" | "number" | "yes_no" | "select";
  */
 export interface ColDataCardDef<T extends Record<string, unknown>> {
   /**
-   * the dot-notated string path to accessing the property on the given type
+   * the dot-notated string path to accessing the property on the given type,
+   * or "actions" for special action buttons column
    */
   path: Path<T>;
   /**
@@ -25,6 +26,11 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    * If the column is editable
    */
   editable?: boolean;
+  /**
+   * If the field should only be available in the exported table data -
+   * only affects when column is used in a table config
+   */
+  exportOnly?: boolean;
   /**
    * Determines the UI component that will be used to edit the column
    */
@@ -41,6 +47,20 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
     column: ColDataCardDef<T>
   ) => string;
   valueRenderer?: (record: T, column: ColDataCardDef<T>) => ReactNode;
+  /**
+   * Function that returns a custom component, used for display and/or editing
+   * when the column is dependent on other columns of the same record
+   */
+  customEditComponent?: (
+    record: T,
+    onCancel: () => void,
+    mutation: string,
+    onSaveCallback: () => Promise<void>
+  ) => ReactNode;
+  /**
+   * Styles to be applied to the component's containing element
+   */
+  style?: React.CSSProperties;
 }
 
 export interface MutationVariables extends Variables {

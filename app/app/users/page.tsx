@@ -6,13 +6,16 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
-import { FaUserPlus, FaCopy } from "react-icons/fa6";
+import { FaUserPlus, FaCopy, FaCheck } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
+import PermissionsRequired from "@/components/PermissionsRequired";
 import UserModal from "@/components/UserModal";
 import { useUsersInfinite } from "@/utils/users";
 import { User } from "@/types/users";
 import { useToken, formatRoleName } from "@/utils/auth";
+
+const allowedCreateUserRoles = ["vz-admin"];
 
 export default function Users() {
   const token = useToken();
@@ -20,11 +23,31 @@ export default function Users() {
   const { users, isLoading, isValidating, error, mutate } =
     useUsersInfinite(token);
   const [showNewUserModal, setShowNewUserModal] = useState(false);
+  const [copyUserEmailsClicked, setCopyUserEmailsClicked] = useState(false);
   const onCloseModal = () => setShowNewUserModal(false);
 
   if (error) {
     console.error(error);
   }
+
+  // copy emails to clipboard and set copied state so that the button updates
+  const handleCopyUserEmails = useCallback(() => {
+    let userEmails = "";
+    users
+      // exclude test accounts
+      .filter(
+        (user) => !user.email.toLowerCase().startsWith("transportation.data+")
+      )
+      .forEach((user) => {
+        userEmails += `${user.email}; `;
+      });
+    // only display the copied button state for a moment
+    navigator.clipboard.writeText(userEmails).then(() => {
+      setCopyUserEmailsClicked(true);
+      const copiedStateTime = 1000;
+      setTimeout(() => setCopyUserEmailsClicked(false), copiedStateTime);
+    });
+  }, [users]);
 
   const onSaveUserCallback = useCallback(
     async (user: User) => {
@@ -45,21 +68,33 @@ export default function Users() {
           <div className="mb-3 d-flex align-items-center">
             {!isLoading && (
               <>
+                <PermissionsRequired allowedRoles={allowedCreateUserRoles}>
+                  <Button
+                    className="me-2"
+                    onClick={() => setShowNewUserModal(true)}
+                    disabled={isValidating}
+                  >
+                    <AlignedLabel>
+                      <FaUserPlus className="me-2" />
+                      <span>Add user</span>
+                    </AlignedLabel>
+                  </Button>
+                </PermissionsRequired>
                 <Button
-                  className="me-2"
-                  onClick={() => setShowNewUserModal(true)}
+                  onClick={handleCopyUserEmails}
+                  disabled={isValidating || copyUserEmailsClicked}
                 >
-                  <AlignedLabel>
-                    <FaUserPlus className="me-2" />
-                    <span>Add user</span>
-                  </AlignedLabel>
-                </Button>
-                <Button>
-                  {/* todo: https://github.com/cityofaustin/atd-data-tech/issues/20121 */}
-                  <AlignedLabel>
-                    <FaCopy className="me-2" />
-                    <span>Copy user emails - todo</span>
-                  </AlignedLabel>
+                  {copyUserEmailsClicked ? (
+                    <AlignedLabel>
+                      <FaCheck className="me-2" />
+                      <span>Copied</span>
+                    </AlignedLabel>
+                  ) : (
+                    <AlignedLabel>
+                      <FaCopy className="me-2" />
+                      <span>Copy user emails</span>
+                    </AlignedLabel>
+                  )}
                 </Button>
                 {/* show the spinner when revalidating - this is important user feedback after a 
                 user has been deleted and the user list is being refetched */}

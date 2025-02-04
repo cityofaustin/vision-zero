@@ -224,16 +224,34 @@ export const GET_CRASH = gql`
       }
       crash_notes(
         where: { is_deleted: { _eq: false } }
-        order_by: { date: desc }
+        order_by: { created_at: asc }
       ) {
         id
+        updated_by
         created_at
-        updated_at
-        date
         text
-        user_email
         crash_pk
       }
+    }
+  }
+`;
+
+export const CRASH_NAV_SEARCH = gql`
+  query CrashNavigationSearch($searchValue: String!) {
+    record_locator: crashes(
+      where: {
+        record_locator: { _eq: $searchValue }
+        is_deleted: { _eq: false }
+      }
+    ) {
+      id
+      record_locator
+    }
+    case_id: crashes(
+      where: { case_id: { _eq: $searchValue }, is_deleted: { _eq: false } }
+    ) {
+      id
+      record_locator
     }
   }
 `;

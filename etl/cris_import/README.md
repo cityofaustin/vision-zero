@@ -105,3 +105,22 @@ It supports the `--verbose` flag to enable debug logging, and the number of conc
 ```shell
  ./cr3_ocr_narrative.py --verbose --workers 4
 ```
+
+## Debugging using the `_cris_import_log`
+
+Whenever this ETL processes an extract, it logs metadata about the extract in the `_cris_import_log` table in the database. You can query this log to see details about extracts which have been processed.
+
+```sql
+select * from _cris_import_log order by id desc;
+```
+
+The import log provides the following information:
+
+column | description
+-- | --
+`id` | The serial ID primary key
+`object_path` | The location within the bucket where the extract was found
+`object_name` | The name of the object (file) within the bucket
+`created_at` | Audit field for when the import started
+`completed_at` | Audit field for when the import finished
+`records_processed` | A JSON blob that contains counts or a list of crashes imported per schema

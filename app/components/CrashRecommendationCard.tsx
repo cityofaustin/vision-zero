@@ -20,6 +20,9 @@ import {
   RecommendationFormInputs,
 } from "@/types/recommendation";
 import { useAuth0 } from "@auth0/auth0-react";
+import PermissionsRequired from "@/components/PermissionsRequired";
+
+const allowedRecommendationEditRoles = ["vz-admin", "editor"];
 
 /**
  * Compares the old vs new RecommendationPartner arrays and returns
@@ -184,7 +187,7 @@ export default function CrashRecommendationCard({
                       rec_partner.atd__coordination_partners_lkp
                         ?.coord_partner_desc
                   )
-                  .join(", ") || ""}
+                  .join(", ") || "-"}
               </p>
             )}
             {isEditing && isLoadingPartners && <Spinner size="sm" />}
@@ -210,7 +213,7 @@ export default function CrashRecommendationCard({
                 <option value="">Select status...</option>
                 {statuses.map((option) => (
                   <option key={option.id} value={String(option.id)}>
-                    {option.rec_status_desc}
+                    {option.rec_status_desc || "-"}
                   </option>
                 ))}
               </Form.Select>
@@ -219,7 +222,7 @@ export default function CrashRecommendationCard({
             {!isEditing && (
               <p>
                 {recommendation?.atd__recommendation_status_lkp
-                  ?.rec_status_desc || ""}
+                  ?.rec_status_desc || "-"}
               </p>
             )}
           </Form.Group>
@@ -236,7 +239,7 @@ export default function CrashRecommendationCard({
                 autoFocus={true}
               />
             )}
-            {!isEditing && <p>{recommendation?.rec_text || ""}</p>}
+            {!isEditing && <p>{recommendation?.rec_text || "-"}</p>}
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label className="fw-bold">Updates</Form.Label>
@@ -250,50 +253,52 @@ export default function CrashRecommendationCard({
                 rows={6}
               />
             )}
-            {!isEditing && <p>{recommendation?.rec_update || ""}</p>}
+            {!isEditing && <p>{recommendation?.rec_update || "-"}</p>}
           </Form.Group>
         </Form>
       </Card.Body>
-      <Card.Footer>
-        <div className="d-flex justify-content-end">
-          {!isEditing && (
-            <Button
-              size="sm"
-              variant="primary"
-              onClick={async () => {
-                setIsEditing(true);
-              }}
-            >
-              Edit
-            </Button>
-          )}
-          {isEditing && (
-            <Button
-              size="sm"
-              variant="primary"
-              disabled={!isDirty || isMutating}
-              form="recommendationForm"
-              type="submit"
-            >
-              Save
-            </Button>
-          )}
-          {isEditing && (
-            <Button
-              className="ms-1"
-              size="sm"
-              variant="danger"
-              onClick={() => {
-                setIsEditing(false);
-                reset();
-              }}
-              disabled={isMutating}
-            >
-              Cancel
-            </Button>
-          )}
-        </div>
-      </Card.Footer>
+      <PermissionsRequired allowedRoles={allowedRecommendationEditRoles}>
+        <Card.Footer>
+          <div className="d-flex justify-content-end">
+            {!isEditing && (
+              <Button
+                size="sm"
+                variant="primary"
+                onClick={async () => {
+                  setIsEditing(true);
+                }}
+              >
+                Edit
+              </Button>
+            )}
+            {isEditing && (
+              <Button
+                size="sm"
+                variant="primary"
+                disabled={!isDirty || isMutating}
+                form="recommendationForm"
+                type="submit"
+              >
+                Save
+              </Button>
+            )}
+            {isEditing && (
+              <Button
+                className="ms-1"
+                size="sm"
+                variant="danger"
+                onClick={() => {
+                  setIsEditing(false);
+                  reset();
+                }}
+                disabled={isMutating}
+              >
+                Cancel
+              </Button>
+            )}
+          </div>
+        </Card.Footer>
+      </PermissionsRequired>
     </Card>
   );
 }
