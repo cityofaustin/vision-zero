@@ -29,9 +29,8 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
     <Card>
       <Card.Header>
         <div className="d-flex justify-content-between">
-
-        {title}
-        {!!headerActionButton && headerActionButton}
+          {title}
+          {!!headerActionButton && headerActionButton}
         </div>
       </Card.Header>
       <Card.Body>
