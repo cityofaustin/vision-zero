@@ -1,5 +1,5 @@
 import { CrashInjuryMetric } from "@/types/crashInjuryMetrics";
-import Badge from "react-bootstrap/Badge";
+import AlignedLabel from "@/components/AlignedLabel";
 
 const InjuryBadge = ({
   label,
@@ -11,12 +11,20 @@ const InjuryBadge = ({
   className?: string;
 }) => {
   return (
-    <span className={`${className || ""} text-nowrap`}>
-      <span className="me-1">{label}</span>
-      {/* todo: decided if/how we want to assign colors to these badges */}
-      <Badge bg={`${value ? "primary" : "dark"}`} pill>
-        {value || 0}
-      </Badge>
+    <span className={`${className || ""} text-nowrap me-3`}>
+      <AlignedLabel>
+        <span className={`me-1 ${value ? "" : "text-secondary"}`}>{label}</span>
+        {value !== 0 && (
+          <span
+            className={`injury-indicator-badge d-flex justify-content-center align-items-middle bg-${
+              value ? "dark" : "secondary"
+            }`}
+          >
+            {value}
+          </span>
+        )}
+        {value === 0 && <span className="text-secondary">-</span>}
+      </AlignedLabel>
     </span>
   );
 };
@@ -32,24 +40,25 @@ const CrashInjuryIndicators = ({
 }) => {
   return (
     <div className="fs-6 d-flex align-items-center bg-light rounded-3 px-3">
+      <span className="fw-bold me-3">Injuries</span>
       <InjuryBadge
         value={injuries.vz_fatality_count}
-        label="Fatalities"
+        label="Fatal"
         className="me-3"
       />
       <InjuryBadge
         value={injuries.sus_serious_injry_count}
-        label="Serious injuries"
+        label="Serious"
         className="me-3"
       />
       <InjuryBadge
         value={injuries.nonincap_injry_count}
-        label="Minor injuries"
+        label="Minor"
         className="me-3"
       />
       <InjuryBadge
         value={injuries.poss_injry_count}
-        label="Possible injuries"
+        label="Possible"
         className="me-3"
       />
       <InjuryBadge

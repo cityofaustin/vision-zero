@@ -4,6 +4,7 @@ import { ColDataCardDef } from "@/types/types";
 import { renderColumnValue } from "@/utils/formHelpers";
 import { QueryConfig } from "@/types/queryBuilder";
 import { FaSortDown, FaSortUp } from "react-icons/fa6";
+import AlignedLabel from "@/components/AlignedLabel";
 
 /**
  * The actual <table> component of our fancy table component
@@ -46,10 +47,12 @@ export default function Table<T extends Record<string, unknown>>({
                 }
               }}
             >
-              {col.label}
-              {col.path === queryConfig.sortColName && (
-                <SortIcon className="ms-1 my-1" />
-              )}
+              <AlignedLabel>
+                {col.label}
+                {col.path === queryConfig.sortColName && (
+                  <SortIcon className="ms-1 my-1 text-primary" />
+                )}
+              </AlignedLabel>
             </th>
           ))}
         </tr>

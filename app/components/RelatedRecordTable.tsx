@@ -72,12 +72,12 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
     <Card>
       <Card.Header>
         <div className="d-flex justify-content-between">
-          {title}
+          <Card.Title>{title}</Card.Title>
           {!!headerActionComponent && headerActionComponent}
         </div>
       </Card.Header>
       <Card.Body>
-        <Table striped hover responsive>
+        <Table hover responsive>
           <thead>
             <tr>
               {columns.map((col) => (
@@ -94,7 +94,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
               <tr>
                 <td
                   colSpan={columns.length + (rowActionComponent ? 1 : 0)}
-                  style={{ textAlign: "center" }}
+                  className="text-center text-secondary"
                 >
                   No {title.toLowerCase()} found
                 </td>

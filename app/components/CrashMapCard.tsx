@@ -54,7 +54,7 @@ export default function CrashMapCard({
   const hasLocation = !!locationId;
 
   return (
-    <Card>
+    <Card className="h-100">
       <Card.Header>
         Location:{" "}
         {hasLocation ? (
@@ -104,7 +104,7 @@ export default function CrashMapCard({
                   }
                 }}
               >
-                {isEditingCoordinates ? "Save location" : "Edit"}
+                {isEditingCoordinates ? "Save" : "Edit"}
               </Button>
               {isEditingCoordinates && (
                 <Button

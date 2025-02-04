@@ -88,8 +88,8 @@ export default function DataCard<T extends Record<string, unknown>>({
 
   return (
     <Card>
-      <Card.Header className="d-flex justify-content-between">
-        {title}
+      <Card.Header className="d-flex justify-content-between bg-white border-none">
+        <Card.Title>{title}</Card.Title>
         {HeaderActionComponent && !isReadOnlyUser && (
           <HeaderActionComponent
             record={record}

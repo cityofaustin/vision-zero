@@ -1,26 +1,25 @@
-/* see https://github.com/twbs/examples/blob/main/react-nextjs/src/styles/styles.scss */
-@import "bootstrap/scss/bootstrap.scss";
+/*
+* current palette 
+*/
+$baby-powder: #fbfef9;
+$night: #131515;
+$moped-blue: #1276d1;
+$dim-gray: #6B7676;
+$anti-flash-white: #f4f5f6;
+$sea-green: #09814a;
+$rojo: #dd0426;
+$jonquil: #ffd22f;
 
-// see VZ branding guide: https://cityofaustin.sharepoint.com/sites/tpwPIO/Vision%20Zero%20Branding%20Files/Forms/AllItems.aspx?id=%2Fsites%2FtpwPIO%2FVision%20Zero%20Branding%20Files%2FBranding%20Guide%2FVision%20Zero%20Branding%20Guide%202024%2Epdf&viewid=4b5e3825%2D0fa4%2D431d%2D8f79%2D3a7fd7f57dcc&parent=%2Fsites%2FtpwPIO%2FVision%20Zero%20Branding%20Files%2FBranding%20Guide
-$vz-sunshine: #edb41f;
-$vz-sunshine-darker: #b38715;
-$vz-asphalt: #444444;
-$vz-peacock: #468189;
-$vz-sand: #eee6de;
-
-.bg-vz-sunshine {
-  background-color: $vz-sunshine;
-  border-color: $vz-sunshine !important;
-}
-
-.bg-vz-sunshine:hover {
-  background-color: $vz-sunshine-darker;
-  border-color: $vz-sunshine-darker !important;
-}
-
-.text-vz-asphalt {
-  color: $vz-asphalt;
-}
+/* override bootstrap with our palette */
+$white: $baby-powder;
+$primary: $moped-blue;
+$secondary: $dim-gray;
+$success: $sea-green;
+$info: $moped-blue;
+$warning: $jonquil;
+$danger: $rojo;
+$light: $anti-flash-white;
+$dark: $night;
 
 .app-sidebar {
   height: 100vh;
@@ -43,6 +42,21 @@ $vz-sand: #eee6de;
 .crash-header-card-body {
   height: 400px;
   overflow-y: auto;
+  border-radius: 0px !important;
+}
+
+.mapboxgl-map {
+  border-radius: 0px;
+}
+
+.injury-indicator-badge {
+  border-radius: 50%;
+  font-size: 0.9rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  line-height: 1.5rem;
+  font-weight: bold;
+  color: $white;
 }
 
 .sidebar-toggle-open {
@@ -70,11 +84,29 @@ $vz-sand: #eee6de;
   max-height: 25rem;
 }
 
-.card-header,
+.card {
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  padding: 1rem;
+  border: none !important;
+  background-color: inherit !important;
+}
+
+h5.card-title {
+  font-size: 1.3rem !important;
+  font-weight: bold;
+}
+
 .card-footer {
-  border: none;
+  background-color: inherit !important;
+  border: none !important;
 }
 
 .dashboard-link-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
+
+@import "bootstrap/scss/bootstrap.scss";

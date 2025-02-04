@@ -46,8 +46,11 @@ export default function AppBreadCrumb() {
   const crumbs = useCrumbs(pathName);
   const isDetailsPage = crumbs?.length > 1;
 
+  if (!isDetailsPage) {
+    return null;
+  }
   return (
-    <Row className="mt-2 mb-3">
+    <Row className={"mt-2 mb-3"}>
       <Col>
         {isDetailsPage &&
           crumbs?.map((crumb, i) => {
@@ -57,12 +60,12 @@ export default function AppBreadCrumb() {
                   <span className="fw-light">
                     <Link href={`/${crumb.label}`}>{crumb.label}</Link>
                   </span>
-                  <span className="mx-2 fw-light">{"/"}</span>
+                  <span className="mx-2 fw-light text-secondary">{"/"}</span>
                 </Fragment>
               );
             } else {
               return (
-                <span key={crumb.label} className="fw-bold">
+                <span key={crumb.label} className="fw-bold text-">
                   {crumb.label}
                 </span>
               );

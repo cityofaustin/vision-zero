@@ -133,3 +133,4 @@ npm run dev
 - versioned localstorage
 - error boundary (see Moped's for reference)
 - map geocoder (technically an enhancement vis a vis current state)
+ 

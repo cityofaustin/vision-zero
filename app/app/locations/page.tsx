@@ -12,7 +12,7 @@ export default function Locations() {
     <>
       <AppBreadCrumb />
       <Card>
-        <Card.Header className="fs-5 fw-bold">Locations</Card.Header>
+        <Card.Header className="fs-3 fw-bold">Locations</Card.Header>
         <Card.Body>
           <TableWrapper
             columns={locationsListViewColumns}
