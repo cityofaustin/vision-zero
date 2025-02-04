@@ -13,7 +13,7 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
    */
   columns: ColDataCardDef<T>[];
   /**
-   * Graphql mutation that will be exectuted when a row is edited -
+   * Graphql mutation that will be executed when a row is edited -
    * will also be passed to the rowActionComponent, if present
    */
   mutation: string;
