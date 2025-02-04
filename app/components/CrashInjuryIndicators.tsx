@@ -1,5 +1,4 @@
 import { CrashInjuryMetric } from "@/types/crashInjuryMetrics";
-import { FaNotesMedical } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
 
 const InjuryBadge = ({
@@ -41,7 +40,6 @@ const CrashInjuryIndicators = ({
 }) => {
   return (
     <div className="fs-6 d-flex align-items-center bg-light rounded-3 px-3">
-      {false && <FaNotesMedical className="fs- me-2" />}
       <span className="fw-bold me-3">Injuries</span>
       <InjuryBadge
         value={injuries.vz_fatality_count}
