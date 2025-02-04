@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Row from "react-bootstrap/Row";
-import AppBreadCrumb from "@/components/AppBreadCrumb";
 import DataCard from "@/components/DataCard";
 import LocationMapCard from "@/components/LocationMapCard";
 import TableWrapper from "@/components/TableWrapper";
@@ -70,7 +69,6 @@ export default function LocationDetailsPage({
 
   return (
     <>
-      <AppBreadCrumb />
       <span className="fs-2">{location.description}</span>
       <Row>
         <Col sm={12} md={6} lg={7} className="mb-3">
