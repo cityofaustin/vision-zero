@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import Link from "next/link";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import { MapRef } from "react-map-gl";
@@ -6,6 +7,9 @@ import { CrashMap } from "@/components/CrashMap";
 import { useMutation } from "@/utils/graphql";
 import { useResizeObserver } from "@/utils/map";
 import { LatLon } from "@/components/CrashMap";
+import PermissionsRequired from "@/components/PermissionsRequired";
+
+const allowedMapEditRoles = ["vz-admin", "editor"];
 
 interface CrashMapCardProps {
   savedLatitude: number | null;
@@ -13,6 +17,8 @@ interface CrashMapCardProps {
   crashId: number;
   onSaveCallback: () => Promise<void>;
   mutation: string;
+  locationId: string | null;
+  isManualGeocode: boolean | null;
 }
 
 /**
@@ -24,6 +30,8 @@ export default function CrashMapCard({
   savedLongitude,
   onSaveCallback,
   mutation,
+  locationId,
+  isManualGeocode,
 }: CrashMapCardProps) {
   const mapRef = useRef<MapRef | null>(null);
   /**
@@ -41,10 +49,19 @@ export default function CrashMapCard({
   });
   const { mutate, loading: isMutating } = useMutation(mutation);
 
+  const hasCoordinates = !!savedLatitude && !!savedLongitude;
+
+  const hasLocation = !!locationId;
+
   return (
     <Card className="h-100">
       <Card.Header>
-        <Card.Title>Location</Card.Title>
+        Location:{" "}
+        {hasLocation ? (
+          <Link href={`/locations/${locationId}`}>{locationId}</Link>
+        ) : (
+          "unassigned"
+        )}
       </Card.Header>
       <Card.Body className="p-1 crash-header-card-body" ref={mapContainerRef}>
         <CrashMap
@@ -59,40 +76,49 @@ export default function CrashMapCard({
       <Card.Footer>
         <div className="d-flex justify-content-between">
           <div>
-            <span>Geocode provider</span>
+            <span>
+              Location provider: {""}
+              {hasCoordinates
+                ? isManualGeocode
+                  ? "Manual Q/A"
+                  : "TxDOT CRIS"
+                : "No Primary Coordinates"}
+            </span>
           </div>
-          <div>
-            <Button
-              size="sm"
-              variant="primary"
-              disabled={isMutating}
-              onClick={async () => {
-                if (!isEditingCoordinates) {
-                  setIsEditingCoordinates(true);
-                } else {
-                  await mutate({
-                    id: crashId,
-                    updates: { ...editCoordinates },
-                  });
-                  await onSaveCallback();
-                  setIsEditingCoordinates(false);
-                }
-              }}
-            >
-              {isEditingCoordinates ? "Save" : "Edit"}
-            </Button>
-            {isEditingCoordinates && (
+          <PermissionsRequired allowedRoles={allowedMapEditRoles}>
+            <div>
               <Button
-                className="ms-1"
                 size="sm"
-                variant="danger"
-                onClick={() => setIsEditingCoordinates(false)}
+                variant="primary"
                 disabled={isMutating}
+                onClick={async () => {
+                  if (!isEditingCoordinates) {
+                    setIsEditingCoordinates(true);
+                  } else {
+                    await mutate({
+                      id: crashId,
+                      updates: { ...editCoordinates },
+                    });
+                    await onSaveCallback();
+                    setIsEditingCoordinates(false);
+                  }
+                }}
               >
-                Cancel
+                {isEditingCoordinates ? "Save" : "Edit"}
               </Button>
-            )}
-          </div>
+              {isEditingCoordinates && (
+                <Button
+                  className="ms-1"
+                  size="sm"
+                  variant="danger"
+                  onClick={() => setIsEditingCoordinates(false)}
+                  disabled={isMutating}
+                >
+                  Cancel
+                </Button>
+              )}
+            </div>
+          </PermissionsRequired>
         </div>
       </Card.Footer>
     </Card>

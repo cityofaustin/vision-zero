@@ -46,7 +46,8 @@ $ node src/load_agol_layer.js --help
 Usage: load_agol_layer [options]
 
 Options:
-  -l, --layer <name>  layer name (choices: "apd_sectors", "council_districts", "engineering_areas", "non_coa_roadways", "signal_engineer_areas", "zipcodes")
+  -l, --layer <name>  layer name (choices: "apd_sectors", "council_districts", "engineering_areas", "jurisdictions", "non_coa_roadways",
+                      "signal_engineer_areas", "zip_codes", "equity_action_zones")
   -s, --save          save a copy of the geojson output to './data/<layer-name>.geojson'
   -h, --help          display help for command
 ```

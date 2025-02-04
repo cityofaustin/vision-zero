@@ -1,33 +1,10 @@
 /*
-* VZ branding colors - todo: remove these 
-* see: https://cityofaustin.sharepoint.com/sites/tpwPIO/Vision%20Zero%20Branding%20Files/Forms/AllItems.aspx?id=%2Fsites%2FtpwPIO%2FVision%20Zero%20Branding%20Files%2FBranding%20Guide%2FVision%20Zero%20Branding%20Guide%202024%2Epdf&viewid=4b5e3825%2D0fa4%2D431d%2D8f79%2D3a7fd7f57dcc&parent=%2Fsites%2FtpwPIO%2FVision%20Zero%20Branding%20Files%2FBranding%20Guide
-*/
-$vz-sunshine: #edb41f;
-$vz-sunshine-darker: #b38715;
-$vz-asphalt: #444444;
-$vz-peacock: #468189;
-$vz-sand: #eee6de;
-
-/* other colors considered - todo: remove these */
-$ghost-white: #f6f8ff;
-$peach: #f6be9a;
-$cornsilk: #faf4d3;
-$timberwolf: #d6dbd2;
-$lavendar: #d6d3f0;
-$platinum: #e5e6e4;
-$battleship: #858881;
-$gunmetal: #333745;
-$imperial-red: #f02d3a;
-$celtic-blue: #226bbf;
-$honolulu-blue: #0077b6;
-
-/* current palette 
-* https://coolors.co/0b2027-1276D1-7a8190-f4f5f6-09814a-dd0426-ffd22f-fbfef9
+* current palette 
 */
 $baby-powder: #fbfef9;
-$rich-black: #0b2027;
+$night: #131515;
 $moped-blue: #1276d1;
-$slate-gray: #7a8190;
+$dim-gray: #6B7676;
 $anti-flash-white: #f4f5f6;
 $sea-green: #09814a;
 $rojo: #dd0426;
@@ -36,13 +13,13 @@ $jonquil: #ffd22f;
 /* override bootstrap with our palette */
 $white: $baby-powder;
 $primary: $moped-blue;
-$secondary: $slate-gray;
+$secondary: $dim-gray;
 $success: $sea-green;
 $info: $moped-blue;
 $warning: $jonquil;
 $danger: $rojo;
 $light: $anti-flash-white;
-$dark: $rich-black;
+$dark: $night;
 
 // .app-navbar {
 //   background-color: rgba(244, 245, 246, 0.4);
@@ -80,6 +57,16 @@ $dark: $rich-black;
 
 .mapboxgl-map {
   border-radius: 0px;
+}
+
+.injury-indicator-badge {
+  border-radius: 50%;
+  font-size: 0.9rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  line-height: 1.5rem;
+  font-weight: bold;
+  color: $white;
 }
 
 .sidebar-toggle-open {

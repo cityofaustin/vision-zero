@@ -1,7 +1,4 @@
-import {
-  getYearsAgoDate,
-  makeDateFilters,
-} from "@/components/TableDateSelector";
+import { getYearsAgoDate, makeDateFilters } from "@/utils/dates";
 import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
@@ -172,7 +169,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
           },
         ],
       },
-      // todo: "Other" sitch
+      // todo: "Other" switch
     ],
   },
   {

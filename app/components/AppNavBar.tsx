@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Container from "react-bootstrap/Container";
 import Dropdown from "react-bootstrap/Dropdown";
 import { User, LogoutOptions } from "@auth0/auth0-react";
@@ -25,11 +26,13 @@ type NavBarProps = {
  * App navbar with branding and a right-aligned dropdown menu
  */
 export default function AppNavBar({ user, logout }: NavBarProps) {
+  const userId = user?.["https://hasura.io/jwt/claims"]?.["x-hasura-user-id"];
+
   return (
     <Navbar className="app-navbar bg-light border-bottom ps-1 pe-3 w-100">
       <Container fluid>
         <Col className="d-flex justify-content-start">
-          <Navbar.Brand href="/crashes">
+          <Navbar.Brand href="/crashes" as={Link}>
             <Image
               src="/assets/img/brand/vz_logo_transparent_asphalt.png"
               alt="Vision Zero Logo"
@@ -52,7 +55,7 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
             <Dropdown.Menu>
               <Dropdown.Header>{user.email}</Dropdown.Header>
               <Dropdown.Divider />
-              <Dropdown.Item eventKey="1">
+              <Dropdown.Item eventKey="1" href={`/users/${userId}`} as={Link}>
                 <AlignedLabel>
                   <FaUserLarge className="me-3" />
                   Account

@@ -1,9 +1,6 @@
 import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
-import {
-  getYearsAgoDate,
-  makeDateFilters,
-} from "@/components/TableDateSelector";
+import { getYearsAgoDate, makeDateFilters } from "@/utils/dates";
 
 const locationCrashesFiltercards: FilterGroup[] = [
   {
