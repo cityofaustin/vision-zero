@@ -80,7 +80,7 @@ const CrashNotesCard = ({
         isValidating={isValidating}
         title="Notes"
         onSaveCallback={onSaveCallback}
-        headerActionButton={<AddNoteButton onClick={handleShow} />}
+        headerActionComponent={<AddNoteButton onClick={handleShow} />}
         rowActionButton={CrashDeleteNoteButton}
       />
 

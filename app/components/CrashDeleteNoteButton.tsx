@@ -2,7 +2,7 @@ import Button from "react-bootstrap/Button";
 import { useMutation } from "@/utils/graphql";
 import AlignedLabel from "@/components/AlignedLabel";
 import { FaTrashCan } from "react-icons/fa6";
-import { HeaderActionButtonProps } from "@/components/DataCard";
+import { HeaderActionComponentProps } from "@/components/DataCard";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import { DELETE_CRASH_NOTE } from "@/queries/notes";
 
@@ -13,7 +13,7 @@ const allowedDeleteCrashNoteRoles = ["vz-admin", "editor"];
  */
 export default function CrashDeleteNoteButton<
   T extends Record<string, unknown>,
->({ record, onSaveCallback }: HeaderActionButtonProps<T>) {
+>({ record, onSaveCallback }: HeaderActionComponentProps<T>) {
   // todo: soft-delete crash notes
   // https://github.com/cityofaustin/atd-data-tech/issues/19046
   const { mutate, loading: isMutating } = useMutation(DELETE_CRASH_NOTE);

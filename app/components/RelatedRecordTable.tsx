@@ -28,7 +28,7 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
   /**
    * Optional React component to be rendered in the card's header
    */
-  headerActionButton?: React.ReactNode;
+  headerActionComponent?: React.ReactNode;
   /**
    * Optional react component to be rendered in the rightmost
    * column of every row
@@ -64,7 +64,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
   mutation,
   isValidating,
   title,
-  headerActionButton,
+  headerActionComponent,
   onSaveCallback,
   rowActionButton,
 }: RelatedRecordTableProps<T>) {
@@ -73,7 +73,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
       <Card.Header>
         <div className="d-flex justify-content-between">
           {title}
-          {!!headerActionButton && headerActionButton}
+          {!!headerActionComponent && headerActionComponent}
         </div>
       </Card.Header>
       <Card.Body>
