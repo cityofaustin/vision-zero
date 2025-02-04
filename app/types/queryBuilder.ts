@@ -18,15 +18,15 @@ export interface Filter {
    * Hasura comparison operator, e.g. _eq, _gte
    */
   operator:
-  | "_gte"
-  | "_lte"
-  | "_gt"
-  | "_eq"
-  | "_neq"
-  | "_is_null"
-  | "_ilike"
-  | "_in"
-  | "_nin";
+    | "_gte"
+    | "_lte"
+    | "_gt"
+    | "_eq"
+    | "_neq"
+    | "_is_null"
+    | "_ilike"
+    | "_in"
+    | "_nin";
   /**
    * The filter value
    */

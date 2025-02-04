@@ -95,12 +95,17 @@ npm run dev
     - signout link
     - external links to report a bug, request enhancement, and TxDOT's CR3 codesheet
 - Users
+
   - user list view
   - user details card
   - add a new user
   - edit a user
   - delete a user
   - copy user emails
+
+- create crash records
+  - view + search for temp records
+  - create crash record form
 
 ## Todo
 

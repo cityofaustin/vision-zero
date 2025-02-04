@@ -50,7 +50,6 @@ const dashboardLinks: DashboardLinkCardProps[] = [
 ];
 
 export default function Dashboard() {
-
   return (
     <>
       <Row>

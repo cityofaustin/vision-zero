@@ -78,7 +78,7 @@ export const crashesColumns = {
       idColumnName: "id",
       labelColumnName: "label",
       foreignKey: "light_cond_id",
-    }
+    },
   },
   longitude: {
     path: "longitude",
@@ -153,7 +153,7 @@ export const crashesColumns = {
       idColumnName: "id",
       labelColumnName: "label",
       foreignKey: "rpt_rdwy_sys_id",
-    }
+    },
   },
   road_part: {
     path: "road_part.label",
@@ -166,7 +166,7 @@ export const crashesColumns = {
       idColumnName: "id",
       labelColumnName: "label",
       foreignKey: "rpt_road_part_id",
-    }
+    },
   },
   rpt_sec_block_num: {
     path: "rpt_sec_block_num",
@@ -191,7 +191,7 @@ export const crashesColumns = {
       idColumnName: "id",
       labelColumnName: "label",
       foreignKey: "rpt_sec_rdwy_sys_id",
-    }
+    },
   },
   road_part_sec: {
     path: "road_part_sec.label",
@@ -204,7 +204,7 @@ export const crashesColumns = {
       idColumnName: "id",
       labelColumnName: "label",
       foreignKey: "rpt_sec_road_part_id",
-    }
+    },
   },
   rpt_sec_street_desc: {
     path: "rpt_sec_street_desc",

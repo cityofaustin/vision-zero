@@ -11,14 +11,36 @@ import {
 } from "@/utils/formHelpers";
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
+import { RowActionComponentProps } from "@/components/RelatedRecordTable";
 import { hasRole } from "@/utils/auth";
 
 interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
+  /**
+   * The records to be rendered in the table
+   */
   record: T;
+  /**
+   * The table's column definitions
+   */
   columns: ColDataCardDef<T>[];
+  /**
+   * Graphql mutation that will be exectuted when a row is edited -
+   * will also be passed to the rowActionComponent, if present
+   */
   mutation: string;
+  /**
+   * If the SWR refetcher is (re)validating
+   */
   isValidating: boolean;
+  /**
+   * Callback function to be executed after a row edit is saved
+   */
   onSaveCallback: () => Promise<void>;
+  /**
+   * Optional react component to be rendered in the rightmost column
+   * of every row
+   */
+  rowActionComponent?: React.ComponentType<RowActionComponentProps<T>>;
 }
 
 /**
@@ -36,6 +58,7 @@ export default function RelatedRecordTableRow<
   mutation,
   isValidating,
   onSaveCallback,
+  rowActionComponent: RowActionComponent,
 }: RelatedRecordTableRowProps<T>) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
@@ -94,7 +117,10 @@ export default function RelatedRecordTableRow<
             <td
               key={String(col.path)}
               style={{
-                cursor: isEditable && !isEditingThisColumn && !isReadOnlyUser ? "pointer" : "auto",
+                cursor:
+                  isEditable && !isEditingThisColumn && !isReadOnlyUser
+                    ? "pointer"
+                    : "auto",
                 ...(col.style || {}),
               }}
               onClick={() => {
@@ -145,6 +171,15 @@ export default function RelatedRecordTableRow<
             </td>
           );
         })}
+        {RowActionComponent && (
+          <td className="text-end">
+            <RowActionComponent
+              record={record}
+              mutation={mutation}
+              onSaveCallback={onSaveCallback}
+            />
+          </td>
+        )}
       </tr>
     </>
   );
