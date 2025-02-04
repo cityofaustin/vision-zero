@@ -15,7 +15,7 @@ import { LookupTableOption } from "@/types/relationships";
 import { useAuth0 } from "@auth0/auth0-react";
 import { hasRole } from "@/utils/auth";
 
-export interface HeaderActionButtonProps<T extends Record<string, unknown>> {
+export interface HeaderActionComponentProps<T extends Record<string, unknown>> {
   record: T;
   mutation: string;
   onSaveCallback: () => Promise<void>;
@@ -28,7 +28,7 @@ interface DataCardProps<T extends Record<string, unknown>> {
   isValidating: boolean;
   title: string;
   onSaveCallback: () => Promise<void>;
-  HeaderActionButton?: React.ComponentType<HeaderActionButtonProps<T>>;
+  headerActionComponent?: React.ComponentType<HeaderActionComponentProps<T>>;
 }
 
 /**
@@ -41,7 +41,7 @@ export default function DataCard<T extends Record<string, unknown>>({
   isValidating,
   title,
   onSaveCallback,
-  HeaderActionButton,
+  headerActionComponent: HeaderActionComponent,
 }: DataCardProps<T>) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
@@ -90,8 +90,8 @@ export default function DataCard<T extends Record<string, unknown>>({
     <Card>
       <Card.Header className="d-flex justify-content-between">
         {title}
-        {HeaderActionButton && !isReadOnlyUser && (
-          <HeaderActionButton
+        {HeaderActionComponent && !isReadOnlyUser && (
+          <HeaderActionComponent
             record={record}
             mutation={mutation}
             onSaveCallback={onSaveCallback}
