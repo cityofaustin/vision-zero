@@ -74,16 +74,16 @@ export default function NotesModal({
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
           <Button
             variant="primary"
             type="submit"
             form="noteForm"
             disabled={isSubmitting}
           >
-            Save Note
+            Save note
+          </Button>
+          <Button variant="danger" onClick={onClose}>
+            Cancel
           </Button>
         </Modal.Footer>
       </Form>
