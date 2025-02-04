@@ -20,26 +20,24 @@ export default function CrashDeleteNoteButton<
 
   return (
     <PermissionsRequired allowedRoles={allowedDeleteCrashNoteRoles}>
-      <div>
-        <Button
-          size="sm"
-          variant="secondary"
-          disabled={isMutating}
-          onClick={async () => {
-            if (window.confirm("Are you sure you want to delete this note?")) {
-              await mutate({
-                id: record.id,
-              });
-              await onSaveCallback();
-            }
-          }}
-        >
-          <AlignedLabel>
-            <FaTrashCan className="me-2" />
-            <span>Delete</span>
-          </AlignedLabel>
-        </Button>
-      </div>
+      <Button
+        size="sm"
+        variant="secondary"
+        disabled={isMutating}
+        onClick={async () => {
+          if (window.confirm("Are you sure you want to delete this note?")) {
+            await mutate({
+              id: record.id,
+            });
+            await onSaveCallback();
+          }
+        }}
+      >
+        <AlignedLabel>
+          <FaTrashCan className="me-2" />
+          <span>Delete</span>
+        </AlignedLabel>
+      </Button>
     </PermissionsRequired>
   );
 }
