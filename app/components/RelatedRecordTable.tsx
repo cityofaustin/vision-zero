@@ -14,7 +14,7 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
   /**
    * Graphql mutation that will be exectuted when a row is edited -
-   * will also be passed to the rowActionButton, if present
+   * will also be passed to the rowActionComponent, if present
    */
   mutation: string;
   /**
@@ -33,14 +33,14 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
    * Optional react component to be rendered in the rightmost
    * column of every row
    */
-  rowActionButton?: React.ComponentType<RowActionButtonProps<T>>;
+  rowActionComponent?: React.ComponentType<RowActionComponentProps<T>>;
   /**
    * Callback function to be executed after a row edit is saved
    */
   onSaveCallback: () => Promise<void>;
 }
 
-export interface RowActionButtonProps<T extends Record<string, unknown>> {
+export interface RowActionComponentProps<T extends Record<string, unknown>> {
   /**
    * The record in the current table row
    */
@@ -66,7 +66,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
   title,
   headerActionComponent,
   onSaveCallback,
-  rowActionButton,
+  rowActionComponent,
 }: RelatedRecordTableProps<T>) {
   return (
     <Card>
@@ -86,14 +86,14 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
                 </th>
               ))}
               {/* add an empty row for the row action */}
-              {rowActionButton && <th></th>}
+              {rowActionComponent && <th></th>}
             </tr>
           </thead>
           <tbody>
             {records.length === 0 ? (
               <tr>
                 <td
-                  colSpan={columns.length + (rowActionButton ? 1 : 0)}
+                  colSpan={columns.length + (rowActionComponent ? 1 : 0)}
                   style={{ textAlign: "center" }}
                 >
                   No {title.toLowerCase()} found
@@ -108,7 +108,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
                   onSaveCallback={onSaveCallback}
                   record={record}
                   mutation={mutation}
-                  rowActionButton={rowActionButton}
+                  rowActionComponent={rowActionComponent}
                 />
               ))
             )}

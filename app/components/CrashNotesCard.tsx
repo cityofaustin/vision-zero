@@ -81,7 +81,7 @@ const CrashNotesCard = ({
         title="Notes"
         onSaveCallback={onSaveCallback}
         headerActionComponent={<AddNoteButton onClick={handleShow} />}
-        rowActionButton={CrashDeleteNoteButton}
+        rowActionComponent={CrashDeleteNoteButton}
       />
 
       <NotesModal

@@ -10,7 +10,7 @@ import {
 } from "@/utils/formHelpers";
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
-import { RowActionButtonProps } from "@/components/RelatedRecordTable";
+import { RowActionComponentProps } from "@/components/RelatedRecordTable";
 
 interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   /**
@@ -23,7 +23,7 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
   /**
    * Graphql mutation that will be exectuted when a row is edited -
-   * will also be passed to the rowActionButton, if present
+   * will also be passed to the rowActionComponent, if present
    */
   mutation: string;
   /**
@@ -38,7 +38,7 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
    * Optional react component to be rendered in the rightmost column
    * of every row
    */
-  rowActionButton?: React.ComponentType<RowActionButtonProps<T>>;
+  rowActionComponent?: React.ComponentType<RowActionComponentProps<T>>;
 }
 
 /**
@@ -56,7 +56,7 @@ export default function RelatedRecordTableRow<
   mutation,
   isValidating,
   onSaveCallback,
-  rowActionButton: RowActionButton,
+  rowActionComponent: RowActionComponent,
 }: RelatedRecordTableRowProps<T>) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
@@ -161,9 +161,9 @@ export default function RelatedRecordTableRow<
             </td>
           );
         })}
-        {RowActionButton && (
+        {RowActionComponent && (
           <td>
-            <RowActionButton
+            <RowActionComponent
               record={record}
               mutation={mutation}
               onSaveCallback={onSaveCallback}
