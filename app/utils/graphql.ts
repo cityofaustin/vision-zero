@@ -37,7 +37,7 @@ const fetcher = <T>([query, variables, token, hasuraRoleName]: [
   RequestDocument,
   Variables,
   string,
-  string
+  string,
 ]): Promise<T> =>
   request<T>({
     url: ENDPOINT,
@@ -104,7 +104,7 @@ export const useQuery = <T extends Record<string, unknown>>({
 
   const fetchWithAuth = async ([query, variables]: [
     RequestDocument,
-    Variables
+    Variables,
   ]): Promise<HasuraGraphQLResponse<T, typeof typename>> => {
     const hasuraRoleName = getHasuraRoleName(getRolesArray(user));
     return fetcher([query, variables, token || "", hasuraRoleName]);

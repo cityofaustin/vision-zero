@@ -107,11 +107,7 @@ const DataCardInput = ({
       </div>
       <div className="text-end">
         <span className="me-2">
-          <Button
-            size="sm"
-            type="submit"
-            disabled={isMutating || !isDirty}
-          >
+          <Button size="sm" type="submit" disabled={isMutating || !isDirty}>
             Save
           </Button>
         </span>

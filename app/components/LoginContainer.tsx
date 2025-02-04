@@ -35,7 +35,11 @@ export default function LoginContainer({
             </span>
           </div>
           <div>
-            <Button onClick={onLogin} size="lg" className="w-100 bg-vz-sunshine text-vz-dark">
+            <Button
+              onClick={onLogin}
+              size="lg"
+              className="w-100 bg-vz-sunshine text-vz-dark"
+            >
               <span className="text-nowrap d-flex justify-content-center align-items-center">
                 <FaSignOutAlt className="me-2" />
                 <span>Sign In</span>
