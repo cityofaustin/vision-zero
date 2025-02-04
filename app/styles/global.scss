@@ -4,7 +4,7 @@
 $baby-powder: #fbfef9;
 $night: #131515;
 $moped-blue: #1276d1;
-$dim-gray: #6B7676;
+$dim-gray: #6b7676;
 $anti-flash-white: #f4f5f6;
 $sea-green: #09814a;
 $rojo: #dd0426;
@@ -20,12 +20,6 @@ $warning: $jonquil;
 $danger: $rojo;
 $light: $anti-flash-white;
 $dark: $night;
-
-// .app-navbar {
-//   background-color: rgba(244, 245, 246, 0.4);
-//   z-index: 10000;
-//   backdrop-filter: blur(10px);
-// }
 
 // https://isotropic.co/tool/hex-color-to-css-filter/
 .app-brand-img {
@@ -96,7 +90,9 @@ $dark: $night;
 
 .card {
   border: 1px solid #e5e7eb !important;
-  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    1px 1px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px -1px rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
