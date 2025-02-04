@@ -3,7 +3,7 @@
 
 ### Invocation
 
-You will need to be on COA VPN to develop this ETL, because the scripts requires access to our credential server.
+You will need to be on COA VPN to develop this ETL, because the scripts require access to our credential server.
 
 For local development, you may find that the `docker-compose.yml` eases the work
 of having to collect the correct arguments to the docker invocation. After creating
