@@ -7,9 +7,8 @@ import cloneDeep from "lodash/cloneDeep";
 import { useQuery } from "@/utils/graphql";
 import Table from "@/components/Table";
 import TableSearch, { SearchSettings } from "@/components/TableSearch";
-import TableDateSelector, {
-  makeDateFilterFromMode,
-} from "@/components/TableDateSelector";
+import TableDateSelector from "@/components/TableDateSelector";
+import { makeDateFilterFromMode } from "@/utils/dates";
 import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
 import { useQueryBuilder, useExportQuery } from "@/utils/queryBuilder";
 import { QueryConfig, Filter } from "@/types/queryBuilder";
