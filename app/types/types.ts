@@ -3,7 +3,7 @@ import { Variables } from "graphql-request";
 import { Relationship } from "./relationships";
 import { Path } from "./utils";
 
-export type InputType = "text" | "number" | "yes_no" | "select";
+export type InputType = "text" | "number" | "yes_no" | "select" | "textarea";
 
 /**
  * Metadata for a database column referenced by our app — where
@@ -14,7 +14,8 @@ export type InputType = "text" | "number" | "yes_no" | "select";
  */
 export interface ColDataCardDef<T extends Record<string, unknown>> {
   /**
-   * the dot-notated string path to accessing the property on the given type
+   * the dot-notated string path to accessing the property on the given type,
+   * or "actions" for special action buttons column
    */
   path: Path<T>;
   /**
@@ -54,8 +55,12 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
     record: T,
     onCancel: () => void,
     mutation: string,
-    onSaveCallback: () => Promise<void>,
+    onSaveCallback: () => Promise<void>
   ) => ReactNode;
+  /**
+   * Styles to be applied to the component's containing element
+   */
+  style?: React.CSSProperties;
 }
 
 export interface MutationVariables extends Variables {

@@ -4,7 +4,7 @@ import SidebarLayout from "@/components/SidebarLayout";
 
 /**
  * The root layout for the whole app
- * 
+ *
  * todo: metadata
  */
 export default function RootLayout({

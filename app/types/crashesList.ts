@@ -38,4 +38,5 @@ export type CrashesListRow = {
   unkn_injry_count: number | null;
   vz_fatality_count: number | null;
   wthr_cond_id: number | null;
+  is_manual_geocode: boolean | null;
 };

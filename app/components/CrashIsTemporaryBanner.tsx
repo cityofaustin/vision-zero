@@ -7,6 +7,9 @@ import { FaTrash, FaTriangleExclamation } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
 import { useMutation } from "@/utils/graphql";
 import { DELETE_CRIS_CRASH } from "@/queries/crash";
+import PermissionsRequired from "@/components/PermissionsRequired";
+
+const allowedDeleteCrashRecordEditRoles = ["vz-admin", "editor"];
 
 interface CrashIsTemporaryBannerProps {
   crashId: number;
@@ -36,33 +39,35 @@ export default function CrashIsTemporaryBanner({
           deleted at any time.
         </span>
       </span>
-      <span>
-        <Button
-          variant="danger"
-          onClick={async () => {
-            if (
-              window.confirm(
-                "Are you sure you want to delete this crash record?"
-              )
-            ) {
-              await mutate({ id: crashId, updated_by: user?.email });
-              router.push("/crashes");
-            }
-          }}
-          disabled={isMutating}
-        >
-          <AlignedLabel>
-            {isMutating ? (
-              <Spinner size="sm" />
-            ) : (
-              <>
-                <FaTrash className="me-2" />
-                <span>Delete</span>
-              </>
-            )}
-          </AlignedLabel>
-        </Button>
-      </span>
+      <PermissionsRequired allowedRoles={allowedDeleteCrashRecordEditRoles}>
+        <span>
+          <Button
+            variant="danger"
+            onClick={async () => {
+              if (
+                window.confirm(
+                  "Are you sure you want to delete this crash record?"
+                )
+              ) {
+                await mutate({ id: crashId, updated_by: user?.email });
+                router.push("/crashes");
+              }
+            }}
+            disabled={isMutating}
+          >
+            <AlignedLabel>
+              {isMutating ? (
+                <Spinner size="sm" />
+              ) : (
+                <>
+                  <FaTrash className="me-2" />
+                  <span>Delete</span>
+                </>
+              )}
+            </AlignedLabel>
+          </Button>
+        </span>
+      </PermissionsRequired>
     </Alert>
   );
 }
