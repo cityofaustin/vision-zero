@@ -162,7 +162,7 @@ export default function RelatedRecordTableRow<
           );
         })}
         {RowActionComponent && (
-          <td>
+          <td className="text-end">
             <RowActionComponent
               record={record}
               mutation={mutation}
