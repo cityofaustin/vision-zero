@@ -34,7 +34,6 @@ const COLUMNS: UserColumn[] = [
   },
   { name: "name", label: "Name" },
   { name: "email", label: "Email" },
-  { name: "last_ip", label: "Last IP address" },
   { name: "logins_count", label: "Login count" },
   {
     name: "created_at",
