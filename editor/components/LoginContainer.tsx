@@ -3,6 +3,8 @@ import Container from "react-bootstrap/Container";
 import Image from "react-bootstrap/Image";
 import { FaSignOutAlt } from "react-icons/fa";
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 /**
  * The login UI
  *
@@ -24,7 +26,7 @@ export default function LoginContainer({
           <div className="mb-2">
             <Image
               fluid
-              src="/assets/img/brand/vz_coa_logo_asphalt.png"
+              src={`${BASE_PATH}/assets/img/brand/vz_coa_logo_asphalt.png`}
               alt="Vision Zero Logo"
               width="350rem"
             />

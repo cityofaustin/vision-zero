@@ -4,12 +4,14 @@ import Image from "react-bootstrap/Image";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 export default function NotFound() {
   return (
     <div className="d-flex flex-column flex-grow-1 justify-content-center h-100">
       <Row className="d-flex justify-content-center">
         <Col xs={6} md={3}>
-          <Image src="/assets/img/brand/404.svg" alt="404" fluid />
+          <Image src={`${BASE_PATH}/assets/img/brand/404.svg`} alt="404" fluid />
         </Col>
       </Row>
       <Row className="d-flex justify-content-center my-4">
