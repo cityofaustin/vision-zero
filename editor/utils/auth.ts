@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth0, User } from "@auth0/auth0-react";
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 /**
  * Add our claims to the Auth0 ID token—these are
  * added via Auth0 action
@@ -84,7 +86,7 @@ export const useToken = (): string | null => {
       } catch (err) {
         await loginWithRedirect({
           appState: {
-            returnTo: pathName,
+            returnTo: BASE_PATH + pathName,
           },
         });
       }

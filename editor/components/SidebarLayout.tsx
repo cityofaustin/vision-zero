@@ -14,6 +14,8 @@ import LoginContainer from "@/components/LoginContainer";
 import { routes } from "@/configs/routes";
 import PermissionsRequired from "@/components/PermissionsRequired";
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const localStorageKey = "sidebarCollapsed";
 
 /**
@@ -74,7 +76,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
         onLogin={() =>
           loginWithRedirect({
             appState: {
-              returnTo: pathName,
+              returnTo: BASE_PATH + pathName,
             },
           })
         }
