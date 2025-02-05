@@ -17,6 +17,8 @@ import NavBarSearch from "@/components/NavBarSearch";
 import AlignedLabel from "@/components/AlignedLabel";
 import DropdownAnchorToggle from "@/components/DropdownAnchorToggle";
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 type NavBarProps = {
   user: User;
   logout: (options?: LogoutOptions) => void;
@@ -64,7 +66,7 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
               <Dropdown.Item
                 eventKey="2"
                 onClick={() =>
-                  logout({ logoutParams: { returnTo: window.location.origin } })
+                  logout({ logoutParams: { returnTo: window.location.origin + BASE_PATH } })
                 }
               >
                 <AlignedLabel>

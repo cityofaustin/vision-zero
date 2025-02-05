@@ -4,6 +4,7 @@ import { Auth0Provider } from "@auth0/auth0-react";
 const DOMAIN = process.env.NEXT_PUBLIC_AUTH0_DOMAIN!;
 const CLIENT_ID = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID!;
 const AUDIENCE = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID!;
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 /**
  * Client-side wrapper for the Auth0Provider
@@ -14,7 +15,7 @@ export default function AuthProvider({
   children: React.ReactNode;
 }) {
   const redirect_uri =
-    (typeof window !== "undefined" && window.location.origin) || undefined;
+    (typeof window !== "undefined" && window.location.origin + BASE_PATH) || undefined;
 
   return (
     <Auth0Provider
