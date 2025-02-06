@@ -14,6 +14,8 @@ import LoginContainer from "@/components/LoginContainer";
 import { routes } from "@/configs/routes";
 import PermissionsRequired from "@/components/PermissionsRequired";
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const localStorageKey = "sidebarCollapsed";
 
 /**
@@ -21,8 +23,14 @@ const localStorageKey = "sidebarCollapsed";
  */
 export default function SidebarLayout({ children }: { children: ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const { loginWithRedirect, logout, isAuthenticated, isLoading, user } =
-    useAuth0();
+  const {
+    getAccessTokenSilently,
+    loginWithRedirect,
+    logout,
+    isAuthenticated,
+    isLoading,
+    user,
+  } = useAuth0();
   const pathName = usePathname();
   const segments = useSelectedLayoutSegments();
 
@@ -34,6 +42,16 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
       }),
     []
   );
+
+  useEffect(() => {
+    console.log("Checking if user is Authenticated...");
+    if (!isAuthenticated) {
+      console.log("Getting access token silently...");
+      getAccessTokenSilently().catch(() => {
+        console.log("User not authenticated...");
+      });
+    }
+  }, [isAuthenticated, getAccessTokenSilently]);
 
   /** Check local storage for initial sidebar state */
   useEffect(() => {
@@ -58,7 +76,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
         onLogin={() =>
           loginWithRedirect({
             appState: {
-              returnTo: pathName,
+              returnTo: BASE_PATH + pathName,
             },
           })
         }

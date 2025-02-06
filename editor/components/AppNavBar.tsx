@@ -17,6 +17,8 @@ import NavBarSearch from "@/components/NavBarSearch";
 import AlignedLabel from "@/components/AlignedLabel";
 import DropdownAnchorToggle from "@/components/DropdownAnchorToggle";
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 type NavBarProps = {
   user: User;
   logout: (options?: LogoutOptions) => void;
@@ -34,7 +36,7 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
         <Col className="d-flex justify-content-start">
           <Navbar.Brand href="/crashes" as={Link}>
             <Image
-              src="/assets/img/brand/visionzerotext.png"
+              src={`${BASE_PATH}/assets/img/brand/visionzerotext.png`}
               alt="Vision Zero Logo"
               height="24px"
               width="140px"
@@ -46,7 +48,7 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
           <Dropdown align="end">
             <Dropdown.Toggle id="avatar-toggle" as={DropdownAnchorToggle}>
               <Image
-                src="/assets/img/avatars/placeholder.png"
+                src={`${BASE_PATH}/assets/img/avatars/placeholder.png`}
                 alt="Vision Zero Logo"
                 height={35}
                 className="rounded-circle"
@@ -64,7 +66,11 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
               <Dropdown.Item
                 eventKey="2"
                 onClick={() =>
-                  logout({ logoutParams: { returnTo: window.location.origin } })
+                  logout({
+                    logoutParams: {
+                      returnTo: window.location.origin + BASE_PATH,
+                    },
+                  })
                 }
               >
                 <AlignedLabel>
