@@ -23,14 +23,8 @@ const localStorageKey = "sidebarCollapsed";
  */
 export default function SidebarLayout({ children }: { children: ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const {
-    getAccessTokenSilently,
-    loginWithRedirect,
-    logout,
-    isAuthenticated,
-    isLoading,
-    user,
-  } = useAuth0();
+  const { loginWithRedirect, logout, isAuthenticated, isLoading, user } =
+    useAuth0();
   const pathName = usePathname();
   const segments = useSelectedLayoutSegments();
 
@@ -42,16 +36,6 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
       }),
     []
   );
-
-  useEffect(() => {
-    console.log("Checking if user is Authenticated...");
-    if (!isAuthenticated) {
-      console.log("Getting access token silently...");
-      getAccessTokenSilently().catch(() => {
-        console.log("User not authenticated...");
-      });
-    }
-  }, [isAuthenticated, getAccessTokenSilently]);
 
   /** Check local storage for initial sidebar state */
   useEffect(() => {
