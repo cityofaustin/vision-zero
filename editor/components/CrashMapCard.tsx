@@ -4,10 +4,11 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import { MapRef } from "react-map-gl";
 import CrashMapCoordinateForm from "@/components/CrashMapCoordinateForm";
-import { CrashMap } from "@/components/CrashMap";
+import { CrashMap, LatLonString } from "@/components/CrashMap";
 import { useMutation } from "@/utils/graphql";
 import { useResizeObserver } from "@/utils/map";
-import { LatLon } from "@/components/CrashMap";
+import { handleCoordinate } from "@/utils/formHelpers";
+import { DEFAULT_MAP_PAN_ZOOM } from "@/configs/map";
 
 import PermissionsRequired from "@/components/PermissionsRequired";
 
@@ -45,9 +46,9 @@ export default function CrashMapCard({
   });
 
   const [isEditingCoordinates, setIsEditingCoordinates] = useState(false);
-  const [editCoordinates, setEditCoordinates] = useState<LatLon>({
-    latitude: 0,
-    longitude: 0,
+  const [editCoordinates, setEditCoordinates] = useState<LatLonString>({
+    latitude: String(DEFAULT_MAP_PAN_ZOOM.latitude),
+    longitude: String(DEFAULT_MAP_PAN_ZOOM.longitude),
   });
   const { mutate, loading: isMutating } = useMutation(mutation);
 
@@ -110,9 +111,20 @@ export default function CrashMapCard({
                   if (!isEditingCoordinates) {
                     setIsEditingCoordinates(true);
                   } else {
+                    // convert coordinates to numbers and validate them
+                    const coordinatesToSave = {
+                      latitude: handleCoordinate(
+                        Number(editCoordinates.latitude),
+                        true
+                      ),
+                      longitude: handleCoordinate(
+                        Number(editCoordinates.longitude),
+                        false
+                      ),
+                    };
                     await mutate({
                       id: crashId,
-                      updates: { ...editCoordinates },
+                      updates: coordinatesToSave,
                     });
                     await onSaveCallback();
                     setIsEditingCoordinates(false);

@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
 import Form from "react-bootstrap/Form";
-import { LatLon } from "@/components/CrashMap";
+import {  LatLonString } from "@/components/CrashMap";
 
 interface CrashMapCoordianteFormProps {
-  editCoordinates: LatLon;
-  setEditCoordinates: Dispatch<SetStateAction<LatLon>>;
+  editCoordinates: LatLonString;
+  setEditCoordinates: Dispatch<SetStateAction<LatLonString>>;
 }
 
 /**
@@ -20,25 +20,27 @@ export default function CrashMapCoordinateForm({
         <Form.Label className="fw-bold me-1 my-auto">Lat</Form.Label>
         <Form.Control
           className="me-2"
-          inputMode="numeric"
           size="sm"
-          value={String(editCoordinates.latitude)}
+          value={String(
+            editCoordinates.latitude === null ? "" : editCoordinates.latitude
+          )}
           onChange={(e) => {
             setEditCoordinates({
               ...editCoordinates,
-              latitude: Number(e.target.value),
+              latitude: e.target.value,
             });
           }}
         />
         <Form.Label className="fw-bold me-1 my-auto">Lon</Form.Label>
         <Form.Control
-          inputMode="numeric"
           size="sm"
-          value={String(editCoordinates.longitude)}
+          value={String(
+            editCoordinates.longitude === null ? "" : editCoordinates.longitude
+          )}
           onChange={(e) => {
             setEditCoordinates({
               ...editCoordinates,
-              latitude: Number(e.target.value),
+              longitude: e.target.value,
             });
           }}
         />

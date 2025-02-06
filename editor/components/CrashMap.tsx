@@ -17,9 +17,13 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
 import { COLORS } from "@/utils/constants";
 
-export interface LatLon {
-  latitude: number | null;
-  longitude: number | null;
+/**
+ * We work with lat/lon as strings so that the map UI
+ * and form inputs can be linked while editing
+ */
+export interface LatLonString {
+  latitude: string;
+  longitude: string;
 }
 
 interface CrashMapProps {
@@ -42,8 +46,8 @@ interface CrashMapProps {
   /**
    * The lat/lon coordinates that are saved while editing
    */
-  editCoordinates: LatLon;
-  setEditCoordinates: Dispatch<SetStateAction<LatLon>>;
+  editCoordinates: LatLonString;
+  setEditCoordinates: Dispatch<SetStateAction<LatLonString>>;
 }
 
 /**
@@ -61,17 +65,20 @@ export const CrashMap = ({
     (e: ViewStateChangeEvent) => {
       const latitude = e.viewState.latitude;
       const longitude = e.viewState.longitude;
-      setEditCoordinates({ latitude, longitude });
+      setEditCoordinates({
+        latitude: String(latitude),
+        longitude: String(longitude),
+      });
     },
     [setEditCoordinates]
   );
 
   useEffect(() => {
     if (!isEditing) {
-      // reset marker coords
+      // initialize edit coordiantes and reset them after saving
       setEditCoordinates({
-        latitude: savedLatitude,
-        longitude: savedLongitude,
+        latitude: String(savedLatitude || DEFAULT_MAP_PAN_ZOOM.latitude),
+        longitude: String(savedLongitude || DEFAULT_MAP_PAN_ZOOM.longitude),
       });
     }
   }, [isEditing, setEditCoordinates, savedLatitude, savedLongitude]);
@@ -102,8 +109,8 @@ export const CrashMap = ({
       )}
       {isEditing && (
         <Marker
-          latitude={editCoordinates.latitude || 0}
-          longitude={editCoordinates.longitude || 0}
+          latitude={Number(editCoordinates.latitude || 0)}
+          longitude={Number(editCoordinates.longitude || 0)}
           color={isEditing ? COLORS.danger : undefined}
         />
       )}

@@ -187,3 +187,24 @@ export const handleFormValueOutput = (
   // handle everything else as a nulllable string
   return trimStringNullable(value);
 };
+
+/**
+ * Validate a lat/lon coordinate
+ *
+ * Returns null if value is NaN or if the number is
+ * is not within the allowed latitude or longitude range
+ */
+export const handleCoordinate = (
+  value: number | null,
+  isLatitude: boolean
+): number | null => {
+  if (value === null || isNaN(value)) {
+    return null;
+  }
+  if (isLatitude && Math.abs(value) > 90) {
+    return null;
+  } else if (!isLatitude && Math.abs(value) > 180) {
+    return null;
+  }
+  return value;
+};
