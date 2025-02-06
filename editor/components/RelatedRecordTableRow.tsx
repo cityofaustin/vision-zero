@@ -1,13 +1,14 @@
 import { useState } from "react";
 import Spinner from "react-bootstrap/Spinner";
 import { useAuth0 } from "@auth0/auth0-react";
-import DataCardInput from "@/components/DataCardInput";
+import EditableField from "@/components/EditableField";
 import { useMutation, useQuery, useLookupQuery } from "@/utils/graphql";
 import {
   getRecordValue,
   renderColumnValue,
   valueToString,
   handleFormValueOutput,
+  getValidationRules,
 } from "@/utils/formHelpers";
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
@@ -145,7 +146,7 @@ export default function RelatedRecordTableRow<
                 <>
                   {isLoadingLookups && <Spinner size="sm" />}
                   {!isLoadingLookups && (
-                    <DataCardInput
+                    <EditableField
                       initialValue={valueToString(
                         getRecordValue(record, col, true),
                         col
@@ -164,6 +165,7 @@ export default function RelatedRecordTableRow<
                       inputType={col.inputType}
                       selectOptions={selectOptions}
                       isMutating={isMutating || isValidating}
+                      validation={getValidationRules(col)}
                     />
                   )}
                 </>

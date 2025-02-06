@@ -2,13 +2,14 @@ import { useState } from "react";
 import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
-import DataCardInput from "@/components/DataCardInput";
+import EditableField from "@/components/EditableField";
 import { useMutation, useQuery, useLookupQuery } from "@/utils/graphql";
 import {
   getRecordValue,
   renderColumnValue,
   valueToString,
   handleFormValueOutput,
+  getValidationRules,
 } from "@/utils/formHelpers";
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
@@ -131,7 +132,7 @@ export default function DataCard<T extends Record<string, unknown>>({
                     <td>
                       {isLoadingLookups && <Spinner size="sm" />}
                       {!isLoadingLookups && (
-                        <DataCardInput
+                        <EditableField
                           initialValue={valueToString(
                             getRecordValue(record, col, true),
                             col
@@ -149,6 +150,7 @@ export default function DataCard<T extends Record<string, unknown>>({
                           inputType={col.inputType}
                           selectOptions={selectOptions}
                           isMutating={isMutating || isValidating}
+                          validation={getValidationRules(col)}
                         />
                       )}
                     </td>

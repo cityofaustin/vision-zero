@@ -1,10 +1,22 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { InputType } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
 
-interface DataCardInputProps {
+// TODO: 
+// - use EditableField component with DataCardInput component in addition to
+// RelatedRecordTableRow component
+// - make sure fields that are nullable don't break from new validation rules
+// - make sure this aligns with React Hook Form patterns 
+
+interface ValidationRules {
+  required?: boolean;
+  pattern?: RegExp;
+  custom?: (value: string) => boolean | string;
+}
+
+interface EditableFieldProps {
   /**
    * The initial value to populate the input
    */
@@ -31,60 +43,91 @@ interface DataCardInputProps {
    * to set control the parent component's edit state
    */
   onCancel: () => void;
+  validation?: ValidationRules;
+}
+
+interface FormValues {
+  value: string;
 }
 
 /**
  * Component that manages the form UI for a single
  * editable field
  */
-const DataCardInput = ({
+const EditableField = ({
   initialValue,
   inputType,
   isMutating,
   selectOptions,
   onSave,
   onCancel,
-}: DataCardInputProps) => {
-  // todo: input validation; input type = number
-  const [editValue, setEditValue] = useState<string>(initialValue);
+  validation,
+}: EditableFieldProps) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isDirty },
+  } = useForm<FormValues>({
+    defaultValues: {
+      value: initialValue,
+    },
+  });
+  
+  const onSubmit = async (data: FormValues) => {
+    await onSave(data.value);
+  };
 
-  const isDirty = editValue !== initialValue;
+  // Build validation rules
+  const validationRules: Record<string, unknown> = {};
+  if (validation?.required) {
+    validationRules.required = "This field is required";
+  }
+  if (inputType === "number") {
+    validationRules.pattern = {
+      value: /^\d*\.?\d*$/,
+      message: "Please enter a valid number",
+    };
+  }
+  if (validation?.pattern) {
+    validationRules.pattern = {
+      value: validation.pattern,
+      message: "Invalid format",
+    };
+  }
+  if (validation?.custom) {
+    validationRules.validate = validation.custom;
+  }
 
   return (
-    <Form
-      onSubmit={async (e) => {
-        e.preventDefault();
-        await onSave(editValue);
-      }}
-    >
+    <Form onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-2">
         {(inputType === "text" || inputType === "number") && (
           <Form.Control
+            {...register("value", validationRules)}
             autoFocus
             size="sm"
             type="text"
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
             inputMode={inputType === "number" ? "numeric" : undefined}
+            isInvalid={!!errors.value}
           />
         )}
         {inputType === "textarea" && (
           <Form.Control
+            {...register("value", validationRules)}
             autoFocus
             size="sm"
             as="textarea"
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
+            isInvalid={!!errors.value}
           />
         )}
         {inputType === "select" && selectOptions && (
           <Form.Select
+            {...register("value", validationRules)}
             autoFocus
             size="sm"
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
+            isInvalid={!!errors.value}
           >
-            <option>Select...</option>
+            <option value="">Select...</option>
             {selectOptions.map((option) => (
               <option key={option.id} value={String(option.id)}>
                 {option.label}
@@ -94,15 +137,20 @@ const DataCardInput = ({
         )}
         {inputType === "yes_no" && (
           <Form.Select
+            {...register("value", validationRules)}
             autoFocus
             size="sm"
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
+            isInvalid={!!errors.value}
           >
-            <option>Select...</option>
+            <option value="">Select...</option>
             <option value="true">Yes</option>
             <option value="false">No</option>
           </Form.Select>
+        )}
+        {errors.value && (
+          <Form.Control.Feedback type="invalid">
+            {errors.value.message}
+          </Form.Control.Feedback>
         )}
       </div>
       <div className="text-end">
@@ -126,4 +174,4 @@ const DataCardInput = ({
   );
 };
 
-export default DataCardInput;
+export default EditableField;

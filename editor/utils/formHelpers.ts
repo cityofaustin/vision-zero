@@ -187,3 +187,16 @@ export const handleFormValueOutput = (
   // handle everything else as a nulllable string
   return trimStringNullable(value);
 };
+
+/**
+ * Generates validation rules for EditableField based on column definition
+ */
+export const getValidationRules = (col: ColDataCardDef<any>) => {
+  return {
+    required: col.required,
+    ...(col.inputType === "number" && {
+      pattern: /^\d*\.?\d*$/,
+    }),
+    ...(col.validation && { custom: col.validation }),
+  };
+};

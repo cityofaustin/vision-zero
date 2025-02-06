@@ -61,6 +61,14 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    * Styles to be applied to the component's containing element
    */
   style?: React.CSSProperties;
+  /**
+   * If the field is required
+   */
+  required?: boolean;
+  /**
+   * Custom validation function
+   */
+  validation?: (value: string) => boolean | string;
 }
 
 export interface MutationVariables extends Variables {
