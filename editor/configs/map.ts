@@ -6,6 +6,8 @@ import { SymbolLayerSpecification, RasterLayerSpecification } from "mapbox-gl";
 const NEARMAP_KEY = process.env.NEXT_PUBLIC_NEARMAP_KEY;
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
+export const MAP_COORDINATE_PRECISION = 8;
+
 export const DEFAULT_MAP_PAN_ZOOM = {
   latitude: 30.2747,
   longitude: -97.7406,
