@@ -3,10 +3,12 @@ import Link from "next/link";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import { MapRef } from "react-map-gl";
+import CrashMapCoordinateForm from "@/components/CrashMapCoordinateForm";
 import { CrashMap } from "@/components/CrashMap";
 import { useMutation } from "@/utils/graphql";
 import { useResizeObserver } from "@/utils/map";
 import { LatLon } from "@/components/CrashMap";
+
 import PermissionsRequired from "@/components/PermissionsRequired";
 
 const allowedMapEditRoles = ["vz-admin", "editor"];
@@ -55,13 +57,26 @@ export default function CrashMapCard({
 
   return (
     <Card className="h-100">
-      <Card.Header>
-        Location:{" "}
-        {hasLocation ? (
-          <Link href={`/locations/${locationId}`}>{locationId}</Link>
-        ) : (
-          "unassigned"
-        )}
+      <Card.Header className="d-flex justify-content-between">
+        <div>
+          <span className="fw-bold me-2">Location</span>
+          {hasLocation ? (
+            <Link href={`/locations/${locationId}`}>{locationId}</Link>
+          ) : (
+            <span className="text-secondary">unassigned</span>
+          )}
+        </div>
+        <div>
+          <span className="fw-bold me-2">Provider </span>
+          <span>
+            {" "}
+            {hasCoordinates
+              ? isManualGeocode
+                ? "Manual Q/A"
+                : "TxDOT CRIS"
+              : "No Primary Coordinates"}
+          </span>
+        </div>
       </Card.Header>
       <Card.Body className="p-1 crash-header-card-body" ref={mapContainerRef}>
         <CrashMap
@@ -74,19 +89,19 @@ export default function CrashMapCard({
         />
       </Card.Body>
       <Card.Footer>
-        <div className="d-flex justify-content-between">
-          <div>
-            <span>
-              Location provider: {""}
-              {hasCoordinates
-                ? isManualGeocode
-                  ? "Manual Q/A"
-                  : "TxDOT CRIS"
-                : "No Primary Coordinates"}
-            </span>
-          </div>
-          <PermissionsRequired allowedRoles={allowedMapEditRoles}>
-            <div>
+        <PermissionsRequired allowedRoles={allowedMapEditRoles}>
+          <div
+            className={`d-flex align-items-center ${isEditingCoordinates ? "justify-content-between" : "justify-content-end"}`}
+          >
+            {isEditingCoordinates && (
+              <div className="flex-grow-1">
+                <CrashMapCoordinateForm
+                  editCoordinates={editCoordinates}
+                  setEditCoordinates={setEditCoordinates}
+                />
+              </div>
+            )}
+            <div className="d-flex text-nowrap d-flex align-items-center justify-content-end">
               <Button
                 size="sm"
                 variant="primary"
@@ -118,8 +133,8 @@ export default function CrashMapCard({
                 </Button>
               )}
             </div>
-          </PermissionsRequired>
-        </div>
+          </div>
+        </PermissionsRequired>
       </Card.Footer>
     </Card>
   );
