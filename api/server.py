@@ -54,6 +54,7 @@ APP = Flask(__name__)
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+logger.info("API Version 1249PM ET")
 
 def get_secure_password(num_chars=16):
     """Generate a secure random password with at least one lowercase character,
