@@ -39,6 +39,7 @@ select_permissions:
         - active_school_zone_fl
         - at_intrsct_fl
         - in_austin_full_purpose
+        - is_coa_roadway
         - is_manual_geocode
         - is_temp_record
         - onsys_fl
@@ -100,6 +101,7 @@ select_permissions:
         - active_school_zone_fl
         - at_intrsct_fl
         - in_austin_full_purpose
+        - is_coa_roadway
         - is_manual_geocode
         - is_temp_record
         - onsys_fl
@@ -161,6 +163,7 @@ select_permissions:
         - active_school_zone_fl
         - at_intrsct_fl
         - in_austin_full_purpose
+        - is_coa_roadway
         - is_manual_geocode
         - is_temp_record
         - onsys_fl
