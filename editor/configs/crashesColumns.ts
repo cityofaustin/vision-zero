@@ -122,6 +122,14 @@ export const crashesColumns = {
     label: "Street number",
     editable: true,
     inputType: "text",
+    required: true,
+    validation: (value: string) => {
+      const isNumber = /^\d+$/.test(value);
+      if (!isNumber) {
+        return "Street number must be a number";
+      }
+      return true;
+    }
   },
   city: {
     path: "city.label",
