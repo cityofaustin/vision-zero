@@ -6,7 +6,7 @@ import { FaMoon } from "react-icons/fa6";
 export const darkModelocalStorageKey = "userDarkModeSetting";
 
 /**
- * Dropdown item with a switch that enables dark mode
+ * App navbar with branding and a right-aligned dropdown menu
  */
 export default function DarkModeToggle() {
   const [isDarkMode, setIsDarkMode] = useState(
