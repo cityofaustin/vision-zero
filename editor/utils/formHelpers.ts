@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { ColDataCardDef, InputType } from "@/types/types";
-import { MAP_COORDINATE_PRECISION } from "@/configs/map";
 
 /**
  * Retrieve a value from an object given a dot-noted path string.
