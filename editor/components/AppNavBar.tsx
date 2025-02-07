@@ -16,6 +16,7 @@ import {
 import NavBarSearch from "@/components/NavBarSearch";
 import AlignedLabel from "@/components/AlignedLabel";
 import DropdownAnchorToggle from "@/components/DropdownAnchorToggle";
+import DarkModeToggle from "@/components/DarkModeToggle";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -56,28 +57,13 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
             </Dropdown.Toggle>
             <Dropdown.Menu>
               <Dropdown.Header>{user.email}</Dropdown.Header>
-              <Dropdown.Divider />
               <Dropdown.Item eventKey="1" href={`/users/${userId}`} as={Link}>
                 <AlignedLabel>
                   <FaUserLarge className="me-3" />
                   Account
                 </AlignedLabel>
               </Dropdown.Item>
-              <Dropdown.Item
-                eventKey="2"
-                onClick={() =>
-                  logout({
-                    logoutParams: {
-                      returnTo: window.location.origin + BASE_PATH,
-                    },
-                  })
-                }
-              >
-                <AlignedLabel>
-                  <FaRightFromBracket className="me-3" />
-                  Sign out
-                </AlignedLabel>
-              </Dropdown.Item>
+              <DarkModeToggle />
               <Dropdown.Divider />
               <Dropdown.Item
                 target="_blank"
@@ -110,6 +96,22 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
                   <FaToolbox className="me-3" />
                   CR3 code sheet
                   <FaSquareArrowUpRight className="ms-3 text-muted" />
+                </AlignedLabel>
+              </Dropdown.Item>
+              <Dropdown.Divider />
+              <Dropdown.Item
+                eventKey="2"
+                onClick={() =>
+                  logout({
+                    logoutParams: {
+                      returnTo: window.location.origin + BASE_PATH,
+                    },
+                  })
+                }
+              >
+                <AlignedLabel>
+                  <FaRightFromBracket className="me-3" />
+                  Sign out
                 </AlignedLabel>
               </Dropdown.Item>
             </Dropdown.Menu>
