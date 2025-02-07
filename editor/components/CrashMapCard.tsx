@@ -4,12 +4,16 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import { MapRef } from "react-map-gl";
 import CrashMapCoordinateForm from "@/components/CrashMapCoordinateForm";
-import { CrashMap, LatLonString } from "@/components/CrashMap";
+import {
+  CrashMap,
+  LatLonString,
+  LatLonSchema,
+  LatLon,
+  CoordinateValidationError,
+} from "@/components/CrashMap";
 import { useMutation } from "@/utils/graphql";
 import { useResizeObserver } from "@/utils/map";
-import { handleCoordinate } from "@/utils/formHelpers";
 import { DEFAULT_MAP_PAN_ZOOM } from "@/configs/map";
-
 import PermissionsRequired from "@/components/PermissionsRequired";
 
 const allowedMapEditRoles = ["vz-admin", "editor"];
@@ -45,11 +49,17 @@ export default function CrashMapCard({
     mapRef.current?.resize();
   });
 
-  const [isEditingCoordinates, setIsEditingCoordinates] = useState(false);
-  const [editCoordinates, setEditCoordinates] = useState<LatLonString>({
+  const [isEditing, setIsEditing] = useState(false);
+  const [mapLatLon, setMapLatLon] = useState<LatLon>({
+    latitude: DEFAULT_MAP_PAN_ZOOM.latitude,
+    longitude: DEFAULT_MAP_PAN_ZOOM.longitude,
+  });
+  const [formLatLon, setFormLatLon] = useState<LatLonString>({
     latitude: String(DEFAULT_MAP_PAN_ZOOM.latitude),
     longitude: String(DEFAULT_MAP_PAN_ZOOM.longitude),
   });
+  const [validationError, setValidationError] =
+    useState<CoordinateValidationError>();
   const { mutate, loading: isMutating } = useMutation(mutation);
 
   const hasCoordinates = !!savedLatitude && !!savedLongitude;
@@ -83,22 +93,25 @@ export default function CrashMapCard({
         <CrashMap
           savedLatitude={savedLatitude}
           savedLongitude={savedLongitude}
-          isEditing={isEditingCoordinates}
-          editCoordinates={editCoordinates}
-          setEditCoordinates={setEditCoordinates}
+          isEditing={isEditing}
+          mapLatLon={mapLatLon}
+          setMapLatLon={setMapLatLon}
           mapRef={mapRef}
         />
       </Card.Body>
       <Card.Footer>
         <PermissionsRequired allowedRoles={allowedMapEditRoles}>
           <div
-            className={`d-flex align-items-center ${isEditingCoordinates ? "justify-content-between" : "justify-content-end"}`}
+            className={`d-flex align-items-center ${isEditing ? "justify-content-between" : "justify-content-end"}`}
           >
-            {isEditingCoordinates && (
+            {isEditing && (
               <div className="flex-grow-1">
                 <CrashMapCoordinateForm
-                  editCoordinates={editCoordinates}
-                  setEditCoordinates={setEditCoordinates}
+                  mapLatLon={mapLatLon}
+                  formLatLon={formLatLon}
+                  setFormLatLon={setFormLatLon}
+                  validationError={validationError}
+                  setValidationError={setValidationError}
                 />
               </div>
             )}
@@ -108,37 +121,47 @@ export default function CrashMapCard({
                 variant="primary"
                 disabled={isMutating}
                 onClick={async () => {
-                  if (!isEditingCoordinates) {
-                    setIsEditingCoordinates(true);
+                  if (!isEditing) {
+                    setIsEditing(true);
                   } else {
-                    // convert coordinates to numbers and validate them
-                    const coordinatesToSave = {
-                      latitude: handleCoordinate(
-                        Number(editCoordinates.latitude),
-                        true
-                      ),
-                      longitude: handleCoordinate(
-                        Number(editCoordinates.longitude),
-                        false
-                      ),
-                    };
+                    // check if form coords match edit coords from map
+                    let coordinatesToSave = { ...mapLatLon };
+                    if (
+                      String(mapLatLon.latitude) !== formLatLon.latitude ||
+                      String(mapLatLon.longitude) !== formLatLon.longitude
+                    ) {
+                      // validate string coords
+                      // convert coordinates to numbers and validate them
+                      const parsedData =
+                        LatLonSchema.safeParse(formLatLon);
+                      if (!parsedData.success) {
+                        setValidationError(parsedData.error.format());
+                        return;
+                      } else {
+                        coordinatesToSave = { ...parsedData.data };
+                      }
+                    }
+                    setValidationError(undefined);
                     await mutate({
                       id: crashId,
                       updates: coordinatesToSave,
                     });
                     await onSaveCallback();
-                    setIsEditingCoordinates(false);
+                    setIsEditing(false);
                   }
                 }}
               >
-                {isEditingCoordinates ? "Save" : "Edit"}
+                {isEditing ? "Save" : "Edit"}
               </Button>
-              {isEditingCoordinates && (
+              {isEditing && (
                 <Button
                   className="ms-1"
                   size="sm"
                   variant="danger"
-                  onClick={() => setIsEditingCoordinates(false)}
+                  onClick={() => {
+                    setIsEditing(false);
+                    setValidationError(undefined);
+                  }}
                   disabled={isMutating}
                 >
                   Cancel

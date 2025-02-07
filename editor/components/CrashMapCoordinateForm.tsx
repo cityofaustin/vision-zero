@@ -1,49 +1,94 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import Form from "react-bootstrap/Form";
-import {  LatLonString } from "@/components/CrashMap";
+import {
+  LatLonString,
+  LatLon,
+  CoordinateValidationError,
+} from "@/components/CrashMap";
 
-interface CrashMapCoordianteFormProps {
-  editCoordinates: LatLonString;
-  setEditCoordinates: Dispatch<SetStateAction<LatLonString>>;
+interface CrashMapCoordinateFormProps {
+  mapLatLon: LatLon;
+  formLatLon: LatLonString;
+  setFormLatLon: Dispatch<SetStateAction<LatLonString>>;
+  validationError?: CoordinateValidationError;
+  setValidationError: Dispatch<
+    SetStateAction<CoordinateValidationError | undefined>
+  >;
 }
 
 /**
  * Form component to enter lat/lon coordinates
  */
 export default function CrashMapCoordinateForm({
-  editCoordinates,
-  setEditCoordinates,
-}: CrashMapCoordianteFormProps) {
+  mapLatLon,
+  formLatLon,
+  setFormLatLon,
+  validationError,
+  setValidationError,
+}: CrashMapCoordinateFormProps) {
+  useEffect(() => {
+    /**
+     * Keeps form values in sync with map edits
+     */
+    setFormLatLon({
+      latitude: String(mapLatLon.latitude),
+      longitude: String(mapLatLon.longitude),
+    });
+    setValidationError(undefined);
+  }, [mapLatLon, setFormLatLon, setValidationError]);
+
   return (
     <Form id="recommendationForm">
-      <Form.Group className="d-flex text-nowrap d-flex align-items-center me-2">
-        <Form.Label className="fw-bold me-1 my-auto">Lat</Form.Label>
-        <Form.Control
-          className="me-2"
-          size="sm"
-          value={String(
-            editCoordinates.latitude === null ? "" : editCoordinates.latitude
-          )}
-          onChange={(e) => {
-            setEditCoordinates({
-              ...editCoordinates,
-              latitude: e.target.value,
-            });
-          }}
-        />
-        <Form.Label className="fw-bold me-1 my-auto">Lon</Form.Label>
-        <Form.Control
-          size="sm"
-          value={String(
-            editCoordinates.longitude === null ? "" : editCoordinates.longitude
-          )}
-          onChange={(e) => {
-            setEditCoordinates({
-              ...editCoordinates,
-              longitude: e.target.value,
-            });
-          }}
-        />
+      <Form.Group className="d-flex align-items-center me-2">
+        {/* Latitude */}
+        <div className="d-flex align-items-center me-2">
+          <div>
+            <Form.Label className="fw-bold me-1 my-auto">Latitude</Form.Label>
+            <Form.Control
+              className="me-2"
+              size="sm"
+              value={String(formLatLon.latitude ?? "")}
+              onChange={(e) => {
+                setFormLatLon({
+                  ...formLatLon,
+                  latitude: e.target.value.trim(),
+                });
+              }}
+              isInvalid={Boolean(validationError?.latitude)}
+            />
+            <Form.Control.Feedback
+              type="invalid"
+              className="d-block"
+              style={{ minHeight: "1.2em" }}
+            >
+              {validationError?.latitude?._errors[0]}
+            </Form.Control.Feedback>
+          </div>
+        </div>
+        {/* Longitude */}
+        <div className="d-flex align-items-center">
+          <div>
+            <Form.Label className="fw-bold me-1 my-auto">Longitude</Form.Label>
+            <Form.Control
+              size="sm"
+              value={String(formLatLon.longitude ?? "")}
+              onChange={(e) => {
+                setFormLatLon({
+                  ...formLatLon,
+                  longitude: e.target.value.trim(),
+                });
+              }}
+              isInvalid={Boolean(validationError?.longitude)}
+            />
+            <Form.Control.Feedback
+              type="invalid"
+              className="d-block"
+              style={{ minHeight: "1.2em" }}
+            >
+              {validationError?.longitude?._errors[0]}
+            </Form.Control.Feedback>
+          </div>
+        </div>
       </Form.Group>
     </Form>
   );

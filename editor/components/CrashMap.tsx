@@ -12,19 +12,38 @@ import MapGL, {
   ViewStateChangeEvent,
   MapRef,
 } from "react-map-gl";
-import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
+import {
+  DEFAULT_MAP_PAN_ZOOM,
+  DEFAULT_MAP_PARAMS,
+  MAP_COORDINATE_PRECISION,
+} from "@/configs/map";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
 import { COLORS } from "@/utils/constants";
+import { z, ZodFormattedError } from "zod";
 
-/**
- * We work with lat/lon as strings so that the map UI
- * and form inputs can be linked while editing
- */
+export interface LatLon {
+  latitude: number;
+  longitude: number;
+}
+
 export interface LatLonString {
   latitude: string;
   longitude: string;
 }
+
+export const LatLonSchema = z.object({
+  latitude: z.coerce
+    .number({ invalid_type_error: "Must be a number" })
+    .min(-90, { message: "Cannot be less than -90" })
+    .max(90, { message: "Cannot be greater than 90" }),
+  longitude: z.coerce
+    .number({ invalid_type_error: "Must be a number" })
+    .min(-180, { message: "Cannot be less than -180" })
+    .max(180, { message: "Cannot be greater than 180" }),
+});
+
+export type CoordinateValidationError = ZodFormattedError<LatLon>;
 
 interface CrashMapProps {
   /**
@@ -46,8 +65,8 @@ interface CrashMapProps {
   /**
    * The lat/lon coordinates that are saved while editing
    */
-  editCoordinates: LatLonString;
-  setEditCoordinates: Dispatch<SetStateAction<LatLonString>>;
+  mapLatLon: LatLon;
+  setMapLatLon: Dispatch<SetStateAction<LatLon>>;
 }
 
 /**
@@ -58,30 +77,33 @@ export const CrashMap = ({
   savedLatitude,
   savedLongitude,
   isEditing,
-  editCoordinates,
-  setEditCoordinates,
+  mapLatLon,
+  setMapLatLon,
 }: CrashMapProps) => {
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
-      const latitude = e.viewState.latitude;
-      const longitude = e.viewState.longitude;
-      setEditCoordinates({
-        latitude: String(latitude),
-        longitude: String(longitude),
+      // truncate values to our preferred precision
+      const latitude = +e.viewState.latitude.toFixed(MAP_COORDINATE_PRECISION);
+      const longitude = +e.viewState.longitude.toFixed(
+        MAP_COORDINATE_PRECISION
+      );
+      setMapLatLon({
+        latitude,
+        longitude,
       });
     },
-    [setEditCoordinates]
+    [setMapLatLon]
   );
 
   useEffect(() => {
     if (!isEditing) {
       // initialize edit coordiantes and reset them after saving
-      setEditCoordinates({
-        latitude: String(savedLatitude || DEFAULT_MAP_PAN_ZOOM.latitude),
-        longitude: String(savedLongitude || DEFAULT_MAP_PAN_ZOOM.longitude),
+      setMapLatLon({
+        latitude: savedLatitude || DEFAULT_MAP_PAN_ZOOM.latitude,
+        longitude: savedLongitude || DEFAULT_MAP_PAN_ZOOM.longitude,
       });
     }
-  }, [isEditing, setEditCoordinates, savedLatitude, savedLongitude]);
+  }, [isEditing, setMapLatLon, savedLatitude, savedLongitude]);
 
   return (
     <MapGL
@@ -109,8 +131,8 @@ export const CrashMap = ({
       )}
       {isEditing && (
         <Marker
-          latitude={Number(editCoordinates.latitude || 0)}
-          longitude={Number(editCoordinates.longitude || 0)}
+          latitude={mapLatLon.latitude}
+          longitude={mapLatLon.longitude}
           color={isEditing ? COLORS.danger : undefined}
         />
       )}

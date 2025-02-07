@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { ColDataCardDef, InputType } from "@/types/types";
 import { MAP_COORDINATE_PRECISION } from "@/configs/map";
+
 /**
  * Retrieve a value from an object given a dot-noted path string.
  *
@@ -186,29 +187,4 @@ export const handleFormValueOutput = (
   }
   // handle everything else as a nulllable string
   return trimStringNullable(value);
-};
-
-/**
- * Validate a lat/lon coordinate and round it to the
- * MAP_COORDINATE_PRECISION.
- *
- * Returns null if value is NaN or if the number is
- * is not within the allowed latitude or longitude range
- */
-export const handleCoordinate = (
-  value: number | null,
-  isLatitude: boolean
-): number | null => {
-  if (value === null || isNaN(value)) {
-    return null;
-  }
-  if (isLatitude && Math.abs(value) > 90) {
-    return null;
-  } else if (!isLatitude && Math.abs(value) > 180) {
-    return null;
-  }
-  return (
-    Math.round(value * Math.pow(10, MAP_COORDINATE_PRECISION)) /
-    Math.pow(10, MAP_COORDINATE_PRECISION)
-  );
 };
