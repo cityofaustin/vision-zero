@@ -10,6 +10,7 @@ import os
 import re
 import secrets
 import string
+import sys
 
 import boto3
 import requests
@@ -50,7 +51,7 @@ CORS_URL = "*"
 ALGORITHMS = ["RS256"]
 APP = Flask(__name__)
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
