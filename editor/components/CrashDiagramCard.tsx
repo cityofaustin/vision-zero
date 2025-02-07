@@ -149,7 +149,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             centerZoomedOut={true}
             centerOnInit={true}
             ref={transformComponentRef}
-            wheel={{ activationKeys: [] }}
+            wheel={{ activationKeys: ["Meta", "Shift"] }}
           >
             <ZoomResetControls
               setRotation={setRotation}
