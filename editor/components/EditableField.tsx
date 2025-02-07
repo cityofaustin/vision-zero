@@ -4,12 +4,6 @@ import Form from "react-bootstrap/Form";
 import { InputType } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
 
-// TODO: 
-// - use EditableField component with DataCardInput component in addition to
-// RelatedRecordTableRow component
-// - make sure fields that are nullable don't break from new validation rules
-// - make sure this aligns with React Hook Form patterns 
-
 interface ValidationRules {
   required?: boolean;
   pattern?: RegExp;
