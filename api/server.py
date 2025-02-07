@@ -4,7 +4,6 @@
 #
 
 import datetime
-import logging
 import json
 import os
 import re
@@ -51,10 +50,6 @@ CORS_URL = "*"
 ALGORITHMS = ["RS256"]
 APP = Flask(__name__)
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-logger.info("API Version 1249PM ET")
 
 def get_secure_password(num_chars=16):
     """Generate a secure random password with at least one lowercase character,
@@ -110,11 +105,6 @@ def notAuthorizedError():
         ),
         403,
     )
-
-
-@APP.before_request
-def log_request_headers():
-    logger.info(f"Request Headers: {request.headers}")
 
 
 # Add the appropriate security headers to all responses
