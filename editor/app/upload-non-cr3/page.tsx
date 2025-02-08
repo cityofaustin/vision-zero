@@ -98,7 +98,7 @@ export default function UploadNonCr3() {
   return (
     <>
       <Card>
-        <Card.Header className="fs-5 fw-bold">
+        <Card.Header className="fs-3 fw-bold">
           Upload Non-CR3 records
         </Card.Header>
         <Card.Body>

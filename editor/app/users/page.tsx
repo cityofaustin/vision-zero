@@ -61,7 +61,7 @@ export default function Users() {
   return (
     <>
       <Card className="mt-3">
-        <Card.Header className="fs-5 fw-bold">Users</Card.Header>
+        <Card.Header className="fs-3 fw-bold">Users</Card.Header>
         <Card.Body>
           <div className="mb-3 d-flex align-items-center">
             {!isLoading && (
