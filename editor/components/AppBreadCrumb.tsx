@@ -1,7 +1,6 @@
 import { useMemo, Fragment } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 interface Crumb {
@@ -50,7 +49,7 @@ export default function AppBreadCrumb() {
     return null;
   }
   return (
-    <Row className={"mt-2 mb-3"}>
+    <div className="px-3 py-2">
       <Col>
         {isDetailsPage &&
           crumbs?.map((crumb, i) => {
@@ -72,6 +71,6 @@ export default function AppBreadCrumb() {
             }
           })}
       </Col>
-    </Row>
+    </div>
   );
 }
