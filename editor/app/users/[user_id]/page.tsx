@@ -9,7 +9,6 @@ import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
 import { FaUserEdit, FaUserAltSlash } from "react-icons/fa";
 import AlignedLabel from "@/components/AlignedLabel";
-import AppBreadCrumb from "@/components/AppBreadCrumb";
 import UserModal from "@/components/UserModal";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import { useToken, formatRoleName } from "@/utils/auth";
@@ -109,7 +108,6 @@ export default function UserDetails({
 
   return (
     <>
-      <AppBreadCrumb />
       <Row>
         <Col md={12} lg={6}>
           <Card>
