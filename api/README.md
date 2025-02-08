@@ -1,8 +1,10 @@
 # VZ User & CR3 API
 
-## Big Picture
+This API provides authenticated access to our CR3 crash report file repository in AWS S3 as well as Auth0 user management operations. It enables users to download CR3 PDFs from the Vision Zero Editor, and it enables admin users to create, modify, and delete VZE user accounts.
 
-The API consists of a flask app which is bundled into a docker image and pushed to Docker Hub. It is deployed on AWS ECS as a service inside the VZ clusters. There is a `:production` and `:staging` version of the image, and these are built by CI on merger to the `production` and `main` branches respectively.
+## Deployment
+
+The API consists of a flask app which is bundled into a docker image and pushed to Docker Hub. It is deployed on AWS ECS as a service inside the VZ clusters. There is a `:production` and `:latest` version of the image, and these are built by CI on merger to the `production` and `main` branches respectively.
 
 Our endpoints can be found at:
 
