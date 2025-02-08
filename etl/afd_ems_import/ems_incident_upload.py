@@ -514,6 +514,7 @@ def upload_data_to_postgres(data, age_cutoff):
                 print(f"Values: {values}")
                 print(f"Error: {error}")
                 pg.rollback()
+                raise error
 
     return True
 

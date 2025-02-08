@@ -3,12 +3,15 @@
 
 ### Invocation
 
+You will need to be on COA VPN to develop this ETL, because the scripts require access to our credential server.
+
 For local development, you may find that the `docker-compose.yml` eases the work
 of having to collect the correct arguments to the docker invocation. After creating
 a .env file, you can run these scripts with:
+
 ```
-$ docker compose run -it import afd
-$ docker compose run -it import ems
+$ docker compose run import afd
+$ docker compose run import ems
 ```
 
 In production, they will be run from a DAG which handles starting the containers with

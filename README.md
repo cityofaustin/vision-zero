@@ -26,7 +26,14 @@ The helper script, `vision-zero`, makes it easy to spin up your local Vision Zer
 
 1. Create a new Python environment and install the packages in [requirements.txt](requirements.txt).
 
-2. Save a copy of the [environment template (`env_template)](env_template) as `.env`, and populate your database read replica credentials.
+```shell
+# Example for Mac
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+2. Save a copy of the [environment template (`env_template`)](env_template) as `.env`, and populate your database read replica credentials.
 
 ```shell
 RR_USERNAME=""
