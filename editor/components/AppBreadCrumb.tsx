@@ -56,15 +56,20 @@ export default function AppBreadCrumb() {
             if (i < crumbs.length - 1) {
               return (
                 <Fragment key={crumb.label}>
-                  <span className="fw-light">
-                    <Link href={`/${crumb.label}`}>{crumb.label}</Link>
+                  <span>
+                    <Link
+                      className="text-decoration-none text-capitalize"
+                      href={`/${crumb.label}`}
+                    >
+                      {crumb.label}
+                    </Link>
                   </span>
                   <span className="mx-2 fw-light text-secondary">{"/"}</span>
                 </Fragment>
               );
             } else {
               return (
-                <span key={crumb.label} className="fw-bold text-">
+                <span key={crumb.label} className="text-secondary">
                   {crumb.label}
                 </span>
               );
