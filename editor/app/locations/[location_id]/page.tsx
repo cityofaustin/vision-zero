@@ -88,7 +88,9 @@ export default function LocationDetailsPage({
       <Row>
         <Col>
           <Card>
-            <Card.Header>Crashes</Card.Header>
+            <Card.Header>
+              <Card.Title>Crashes</Card.Title>
+            </Card.Header>
             <Card.Body>
               <TableWrapper
                 columns={locationCrashesColumns}
