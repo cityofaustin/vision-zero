@@ -65,12 +65,12 @@ $dark: $night;
 
 .sidebar-toggle-open {
   transform: rotate(180deg);
-  transition: transform 0.2s ease-out; /* Optional: Smooth transition */
+  transition: transform 0.2s ease-out; // Optional: Smooth transition
 }
 
 .sidebar-toggle-closed {
   transform: rotate(360deg);
-  transition: transform 0.2s ease-out; /* Optional: Smooth transition */
+  transition: transform 0.2s ease-out; // Optional: Smooth transition
 }
 
 .react-datepicker__calendar-icon {
@@ -113,6 +113,12 @@ h5.card-title {
 
 .dashboard-link-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* datepicker has problems with overlaying incorrectly, using z-index 
+to make sure it renders on top is a common fix */
+.react-datepicker-popper {
+  z-index: 99 !important;
 }
 
 @import "bootstrap/scss/bootstrap.scss";
