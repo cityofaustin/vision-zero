@@ -1,4 +1,4 @@
-import { LngLatBoundsLike } from "react-map-gl";
+import { LngLatLike } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { SymbolLayerSpecification, RasterLayerSpecification } from "mapbox-gl";
 
@@ -14,7 +14,7 @@ export const DEFAULT_MAP_PAN_ZOOM = {
   zoom: 17,
 };
 
-const MAP_MAX_BOUNDS: LngLatBoundsLike = [
+export const MAP_MAX_BOUNDS: [[number, number], [number, number]] = [
   [-99, 29],
   [-96, 32],
 ];

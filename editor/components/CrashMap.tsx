@@ -16,6 +16,7 @@ import {
   DEFAULT_MAP_PAN_ZOOM,
   DEFAULT_MAP_PARAMS,
   MAP_COORDINATE_PRECISION,
+  MAP_MAX_BOUNDS,
 } from "@/configs/map";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
@@ -35,12 +36,12 @@ export interface LatLonString {
 export const LatLonSchema = z.object({
   latitude: z.coerce
     .number({ invalid_type_error: "Must be a number" })
-    .min(-90, { message: "Cannot be less than -90" })
-    .max(90, { message: "Cannot be greater than 90" }),
+    .min(MAP_MAX_BOUNDS[0][1], { message: "Latitude is invalid" })
+    .max(MAP_MAX_BOUNDS[1][1], { message: "Latitude is invalid" }),
   longitude: z.coerce
     .number({ invalid_type_error: "Must be a number" })
-    .min(-180, { message: "Cannot be less than -180" })
-    .max(180, { message: "Cannot be greater than 180" }),
+    .min(MAP_MAX_BOUNDS[0][0], { message: "Longitude is invalid" })
+    .max(MAP_MAX_BOUNDS[1][0], { message: "Longitude is invalid" }),
 });
 
 export type CoordinateValidationError = ZodFormattedError<LatLon>;

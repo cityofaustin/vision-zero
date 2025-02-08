@@ -132,13 +132,17 @@ export default function CrashMapCard({
                     ) {
                       // validate string coords
                       // convert coordinates to numbers and validate them
-                      const parsedData =
-                        LatLonSchema.safeParse(formLatLon);
+                      const parsedData = LatLonSchema.safeParse(formLatLon);
                       if (!parsedData.success) {
                         setValidationError(parsedData.error.format());
                         return;
                       } else {
                         coordinatesToSave = { ...parsedData.data };
+                        // pan to the saved location
+                        mapRef.current?.panTo([
+                          coordinatesToSave.longitude,
+                          coordinatesToSave.latitude,
+                        ]);
                       }
                     }
                     setValidationError(undefined);
