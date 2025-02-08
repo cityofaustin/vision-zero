@@ -282,8 +282,8 @@ export const fatalitiesListViewQueryConfig: QueryConfig = {
   ],
   dateFilter: {
     mode: "1y",
-    column: "crash_date_ct",
-    filters: makeDateFilters("crash_date_ct", {
+    column: "crash_timestamp",
+    filters: makeDateFilters("crash_timestamp", {
       start: getYearsAgoDate(1),
       end: null,
     }),

@@ -5,7 +5,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
   {
     id: "geography_filter_card",
     label: "Jurisdiction",
-    groupOperator: "_or",
+    groupOperator: "_and",
     filterGroups: [
       {
         id: "in_austin_full_purpose",

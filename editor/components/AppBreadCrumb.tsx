@@ -1,7 +1,6 @@
 import { useMemo, Fragment } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 interface Crumb {
@@ -50,28 +49,33 @@ export default function AppBreadCrumb() {
     return null;
   }
   return (
-    <Row className={"mt-2 mb-3"}>
+    <div className="px-3 py-2">
       <Col>
         {isDetailsPage &&
           crumbs?.map((crumb, i) => {
             if (i < crumbs.length - 1) {
               return (
                 <Fragment key={crumb.label}>
-                  <span className="fw-light">
-                    <Link href={`/${crumb.label}`}>{crumb.label}</Link>
+                  <span>
+                    <Link
+                      className="text-decoration-none text-capitalize"
+                      href={`/${crumb.label}`}
+                    >
+                      {crumb.label}
+                    </Link>
                   </span>
                   <span className="mx-2 fw-light text-secondary">{"/"}</span>
                 </Fragment>
               );
             } else {
               return (
-                <span key={crumb.label} className="fw-bold text-">
+                <span key={crumb.label} className="text-secondary">
                   {crumb.label}
                 </span>
               );
             }
           })}
       </Col>
-    </Row>
+    </div>
   );
 }

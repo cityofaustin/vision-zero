@@ -95,3 +95,4 @@ env
 zappa_settings.json
 
 env_file
+/app
