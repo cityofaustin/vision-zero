@@ -116,7 +116,7 @@ const DataCardInput = ({
             size="sm"
             onClick={onCancel}
             disabled={isMutating}
-            variant="danger"
+            variant="secondary"
           >
             Cancel
           </Button>

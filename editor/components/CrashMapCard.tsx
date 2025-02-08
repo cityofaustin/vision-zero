@@ -110,7 +110,7 @@ export default function CrashMapCard({
                 <Button
                   className="ms-1"
                   size="sm"
-                  variant="danger"
+                  variant="secondary"
                   onClick={() => setIsEditingCoordinates(false)}
                   disabled={isMutating}
                 >

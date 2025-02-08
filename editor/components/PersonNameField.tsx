@@ -131,7 +131,7 @@ export default function PersonNameField({
               onCancel();
             }}
             disabled={isMutating}
-            variant="danger"
+            variant="secondary"
           >
             Cancel
           </Button>

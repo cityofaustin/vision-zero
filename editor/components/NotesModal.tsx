@@ -82,7 +82,7 @@ export default function NotesModal({
           >
             Save note
           </Button>
-          <Button variant="danger" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
         </Modal.Footer>
