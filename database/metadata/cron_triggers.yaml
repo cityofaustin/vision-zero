@@ -1,1 +1,21 @@
-[]
+- name: refresh_location_crashes_view
+  webhook: http://localhost:8080/v2/query
+  schedule: '* * * * *'
+  include_in_metadata: true
+  payload:
+    args:
+      source: default
+      sql: refresh materialized view location_crashes_view;
+    type: run_sql
+  headers:
+    - name: x-hasura-admin-secret
+      value_from_env: CRON_TRIGGER_API_SECRET
+  comment: Refreshes materialized view location_crashes_view
+  request_transform:
+    body:
+      action: transform
+      template: '{"args":{"source":"default","sql":"refresh materialized view location_crashes_view;"},"type":"run_sql"}'
+    method: POST
+    query_params: {}
+    template_engine: Kriti
+    version: 2

@@ -10,6 +10,7 @@ services:
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
       HASURA_GRAPHQL_NO_OF_RETRIES: 30
+      CRON_TRIGGER_API_SECRET: hasurapassword
     depends_on:
       - postgis
 
@@ -42,7 +43,6 @@ services:
       - ./database/snapshots:/snapshots
     ports:
       - 5431:5432
-
   cr3-user-api:
     build: api
     # image: atddocker/vz-user-cr3-api
