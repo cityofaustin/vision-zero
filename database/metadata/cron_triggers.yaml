@@ -1,6 +1,6 @@
 - name: refresh_location_crashes_view
   webhook: http://localhost:8080/v2/query
-  schedule: '* * * * *'
+  schedule: '0 * * * *'
   include_in_metadata: true
   payload: {}
   headers:
