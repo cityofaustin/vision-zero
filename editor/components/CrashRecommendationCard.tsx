@@ -241,7 +241,11 @@ export default function CrashRecommendationCard({
                 autoFocus={true}
               />
             )}
-            {!isEditing && <p>{recommendation?.rec_text || "-"}</p>}
+            {!isEditing && (
+              <p style={{ whiteSpace: "pre-wrap" }}>
+                {recommendation?.rec_text || "-"}
+              </p>
+            )}
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label className="fw-bold">Updates</Form.Label>
