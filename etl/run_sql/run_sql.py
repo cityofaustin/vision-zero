@@ -12,8 +12,6 @@ from utils.commands import COMMANDS
 ENDPOINT = os.getenv("HASURA_GRAPHQL_ENDPOINT")
 ADMIN_SECRET = os.getenv("HASURA_GRAPHQL_ADMIN_SECRET")
 
-ENDPOINT="http://localhost:8084/v2/query"
-
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
