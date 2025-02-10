@@ -1,6 +1,6 @@
 # Run SQL
 
-This tool enables us to run arbitrary SQL using the Hasura [schema API](https://hasura.io/docs/2.0/api-reference/schema-api/run-sql/). It is intended to be used to schedule 
+This tool enables us to run arbitrary SQL using the Hasura [schema API](https://hasura.io/docs/2.0/api-reference/schema-api/run-sql/).
 
 ## Configuration
 
