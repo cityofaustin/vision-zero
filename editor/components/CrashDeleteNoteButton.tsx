@@ -4,7 +4,7 @@ import AlignedLabel from "@/components/AlignedLabel";
 import { FaTrashCan } from "react-icons/fa6";
 import { HeaderActionComponentProps } from "@/components/DataCard";
 import PermissionsRequired from "@/components/PermissionsRequired";
-import { DELETE_CRASH_NOTE } from "@/queries/notes";
+import { DELETE_CRASH_NOTE } from "@/queries/crashNotes";
 
 const allowedDeleteCrashNoteRoles = ["vz-admin", "editor"];
 
