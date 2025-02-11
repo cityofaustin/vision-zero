@@ -165,6 +165,9 @@ export default function CrashMapCard({
                   onClick={() => {
                     setIsEditing(false);
                     setValidationError(undefined);
+                    // reset map position
+                    const resetLngLat: [number, number] = hasCoordinates ? [savedLongitude, savedLatitude] : [DEFAULT_MAP_PAN_ZOOM.longitude, DEFAULT_MAP_PAN_ZOOM.latitude]
+                    mapRef.current?.panTo(resetLngLat)
                   }}
                   disabled={isMutating}
                 >

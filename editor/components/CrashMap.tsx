@@ -12,16 +12,17 @@ import MapGL, {
   ViewStateChangeEvent,
   MapRef,
 } from "react-map-gl";
+import MapGeocoderControl from "@/components/MapGeocoderControl";
 import {
   DEFAULT_MAP_PAN_ZOOM,
   DEFAULT_MAP_PARAMS,
   MAP_COORDINATE_PRECISION,
   MAP_MAX_BOUNDS,
 } from "@/configs/map";
-import "mapbox-gl/dist/mapbox-gl.css";
 import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
 import { COLORS } from "@/utils/constants";
 import { z, ZodFormattedError } from "zod";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 export interface LatLon {
   latitude: number;
@@ -121,8 +122,8 @@ export const CrashMap = ({
       onDrag={isEditing ? onDrag : undefined}
       maxZoom={21}
     >
-      <FullscreenControl position="top-left" />
-      <NavigationControl position="top-left" showCompass={false} />
+      <FullscreenControl position="bottom-right" />
+      <NavigationControl position="top-right" showCompass={false} />
       {savedLatitude && savedLongitude && !isEditing && (
         <Marker
           latitude={savedLatitude}
@@ -139,6 +140,12 @@ export const CrashMap = ({
       )}
       {/* add nearmap raster source and style */}
       <MapAerialSourceAndLayer />
+      {isEditing && (
+        <MapGeocoderControl
+          position="top-left"
+          onResult={(latLon: LatLon) => setMapLatLon(latLon)}
+        />
+      )}
     </MapGL>
   );
 };
