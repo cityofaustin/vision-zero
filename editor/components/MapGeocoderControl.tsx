@@ -106,19 +106,6 @@ export default function MapGeocoderControl(props: GeocoderControlProps) {
     if (geocoder.getOrigin() !== props.origin && props.origin !== undefined) {
       geocoder.setOrigin(props.origin);
     }
-    // Types missing from @types/mapbox__mapbox-gl-geocoder
-    // if (geocoder.getAutocomplete() !== props.autocomplete && props.autocomplete !== undefined) {
-    //   geocoder.setAutocomplete(props.autocomplete);
-    // }
-    // if (geocoder.getFuzzyMatch() !== props.fuzzyMatch && props.fuzzyMatch !== undefined) {
-    //   geocoder.setFuzzyMatch(props.fuzzyMatch);
-    // }
-    // if (geocoder.getRouting() !== props.routing && props.routing !== undefined) {
-    //   geocoder.setRouting(props.routing);
-    // }
-    // if (geocoder.getWorldview() !== props.worldview && props.worldview !== undefined) {
-    //   geocoder.setWorldview(props.worldview);
-    // }
   }
   return null;
 }
