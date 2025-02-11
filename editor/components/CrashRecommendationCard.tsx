@@ -259,7 +259,11 @@ export default function CrashRecommendationCard({
                 rows={6}
               />
             )}
-            {!isEditing && <p>{recommendation?.rec_update || "-"}</p>}
+            {!isEditing && (
+              <p style={{ whiteSpace: "pre-wrap" }}>
+                {recommendation?.rec_update || "-"}
+              </p>
+            )}
           </Form.Group>
         </Form>
       </Card.Body>
