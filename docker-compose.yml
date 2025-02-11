@@ -10,7 +10,6 @@ services:
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
       HASURA_GRAPHQL_NO_OF_RETRIES: 30
-      CRON_TRIGGER_API_SECRET: hasurapassword
     depends_on:
       - postgis
 
