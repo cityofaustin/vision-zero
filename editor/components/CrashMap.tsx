@@ -37,12 +37,12 @@ export interface LatLonString {
 export const LatLonSchema = z.object({
   latitude: z.coerce
     .number({ invalid_type_error: "Must be a number" })
-    .min(MAP_MAX_BOUNDS[0][1], { message: "Latitude is out of bounds" })
-    .max(MAP_MAX_BOUNDS[1][1], { message: "Latitude is out of bounds" }),
+    .min(MAP_MAX_BOUNDS[0][1], { message: "Out of bounds" })
+    .max(MAP_MAX_BOUNDS[1][1], { message: "Out of bounds" }),
   longitude: z.coerce
     .number({ invalid_type_error: "Must be a number" })
-    .min(MAP_MAX_BOUNDS[0][0], { message: "Longitude is out of bounds" })
-    .max(MAP_MAX_BOUNDS[1][0], { message: "Longitude is out of bounds" }),
+    .min(MAP_MAX_BOUNDS[0][0], { message: "Out of bounds" })
+    .max(MAP_MAX_BOUNDS[1][0], { message: "Out of bounds" }),
 });
 
 export type CoordinateValidationError = ZodFormattedError<LatLon>;
