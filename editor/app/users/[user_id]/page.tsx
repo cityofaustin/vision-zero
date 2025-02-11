@@ -9,7 +9,6 @@ import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
 import { FaUserEdit, FaUserAltSlash } from "react-icons/fa";
 import AlignedLabel from "@/components/AlignedLabel";
-import AppBreadCrumb from "@/components/AppBreadCrumb";
 import UserModal from "@/components/UserModal";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import { useToken, formatRoleName } from "@/utils/auth";
@@ -34,7 +33,6 @@ const COLUMNS: UserColumn[] = [
   },
   { name: "name", label: "Name" },
   { name: "email", label: "Email" },
-  { name: "last_ip", label: "Last IP address" },
   { name: "logins_count", label: "Login count" },
   {
     name: "created_at",
@@ -110,7 +108,6 @@ export default function UserDetails({
 
   return (
     <>
-      <AppBreadCrumb />
       <Row>
         <Col md={12} lg={6}>
           <Card>

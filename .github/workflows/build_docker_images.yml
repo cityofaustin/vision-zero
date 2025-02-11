@@ -98,10 +98,10 @@ jobs:
         run: |
           if [ "${{ github.ref }}" == "refs/heads/production" ]; then
             echo "ECS_CLUSTER=atd-vz-data-cluster-production" >> $GITHUB_ENV
-            echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-production/cr3-and-user-mgmt-api" >> $GITHUB_ENV
+            echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-production/backend-flask-api" >> $GITHUB_ENV
           else
             echo "ECS_CLUSTER=atd-vz-data-cluster-staging" >> $GITHUB_ENV
-            echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-staging/cr3-and-user-mgmt-api" >> $GITHUB_ENV
+            echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-staging/backend-flask-api-staging" >> $GITHUB_ENV
           fi
 
       - name: Restart ECS service

@@ -207,11 +207,6 @@ export default function UserModal({
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        {!isSubmitting && (
-          <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
-            Cancel
-          </Button>
-        )}
         <Button
           variant="primary"
           type="submit"
@@ -221,6 +216,11 @@ export default function UserModal({
           {isSubmitting && <Spinner size="sm" />}
           {!isSubmitting && <span>{user ? "Save" : "Create user"}</span>}
         </Button>
+        {!isSubmitting && (
+          <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+            Cancel
+          </Button>
+        )}
       </Modal.Footer>
     </Modal>
   );

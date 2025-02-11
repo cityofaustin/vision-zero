@@ -260,7 +260,7 @@ export default function CreateCrashRecordModal({
                   {fields.length > 1 && (
                     <Button
                       size="sm"
-                      variant="outline-danger"
+                      variant="outline-secondary"
                       onClick={() => remove(index)}
                     >
                       <AlignedLabel>
@@ -371,7 +371,7 @@ export default function CreateCrashRecordModal({
         </Button>
         {!isSubmitting && (
           <Button
-            variant="danger"
+            variant="secondary"
             onClick={() => {
               reset();
               onClose();

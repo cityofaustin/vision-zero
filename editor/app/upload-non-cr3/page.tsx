@@ -1,7 +1,6 @@
 "use client";
 import { useState, useCallback } from "react";
 import Link from "next/link";
-import AppBreadCrumb from "@/components/AppBreadCrumb";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -98,9 +97,8 @@ export default function UploadNonCr3() {
 
   return (
     <>
-      <AppBreadCrumb />
       <Card>
-        <Card.Header className="fs-5 fw-bold">
+        <Card.Header className="fs-3 fw-bold">
           Upload Non-CR3 records
         </Card.Header>
         <Card.Body>

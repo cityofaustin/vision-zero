@@ -288,7 +288,7 @@ export default function CrashRecommendationCard({
               <Button
                 className="ms-1"
                 size="sm"
-                variant="danger"
+                variant="secondary"
                 onClick={() => {
                   setIsEditing(false);
                   reset();
