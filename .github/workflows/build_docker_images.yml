@@ -94,7 +94,7 @@ jobs:
           platforms: linux/amd64
           context: etl/run_sql
           push: true
-          tags: atddocker/vz-run_sql:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
+          tags: atddocker/vz-run-sql:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
 
       - name: Build and push VZ User & CR3 API image
         if: steps.changes.outputs.user_cr3_api == 'true'
