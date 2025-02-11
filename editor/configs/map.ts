@@ -1,4 +1,3 @@
-import { LngLatLike } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { SymbolLayerSpecification, RasterLayerSpecification } from "mapbox-gl";
 
