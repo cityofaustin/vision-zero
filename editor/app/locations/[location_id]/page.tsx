@@ -14,6 +14,8 @@ import { Filter } from "@/types/queryBuilder";
 import { locationCardColumns } from "@/configs/locationDataCard";
 import { locationCrashesColumns } from "@/configs/locationCrashesColumns";
 import { locationCrashesQueryConfig } from "@/configs/locationCrashesTable";
+import AlignedLabel from "@/components/AlignedLabel";
+import { FaCircleInfo } from "react-icons/fa6";
 
 const typename = "atd_txdot_locations";
 
@@ -90,6 +92,14 @@ export default function LocationDetailsPage({
           <Card>
             <Card.Header>
               <Card.Title>Crashes</Card.Title>
+              <Card.Subtitle className="fw-light text-secondary">
+                <AlignedLabel>
+                  <FaCircleInfo className="me-2" />
+                  <span>
+                    The data in this table is refreshed on an hourly basis
+                  </span>
+                </AlignedLabel>
+              </Card.Subtitle>
             </Card.Header>
             <Card.Body>
               <TableWrapper
