@@ -1,4 +1,3 @@
-import { LngLatBoundsLike } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { SymbolLayerSpecification, RasterLayerSpecification } from "mapbox-gl";
 
@@ -6,13 +5,15 @@ import { SymbolLayerSpecification, RasterLayerSpecification } from "mapbox-gl";
 const NEARMAP_KEY = process.env.NEXT_PUBLIC_NEARMAP_KEY;
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
+export const MAP_COORDINATE_PRECISION = 8;
+
 export const DEFAULT_MAP_PAN_ZOOM = {
   latitude: 30.2747,
   longitude: -97.7406,
   zoom: 17,
 };
 
-const MAP_MAX_BOUNDS: LngLatBoundsLike = [
+export const MAP_MAX_BOUNDS: [[number, number], [number, number]] = [
   [-99, 29],
   [-96, 32],
 ];

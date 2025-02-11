@@ -42,7 +42,6 @@ services:
       - ./database/snapshots:/snapshots
     ports:
       - 5431:5432
-
   cr3-user-api:
     build: api
     # image: atddocker/vz-user-cr3-api
