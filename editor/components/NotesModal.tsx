@@ -3,7 +3,6 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { CrashNote } from "@/types/crashNote";
-import { INSERT_CRASH_NOTE } from "@/queries/notes";
 import { useMutation } from "@/utils/graphql";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -11,7 +10,8 @@ interface NotesModalProps {
   show: boolean;
   onClose: () => void;
   onSubmitCallback: (data: CrashNote) => void;
-  crashPk?: number;
+  recordId?: number | string;
+  insertMutation: string;
 }
 
 interface NoteFormInputs {
@@ -22,7 +22,8 @@ export default function NotesModal({
   show,
   onClose,
   onSubmitCallback,
-  crashPk,
+  recordId,
+  insertMutation,
 }: NotesModalProps) {
   const { user } = useAuth0();
   const {
@@ -31,12 +32,12 @@ export default function NotesModal({
     formState: { errors },
     reset,
   } = useForm<NoteFormInputs>();
-  const { mutate, loading: isSubmitting } = useMutation(INSERT_CRASH_NOTE);
+  const { mutate, loading: isSubmitting } = useMutation(insertMutation);
 
   const onSubmit: SubmitHandler<NoteFormInputs> = async (data) => {
     const noteData = {
       ...data,
-      crashPk: crashPk,
+      recordId: recordId,
       userEmail: user?.email,
     };
     const responseData = await mutate<{
