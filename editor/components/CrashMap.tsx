@@ -12,15 +12,40 @@ import MapGL, {
   ViewStateChangeEvent,
   MapRef,
 } from "react-map-gl";
-import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
-import "mapbox-gl/dist/mapbox-gl.css";
+import MapGeocoderControl from "@/components/MapGeocoderControl";
+import {
+  DEFAULT_MAP_PAN_ZOOM,
+  DEFAULT_MAP_PARAMS,
+  MAP_COORDINATE_PRECISION,
+  MAP_MAX_BOUNDS,
+} from "@/configs/map";
 import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
 import { COLORS } from "@/utils/constants";
+import { z, ZodFormattedError } from "zod";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 export interface LatLon {
-  latitude: number | null;
-  longitude: number | null;
+  latitude: number;
+  longitude: number;
 }
+
+export interface LatLonString {
+  latitude: string;
+  longitude: string;
+}
+
+export const LatLonSchema = z.object({
+  latitude: z.coerce
+    .number({ invalid_type_error: "Must be a number" })
+    .min(MAP_MAX_BOUNDS[0][1], { message: "Latitude is out of bounds" })
+    .max(MAP_MAX_BOUNDS[1][1], { message: "Latitude is out of bounds" }),
+  longitude: z.coerce
+    .number({ invalid_type_error: "Must be a number" })
+    .min(MAP_MAX_BOUNDS[0][0], { message: "Longitude is out of bounds" })
+    .max(MAP_MAX_BOUNDS[1][0], { message: "Longitude is out of bounds" }),
+});
+
+export type CoordinateValidationError = ZodFormattedError<LatLon>;
 
 interface CrashMapProps {
   /**
@@ -42,8 +67,8 @@ interface CrashMapProps {
   /**
    * The lat/lon coordinates that are saved while editing
    */
-  editCoordinates: LatLon;
-  setEditCoordinates: Dispatch<SetStateAction<LatLon>>;
+  mapLatLon: LatLon;
+  setMapLatLon: Dispatch<SetStateAction<LatLon>>;
 }
 
 /**
@@ -54,27 +79,33 @@ export const CrashMap = ({
   savedLatitude,
   savedLongitude,
   isEditing,
-  editCoordinates,
-  setEditCoordinates,
+  mapLatLon,
+  setMapLatLon,
 }: CrashMapProps) => {
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
-      const latitude = e.viewState.latitude;
-      const longitude = e.viewState.longitude;
-      setEditCoordinates({ latitude, longitude });
+      // truncate values to our preferred precision
+      const latitude = +e.viewState.latitude.toFixed(MAP_COORDINATE_PRECISION);
+      const longitude = +e.viewState.longitude.toFixed(
+        MAP_COORDINATE_PRECISION
+      );
+      setMapLatLon({
+        latitude,
+        longitude,
+      });
     },
-    [setEditCoordinates]
+    [setMapLatLon]
   );
 
   useEffect(() => {
     if (!isEditing) {
-      // reset marker coords
-      setEditCoordinates({
-        latitude: savedLatitude,
-        longitude: savedLongitude,
+      // initialize edit coordiantes and reset them after saving
+      setMapLatLon({
+        latitude: savedLatitude || DEFAULT_MAP_PAN_ZOOM.latitude,
+        longitude: savedLongitude || DEFAULT_MAP_PAN_ZOOM.longitude,
       });
     }
-  }, [isEditing, setEditCoordinates, savedLatitude, savedLongitude]);
+  }, [isEditing, setMapLatLon, savedLatitude, savedLongitude]);
 
   return (
     <MapGL
@@ -91,8 +122,8 @@ export const CrashMap = ({
       onDrag={isEditing ? onDrag : undefined}
       maxZoom={21}
     >
-      <FullscreenControl position="top-left" />
-      <NavigationControl position="top-left" showCompass={false} />
+      <FullscreenControl position="bottom-right" />
+      <NavigationControl position="top-right" showCompass={false} />
       {savedLatitude && savedLongitude && !isEditing && (
         <Marker
           latitude={savedLatitude}
@@ -102,13 +133,19 @@ export const CrashMap = ({
       )}
       {isEditing && (
         <Marker
-          latitude={editCoordinates.latitude || 0}
-          longitude={editCoordinates.longitude || 0}
+          latitude={mapLatLon.latitude}
+          longitude={mapLatLon.longitude}
           color={isEditing ? COLORS.danger : undefined}
         />
       )}
       {/* add nearmap raster source and style */}
       <MapAerialSourceAndLayer />
+      {isEditing && (
+        <MapGeocoderControl
+          position="top-left"
+          onResult={(latLon: LatLon) => setMapLatLon(latLon)}
+        />
+      )}
     </MapGL>
   );
 };

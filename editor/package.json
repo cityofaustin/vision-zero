@@ -14,8 +14,10 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.3.0",
+    "@mapbox/mapbox-gl-geocoder": "^5.0.3",
     "@turf/center": "^7.2.0",
     "@types/lodash": "^4.17.15",
+    "@types/mapbox__mapbox-gl-geocoder": "^5.0.0",
     "@types/mapbox-gl": "^3.4.1",
     "@types/papaparse": "^5.3.15",
     "bootstrap": "^5.3.3",
