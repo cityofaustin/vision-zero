@@ -11,7 +11,7 @@ The Vision Zero Editor (VZE) enables City of Austin staff to view and edit traff
 ## Quick start
 
 
-1. [Vision Zero Database (VZD)](./database/README.md)
+1. Start the Vision Zero database (todo: update helper docs)
 
 2. Use the `env_template` to configure the local environment variables
 
