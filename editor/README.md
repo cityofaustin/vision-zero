@@ -1,7 +1,7 @@
 
 # Vision Zero Editor (VZE)
 
-The Vision Zero Editor (VZE) enables City of Austin staff to browse and edit traffic crash data. It the central application that supports the City's [Vision Zero program](https://www.austintexas.gov/department/vision-zero), and related safety efforts carried out by the Transportation & Public Works Department.
+The Vision Zero Editor (VZE) enables City of Austin staff to view and edit traffic crash records. It's the central application that supports the City's [Vision Zero program](https://www.austintexas.gov/department/vision-zero), and related safety efforts carried out by the Transportation & Public Works Department.
 
 
 - Production: https://visionzero.austin.gov/editor
