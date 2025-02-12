@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     },
   ],
   icons: {
-    icon: "/editor/favicon.ico",
+    icon: `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/favicon.ico`,
   },
   keywords: ["Vision Zero", "Austin", "City of Austin", "Safety", "Civic Tech"],
 };
