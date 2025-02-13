@@ -77,3 +77,7 @@ export interface MutationVariables extends Variables {
     updated_by?: string;
   };
 }
+
+export interface FormValues {
+  value: string;
+}

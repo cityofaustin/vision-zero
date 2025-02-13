@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { ColDataCardDef, InputType } from "@/types/types";
+import { ColDataCardDef, FormValues, InputType } from "@/types/types";
 import { RegisterOptions } from "react-hook-form";
 
 /**
@@ -192,18 +192,24 @@ export const handleFormValueOutput = (
 /**
  * Generates validation rules for EditableField based on column definition
  */
-export const getValidationRules = (col: ColDataCardDef<any>): RegisterOptions => {
-  return {
-    ...(col.inputType === "number" && {
-      pattern: commonValidations.isNumber
-    }),
-    ...col.inputOptions
-  };
-};
-
 export const commonValidations = {
   isNumber: (value: string) => {
     return /^\d+$/.test(value) || "This field must be a number";
   },
   required: "This field is required"
+};
+
+export const getValidationRules = <T extends Record<string, unknown>>(
+  col: ColDataCardDef<T>
+): RegisterOptions<FormValues, "value"> => {
+  const validationRules: RegisterOptions<FormValues, "value"> = {
+    ...(col.inputType === "number" && { validate: commonValidations.isNumber }),
+  };
+
+  // Ensure inputOptions are compatible with RegisterOptions<FormValues, "value">
+  if (col.inputOptions) {
+    Object.assign(validationRules, col.inputOptions);
+  }
+
+  return validationRules;
 };
