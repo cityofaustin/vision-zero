@@ -7,7 +7,7 @@ export const INSERT_LOCATION_NOTE = gql`
     $userEmail: String!
   ) {
     insert_location_notes_one(
-      object: { location_id: $recordId, text: $text, updated_by: $userEmail }
+      object: { location_id: $recordId, text: $text, updated_by: $userEmail, created_by: $userEmail }
     ) {
       id
       text

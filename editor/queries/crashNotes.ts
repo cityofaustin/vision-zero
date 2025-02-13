@@ -5,9 +5,10 @@ export const INSERT_CRASH_NOTE = gql`
     $recordId: Int!
     $text: String!
     $userEmail: String!
+    $createdBy: String!
   ) {
     insert_crash_notes_one(
-      object: { crash_pk: $recordId, text: $text, updated_by: $userEmail }
+      object: { crash_pk: $recordId, text: $text, updated_by: $userEmail, created_by: $userEmail }
     ) {
       id
       text
