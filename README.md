@@ -42,7 +42,7 @@ RR_HOSTNAME=""
 RR_DATABASE=""
 ```
 
-3. Start the DB
+3. Start the DB + GraphQL API. You'll need to be on City of Austin VPN *or* your IP address will need to be whitelisted to reach our read-replica host.
 
 ```shell
 ./vision-zero replicate-db
@@ -57,13 +57,29 @@ This command will:
 
 Note: the `-f / --filename` flag can be optionally used to point to a specific data dump `.sql` file to use to restore. The way the snapshots are dated means that one will only end up downloading one copy of the data per-day, both with and without change log data.
 
-4. Start the Vision Zero Editor
+See [here](docs/local_dev.md) for in-depth documentation about the `vision-zero` helper.
+
+4. Configure the Vision Zero editor. Navigate to the `/editor` subdirectory and create a file called `.env.local`, and save the contents of the 1Password item called **Vision Zero Editor (VZE) Environment File** into this file.
+
+5. Activate your Node environment - requires [`nvm`](https://github.com/nvm-sh/nvm ).
 
 ```shell
-vision-zero vze-up
+nvm use
 ```
 
-See [here](docs/local_dev.md) for in-depth documentation about the `vision-zero` helper.
+6. Install required package
+
+```shell
+npm install
+```
+
+7. Finally, start the app
+
+```
+npm run dev
+```
+
+8. Visit the individual subdirectory READMEs to find instructions for starting other parts of the app, such as the user management API and the Vision Zero Viewer.
 
 ## Learn more
 
