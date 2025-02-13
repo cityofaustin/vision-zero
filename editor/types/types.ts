@@ -67,7 +67,7 @@ export interface ColDataCardDef<T extends Record<string, unknown>, V = any> {
    *
    * @see https://react-hook-form.com/api/useform/register
    */
-  inputOptions?: RegisterOptions<V, "value">;
+  inputOptions?: RegisterOptions<FormValues, "value">;
 }
 
 export interface MutationVariables extends Variables {
