@@ -46,13 +46,6 @@ Start and stop the Vision Zero CR3 / User API
 
 Start and stop the DB, `graphql-engine`, and the API at once
 
-#### `vision-zero vze-up` & `vision-zero vze-down`
-
-Start and stop the Vision Zero Editor
-
-#### `vision-zero vzv-up` & `vision-zero vzv-down`
-
-Start and stop the Vision Zero Viewer
 
 #### `vision-zero psql`
 
