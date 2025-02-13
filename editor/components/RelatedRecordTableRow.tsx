@@ -28,6 +28,8 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
    * will also be passed to the rowActionComponent, if present
    */
   mutation: string;
+
+  rowActionMutation?: string;
   /**
    * If the SWR refetcher is (re)validating
    */
@@ -56,6 +58,7 @@ export default function RelatedRecordTableRow<
   record,
   columns,
   mutation,
+  rowActionMutation,
   isValidating,
   onSaveCallback,
   rowActionComponent: RowActionComponent,
@@ -179,7 +182,7 @@ export default function RelatedRecordTableRow<
           <td className="text-end">
             <RowActionComponent
               record={record}
-              mutation={mutation}
+              mutation={rowActionMutation || ""}
               onSaveCallback={onSaveCallback}
             />
           </td>

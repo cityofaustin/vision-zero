@@ -18,6 +18,11 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
    */
   mutation: string;
   /**
+   * Graphql delete mutation that will be executed when a row is deleted -
+   * will also be passed to the rowActionComponent, if present
+   */
+  rowActionMutation?: string;
+  /**
    * If the SWR refetcher is (re)validating
    */
   isValidating: boolean;
@@ -62,6 +67,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
   records,
   columns,
   mutation,
+  rowActionMutation,
   isValidating,
   title,
   headerActionComponent,
@@ -108,6 +114,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
                   onSaveCallback={onSaveCallback}
                   record={record}
                   mutation={mutation}
+                  rowActionMutation={rowActionMutation}
                   rowActionComponent={rowActionComponent}
                 />
               ))
