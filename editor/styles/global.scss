@@ -129,4 +129,8 @@ to make sure it renders on top is a common fix */
   background-color: $white !important;
 }
 
+.accordion-button:hover {
+  background-color: $light !important;
+}
+
 @import "bootstrap/scss/bootstrap.scss";
