@@ -42,7 +42,7 @@ RR_HOSTNAME=""
 RR_DATABASE=""
 ```
 
-3. Start the DB + GraphQL API. You'll need to be on City of Austin VPN *or* your IP address will need to be whitelisted to reach our read-replica host.
+3. Start the DB + GraphQL API. You'll need to be on City of Austin VPN _or_ your IP address will need to be whitelisted to reach our read-replica host.
 
 ```shell
 ./vision-zero replicate-db
@@ -61,7 +61,7 @@ See [here](docs/local_dev.md) for in-depth documentation about the `vision-zero`
 
 4. Configure the Vision Zero editor. Navigate to the `/editor` subdirectory and create a file called `.env.local`, and save the contents of the 1Password item called **Vision Zero Editor (VZE) Environment File** into this file.
 
-5. Activate your Node environment - requires [`nvm`](https://github.com/nvm-sh/nvm ).
+5. Activate your Node environment - requires [`nvm`](https://github.com/nvm-sh/nvm).
 
 ```shell
 nvm use
@@ -73,7 +73,7 @@ nvm use
 npm install
 ```
 
-7. Finally, start the app
+7. Finally, start the app - visit [http://localhost:3002](http://localhost:3002) with your browser to see the result
 
 ```
 npm run dev
