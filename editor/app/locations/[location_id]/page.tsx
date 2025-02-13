@@ -54,6 +54,7 @@ export default function LocationDetailsPage({
   const locationId = params.location_id;
 
   const locationIdFilter = useLocationIdFilter(locationId);
+
   const { data, error, refetch } = useQuery<Location>({
     query: locationId ? GET_LOCATION : null,
     variables: { locationId },
