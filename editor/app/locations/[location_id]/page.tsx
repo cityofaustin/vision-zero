@@ -17,10 +17,11 @@ import { locationCrashesQueryConfig } from "@/configs/locationCrashesTable";
 import AlignedLabel from "@/components/AlignedLabel";
 import { FaCircleInfo } from "react-icons/fa6";
 import { locationNotesColumns } from "@/configs/notesColumns";
-import CrashNotesCard from "@/components/CrashNotesCard";
+import NotesCard from "@/components/NotesCard";
 import {
   INSERT_LOCATION_NOTE,
   UPDATE_LOCATION_NOTE,
+  SOFT_DELETE_LOCATION_NOTE,
 } from "@/queries/locationNotes";
 
 const typename = "atd_txdot_locations";
@@ -99,11 +100,12 @@ export default function LocationDetailsPage({
       </Row>
       <Row>
         <Col sm={12} className="mb-3">
-          <CrashNotesCard
+          <NotesCard
             notes={location.location_notes || []}
             notesColumns={locationNotesColumns}
-            mutation={UPDATE_LOCATION_NOTE}
+            updateMutation={UPDATE_LOCATION_NOTE}
             insertMutation={INSERT_LOCATION_NOTE}
+            deleteMutation={SOFT_DELETE_LOCATION_NOTE}
             onSaveCallback={onSaveCallback}
             recordId={location.location_id}
             refetch={refetch}
