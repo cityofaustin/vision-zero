@@ -37,15 +37,14 @@ const notesColumns: ColDataCardDef<CrashNote>[] = [
     label: "Note",
     editable: true,
     inputType: "textarea",
-    required: true,
+    inputOptions: {
+      required: true,
+      minLength: {
+        value: 3,
+        message: "This field must be at least 3 characters"
+      },
+    },
     style: { minWidth: "350px" },
-    validation: (value: string) => {
-      // Example of custom validation
-      if (value.trim().length < 3) {
-        return "Note must be at least 3 characters";
-      }
-      return true;
-    } 
   },
 ];
 

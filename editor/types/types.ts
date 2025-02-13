@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { Variables } from "graphql-request";
 import { Relationship } from "./relationships";
 import { Path } from "./utils";
+import { RegisterOptions } from "react-hook-form";
 
 export type InputType = "text" | "number" | "yes_no" | "select" | "textarea";
 
@@ -62,13 +63,11 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    */
   style?: React.CSSProperties;
   /**
-   * If the field is required
+   * Additional input validation options that mirror react-hook-form RegisterOptions
+   *
+   * @see https://react-hook-form.com/api/useform/register
    */
-  required?: boolean;
-  /**
-   * Custom validation function
-   */
-  validation?: (value: string) => boolean | string;
+  inputOptions?: RegisterOptions;
 }
 
 export interface MutationVariables extends Variables {

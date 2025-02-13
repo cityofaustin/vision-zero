@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { ColDataCardDef, InputType } from "@/types/types";
+import { RegisterOptions } from "react-hook-form";
 
 /**
  * Retrieve a value from an object given a dot-noted path string.
@@ -191,12 +192,18 @@ export const handleFormValueOutput = (
 /**
  * Generates validation rules for EditableField based on column definition
  */
-export const getValidationRules = (col: ColDataCardDef<any>) => {
+export const getValidationRules = (col: ColDataCardDef<any>): RegisterOptions => {
   return {
-    required: col.required,
     ...(col.inputType === "number" && {
-      pattern: /^\d*\.?\d*$/,
+      pattern: commonValidations.isNumber
     }),
-    ...(col.validation && { custom: col.validation }),
+    ...col.inputOptions
   };
+};
+
+export const commonValidations = {
+  isNumber: (value: string) => {
+    return /^\d+$/.test(value) || "This field must be a number";
+  },
+  required: "This field is required"
 };

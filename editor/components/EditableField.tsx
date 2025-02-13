@@ -1,31 +1,19 @@
-import { useForm } from "react-hook-form";
+import { useForm, RegisterOptions } from "react-hook-form";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { InputType } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
 
-interface ValidationRules {
-  required?: boolean;
-  pattern?: RegExp;
-  custom?: (value: string) => boolean | string;
-}
+
 
 interface EditableFieldProps {
-  /**
-   * The initial value to populate the input
-   */
+  /** The initial value to populate the input */
   initialValue: string;
-  /**
-   * If the input is in the process of mutating via API call
-   */
+  /** If the input is in the process of mutating via API call */
   isMutating: boolean;
-  /**
-   * Controls the type of input to be rendered
-   */
+  /** Controls the type of input to be rendered */
   inputType?: InputType;
-  /**
-   * Array of lookup table options that will populate a <select> input
-   */
+  /** Array of lookup table options that will populate a <select> input */
   selectOptions?: LookupTableOption[];
   /**
    * The function to call on save button click, which is expected to mutate the field
@@ -37,7 +25,9 @@ interface EditableFieldProps {
    * to set control the parent component's edit state
    */
   onCancel: () => void;
-  validation?: ValidationRules;
+
+  /** Validation rules that mirror react-hook-form RegisterOptions */
+  validation?: RegisterOptions<FormValues, "value">;
 }
 
 interface FormValues {
@@ -71,33 +61,12 @@ const EditableField = ({
     await onSave(data.value);
   };
 
-  // Build validation rules
-  const validationRules: Record<string, unknown> = {};
-  if (validation?.required) {
-    validationRules.required = "This field is required";
-  }
-  if (inputType === "number") {
-    validationRules.pattern = {
-      value: /^\d*\.?\d*$/,
-      message: "Please enter a valid number",
-    };
-  }
-  if (validation?.pattern) {
-    validationRules.pattern = {
-      value: validation.pattern,
-      message: "Invalid format",
-    };
-  }
-  if (validation?.custom) {
-    validationRules.validate = validation.custom;
-  }
-
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-2">
         {(inputType === "text" || inputType === "number") && (
           <Form.Control
-            {...register("value", validationRules)}
+            {...register("value", validation as RegisterOptions<FormValues, "value">)}
             autoFocus
             size="sm"
             type="text"
@@ -107,7 +76,7 @@ const EditableField = ({
         )}
         {inputType === "textarea" && (
           <Form.Control
-            {...register("value", validationRules)}
+            {...register("value", validation as RegisterOptions<FormValues, "value">)}
             autoFocus
             size="sm"
             as="textarea"
@@ -116,7 +85,7 @@ const EditableField = ({
         )}
         {inputType === "select" && selectOptions && (
           <Form.Select
-            {...register("value", validationRules)}
+            {...register("value", validation as RegisterOptions<FormValues, "value">)}
             autoFocus
             size="sm"
             isInvalid={!!errors.value}
@@ -131,7 +100,7 @@ const EditableField = ({
         )}
         {inputType === "yes_no" && (
           <Form.Select
-            {...register("value", validationRules)}
+            {...register("value", validation as RegisterOptions<FormValues, "value">)}
             autoFocus
             size="sm"
             isInvalid={!!errors.value}
