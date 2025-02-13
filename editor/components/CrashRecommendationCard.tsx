@@ -241,7 +241,11 @@ export default function CrashRecommendationCard({
                 autoFocus={true}
               />
             )}
-            {!isEditing && <p>{recommendation?.rec_text || "-"}</p>}
+            {!isEditing && (
+              <p style={{ whiteSpace: "pre-wrap" }}>
+                {recommendation?.rec_text || "-"}
+              </p>
+            )}
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label className="fw-bold">Updates</Form.Label>
@@ -255,7 +259,11 @@ export default function CrashRecommendationCard({
                 rows={6}
               />
             )}
-            {!isEditing && <p>{recommendation?.rec_update || "-"}</p>}
+            {!isEditing && (
+              <p style={{ whiteSpace: "pre-wrap" }}>
+                {recommendation?.rec_update || "-"}
+              </p>
+            )}
           </Form.Group>
         </Form>
       </Card.Body>
@@ -288,7 +296,7 @@ export default function CrashRecommendationCard({
               <Button
                 className="ms-1"
                 size="sm"
-                variant="danger"
+                variant="secondary"
                 onClick={() => {
                   setIsEditing(false);
                   reset();

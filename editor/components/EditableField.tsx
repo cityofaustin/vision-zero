@@ -116,7 +116,7 @@ const EditableField = ({
           </Form.Control.Feedback>
         )}
       </div>
-      <div className="text-end">
+      <div className="text-end text-nowrap">
         <span className="me-2">
           <Button size="sm" type="submit" disabled={isMutating || !isDirty}>
             Save
@@ -127,7 +127,7 @@ const EditableField = ({
             size="sm"
             onClick={onCancel}
             disabled={isMutating}
-            variant="danger"
+            variant="secondary"
           >
             Cancel
           </Button>

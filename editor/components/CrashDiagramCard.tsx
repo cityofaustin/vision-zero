@@ -140,6 +140,9 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
     <Card className="h-100">
       <Card.Header>
         <Card.Title>Diagram</Card.Title>
+        <div className="text-secondary fw-light">
+          Use shift + scroll to zoom
+        </div>
       </Card.Header>
       <Card.Body className="crash-header-card-body text-center d-flex flex-column">
         {!diagramError && (
@@ -149,7 +152,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             centerZoomedOut={true}
             centerOnInit={true}
             ref={transformComponentRef}
-            wheel={{ activationKeys: [] }}
+            wheel={{ activationKeys: ["Meta", "Shift"] }}
           >
             <ZoomResetControls
               setRotation={setRotation}

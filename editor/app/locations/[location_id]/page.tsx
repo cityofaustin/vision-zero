@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Row from "react-bootstrap/Row";
-import AppBreadCrumb from "@/components/AppBreadCrumb";
 import DataCard from "@/components/DataCard";
 import LocationMapCard from "@/components/LocationMapCard";
 import TableWrapper from "@/components/TableWrapper";
@@ -15,6 +14,8 @@ import { Filter } from "@/types/queryBuilder";
 import { locationCardColumns } from "@/configs/locationDataCard";
 import { locationCrashesColumns } from "@/configs/locationCrashesColumns";
 import { locationCrashesQueryConfig } from "@/configs/locationCrashesTable";
+import AlignedLabel from "@/components/AlignedLabel";
+import { FaCircleInfo } from "react-icons/fa6";
 
 const typename = "atd_txdot_locations";
 
@@ -70,7 +71,6 @@ export default function LocationDetailsPage({
 
   return (
     <>
-      <AppBreadCrumb />
       <span className="fs-2">{location.description}</span>
       <Row>
         <Col sm={12} md={6} lg={7} className="mb-3">
@@ -90,7 +90,17 @@ export default function LocationDetailsPage({
       <Row>
         <Col>
           <Card>
-            <Card.Header>Crashes</Card.Header>
+            <Card.Header>
+              <Card.Title>Crashes</Card.Title>
+              <Card.Subtitle className="fw-light text-secondary">
+                <AlignedLabel>
+                  <FaCircleInfo className="me-2" />
+                  <span>
+                    The data in this table is refreshed on an hourly basis
+                  </span>
+                </AlignedLabel>
+              </Card.Subtitle>
+            </Card.Header>
             <Card.Body>
               <TableWrapper
                 columns={locationCrashesColumns}

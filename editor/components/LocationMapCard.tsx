@@ -20,7 +20,9 @@ export default function LocationMapCard({ location }: { location: Location }) {
 
   return (
     <Card>
-      <Card.Header>Location</Card.Header>
+      <Card.Header>
+        <Card.Title>Location</Card.Title>
+      </Card.Header>
       <Card.Body className="p-1 crash-header-card-body" ref={mapContainerRef}>
         {location.geometry && (
           <LocationMap

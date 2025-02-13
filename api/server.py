@@ -9,6 +9,7 @@ import os
 import re
 import secrets
 import string
+import sys
 
 import boto3
 import requests
@@ -204,21 +205,6 @@ def get_token_auth_header():
     return token
 
 
-def requires_scope(required_scope):
-    """Determines if the required scope is present in the access token
-    Args:
-        required_scope (str): The scope required to access the resource
-    """
-    token = get_token_auth_header()
-    unverified_claims = jwt.get_unverified_claims(token)
-    if unverified_claims.get("scope"):
-        token_scopes = unverified_claims["scope"].split()
-        for token_scope in token_scopes:
-            if token_scope == required_scope:
-                return True
-    return False
-
-
 def requires_auth(f):
     """Determines if the access token is valid"""
 
@@ -227,6 +213,7 @@ def requires_auth(f):
         token = get_token_auth_header()
         jsonurl = urlopen("https://" + AUTH0_DOMAIN + "/.well-known/jwks.json")
         jwks = json.loads(jsonurl.read())
+
         try:
             unverified_header = jwt.get_unverified_header(token)
         except jwt.JWTError:
@@ -425,9 +412,8 @@ def user_test():
 )
 @requires_auth
 def user_list_users():
-    user_dict = current_user._get_current_object()
     page = request.args.get("page")
-    per_page = request.args.get("per_page")    
+    per_page = request.args.get("per_page")
     endpoint = (
         f"https://{AUTH0_DOMAIN}/api/v2/users?page="
         + page
@@ -438,7 +424,6 @@ def user_list_users():
     headers = {"Authorization": f"Bearer {get_api_token()}"}
     response = requests.get(endpoint, headers=headers)
     return jsonify(response.json()), response.status_code
-
 
 
 @APP.route("/user/get_user/<id>")

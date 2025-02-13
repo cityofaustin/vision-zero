@@ -8,7 +8,6 @@ import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
 import { FaUserPlus, FaCopy, FaCheck } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
-import AppBreadCrumb from "@/components/AppBreadCrumb";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import UserModal from "@/components/UserModal";
 import { useUsersInfinite } from "@/utils/users";
@@ -61,9 +60,8 @@ export default function Users() {
 
   return (
     <>
-      <AppBreadCrumb />
-      <Card>
-        <Card.Header className="fs-5 fw-bold">Users</Card.Header>
+      <Card className="mt-3">
+        <Card.Header className="fs-3 fw-bold">Users</Card.Header>
         <Card.Body>
           <div className="mb-3 d-flex align-items-center">
             {!isLoading && (

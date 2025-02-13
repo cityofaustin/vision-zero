@@ -11,6 +11,7 @@ on:
       - "etl/cris_import/**"
       - "etl/socrata_export/**"
       - "etl/moped_projects/**"
+      - "etl/run_sql/**"
       - "api/**"
   workflow_dispatch:
 
@@ -44,6 +45,8 @@ jobs:
               - 'api/**'
             moped_projects:
               - 'etl/moped_projects/**'
+            run_sql:
+              - 'etl/run_sql/**'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -84,6 +87,15 @@ jobs:
           push: true
           tags: atddocker/vz-moped-join:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
 
+      - name: Build and push Run-SQL ETL image
+        if: steps.changes.outputs.run_sql == 'true'
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64
+          context: etl/run_sql
+          push: true
+          tags: atddocker/vz-run-sql:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
+
       - name: Build and push VZ User & CR3 API image
         if: steps.changes.outputs.user_cr3_api == 'true'
         uses: docker/build-push-action@v4
@@ -98,10 +110,10 @@ jobs:
         run: |
           if [ "${{ github.ref }}" == "refs/heads/production" ]; then
             echo "ECS_CLUSTER=atd-vz-data-cluster-production" >> $GITHUB_ENV
-            echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-production/cr3-and-user-mgmt-api" >> $GITHUB_ENV
+            echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-production/backend-flask-api" >> $GITHUB_ENV
           else
             echo "ECS_CLUSTER=atd-vz-data-cluster-staging" >> $GITHUB_ENV
-            echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-staging/cr3-and-user-mgmt-api" >> $GITHUB_ENV
+            echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-staging/backend-flask-api-staging" >> $GITHUB_ENV
           fi
 
       - name: Restart ECS service
