@@ -249,8 +249,8 @@ export const crashesColumns = {
     inputOptions: {
       required: true,
       validate: (value: string) => {
-        const isAustin = value === "Sesame";
-        return isAustin || "Street name must be Sesame";
+        const isSesameStreet = value === "Sesame";
+        return isSesameStreet || "Street name must be Sesame";
       }
     }
   },
