@@ -30,9 +30,9 @@ export const UPDATE_CRASH_NOTE = gql`
   }
 `;
 
-export const DELETE_CRASH_NOTE = gql`
-  mutation DeleteCrashNote($id: Int!) {
-    delete_crash_notes(where: { id: { _eq: $id } }) {
+export const SOFT_DELETE_CRASH_NOTE = gql`
+  mutation SoftDeleteCrashNote($id: Int!) {
+    update_crash_notes(where: { id: { _eq: $id } }, _set: {is_deleted: true}) {
       returning {
         id
       }
