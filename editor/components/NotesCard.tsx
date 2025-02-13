@@ -5,10 +5,10 @@ import NotesModal from "./NotesModal";
 import RelatedRecordTable from "./RelatedRecordTable";
 import { ColDataCardDef } from "@/types/types";
 import AlignedLabel from "@/components/AlignedLabel";
-import CrashDeleteNoteButton from "@/components/DeleteNoteButton";
+import DeleteNoteButton from "@/components/DeleteNoteButton";
 import PermissionsRequired from "@/components/PermissionsRequired";
 
-const allowedAddCrashNoteRoles = ["vz-admin", "editor"];
+const allowedNoteRoles = ["vz-admin", "editor"];
 
 interface NotesCardProps<T extends Record<string, unknown>> {
   notes: T[];
@@ -23,7 +23,7 @@ interface NotesCardProps<T extends Record<string, unknown>> {
 
 const AddNoteButton = ({ onClick }: { onClick: () => void }) => {
   return (
-    <PermissionsRequired allowedRoles={allowedAddCrashNoteRoles}>
+    <PermissionsRequired allowedRoles={allowedNoteRoles}>
       <Button size="sm" variant="primary" onClick={onClick}>
         <AlignedLabel>
           <FaCirclePlus className="me-2" />
@@ -46,14 +46,10 @@ export default function NotesCard<T extends Record<string, unknown>>({
   recordId,
   onSaveCallback,
 }: NotesCardProps<T>) {
-  const [showModal, setShowModal] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isValidating] = useState(false);
-  const handleClose = () => setShowModal(false);
-  const handleShow = () => setShowModal(true);
-
-  const handleSaveNote = async () => {
-    await onSaveCallback();
-  };
+  const handleCloseModal = () => setIsModalOpen(false);
+  const handleOpenModal = () => setIsModalOpen(true);
 
   return (
     <>
@@ -65,14 +61,14 @@ export default function NotesCard<T extends Record<string, unknown>>({
         isValidating={isValidating}
         title="Notes"
         onSaveCallback={onSaveCallback}
-        headerActionComponent={<AddNoteButton onClick={handleShow} />}
-        rowActionComponent={CrashDeleteNoteButton}
+        headerActionComponent={<AddNoteButton onClick={handleOpenModal} />}
+        rowActionComponent={DeleteNoteButton}
       />
 
       <NotesModal
-        show={showModal}
-        onClose={handleClose}
-        onSubmitCallback={handleSaveNote}
+        show={isModalOpen}
+        handleCloseModal={handleCloseModal}
+        onSubmitCallback={onSaveCallback}
         recordId={recordId}
         insertMutation={insertMutation}
       />
