@@ -2,12 +2,13 @@ import { gql } from "graphql-request";
 
 export const INSERT_CRASH_NOTE = gql`
   mutation InsertCrashNote(
-    $crashPk: Int!
+    $recordId: Int!
     $text: String!
     $userEmail: String!
+    $createdBy: String!
   ) {
     insert_crash_notes_one(
-      object: { crash_pk: $crashPk, text: $text, updated_by: $userEmail }
+      object: { crash_pk: $recordId, text: $text, updated_by: $userEmail, created_by: $userEmail }
     ) {
       id
       text
@@ -30,9 +31,9 @@ export const UPDATE_CRASH_NOTE = gql`
   }
 `;
 
-export const DELETE_CRASH_NOTE = gql`
-  mutation DeleteCrashNote($id: Int!) {
-    delete_crash_notes(where: { id: { _eq: $id } }) {
+export const SOFT_DELETE_CRASH_NOTE = gql`
+  mutation SoftDeleteCrashNote($id: Int!) {
+    update_crash_notes(where: { id: { _eq: $id } }, _set: {is_deleted: true}) {
       returning {
         id
       }

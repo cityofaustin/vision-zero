@@ -14,6 +14,16 @@ export const GET_LOCATION = gql`
         non_cr3_crash_count
         total_est_comp_cost
       }
+      location_notes(
+        where: { is_deleted: { _eq: false } }
+        order_by: { created_at: asc }
+      ) {
+        id
+        updated_by
+        created_at
+        text
+        location_id
+      }
     }
   }
 `;
