@@ -18,8 +18,7 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
    */
   mutation: string;
   /**
-   * Graphql delete mutation that will be executed when a row is deleted -
-   * will also be passed to the rowActionComponent, if present
+   * Graphql mutation that will be passed to rowActionComponent, if present
    */
   rowActionMutation?: string;
   /**
