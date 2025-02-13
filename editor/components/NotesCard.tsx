@@ -5,15 +5,16 @@ import NotesModal from "./NotesModal";
 import RelatedRecordTable from "./RelatedRecordTable";
 import { ColDataCardDef } from "@/types/types";
 import AlignedLabel from "@/components/AlignedLabel";
-import CrashDeleteNoteButton from "@/components/CrashDeleteNoteButton";
+import CrashDeleteNoteButton from "@/components/DeleteNoteButton";
 import PermissionsRequired from "@/components/PermissionsRequired";
 
 const allowedAddCrashNoteRoles = ["vz-admin", "editor"];
 
-interface CrashNotesCardProps<T extends Record<string, unknown>> {
+interface NotesCardProps<T extends Record<string, unknown>> {
   notes: T[];
-  mutation: string;
+  updateMutation: string;
   insertMutation: string;
+  deleteMutation: string;
   notesColumns: ColDataCardDef<T>[];
   recordId: number | string;
   onSaveCallback: () => Promise<void>;
@@ -36,14 +37,15 @@ const AddNoteButton = ({ onClick }: { onClick: () => void }) => {
 /**
  * UI component for adding a note to a crash
  */
-export default function CrashNotesCard<T extends Record<string, unknown>>({
+export default function NotesCard<T extends Record<string, unknown>>({
   notes,
   notesColumns,
-  mutation,
+  updateMutation,
   insertMutation,
+  deleteMutation,
   recordId,
   onSaveCallback,
-}: CrashNotesCardProps<T>) {
+}: NotesCardProps<T>) {
   const [showModal, setShowModal] = useState(false);
   const [isValidating] = useState(false);
   const handleClose = () => setShowModal(false);
@@ -58,7 +60,8 @@ export default function CrashNotesCard<T extends Record<string, unknown>>({
       <RelatedRecordTable
         records={notes}
         columns={notesColumns}
-        mutation={mutation}
+        mutation={updateMutation}
+        rowActionMutation={deleteMutation}
         isValidating={isValidating}
         title="Notes"
         onSaveCallback={onSaveCallback}
