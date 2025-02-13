@@ -24,11 +24,13 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
    */
   columns: ColDataCardDef<T>[];
   /**
-   * Graphql mutation that will be exectuted when a row is edited -
-   * will also be passed to the rowActionComponent, if present
+   * Graphql mutation that will be exectuted when a row is edited
    */
   mutation: string;
 
+  /**
+   * Graphql mutation that will be exectuted in the rowActionComponent
+   */
   rowActionMutation?: string;
   /**
    * If the SWR refetcher is (re)validating
