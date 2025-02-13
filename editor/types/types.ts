@@ -13,7 +13,7 @@ export type InputType = "text" | "number" | "yes_no" | "select" | "textarea";
  * These properties control how a column is rendered and edited
  * in various UI components
  */
-export interface ColDataCardDef<T extends Record<string, unknown>> {
+export interface ColDataCardDef<T extends Record<string, unknown>, V = any> {
   /**
    * the dot-notated string path to accessing the property on the given type,
    * or "actions" for special action buttons column
@@ -67,7 +67,7 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    *
    * @see https://react-hook-form.com/api/useform/register
    */
-  inputOptions?: RegisterOptions;
+  inputOptions?: RegisterOptions<V, "value">;
 }
 
 export interface MutationVariables extends Variables {

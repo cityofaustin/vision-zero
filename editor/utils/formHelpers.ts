@@ -198,18 +198,3 @@ export const commonValidations = {
   },
   required: "This field is required"
 };
-
-export const getValidationRules = <T extends Record<string, unknown>>(
-  col: ColDataCardDef<T>
-): RegisterOptions<FormValues, "value"> => {
-  const validationRules: RegisterOptions<FormValues, "value"> = {
-    ...(col.inputType === "number" && { validate: commonValidations.isNumber }),
-  };
-
-  // Ensure inputOptions are compatible with RegisterOptions<FormValues, "value">
-  if (col.inputOptions) {
-    Object.assign(validationRules, col.inputOptions);
-  }
-
-  return validationRules;
-};

@@ -8,14 +8,11 @@ import {
   renderColumnValue,
   valueToString,
   handleFormValueOutput,
-  getValidationRules,
 } from "@/utils/formHelpers";
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
 import { RowActionComponentProps } from "@/components/RelatedRecordTable";
 import { hasRole } from "@/utils/auth";
-import { RegisterOptions } from "react-hook-form";
-import { FormValues } from "@/types/types";
 
 interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
   /**
@@ -171,7 +168,7 @@ export default function RelatedRecordTableRow<
                       inputType={col.inputType}
                       selectOptions={selectOptions}
                       isMutating={isMutating || isValidating}
-                      validation={getValidationRules(col) as RegisterOptions<FormValues, "value">}
+                      inputOptions={col.inputOptions}
                     />
                   )}
                 </>

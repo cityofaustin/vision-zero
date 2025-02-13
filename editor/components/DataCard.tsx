@@ -9,14 +9,11 @@ import {
   renderColumnValue,
   valueToString,
   handleFormValueOutput,
-  getValidationRules,
 } from "@/utils/formHelpers";
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
 import { useAuth0 } from "@auth0/auth0-react";
 import { hasRole } from "@/utils/auth";
-import { RegisterOptions } from "react-hook-form"; 
-import { FormValues } from "@/types/types";
 export interface HeaderActionComponentProps<T extends Record<string, unknown>> {
   record: T;
   mutation: string;
@@ -151,7 +148,7 @@ export default function DataCard<T extends Record<string, unknown>>({
                           inputType={col.inputType}
                           selectOptions={selectOptions}
                           isMutating={isMutating || isValidating} 
-                          validation={getValidationRules(col) as RegisterOptions<FormValues, "value">}
+                          inputOptions={col.inputOptions}
                         />
                       )}
                     </td>

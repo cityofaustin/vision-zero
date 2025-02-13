@@ -27,7 +27,7 @@ interface EditableFieldProps {
   onCancel: () => void;
 
   /** Validation rules that mirror react-hook-form RegisterOptions */
-  validation?: RegisterOptions<FormValues, "value">;
+  inputOptions?: RegisterOptions<FormValues, "value">;
 }
 
 interface FormValues {
@@ -45,7 +45,7 @@ const EditableField = ({
   selectOptions,
   onSave,
   onCancel,
-  validation,
+  inputOptions,
 }: EditableFieldProps) => {
   const {
     register,
@@ -66,7 +66,7 @@ const EditableField = ({
       <div className="mb-2">
         {(inputType === "text" || inputType === "number") && (
           <Form.Control
-            {...register("value", validation)}
+            {...register("value", inputOptions)}
             autoFocus
             size="sm"
             type="text"
@@ -76,7 +76,7 @@ const EditableField = ({
         )}
         {inputType === "textarea" && (
           <Form.Control
-            {...register("value", validation)}
+            {...register("value", inputOptions)}
             autoFocus
             size="sm"
             as="textarea"
@@ -85,7 +85,7 @@ const EditableField = ({
         )}
         {inputType === "select" && selectOptions && (
           <Form.Select
-            {...register("value", validation)}
+            {...register("value", inputOptions)}
             autoFocus
             size="sm"
             isInvalid={!!errors.value}
@@ -100,7 +100,7 @@ const EditableField = ({
         )}
         {inputType === "yes_no" && (
           <Form.Select
-            {...register("value", validation)}
+            {...register("value", inputOptions)}
             autoFocus
             size="sm"
             isInvalid={!!errors.value}
