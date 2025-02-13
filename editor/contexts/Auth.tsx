@@ -15,7 +15,8 @@ export default function AuthProvider({
   children: React.ReactNode;
 }) {
   const redirect_uri =
-    (typeof window !== "undefined" && window.location.origin + BASE_PATH) || undefined;
+    (typeof window !== "undefined" && window.location.origin + BASE_PATH) ||
+    undefined;
 
   return (
     <Auth0Provider

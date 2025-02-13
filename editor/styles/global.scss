@@ -121,4 +121,16 @@ to make sure it renders on top is a common fix */
   z-index: 99 !important;
 }
 
+.accordion-button:focus {
+  box-shadow: none !important;
+}
+
+.accordion-button {
+  background-color: $white !important;
+}
+
+.accordion-button:hover {
+  background-color: $light !important;
+}
+
 @import "bootstrap/scss/bootstrap.scss";
