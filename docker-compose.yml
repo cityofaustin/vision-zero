@@ -13,27 +13,6 @@ services:
     depends_on:
       - postgis
 
-  vze:
-    tty: true
-    container_name: visionzero-vze
-    command: npm start
-    ports:
-      - 3002:3000
-    hostname: vze
-    build: editor
-    volumes:
-      - ./editor:/root/editor
-  vzv:
-    tty: true
-    container_name: visionzero-vzv
-    command: npm start
-    ports:
-      - 3001:3000
-    hostname: vzv
-    build: viewer
-    volumes:
-      - ./viewer:/root/viewer
-
   postgis:
     build: database
     env_file:
