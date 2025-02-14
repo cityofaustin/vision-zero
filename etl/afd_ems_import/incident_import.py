@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-
-# todo: we have two dupe ems records bc pcr_key uniqueness is not enforced: 1824778 and 1824308
-
 import csv
 import email
 from io import BytesIO, TextIOWrapper
