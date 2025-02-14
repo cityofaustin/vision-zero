@@ -1,4 +1,4 @@
--- delet ems_incidents with the same pcr_key, keeping the first of any dupes
+-- delete ems_incidents with the same pcr_key, keeping the first of any dupes
 with numbered_rows as (
     select
         id,
@@ -17,7 +17,7 @@ where id in (
 -- add unique constraint
 alter table ems__incidents add constraint unique_pcr_key unique (pcr_key);
 
--- make ems trigger compatible with on insert rather than after
+-- use BEFORE trigger instead of AFTER
 drop trigger if exists ems_incidents_trigger_insert on ems__incidents;
 drop trigger if exists ems_incidents_trigger_update on ems__incidents;
 
@@ -40,7 +40,6 @@ returns trigger
 language plpgsql
 as $function$
 BEGIN
-  -- First construct the geometry from lat/long
   NEW.geometry = ST_SetSRID(ST_MakePoint(NEW.longitude, NEW.latitude), 4326);
 
   WITH jurisdiction_union AS (
@@ -51,8 +50,6 @@ BEGIN
   SELECT 
     COALESCE(ST_Contains(jurisdiction.geometry, NEW.geometry), FALSE),
     locations.location_id,
-    NEW.latitude,
-    NEW.longitude,
     (NEW.apd_incident_numbers)[1],
     (NEW.apd_incident_numbers)[2],
     date(NEW.mvc_form_extrication_datetime),
@@ -60,8 +57,6 @@ BEGIN
   INTO 
     NEW.austin_full_purpose,
     NEW.location_id,
-    NEW.latitude,
-    NEW.longitude,
     NEW.apd_incident_number_1,
     NEW.apd_incident_number_2,
     NEW.mvc_form_date,
