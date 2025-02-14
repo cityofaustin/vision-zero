@@ -19,12 +19,21 @@ alter table ems__incidents add constraint unique_pcr_key unique (pcr_key);
 
 -- make ems trigger compatible with on insert rather than after
 drop trigger if exists ems_incidents_trigger_insert on ems__incidents;
+drop trigger if exists ems_incidents_trigger_update on ems__incidents;
 
 create trigger ems_incidents_trigger_insert
 before insert
 on ems__incidents
 for each row
 execute function public.ems_incidents_trigger();
+
+create trigger ems_incidents_trigger_update before update on
+ems__incidents for each row when (
+    old.latitude is distinct from new.latitude
+    or old.longitude is distinct from new.longitude
+    or old.apd_incident_numbers is distinct from new.apd_incident_numbers
+    or old.mvc_form_extrication_datetime is distinct from new.mvc_form_extrication_datetime
+) execute function ems_incidents_trigger();
 
 create or replace function public.ems_incidents_trigger()
 returns trigger
@@ -63,7 +72,6 @@ BEGIN
     AND NEW.geometry && locations.geometry 
     AND ST_Contains(locations.geometry, NEW.geometry)
   );
-
   RETURN NEW;
 END;
 $function$;
