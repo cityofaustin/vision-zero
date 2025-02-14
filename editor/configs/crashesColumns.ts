@@ -1,6 +1,7 @@
 import { ColDataCardDef } from "@/types/types";
 import { Crash } from "@/types/crashes";
 import { formatDateTime } from "@/utils/formatters";
+import { commonValidations } from "@/utils/formHelpers";
 
 export const crashesColumns = {
   active_school_zone_fl: {
@@ -122,6 +123,10 @@ export const crashesColumns = {
     label: "Street number",
     editable: true,
     inputType: "text",
+    inputOptions: {
+      required: true,
+      validate: commonValidations.isNumber
+    }
   },
   city: {
     path: "city.label",
@@ -241,6 +246,13 @@ export const crashesColumns = {
     label: "Street name",
     editable: true,
     inputType: "text",
+    inputOptions: {
+      required: true,
+      validate: (value: string) => {
+        const isSesameStreet = value === "Sesame";
+        return isSesameStreet || "Street name must be Sesame";
+      }
+    }
   },
   rpt_street_pfx: {
     path: "rpt_street_pfx",
