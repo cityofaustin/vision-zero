@@ -65,7 +65,7 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
   /**
    * Additional input validation options that mirror react-hook-form RegisterOptions
    *
-   * @see https://react-hook-form.com/api/useform/register
+   * @see https://react-hook-form.com/docs/useform/register
    */
   inputOptions?: RegisterOptions<FormValues, "value">;
 }
