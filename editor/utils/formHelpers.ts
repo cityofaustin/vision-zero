@@ -196,5 +196,4 @@ export const commonValidations = {
   isNumber: (value: string) => {
     return /^\d+$/.test(value) || "This field must be a number";
   },
-  required: "This field is required"
 };
