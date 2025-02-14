@@ -6,6 +6,7 @@ with numbered_rows as (
         row_number() over (partition by pcr_key order by id) as row_num
     from ems__incidents
 )
+
 delete from ems__incidents
 where id in (
     select id
@@ -15,3 +16,54 @@ where id in (
 
 -- add unique constraint
 alter table ems__incidents add constraint unique_pcr_key unique (pcr_key);
+
+-- make ems trigger compatible with on insert rather than after
+drop trigger if exists ems_incidents_trigger_insert on ems__incidents;
+
+create trigger ems_incidents_trigger_insert
+before insert
+on ems__incidents
+for each row
+execute function public.ems_incidents_trigger();
+
+create or replace function public.ems_incidents_trigger()
+returns trigger
+language plpgsql
+as $function$
+BEGIN
+  -- First construct the geometry from lat/long
+  NEW.geometry = ST_SetSRID(ST_MakePoint(NEW.longitude, NEW.latitude), 4326);
+
+  WITH jurisdiction_union AS (
+    SELECT ST_Union(geometry) AS geometry
+    FROM geo.jurisdictions
+    WHERE jurisdiction_label = 'AUSTIN FULL PURPOSE'
+  )
+  SELECT 
+    COALESCE(ST_Contains(jurisdiction.geometry, NEW.geometry), FALSE),
+    locations.location_id,
+    NEW.latitude,
+    NEW.longitude,
+    (NEW.apd_incident_numbers)[1],
+    (NEW.apd_incident_numbers)[2],
+    date(NEW.mvc_form_extrication_datetime),
+    NEW.mvc_form_extrication_datetime::time
+  INTO 
+    NEW.austin_full_purpose,
+    NEW.location_id,
+    NEW.latitude,
+    NEW.longitude,
+    NEW.apd_incident_number_1,
+    NEW.apd_incident_number_2,
+    NEW.mvc_form_date,
+    NEW.mvc_form_time
+  FROM jurisdiction_union jurisdiction
+  LEFT JOIN atd_txdot_locations locations ON (
+    locations.location_group = 1 
+    AND NEW.geometry && locations.geometry 
+    AND ST_Contains(locations.geometry, NEW.geometry)
+  );
+
+  RETURN NEW;
+END;
+$function$;
