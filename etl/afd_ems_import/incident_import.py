@@ -27,8 +27,8 @@ s3_resource = resource("s3")
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
-def get_emails_todo(subdir="inbox"):
-    prefix = f"{ENV}/ems_incidents/{subdir}"
+def get_emails_todo(source, subdir="inbox"):
+    prefix = f"{ENV}/{source}_incidents/{subdir}"
     logging.info(f"Checking for files in: {prefix}")
     response = s3_client.list_objects(
         Bucket=BUCKET_NAME,
@@ -126,7 +126,7 @@ def chunks(lst, n):
 
 def main(source):
     logging.info(f"Running incident import for source: {source}")
-    emails_todo = get_emails_todo()
+    emails_todo = get_emails_todo(source)
     logging.info(f"{len(emails_todo)} files to process")
 
     # construct upsert mutation by patching columns to update on upsert
@@ -146,7 +146,8 @@ def main(source):
         for chunk in chunks(data, BATCH_SIZE):
             logging.info(f"Upserting {len(chunk)} rows...")
             make_hasura_request(query=upsert_mutation, variables={"objects": chunk})
-        # archive_email(email_obj_key)
+        if False:
+            archive_email(email_obj_key)
 
 
 if __name__ == "__main__":

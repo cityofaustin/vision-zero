@@ -10,5 +10,17 @@ MUTATIONS = {
                 affected_rows
             }
         }
-    """
+    """,
+    "afd": """
+        mutation UpsertAfdncidents($objects: [afd__incidents_insert_input!]!) {
+            insert_afd__incidents(
+                objects: $objects, 
+                on_conflict: {
+                    constraint: unique_incident_number,
+                    update_columns: [$updateColumns]
+                }) {
+                affected_rows
+            }
+        }
+    """,
 }
