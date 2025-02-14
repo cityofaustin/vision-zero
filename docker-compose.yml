@@ -42,6 +42,12 @@ services:
       - ./database/snapshots:/snapshots
     ports:
       - 5431:5432
+    command: postgres 
+      -c 'maintenance_work_mem=1GB'
+      -c 'max_wal_size=4GB'
+      -c 'shared_buffers=1GB'
+      -c 'work_mem=32MB'
+
   cr3-user-api:
     build: api
     # image: atddocker/vz-user-cr3-api
