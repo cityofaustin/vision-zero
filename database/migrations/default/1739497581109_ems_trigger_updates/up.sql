@@ -42,13 +42,13 @@ as $function$
 BEGIN
   NEW.geometry = ST_SetSRID(ST_MakePoint(NEW.longitude, NEW.latitude), 4326);
 
-  WITH jurisdiction_union AS (
-    SELECT ST_Union(geometry) AS geometry
-    FROM geo.jurisdictions
-    WHERE jurisdiction_label = 'AUSTIN FULL PURPOSE'
-  )
   SELECT 
-    COALESCE(ST_Contains(jurisdiction.geometry, NEW.geometry), FALSE),
+    COALESCE(EXISTS (
+      SELECT 1 
+      FROM geo.jurisdictions 
+      WHERE jurisdiction_label = 'AUSTIN FULL PURPOSE'
+      AND ST_Contains(geometry, NEW.geometry)
+    ), FALSE),
     locations.location_id,
     (NEW.apd_incident_numbers)[1],
     (NEW.apd_incident_numbers)[2],
@@ -61,7 +61,7 @@ BEGIN
     NEW.apd_incident_number_2,
     NEW.mvc_form_date,
     NEW.mvc_form_time
-  FROM jurisdiction_union jurisdiction
+  FROM (SELECT 1) AS dummy
   LEFT JOIN atd_txdot_locations locations ON (
     locations.location_group = 1 
     AND NEW.geometry && locations.geometry 
