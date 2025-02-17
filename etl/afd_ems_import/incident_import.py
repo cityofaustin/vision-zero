@@ -57,7 +57,7 @@ def download_email(email_obj_key):
     return file_object.read().decode("utf-8")
 
 
-def get_data_from_email_str(email_str):
+def get_data_from_email_str(source, email_str):
     """Parse raw email content and return the attachment as a list of dictionarooes
 
     Args:
@@ -66,11 +66,22 @@ def get_data_from_email_str(email_str):
     Returns:
         list: list of row dictionaries of the parsed CSV attachment
     """
+    logging.info("Getting attachment from email...")
     message = email.message_from_string(email_str)
     attachment = message.get_payload()[1]
     attachment_data = BytesIO(attachment.get_payload(decode=True))
-    reader = csv.DictReader(TextIOWrapper(attachment_data, encoding="iso-8859-1"))
-    return [row for row in reader]
+
+    logging.info("Parsing attachment data...")
+    if source == "ems":
+        reader = csv.DictReader(TextIOWrapper(attachment_data, encoding="iso-8859-1"))
+        return [row for row in reader]
+    elif source == "afd":
+        from pandas import read_excel
+
+        data = read_excel(
+            attachment_data, header=0, dtype={"Inc_Time": str, "Inc_Date": str}
+        )
+        return data.to_dict("records")
 
 
 def archive_email(email_obj_key):
@@ -96,9 +107,7 @@ def set_empty_strings_to_none(data):
     """Traverse every row property and set '' to None"""
     for row in data:
         for key, val in row.items():
-            if val == "":
-                row[key] = None
-            elif val == "None":
+            if val == "" or val == "None" or val == "-":
                 row[key] = None
 
 
@@ -116,6 +125,58 @@ def listify_apd_incident_numbers(data):
             row["apd_incident_numbers"] = (
                 incident_nums.replace("-", "").replace(" ", "").split(",")
             )
+
+
+def listify_ems_incident_numbers(data):
+    """On AFD data source, parse the EMS incident numbers. We are handling incident numbers
+    that look like `1234-5678; 1234-5679`"""
+    for row in data:
+        row["unparsed_ems_incident_number"] = row["ems_incident_numbers"]
+        if row["ems_incident_numbers"]:
+            incident_nums = row["ems_incident_numbers"].replace("-", "")
+            row["ems_incident_numbers"] = incident_nums.split(";")
+        else:
+            row["ems_incident_numbers"] = None
+
+
+def handle_afd_timestamps(data):
+    """Handle the AFD timestamp columns. We receive two, both in local time:
+    - Inc_Date (renamed to call_date): a datetime string where the time is always 00:00:00
+    - Inc_Time (renamed to call_time): a datetime string
+
+    In the DB, we're targeting:
+        - call_date (type: date)
+        - call_time (type: time)
+        - call_datetime (type: timestamp)
+
+    Why not just use `call_datetime`? Unclear.
+    """
+    for row in data:
+        if row["call_time"]:
+            dt_str, time_str = row["call_time"].split(" ")
+            row["call_datetime"] = row["call_time"]
+            row["call_date"] = dt_str
+            row["call_time"] = time_str
+
+
+def handle_afd_timestamps(data):
+    """Handle the AFD timestamp columns. We receive two, both in local time:
+    - Inc_Date (renamed to call_date): a datetime string where the time is always 00:00:00
+    - Inc_Time (renamed to call_time): a datetime string
+
+    In the DB, we're targeting:
+        - call_date (type: date)
+        - call_time (type: time)
+        - call_datetime (type: timestamp)
+
+    Why not just use `call_datetime`? Unclear.
+    """
+    for row in data:
+        if row["call_time"]:
+            dt_str, time_str = row["call_time"].split(" ")
+            row["call_datetime"] = row["call_time"]
+            row["call_date"] = dt_str
+            row["call_time"] = time_str
 
 
 def chunks(lst, n):
@@ -137,12 +198,15 @@ def main(source):
     for email_obj_key in emails_todo:
         logging.info("Processing data...")
         email_str = download_email(email_obj_key)
-        data = get_data_from_email_str(email_str)
+        data = get_data_from_email_str(source, email_str)
         data = lower_case_keys(data)
         set_empty_strings_to_none(data)
         rename_columns(data, COLUMNS[source]["cols_to_rename"])
         if source == "ems":
             listify_apd_incident_numbers(data)
+        elif source == "afd":
+            listify_ems_incident_numbers(data)
+            handle_afd_timestamps(data)
         for chunk in chunks(data, BATCH_SIZE):
             logging.info(f"Upserting {len(chunk)} rows...")
             make_hasura_request(query=upsert_mutation, variables={"objects": chunk})

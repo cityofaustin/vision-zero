@@ -53,7 +53,16 @@ COLUMNS = {
         ],
     },
     "afd": {
-        "cols_to_rename": {},
+        "cols_to_rename": {
+            "cad_address": "address",
+            "cad_problem": "problem",
+            "calendaryear": "calendar_year",
+            "ems_incidentnumber": "ems_incident_numbers",
+            "inc_date": "call_date",
+            "inc_time": "call_time",
+            "x": "longitude",
+            "y": "latitude"
+        },
         "update_columns": [
             "unparsed_ems_incident_number",
             "ems_incident_numbers",
