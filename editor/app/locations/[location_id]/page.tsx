@@ -1,5 +1,5 @@
 "use client";
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { notFound } from "next/navigation";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -16,6 +16,12 @@ import { locationCrashesColumns } from "@/configs/locationCrashesColumns";
 import { locationCrashesQueryConfig } from "@/configs/locationCrashesTable";
 import AlignedLabel from "@/components/AlignedLabel";
 import { FaCircleInfo } from "react-icons/fa6";
+import { locationNotesColumns } from "@/configs/notesColumns";
+import NotesCard from "@/components/NotesCard";
+import {
+  INSERT_LOCATION_NOTE,
+  UPDATE_LOCATION_NOTE,
+} from "@/queries/locationNotes";
 
 const typename = "atd_txdot_locations";
 
@@ -47,7 +53,8 @@ export default function LocationDetailsPage({
   const locationId = params.location_id;
 
   const locationIdFilter = useLocationIdFilter(locationId);
-  const { data, error } = useQuery<Location>({
+
+  const { data, error, refetch } = useQuery<Location>({
     query: locationId ? GET_LOCATION : null,
     variables: { locationId },
     typename,
@@ -56,6 +63,10 @@ export default function LocationDetailsPage({
   if (error) {
     console.error(error);
   }
+
+  const onSaveCallback = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   if (!data) {
     // todo: loading spinner (would be nice to use a spinner inside cards)
@@ -88,7 +99,7 @@ export default function LocationDetailsPage({
         </Col>
       </Row>
       <Row>
-        <Col>
+        <Col className="mb-3">
           <Card>
             <Card.Header>
               <Card.Title>Crashes</Card.Title>
@@ -114,6 +125,19 @@ export default function LocationDetailsPage({
               />
             </Card.Body>
           </Card>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12}>
+          <NotesCard
+            notes={location.location_notes || []}
+            notesColumns={locationNotesColumns}
+            updateMutation={UPDATE_LOCATION_NOTE}
+            insertMutation={INSERT_LOCATION_NOTE}
+            onSaveCallback={onSaveCallback}
+            recordId={location.location_id}
+            refetch={refetch}
+          />
         </Col>
       </Row>
     </>

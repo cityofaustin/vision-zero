@@ -2,16 +2,15 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { CrashNote } from "@/types/crashNote";
-import { INSERT_CRASH_NOTE } from "@/queries/notes";
 import { useMutation } from "@/utils/graphql";
 import { useAuth0 } from "@auth0/auth0-react";
 
 interface NotesModalProps {
   show: boolean;
-  onClose: () => void;
-  onSubmitCallback: (data: CrashNote) => void;
-  crashPk?: number;
+  handleCloseModal: () => void;
+  onSubmitCallback: () => void;
+  recordId?: number | string;
+  insertMutation: string;
 }
 
 interface NoteFormInputs {
@@ -20,9 +19,10 @@ interface NoteFormInputs {
 
 export default function NotesModal({
   show,
-  onClose,
+  handleCloseModal,
   onSubmitCallback,
-  crashPk,
+  recordId,
+  insertMutation,
 }: NotesModalProps) {
   const { user } = useAuth0();
   const {
@@ -31,26 +31,24 @@ export default function NotesModal({
     formState: { errors },
     reset,
   } = useForm<NoteFormInputs>();
-  const { mutate, loading: isSubmitting } = useMutation(INSERT_CRASH_NOTE);
+  const { mutate, loading: isSubmitting } = useMutation(insertMutation);
 
   const onSubmit: SubmitHandler<NoteFormInputs> = async (data) => {
     const noteData = {
       ...data,
-      crashPk: crashPk,
+      recordId: recordId,
       userEmail: user?.email,
     };
-    const responseData = await mutate<{
-      insert_crash_notes_one: { returning: CrashNote };
-    }>(noteData);
-    if (responseData && responseData.insert_crash_notes_one) {
-      onSubmitCallback(responseData.insert_crash_notes_one.returning);
+    const responseData = await mutate(noteData);
+    if (!!responseData) {
+      onSubmitCallback();
     }
     reset();
-    onClose();
+    handleCloseModal();
   };
 
   return (
-    <Modal show={show} onHide={onClose}>
+    <Modal show={show} onHide={handleCloseModal}>
       <Form onSubmit={handleSubmit(onSubmit)} id="noteForm">
         <Modal.Header closeButton>
           <Modal.Title>Add Note</Modal.Title>
@@ -82,7 +80,7 @@ export default function NotesModal({
           >
             Save note
           </Button>
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={handleCloseModal}>
             Cancel
           </Button>
         </Modal.Footer>

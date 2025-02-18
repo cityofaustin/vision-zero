@@ -14,16 +14,18 @@ import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import CrashNarrativeCard from "@/components/CrashNarrativeCard";
 import DataCard from "@/components/DataCard";
-import CrashNotesCard from "@/components/CrashNotesCard";
+import NotesCard from "@/components/NotesCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
 import ChangeLog from "@/components/ChangeLog";
 import { crashDataCards } from "@/configs/crashDataCard";
+import { crashNotesColumns } from "@/configs/notesColumns";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
 import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
 import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
 import { Crash } from "@/types/crashes";
 import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 import CrashSwapAddressButton from "@/components/CrashSwapAddressButton";
+import { UPDATE_CRASH_NOTE, INSERT_CRASH_NOTE } from "@/queries/crashNotes";
 
 const typename = "crashes";
 
@@ -185,10 +187,13 @@ export default function CrashDetailsPage({
       </Row>
       <Row>
         <Col sm={12} className="mb-3">
-          <CrashNotesCard
+          <NotesCard
             notes={crash.crash_notes || []}
+            notesColumns={crashNotesColumns}
+            updateMutation={UPDATE_CRASH_NOTE}
+            insertMutation={INSERT_CRASH_NOTE}
             onSaveCallback={onSaveCallback}
-            crashPk={crash.id}
+            recordId={crash.id}
             refetch={refetch}
           />
         </Col>
