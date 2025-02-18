@@ -35,7 +35,7 @@ def get_emails_todo(source, subdir="inbox"):
         subdir (str, optional): The S3 bucket subdirectory to check. Defaults to "inbox".
 
     Raises:
-        IOError: If not objects are found in the bucket subdirectory
+        IOError: If no objects are found in the bucket subdirectory
 
     Returns:
         List: List of S3 object keys, sorted oldest to newest by modified date
@@ -118,7 +118,7 @@ def lower_case_keys(data):
 
 
 def set_empty_strings_to_none(data):
-    """Traverse every row property and set '' to None"""
+    """Traverse every row property and set '', '-', and 'None' to None"""
     for row in data:
         for key, val in row.items():
             if val == "" or val == "None" or val == "-":
