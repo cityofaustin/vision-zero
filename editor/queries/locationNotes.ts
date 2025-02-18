@@ -29,13 +29,3 @@ export const UPDATE_LOCATION_NOTE = gql`
     }
   }
 `;
-
-export const SOFT_DELETE_LOCATION_NOTE = gql`
-  mutation SoftDeleteLocationNote($id: Int!) {
-    update_location_notes(where: { id: { _eq: $id } }, _set: {is_deleted: true}) {
-      returning {
-        id
-      }
-    }
-  }
-`;
