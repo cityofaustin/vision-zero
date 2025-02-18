@@ -28,6 +28,18 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
 def get_emails_todo(source, subdir="inbox"):
+    """Get a list of S3 object keys of the email messages in the /inbox.
+
+    Args:
+        source (str): The data source: `afd` or `ems`
+        subdir (str, optional): The S3 bucket subdirectory to check. Defaults to "inbox".
+
+    Raises:
+        IOError: If not objects are found in the bucket subdirectory
+
+    Returns:
+        List: List of S3 object keys, sorted oldest to newest by modified date
+    """
     prefix = f"{ENV}/{source}_incidents/{subdir}"
     logging.info(f"Checking for files in: {prefix}")
     response = s3_client.list_objects(
@@ -37,9 +49,9 @@ def get_emails_todo(source, subdir="inbox"):
     emails = []
     for item in response.get("Contents", []):
         key = item.get("Key")
-        last_modified = item.get("LastModified")
         # ignore the subdirectory itself
         if not key.endswith("/"):
+            last_modified = item.get("LastModified")
             emails.append((key, last_modified))
     if not len(emails):
         raise IOError("No emails found in S3 bucket")
@@ -50,6 +62,7 @@ def get_emails_todo(source, subdir="inbox"):
 
 
 def download_email(email_obj_key):
+    """Download an email message from S3"""
     logging.info(f"Downloading: {email_obj_key}")
     file_object = BytesIO()
     s3_client.download_fileobj(BUCKET_NAME, email_obj_key, file_object)
@@ -58,10 +71,11 @@ def download_email(email_obj_key):
 
 
 def get_data_from_email_str(source, email_str):
-    """Parse raw email content and return the attachment as a list of dictionarooes
+    """Parse raw email content and return the attachment as a list of dictionaries
 
     Args:
-        email_str (st): the decoded email string
+        source (str): The data source: `afd` or `ems`
+        email_str (str): the decoded email string
 
     Returns:
         list: list of row dictionaries of the parsed CSV attachment
@@ -112,12 +126,20 @@ def set_empty_strings_to_none(data):
 
 
 def rename_columns(data, cols_to_rename):
+    """Rename columns in a list of row dictionaries.
+
+    Args:
+        data (list): the data to be processed
+        cols_to_rename (dict): a dict in the format { <old-name>: <new-name> }
+    """
     for row in data:
         for source_key, target_key in cols_to_rename.items():
             row[target_key] = row.pop(source_key)
 
 
 def listify_apd_incident_numbers(data):
+    """Parse the apd_incident_numbers str into a list. This is only needed for EMS
+    records"""
     for row in data:
         incident_nums = row["apd_incident_numbers"]
         row["unparsed_apd_incident_numbers"] = incident_nums
@@ -128,8 +150,9 @@ def listify_apd_incident_numbers(data):
 
 
 def listify_ems_incident_numbers(data):
-    """On AFD data source, parse the EMS incident numbers. We are handling incident numbers
-    that look like `1234-5678; 1234-5679`"""
+    """Parse the EMS incident numbers into a list. This is only needed for AFD records.
+
+    We are handling a string that looks like `1234-5678; 1234-5679`"""
     for row in data:
         row["unparsed_ems_incident_number"] = row["ems_incident_numbers"]
         if row["ems_incident_numbers"]:
@@ -142,34 +165,12 @@ def listify_ems_incident_numbers(data):
 def handle_afd_timestamps(data):
     """Handle the AFD timestamp columns. We receive two, both in local time:
     - Inc_Date (renamed to call_date): a datetime string where the time is always 00:00:00
-    - Inc_Time (renamed to call_time): a datetime string
+    - Inc_Time (renamed to call_time): a datetime string with the correct date and time
 
     In the DB, we're targeting:
         - call_date (type: date)
         - call_time (type: time)
         - call_datetime (type: timestamp)
-
-    Why not just use `call_datetime`? Unclear.
-    """
-    for row in data:
-        if row["call_time"]:
-            dt_str, time_str = row["call_time"].split(" ")
-            row["call_datetime"] = row["call_time"]
-            row["call_date"] = dt_str
-            row["call_time"] = time_str
-
-
-def handle_afd_timestamps(data):
-    """Handle the AFD timestamp columns. We receive two, both in local time:
-    - Inc_Date (renamed to call_date): a datetime string where the time is always 00:00:00
-    - Inc_Time (renamed to call_time): a datetime string
-
-    In the DB, we're targeting:
-        - call_date (type: date)
-        - call_time (type: time)
-        - call_datetime (type: timestamp)
-
-    Why not just use `call_datetime`? Unclear.
     """
     for row in data:
         if row["call_time"]:
@@ -185,7 +186,7 @@ def chunks(lst, n):
         yield lst[i : i + n]
 
 
-def main(source):
+def main(*, source, skip_archive):
     logging.info(f"Running incident import for source: {source}")
     emails_todo = get_emails_todo(source)
     logging.info(f"{len(emails_todo)} files to process")
@@ -210,10 +211,10 @@ def main(source):
         for chunk in chunks(data, BATCH_SIZE):
             logging.info(f"Upserting {len(chunk)} rows...")
             make_hasura_request(query=upsert_mutation, variables={"objects": chunk})
-        if False:
+        if not skip_archive:
             archive_email(email_obj_key)
 
 
 if __name__ == "__main__":
     args = get_cli_args()
-    main(args.source)
+    main(source=args.source, skip_archive=args.skip_archive)
