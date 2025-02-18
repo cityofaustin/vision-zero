@@ -21,7 +21,7 @@ export default function DeleteNoteButton<T extends Record<string, unknown>>({
     <PermissionsRequired allowedRoles={allowedDeleteNoteRoles}>
       <Button
         size="sm"
-        variant="outline-danger"
+        variant="secondary"
         disabled={isMutating}
         onClick={async () => {
           if (window.confirm("Are you sure you want to delete this note?")) {
