@@ -14,7 +14,6 @@ interface NotesCardProps<T extends Record<string, unknown>> {
   notes: T[];
   updateMutation: string;
   insertMutation: string;
-  deleteMutation: string;
   notesColumns: ColDataCardDef<T>[];
   recordId: number | string;
   onSaveCallback: () => Promise<void>;
@@ -42,7 +41,6 @@ export default function NotesCard<T extends Record<string, unknown>>({
   notesColumns,
   updateMutation,
   insertMutation,
-  deleteMutation,
   recordId,
   onSaveCallback,
 }: NotesCardProps<T>) {
@@ -57,7 +55,7 @@ export default function NotesCard<T extends Record<string, unknown>>({
         records={notes}
         columns={notesColumns}
         mutation={updateMutation}
-        rowActionMutation={deleteMutation}
+        rowActionMutation={updateMutation}
         isValidating={isValidating}
         title="Notes"
         onSaveCallback={onSaveCallback}
