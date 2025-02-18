@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/ python
 import csv
 import email
 from io import BytesIO, TextIOWrapper
@@ -16,7 +16,7 @@ from utils.queries import MUTATIONS
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 BUCKET_NAME = os.getenv("BUCKET_NAME")
-ENV = os.getenv("ENV")
+BUCKET_ENV = os.getenv("BUCKET_ENV")
 
 BATCH_SIZE = 1000
 
@@ -40,7 +40,7 @@ def get_emails_todo(source, subdir="inbox"):
     Returns:
         List: List of S3 object keys, sorted oldest to newest by modified date
     """
-    prefix = f"{ENV}/{source}_incidents/{subdir}"
+    prefix = f"{BUCKET_ENV}/{source}_incidents/{subdir}"
     logging.info(f"Checking for files in: {prefix}")
     response = s3_client.list_objects(
         Bucket=BUCKET_NAME,
