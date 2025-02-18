@@ -1,0 +1,3 @@
+table:
+  name: afd__incidents
+  schema: public

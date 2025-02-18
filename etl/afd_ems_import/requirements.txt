@@ -1,7 +1,4 @@
-onepasswordconnectsdk==1.*
-psycopg2-binary==2.*
 boto3==1.*
-sshtunnel==0.*
-openpyxl==3.*
-numpy==1.*
+openpyxl
 pandas==2.*
+requests==2.*
