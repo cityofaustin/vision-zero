@@ -7,87 +7,73 @@ insert_permissions:
       check: {}
       columns:
         - created_by
-        - date
         - is_deleted
         - location_id
         - text
         - updated_by
-        - user_email
   - role: vz-admin
     permission:
       check: {}
       columns:
         - created_by
-        - date
         - is_deleted
         - location_id
         - text
         - updated_by
-        - user_email
 select_permissions:
   - role: editor
     permission:
       columns:
-        - created_at
-        - created_by
-        - date
-        - id
         - is_deleted
+        - id
+        - created_by
         - location_id
         - text
-        - updated_at
         - updated_by
-        - user_email
+        - created_at
+        - updated_at
       filter: {}
   - role: readonly
     permission:
       columns:
-        - created_at
-        - created_by
-        - date
-        - id
         - is_deleted
+        - id
+        - created_by
         - location_id
         - text
-        - updated_at
         - updated_by
-        - user_email
+        - created_at
+        - updated_at
       filter: {}
   - role: vz-admin
     permission:
       columns:
-        - created_at
-        - created_by
-        - date
-        - id
         - is_deleted
+        - id
+        - created_by
         - location_id
         - text
-        - updated_at
         - updated_by
-        - user_email
+        - created_at
+        - updated_at
       filter: {}
 update_permissions:
   - role: editor
     permission:
       columns:
-        - date
         - is_deleted
         - location_id
         - text
         - updated_by
-        - user_email
       filter: {}
       check: null
   - role: vz-admin
     permission:
       columns:
-        - date
         - is_deleted
         - location_id
         - text
         - updated_by
-        - user_email
       filter: {}
       check: null
 delete_permissions:
