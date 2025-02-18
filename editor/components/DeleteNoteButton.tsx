@@ -5,10 +5,10 @@ import { FaTrashCan } from "react-icons/fa6";
 import { HeaderActionComponentProps } from "@/components/DataCard";
 import PermissionsRequired from "@/components/PermissionsRequired";
 
-const allowedDeleteCrashNoteRoles = ["vz-admin", "editor"];
+const allowedDeleteNoteRoles = ["vz-admin", "editor"];
 
 /**
- * Button which enables a crash note to be deleted
+ * Button which enables a note to be deleted
  */
 export default function DeleteNoteButton<T extends Record<string, unknown>>({
   record,
@@ -18,16 +18,20 @@ export default function DeleteNoteButton<T extends Record<string, unknown>>({
   const { mutate, loading: isMutating } = useMutation(mutation);
 
   return (
-    <PermissionsRequired allowedRoles={allowedDeleteCrashNoteRoles}>
+    <PermissionsRequired allowedRoles={allowedDeleteNoteRoles}>
       <Button
         size="sm"
         variant="outline-danger"
         disabled={isMutating}
         onClick={async () => {
           if (window.confirm("Are you sure you want to delete this note?")) {
-            await mutate({
+            const variables = {
               id: record.id,
-            });
+              updates: {
+                is_deleted: true,
+              },
+            };
+            await mutate(variables);
             await onSaveCallback();
           }
         }}
