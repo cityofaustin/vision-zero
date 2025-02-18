@@ -21,7 +21,6 @@ import NotesCard from "@/components/NotesCard";
 import {
   INSERT_LOCATION_NOTE,
   UPDATE_LOCATION_NOTE,
-  SOFT_DELETE_LOCATION_NOTE,
 } from "@/queries/locationNotes";
 
 const typename = "atd_txdot_locations";
@@ -106,7 +105,6 @@ export default function LocationDetailsPage({
             notesColumns={locationNotesColumns}
             updateMutation={UPDATE_LOCATION_NOTE}
             insertMutation={INSERT_LOCATION_NOTE}
-            deleteMutation={SOFT_DELETE_LOCATION_NOTE}
             onSaveCallback={onSaveCallback}
             recordId={location.location_id}
             refetch={refetch}

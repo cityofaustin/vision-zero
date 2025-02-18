@@ -25,11 +25,7 @@ import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
 import { Crash } from "@/types/crashes";
 import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 import CrashSwapAddressButton from "@/components/CrashSwapAddressButton";
-import {
-  UPDATE_CRASH_NOTE,
-  INSERT_CRASH_NOTE,
-  SOFT_DELETE_CRASH_NOTE,
-} from "@/queries/crashNotes";
+import { UPDATE_CRASH_NOTE, INSERT_CRASH_NOTE } from "@/queries/crashNotes";
 
 const typename = "crashes";
 
@@ -195,7 +191,6 @@ export default function CrashDetailsPage({
             notes={crash.crash_notes || []}
             notesColumns={crashNotesColumns}
             updateMutation={UPDATE_CRASH_NOTE}
-            deleteMutation={SOFT_DELETE_CRASH_NOTE}
             insertMutation={INSERT_CRASH_NOTE}
             onSaveCallback={onSaveCallback}
             recordId={crash.id}
