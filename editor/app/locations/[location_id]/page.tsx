@@ -99,20 +99,7 @@ export default function LocationDetailsPage({
         </Col>
       </Row>
       <Row>
-        <Col sm={12} className="mb-3">
-          <NotesCard
-            notes={location.location_notes || []}
-            notesColumns={locationNotesColumns}
-            updateMutation={UPDATE_LOCATION_NOTE}
-            insertMutation={INSERT_LOCATION_NOTE}
-            onSaveCallback={onSaveCallback}
-            recordId={location.location_id}
-            refetch={refetch}
-          />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
+        <Col className="mb-3">
           <Card>
             <Card.Header>
               <Card.Title>Crashes</Card.Title>
@@ -138,6 +125,19 @@ export default function LocationDetailsPage({
               />
             </Card.Body>
           </Card>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12}>
+          <NotesCard
+            notes={location.location_notes || []}
+            notesColumns={locationNotesColumns}
+            updateMutation={UPDATE_LOCATION_NOTE}
+            insertMutation={INSERT_LOCATION_NOTE}
+            onSaveCallback={onSaveCallback}
+            recordId={location.location_id}
+            refetch={refetch}
+          />
         </Col>
       </Row>
     </>
