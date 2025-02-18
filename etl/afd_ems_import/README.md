@@ -8,7 +8,9 @@ A single script, `incident_import.py`, is equipped to handle both data sources, 
 
 ![diagram](docs/diagram.png)
 
-Both data sources are are delivered to an AWS S3 bucket via a Simple Email Service configuration, and are received in `s3://atd-vision-zero/<source>/inbox`. When the script runs, it processes each file in the `/inbox` and moves the processed file to the `/archived` directory upon completion.
+Both data sources are delivered to an AWS S3 bucket via a Simple Email Service configuration, and are received in `s3://atd-vision-zero/<env>/<source>_incidents/inbox`.
+
+ When the script runs, it processes each file in the `/inbox` and moves the processed file to the `/archived` directory upon completion.
 
 See [this gitbook page](https://app.gitbook.com/o/-LzDQOVGhTudbKRDGpUA/s/-M4Ve3sp7qA5cPXha0B4/external-data-sources) for more details about the email report delivery and contact info for the report admins.
 
