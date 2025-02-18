@@ -1,6 +1,6 @@
-ENV=dev
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-BUCKET_NAME=
-HASURA_GRAPHQL_ENDPOINT==http://host.docker.internal:8084/v1/graphql
-ADMIN_SECRET=
+BUCKET_ENV=dev
+AWS_ACCESS_KEY_ID=<Vision Zero CRIS Import item in 1pass>
+AWS_SECRET_ACCESS_KEY=<Vision Zero CRIS Import item in 1pass>
+BUCKET_NAME=<Vision Zero CRIS Import item in 1pass>
+HASURA_GRAPHQL_ENDPOINT=http://host.docker.internal:8084/v1/graphql
+ADMIN_SECRET=<not needed locally - see Vision Zero CRIS Import item in 1pass>
