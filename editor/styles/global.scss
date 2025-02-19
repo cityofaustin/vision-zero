@@ -26,6 +26,15 @@ $dark: $night;
   filter: sepia(10%) contrast(130%);
 }
 
+/* dark mode overrides */
+[data-bs-theme="dark"] .app-brand-img {
+  filter: invert(100%);
+}
+
+[data-bs-theme="dark"] .app-navbar {
+  background-color: #212529 !important;
+}
+
 .app-sidebar {
   transition: width 0.2s ease-out;
   overflow-x: hidden;
@@ -126,7 +135,7 @@ to make sure it renders on top is a common fix */
 }
 
 .accordion-button {
-  background-color: $white !important;
+  background-color: none !important;
 }
 
 .accordion-button:hover {
