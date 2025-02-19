@@ -37,6 +37,12 @@ const notesColumns: ColDataCardDef<CrashNote>[] = [
     label: "Note",
     editable: true,
     inputType: "textarea",
+    inputOptions: {
+      required: {
+        value: true,
+        message: "Note is required",
+      },
+    },
     style: { minWidth: "350px" },
   },
 ];
