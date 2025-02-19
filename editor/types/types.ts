@@ -79,5 +79,9 @@ export interface MutationVariables extends Variables {
 }
 
 export interface FormValues {
+  // Represents the structure of form data, specifically for forms that
+  // require a single string value. This interface can be used with
+  // form libraries like react-hook-form to ensure type safety and
+  // consistency when handling form submissions.
   value: string;
 }
