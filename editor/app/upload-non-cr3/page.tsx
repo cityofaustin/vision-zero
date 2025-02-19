@@ -97,7 +97,7 @@ export default function UploadNonCr3() {
 
   return (
     <>
-      <Card>
+      <Card className="mt-3">
         <Card.Header className="fs-3 fw-bold">
           Upload Non-CR3 records
         </Card.Header>
