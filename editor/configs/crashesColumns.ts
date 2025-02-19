@@ -1,7 +1,6 @@
 import { ColDataCardDef } from "@/types/types";
 import { Crash } from "@/types/crashes";
 import { formatDateTime } from "@/utils/formatters";
-import { commonValidations } from "@/utils/formHelpers";
 
 export const crashesColumns = {
   active_school_zone_fl: {
