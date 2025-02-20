@@ -31,8 +31,13 @@ $dark: $night;
   filter: invert(100%);
 }
 
-[data-bs-theme="dark"] .app-navbar {
+[data-bs-theme="dark"] .app-navbar,
+.crash-injury-indicator {
   background-color: #212529 !important;
+}
+
+[data-bs-theme="light"] .crash-injury-indicator {
+  background-color: $light !important;
 }
 
 .app-sidebar {
