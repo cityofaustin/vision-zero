@@ -23,10 +23,10 @@ export default function DashboardLinkCard({
     <a href={href} style={{ textDecoration: "none" }}>
       <Card className="my-2 dashboard-link-card">
         <CardBody className="d-flex">
-          <div className="d-flex align-items-center me-4 py-3 px-3 bg-dark rounded fs-3 fw-bold text-white">
+          <div className="d-flex align-items-center me-4 py-3 px-3 bg-dark rounded fs-3 fw-bold text-white border">
             <Icon />
           </div>
-          <div className="d-flex flex-column text-dark">
+          <div className="d-flex flex-column">
             <span className="fs-5 fw-bold">{title}</span>
             <span className="">{description}</span>
           </div>
