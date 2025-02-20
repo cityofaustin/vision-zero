@@ -24,6 +24,7 @@ import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
 import { Crash } from "@/types/crashes";
 import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 import CrashSwapAddressButton from "@/components/CrashSwapAddressButton";
+import { useKeyboardShortcut } from "@/utils/shortcuts";
 
 const typename = "crashes";
 
@@ -33,6 +34,14 @@ export default function CrashDetailsPage({
   params: { record_locator: string };
 }) {
   const recordLocator = params.record_locator;
+
+  // Handles scrolling down to element on key press
+  const onKeyPress = (event: KeyboardEvent) => {
+    const element = document.getElementById(String(event.key));
+    element?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useKeyboardShortcut(["A", "U", "P"], onKeyPress);
 
   const { data, error, refetch, isValidating } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
@@ -124,7 +133,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row>
+      <Row id="A">
         <Col sm={12} md={6} lg={4} className="mb-3">
           <DataCard<Crash>
             record={crash}
@@ -147,7 +156,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row>
+      <Row id="U">
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
             records={crash.units || []}
@@ -159,7 +168,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row>
+      <Row id="P">
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
             records={crash.people_list_view || []}
