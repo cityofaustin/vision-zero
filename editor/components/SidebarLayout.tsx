@@ -42,10 +42,12 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
     const collapsedFromStorage =
       localStorage.getItem(localStorageKey) === "true";
     setIsCollapsed(collapsedFromStorage);
-    const isDarkMode = localStorage.getItem(darkModelocalStorageKey) === "true";
-    if (isDarkMode) {
-      document.documentElement.setAttribute("data-bs-theme", "dark");
-    }
+    const isDarkMode = localStorage.getItem(darkModelocalStorageKey) === "dark";
+
+    document.documentElement.setAttribute(
+      "data-bs-theme",
+      isDarkMode ? "dark" : "light"
+    );
   }, []);
 
   if (isLoading) {

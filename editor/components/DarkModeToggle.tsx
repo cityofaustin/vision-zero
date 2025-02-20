@@ -9,25 +9,21 @@ export const darkModelocalStorageKey = "userDarkModeSetting";
  * Dropdown item with a switch that enables dark mode
  */
 export default function DarkModeToggle() {
-  const [isDarkMode, setIsDarkMode] = useState(
-    localStorage.getItem(darkModelocalStorageKey) === "true"
+  const [appColorMode, setAppColorMode] = useState<"dark" | "light">(
+    localStorage.getItem(darkModelocalStorageKey) === "dark" ? "dark" : "light"
   );
 
   useEffect(() => {
     const htmlElement = document.documentElement;
-    if (isDarkMode) {
-      htmlElement.setAttribute("data-bs-theme", "dark");
-    } else {
-      htmlElement.removeAttribute("data-bs-theme");
-    }
-    localStorage.setItem(darkModelocalStorageKey, String(isDarkMode));
-  }, [isDarkMode]);
+    htmlElement.setAttribute("data-bs-theme", appColorMode);
+    localStorage.setItem(darkModelocalStorageKey, appColorMode);
+  }, [appColorMode]);
 
   return (
     <Dropdown.Item
       className="d-flex align-items-center"
       onClick={(e) => {
-        setIsDarkMode(!isDarkMode);
+        setAppColorMode(appColorMode === "dark" ? "light" : "dark");
         e.preventDefault();
         e.stopPropagation();
       }}
@@ -38,7 +34,7 @@ export default function DarkModeToggle() {
         style={{ pointerEvents: "none" }}
         type="switch"
         label=""
-        checked={isDarkMode}
+        checked={appColorMode === "dark"}
         className="my-auto"
       />
     </Dropdown.Item>
