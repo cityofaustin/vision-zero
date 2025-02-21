@@ -6,7 +6,7 @@ import { useCallback, useLayoutEffect, useRef, useEffect } from "react";
 export const useKeyboardShortcut = (
   // Array of keys that should trigger the callback
   keys: string[],
-  // Callback that handles what should happen when the keys are pressed
+  // Callback that handles what happens when the keys are pressed
   callback: (event: KeyboardEvent) => void
 ) => {
   const callbackRef = useRef(callback);
