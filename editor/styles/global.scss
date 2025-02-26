@@ -40,6 +40,10 @@ $dark: $night;
   background-color: $light !important;
 }
 
+[data-bs-theme="dark"] .react-datepicker__calendar-icon {
+  fill: $light;
+}
+
 .app-sidebar {
   transition: width 0.2s ease-out;
   overflow-x: hidden;
@@ -100,13 +104,6 @@ $dark: $night;
 .special-filter-open {
   /* Adjust to be just above content height */
   max-height: 25rem;
-}
-
-.card {
-  border: 1px solid #e5e7eb !important;
-  box-shadow:
-    1px 1px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px -1px rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
