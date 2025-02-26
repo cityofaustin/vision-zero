@@ -44,6 +44,15 @@ $dark: $night;
   fill: $light;
 }
 
+[data-bs-theme="light"] .app-footer {
+  background-color: $light;
+  color: $secondary;
+}
+
+[data-bs-theme="dark"] .app-footer {
+  border: none !important;
+}
+
 .app-sidebar {
   transition: width 0.2s ease-out;
   overflow-x: hidden;
