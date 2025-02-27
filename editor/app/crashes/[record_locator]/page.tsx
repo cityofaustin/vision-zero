@@ -28,6 +28,22 @@ import { useKeyboardShortcut } from "@/utils/shortcuts";
 
 const typename = "crashes";
 
+// Lookup object that maps key shortcuts to the associated DOM element id to scroll to
+const shortcutKeyLookup = {
+  A: "address",
+  U: "units",
+  P: "people",
+};
+
+// Handles scrolling down to element on key press
+const onKeyPress = (event: KeyboardEvent) => {
+  const shortcutKey = event.key.toUpperCase();
+  const elementId =
+    shortcutKeyLookup[shortcutKey as keyof typeof shortcutKeyLookup];
+  const element = document.getElementById(elementId);
+  element?.scrollIntoView();
+};
+
 export default function CrashDetailsPage({
   params,
 }: {
@@ -35,13 +51,8 @@ export default function CrashDetailsPage({
 }) {
   const recordLocator = params.record_locator;
 
-  // Handles scrolling down to element on key press
-  const onKeyPress = (event: KeyboardEvent) => {
-    const element = document.getElementById(String(event.key));
-    element?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useKeyboardShortcut(["A", "U", "P"], onKeyPress);
+  // Call hook to watch out for the use of keyboard shortcuts
+  useKeyboardShortcut(Object.keys(shortcutKeyLookup), onKeyPress);
 
   const { data, error, refetch, isValidating } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
@@ -133,7 +144,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="A">
+      <Row id="address">
         <Col sm={12} md={6} lg={4} className="mb-3">
           <DataCard<Crash>
             record={crash}
@@ -156,7 +167,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="U">
+      <Row id="units">
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
             records={crash.units || []}
@@ -168,7 +179,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="P">
+      <Row id="people">
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
             records={crash.people_list_view || []}
