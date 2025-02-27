@@ -14,6 +14,7 @@
 - "!include lookups_collsn.yaml"
 - "!include lookups_contrib_factr.yaml"
 - "!include lookups_drvr_ethncty.yaml"
+- "!include lookups_drvr_lic_type.yaml"
 - "!include lookups_e_scooter.yaml"
 - "!include lookups_gndr.yaml"
 - "!include lookups_harm_evnt.yaml"
