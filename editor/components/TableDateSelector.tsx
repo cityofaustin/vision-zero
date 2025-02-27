@@ -64,8 +64,9 @@ export default function TableDateSelector({
           {buttons.map((button) => (
             <Button
               key={button.label}
-              variant="light"
+              variant="outline-primary"
               active={button.value === currentFilter.mode}
+              size="sm"
               onClick={() => {
                 if (button.value === currentFilter.mode) {
                   // nothing todo
