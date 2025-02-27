@@ -35,7 +35,7 @@ export default function TablePaginationControls({
 
   const pageLeftButtonDisabled =
     recordCount === 0 || queryConfig.offset === 0 || isLoading;
-  const pageRightButtonDisabled = recordCount < queryConfig.limit || isLoading;
+  const pageRightButtonDisabled = recordCount <= queryConfig.limit || isLoading;
 
   return (
     <ButtonToolbar>
