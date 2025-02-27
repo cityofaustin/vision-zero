@@ -1,0 +1,11 @@
+delete from lookups.agency where id = 10101;
+insert into lookups.agency (id, label, source) values (10233, 'CITY OF DUNCANVILLE', 'cris');
+insert into lookups.agency (id, label, source) values (10234, 'CITY OF FORNEY', 'cris');
+insert into lookups.agency (id, label, source) values (10235, 'ROBINSON VOLUNTEER FIRE DEPARTMENT', 'cris');
+insert into lookups.agency (id, label, source) values (3365, 'BONHAM ISD POLICE DEPARTMENT', 'cris');
+insert into lookups.agency (id, label, source) values (3366, 'ROUND ROCK ISD POLICE DEPARTMENT', 'cris');
+insert into lookups.agency (id, label, source) values (3367, 'YORKTOWN ISD POLICE DEPARTMENT', 'cris');
+insert into lookups.agency (id, label, source) values (3368, 'HARTS BLUFF ISD POLICE DEPARTMENT', 'cris');
+insert into lookups.agency (id, label, source) values (3369, 'GODLEY ISD POLICE DEPARTMENT', 'cris');
+insert into lookups.agency (id, label, source) values (3370, 'YOAKUM COUNTY SHERIFF''S OFFICE', 'cris');
+insert into lookups.agency (id, label, source) values (3371, 'WASHINGTON COUNTY CONSTABLE''S OFFICE PCT. 1', 'cris');
