@@ -39,6 +39,8 @@ const shortcutKeyLookup = {
 const onKeyPress = (event: KeyboardEvent) => {
   const shortcutKey = event.key.toUpperCase();
   const elementId =
+    // Type assertion to indicate that shortcutKey is not of type string but
+    // is a union type containing the keys of our object shortcutKeyLookup
     shortcutKeyLookup[shortcutKey as keyof typeof shortcutKeyLookup];
   const element = document.getElementById(elementId);
   element?.scrollIntoView();
