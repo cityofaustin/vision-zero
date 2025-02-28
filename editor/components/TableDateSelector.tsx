@@ -99,6 +99,8 @@ export default function TableDateSelector({
             className="form-control"
             onChange={(date) => {
               if (date) {
+                // set the hours to the beginning of the date selected
+                date.setHours(0, 0, 0, 0);
                 setCustomDateRange({
                   start: date,
                   end: customDateRange.end,
@@ -117,6 +119,8 @@ export default function TableDateSelector({
             className="form-control"
             onChange={(date) => {
               if (date) {
+                // set the hours to the end of the date selected
+                date.setHours(23, 59, 59, 999);
                 setCustomDateRange({
                   start: customDateRange.start,
                   end: date,

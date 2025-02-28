@@ -76,11 +76,11 @@ export const LocationMap = ({
     >
       <FullscreenControl position="top-left" />
       <NavigationControl position="top-left" showCompass={false} />
+      {/* add nearmap raster source and style */}
+      <MapAerialSourceAndLayer />
       <Source type="geojson" data={polygonFeature} id="location-polygon">
         <Layer {...polygonLayer} />
       </Source>
-      {/* add nearmap raster source and style */}
-      <MapAerialSourceAndLayer />
     </MapGL>
   );
 };

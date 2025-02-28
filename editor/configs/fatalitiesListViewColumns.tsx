@@ -67,7 +67,7 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
   {
     path: "recommendation.rec_text",
     label: "FRB Recommendation",
-    style: { minWidth: "400px" },
+    style: { minWidth: "400px", whiteSpace: "pre-wrap" },
     sortable: true,
   },
   {

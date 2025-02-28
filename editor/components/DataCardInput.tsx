@@ -73,6 +73,7 @@ const DataCardInput = ({
             autoFocus
             size="sm"
             as="textarea"
+            rows={5}
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
           />
