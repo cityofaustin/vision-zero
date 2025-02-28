@@ -55,8 +55,10 @@ $dark: $night;
 
 [data-bs-theme="dark"] .date-preset-button {
   color: $white;
-  border-color: $secondary !important;
-  background-color: inherit !important;
+  // bs border-color
+  border-color: #495057 !important;
+  // bs tertiary background
+  background-color: rgb(42.5, 47.5, 52.5);
   &:hover,
   &:active,
   &:focus,
@@ -67,8 +69,8 @@ $dark: $night;
 }
 
 [data-bs-theme="light"] .date-preset-button {
-  border-color: $light !important;
   background-color: $light !important;
+  border-color: $light !important;
   color: #000;
   &:hover,
   &:active,
