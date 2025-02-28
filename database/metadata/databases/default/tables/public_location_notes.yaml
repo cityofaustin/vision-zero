@@ -8,8 +8,9 @@ insert_permissions:
       columns:
         - created_by
         - date
-        - text
+        - is_deleted
         - location_id
+        - text
         - updated_by
         - user_email
   - role: vz-admin
@@ -18,8 +19,9 @@ insert_permissions:
       columns:
         - created_by
         - date
-        - text
+        - is_deleted
         - location_id
+        - text
         - updated_by
         - user_email
 select_permissions:
@@ -30,6 +32,7 @@ select_permissions:
         - created_by
         - date
         - id
+        - is_deleted
         - location_id
         - text
         - updated_at
@@ -43,6 +46,7 @@ select_permissions:
         - created_by
         - date
         - id
+        - is_deleted
         - location_id
         - text
         - updated_at
@@ -56,6 +60,7 @@ select_permissions:
         - created_by
         - date
         - id
+        - is_deleted
         - location_id
         - text
         - updated_at
@@ -67,6 +72,7 @@ update_permissions:
     permission:
       columns:
         - date
+        - is_deleted
         - location_id
         - text
         - updated_by
@@ -77,6 +83,7 @@ update_permissions:
     permission:
       columns:
         - date
+        - is_deleted
         - location_id
         - text
         - updated_by

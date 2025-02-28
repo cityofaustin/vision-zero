@@ -4,31 +4,34 @@ import AlignedLabel from "@/components/AlignedLabel";
 import { FaTrashCan } from "react-icons/fa6";
 import { HeaderActionComponentProps } from "@/components/DataCard";
 import PermissionsRequired from "@/components/PermissionsRequired";
-import { DELETE_CRASH_NOTE } from "@/queries/notes";
 
-const allowedDeleteCrashNoteRoles = ["vz-admin", "editor"];
+const allowedDeleteNoteRoles = ["vz-admin", "editor"];
 
 /**
- * Button which enables a crash note to be deleted
+ * Button which enables a note to be deleted
  */
-export default function CrashDeleteNoteButton<
-  T extends Record<string, unknown>,
->({ record, onSaveCallback }: HeaderActionComponentProps<T>) {
-  // todo: soft-delete crash notes
-  // https://github.com/cityofaustin/atd-data-tech/issues/19046
-  const { mutate, loading: isMutating } = useMutation(DELETE_CRASH_NOTE);
+export default function DeleteNoteButton<T extends Record<string, unknown>>({
+  record,
+  mutation,
+  onSaveCallback,
+}: HeaderActionComponentProps<T>) {
+  const { mutate, loading: isMutating } = useMutation(mutation);
 
   return (
-    <PermissionsRequired allowedRoles={allowedDeleteCrashNoteRoles}>
+    <PermissionsRequired allowedRoles={allowedDeleteNoteRoles}>
       <Button
         size="sm"
         variant="secondary"
         disabled={isMutating}
         onClick={async () => {
           if (window.confirm("Are you sure you want to delete this note?")) {
-            await mutate({
+            const variables = {
               id: record.id,
-            });
+              updates: {
+                is_deleted: true,
+              },
+            };
+            await mutate(variables);
             await onSaveCallback();
           }
         }}
