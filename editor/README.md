@@ -18,7 +18,7 @@ The Vision Zero Editor (VZE) enables City of Austin staff to view and edit traff
 nvm use
 ```
 
-3. Install required package
+3. Install required packages
 
 ```shell
 npm install

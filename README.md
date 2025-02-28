@@ -22,7 +22,7 @@ This repository also holds integration scripts for consuming crash data from ext
 
 You need access to the production VZ database in order to develop locally. There is currently no option to run the Vision Zero stack based on seed data.
 
-The helper script, `vision-zero`, makes it easy to spin up your local Vision Zero stack. See the [local development docs](docs/local_dev.md) for more details.
+The helper script, `vision-zero`, makes it easy to spin up the database and API. See the [local development docs](docs/local_dev.md) for more details.
 
 1. Create a new Python environment and install the packages in [requirements.txt](requirements.txt).
 
