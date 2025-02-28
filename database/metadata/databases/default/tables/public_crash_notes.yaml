@@ -12,88 +12,74 @@ insert_permissions:
       columns:
         - crash_pk
         - created_by
-        - date
         - is_deleted
         - text
         - updated_by
-        - user_email
   - role: vz-admin
     permission:
       check: {}
       columns:
         - crash_pk
         - created_by
-        - date
         - is_deleted
         - text
         - updated_by
-        - user_email
 select_permissions:
   - role: editor
     permission:
       columns:
-        - crash_pk
-        - created_at
-        - created_by
-        - date
-        - id
         - is_deleted
+        - crash_pk
+        - id
+        - created_by
         - text
-        - updated_at
         - updated_by
-        - user_email
+        - created_at
+        - updated_at
       filter: {}
   - role: readonly
     permission:
       columns:
-        - crash_pk
-        - created_at
-        - created_by
-        - date
-        - id
         - is_deleted
+        - crash_pk
+        - id
+        - created_by
         - text
-        - updated_at
         - updated_by
-        - user_email
+        - created_at
+        - updated_at
       filter: {}
   - role: vz-admin
     permission:
       columns:
-        - crash_pk
-        - created_at
-        - created_by
-        - date
-        - id
         - is_deleted
+        - crash_pk
+        - id
+        - created_by
         - text
-        - updated_at
         - updated_by
-        - user_email
+        - created_at
+        - updated_at
       filter: {}
 update_permissions:
   - role: editor
     permission:
       columns:
         - crash_pk
-        - date
         - is_deleted
         - text
         - updated_by
-        - user_email
       filter: {}
-      check: null
+      check: {}
   - role: vz-admin
     permission:
       columns:
         - crash_pk
-        - date
         - is_deleted
         - text
         - updated_by
-        - user_email
       filter: {}
-      check: null
+      check: {}
 delete_permissions:
   - role: editor
     permission:
