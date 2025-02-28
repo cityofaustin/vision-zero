@@ -1,3 +1,6 @@
+-- use replica mode to disable triggers
+set session_replication_role = replica;
+
 -- removing unused columns and setting audit fields to not nullable
 
 update crash_notes set created_by = updated_by where created_by is null;

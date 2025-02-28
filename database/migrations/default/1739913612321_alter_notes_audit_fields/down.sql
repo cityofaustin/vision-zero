@@ -1,3 +1,6 @@
+-- use replica mode to disable triggers
+set session_replication_role = replica;
+
 alter table crash_notes
     add column date timestamp with time zone DEFAULT now(),
     add column user_email text,
