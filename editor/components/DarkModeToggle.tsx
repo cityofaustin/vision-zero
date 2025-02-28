@@ -36,6 +36,7 @@ export default function DarkModeToggle() {
         label=""
         checked={appColorMode === "dark"}
         className="my-auto"
+        readOnly
       />
     </Dropdown.Item>
   );
