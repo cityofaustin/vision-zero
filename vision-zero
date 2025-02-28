@@ -24,6 +24,7 @@ TABLES_TO_IGNORE = [
     "public.change_log_people_cris",
     "public.change_log_people",
     "public.change_log_units",
+    "public.location_crashes_view",
 ]
 
 
@@ -78,16 +79,6 @@ def doCommand(args):
         cr3UserApiDown(args)
     elif args.command == "hasura-console":
         hasuraConsole(args)
-    elif args.command == "vze-up":
-        dbUp(args)
-        graphqlEngineUp(args)
-        vzeUp(args)
-    elif args.command == "vze-down":
-        vzeDown(args)
-    elif args.command == "vzv-up":
-        vzvUp(args)
-    elif args.command == "vzv-down":
-        vzvDown(args)
     elif args.command == "psql":
         psql(args)
     elif args.command == "tools-shell":
@@ -375,7 +366,9 @@ def cr3UserApiDown(args):
 def hasuraConsole(args):
     print("🚀  Opening Hasura console")
     try:
-        subprocess.call(["hasura", "console", "--console-port", "9696"], cwd="./database")
+        subprocess.call(
+            ["hasura", "console", "--console-port", "9696"], cwd="./database"
+        )
     except KeyboardInterrupt:
         print("Exited Hasura console")
 
@@ -389,64 +382,6 @@ def graphqlEngineDown(args):
             "docker-compose.yml",
             "stop",
             "graphql-engine",
-        ]
-    )
-    subprocess.run(["docker", "ps"])
-
-
-def vzeUp(args):
-    print("📝  Starting Vision Zero Editor")
-    subprocess.run(
-        docker_compose_invocation
-        + [
-            "-f",
-            "docker-compose.yml",
-            "up",
-            "-d",
-            "vze",
-        ]
-    )
-    subprocess.run(["docker", "ps"])
-
-
-def vzeDown(args):
-    print("📝  Stopping Vision Zero Editor")
-    subprocess.run(
-        docker_compose_invocation
-        + [
-            "-f",
-            "docker-compose.yml",
-            "stop",
-            "vze",
-        ]
-    )
-    subprocess.run(["docker", "ps"])
-
-
-def vzvUp(args):
-    print("👀 Starting Vision Zero Viewer")
-    subprocess.run(
-        docker_compose_invocation
-        + [
-            "-f",
-            "docker-compose.yml",
-            "up",
-            "-d",
-            "vzv",
-        ]
-    )
-    subprocess.run(["docker", "ps"])
-
-
-def vzvDown(args):
-    print("👀 Stopping Vision Zero Viewer")
-    subprocess.run(
-        docker_compose_invocation
-        + [
-            "-f",
-            "docker-compose.yml",
-            "stop",
-            "vzv",
         ]
     )
     subprocess.run(["docker", "ps"])
@@ -501,10 +436,6 @@ def get_main_parser():
             "api-down",
             "graphql-engine-up",
             "graphql-engine-down",
-            "vze-up",
-            "vze-down",
-            "vzv-up",
-            "vzv-down",
             "stop",
             "psql",
             "tools-shell",

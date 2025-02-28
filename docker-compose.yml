@@ -13,27 +13,6 @@ services:
     depends_on:
       - postgis
 
-  vze:
-    tty: true
-    container_name: visionzero-vze
-    command: npm start
-    ports:
-      - 3002:3000
-    hostname: vze
-    build: editor
-    volumes:
-      - ./editor:/root/editor
-  vzv:
-    tty: true
-    container_name: visionzero-vzv
-    command: npm start
-    ports:
-      - 3001:3000
-    hostname: vzv
-    build: viewer
-    volumes:
-      - ./viewer:/root/viewer
-
   postgis:
     build: database
     env_file:
@@ -42,6 +21,11 @@ services:
       - ./database/snapshots:/snapshots
     ports:
       - 5431:5432
+    command: postgres 
+      -c 'maintenance_work_mem=2GB'
+      -c 'max_wal_size=4GB'
+      -c 'shared_buffers=1GB'
+      -c 'work_mem=32MB'
 
   cr3-user-api:
     build: api
