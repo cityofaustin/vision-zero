@@ -63,8 +63,8 @@ export default function TableDateSelector({
         <ButtonGroup className="me-2" aria-label="Date filter preset buttons">
           {buttons.map((button) => (
             <Button
+              className="date-preset-button"
               key={button.label}
-              variant="outline-primary"
               active={button.value === currentFilter.mode}
               size="sm"
               onClick={() => {

@@ -53,6 +53,32 @@ $dark: $night;
   border: none !important;
 }
 
+[data-bs-theme="dark"] .date-preset-button {
+  color: $white;
+  border-color: $secondary !important;
+  background-color: inherit !important;
+  &:hover,
+  &:active,
+  &:focus,
+  &.active {
+    background-color: $secondary !important;
+    border-color: $secondary !important;
+  }
+}
+
+[data-bs-theme="light"] .date-preset-button {
+  border-color: $light !important;
+  background-color: $light !important;
+  color: #000;
+  &:hover,
+  &:active,
+  &:focus,
+  &.active {
+    background-color: $secondary !important;
+    border-color: $secondary !important;
+  }
+}
+
 .app-sidebar {
   transition: width 0.2s ease-out;
   overflow-x: hidden;
