@@ -25,15 +25,9 @@ export const getRolesArray = (user: CustomUser | undefined) =>
  */
 export const getHasuraRoleName = (roles?: string[]): string => {
   if (!roles) {
+    // this would be there result of a malformed/corrupted user account -
+    // check this user's raw JSON in the Auth0 user database
     return "";
-  } else if (roles.includes("vz-admin")) {
-    // todo
-    // If user has more than one role, it is because they have `itSupervisor` and `vz-admin`
-    // `vz-admin` is the Hasura role name, `itSupervisor` is a legacy role that was previously
-    // used to enable a user to create and edit other admins. this app will do away with
-    // that behavior: any admin can create and modify other admins. A follow-up task is
-    // to clean up the Auth0 user database that references `itSupervisor`
-    return "vz-admin";
   } else {
     return roles[0] || "";
   }
@@ -59,8 +53,6 @@ export const formatRoleName = (role: string): string => {
       return "Editor";
     case "vz-admin":
       return "Admin";
-    case "itSupervisor":
-      return "IT Supervisor";
     default:
       return role;
   }
