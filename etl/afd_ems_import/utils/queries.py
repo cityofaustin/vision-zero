@@ -12,7 +12,7 @@ MUTATIONS = {
         }
     """,
     "afd": """
-        mutation UpsertAfdncidents($objects: [afd__incidents_insert_input!]!) {
+        mutation UpsertAfdIncidents($objects: [afd__incidents_insert_input!]!) {
             insert_afd__incidents(
                 objects: $objects, 
                 on_conflict: {
