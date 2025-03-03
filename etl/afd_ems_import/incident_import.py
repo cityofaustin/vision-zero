@@ -208,6 +208,7 @@ def main(*, source, skip_archive):
         elif source == "afd":
             listify_ems_incident_numbers(data)
             handle_afd_timestamps(data)
+        logging.info(f"{len(data):,} total records to upsert.")
         for chunk in chunks(data, BATCH_SIZE):
             logging.info(f"Upserting {len(chunk)} rows...")
             make_hasura_request(query=upsert_mutation, variables={"objects": chunk})
