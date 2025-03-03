@@ -4,8 +4,6 @@ import Form from "react-bootstrap/Form";
 import { InputType } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
 
-
-
 interface EditableFieldProps {
   /** The initial value to populate the input */
   initialValue: string;
@@ -56,7 +54,7 @@ const EditableField = ({
       value: initialValue,
     },
   });
-  
+
   const onSubmit = async (data: FormValues) => {
     await onSave(data.value);
   };
