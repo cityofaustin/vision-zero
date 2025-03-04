@@ -25,7 +25,7 @@ export const getRolesArray = (user: CustomUser | undefined) =>
  */
 export const getHasuraRoleName = (roles?: string[]): string => {
   if (!roles) {
-    // this would be there result of a malformed/corrupted user account -
+    // this would be the result of a malformed/corrupted user account -
     // check this user's raw JSON in the Auth0 user database
     return "";
   } else {
