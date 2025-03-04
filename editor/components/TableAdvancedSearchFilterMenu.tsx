@@ -50,12 +50,12 @@ export default function TableAdvancedSearchFilterMenu({
   setQueryConfig,
 }: TableSearchProps) {
   return (
-    <Row className="p-2 bg-light">
+    <Row className="p-2">
       {queryConfig.filterCards.map((filterCard) => {
         return (
           <Col key={filterCard.id} xs={12} md={3}>
-            <Card>
-              <Card.Header>{filterCard.label}</Card.Header>
+            <Card className="h-100">
+              <Card.Header className="fw-bold">{filterCard.label}</Card.Header>
               <Card.Body>
                 <Form>
                   {filterCard.filterGroups?.map((switchFilterGroup) => {

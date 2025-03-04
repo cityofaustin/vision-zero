@@ -20,6 +20,12 @@ export const crashNotesColumns: ColDataCardDef<CrashNote>[] = [
     label: "Note",
     editable: true,
     inputType: "textarea",
+    inputOptions: {
+      required: {
+        value: true,
+        message: "Note is required",
+      },
+    },
     style: { minWidth: "350px" },
   },
 ];
@@ -41,6 +47,12 @@ export const locationNotesColumns: ColDataCardDef<LocationNote>[] = [
     label: "Note",
     editable: true,
     inputType: "textarea",
+    inputOptions: {
+      required: {
+        value: true,
+        message: "Note is required",
+      },
+    },
     style: { minWidth: "350px" },
   },
 ];

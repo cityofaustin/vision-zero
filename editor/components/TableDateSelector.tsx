@@ -63,9 +63,10 @@ export default function TableDateSelector({
         <ButtonGroup className="me-2" aria-label="Date filter preset buttons">
           {buttons.map((button) => (
             <Button
+              className="date-preset-button"
               key={button.label}
-              variant="light"
               active={button.value === currentFilter.mode}
+              size="sm"
               onClick={() => {
                 if (button.value === currentFilter.mode) {
                   // nothing todo
@@ -99,6 +100,8 @@ export default function TableDateSelector({
             className="form-control"
             onChange={(date) => {
               if (date) {
+                // set the hours to the beginning of the date selected
+                date.setHours(0, 0, 0, 0);
                 setCustomDateRange({
                   start: date,
                   end: customDateRange.end,
@@ -117,6 +120,8 @@ export default function TableDateSelector({
             className="form-control"
             onChange={(date) => {
               if (date) {
+                // set the hours to the end of the date selected
+                date.setHours(23, 59, 59, 999);
                 setCustomDateRange({
                   start: customDateRange.start,
                   end: date,
