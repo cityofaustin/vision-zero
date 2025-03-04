@@ -45,7 +45,6 @@ export default function NotesCard<T extends Record<string, unknown>>({
   onSaveCallback,
 }: NotesCardProps<T>) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isValidating] = useState(false);
   const handleCloseModal = () => setIsModalOpen(false);
   const handleOpenModal = () => setIsModalOpen(true);
 
@@ -56,7 +55,7 @@ export default function NotesCard<T extends Record<string, unknown>>({
         columns={notesColumns}
         mutation={updateMutation}
         rowActionMutation={updateMutation}
-        isValidating={isValidating}
+        isValidating={false}
         title="Notes"
         onSaveCallback={onSaveCallback}
         headerActionComponent={<AddNoteButton onClick={handleOpenModal} />}
