@@ -12,14 +12,10 @@ import { routes } from "@/configs/routes";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import AppFooter from "@/components/AppFooter";
-import { scrollToTop, useKeyboardShortcut } from "@/utils/shortcuts";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const localStorageKey = "sidebarCollapsed";
-
-// Keyboard shortcut to scroll to top of page
-const shortcutKey = [{ key: "T" }];
 
 /**
  * The app sidebar component
@@ -30,9 +26,6 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
     useAuth0();
   const pathName = usePathname();
   const segments = useSelectedLayoutSegments();
-
-  // Call hook to watch out for the use of keyboard shortcuts
-  useKeyboardShortcut(shortcutKey, scrollToTop);
 
   const toggleSidebar = useCallback(
     () =>
@@ -75,7 +68,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div style={{ overflow: "hidden" }} className="d-flex">
+    <div style={{ height: "100vh", overflow: "hidden" }} className="d-flex">
       {/* Sidebar */}
       <div
         className={`bg-dark app-sidebar app-sidebar-${

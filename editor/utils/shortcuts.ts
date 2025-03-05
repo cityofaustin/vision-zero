@@ -14,7 +14,7 @@ export const useKeyboardShortcut = (
   // Callback that handles what happens when the keys are pressed
   callback: (
     event: KeyboardEvent,
-    shortcutKeyLookup?: ShortcutKeyLookup[]
+    shortcutKeyLookup: ShortcutKeyLookup[]
   ) => void
 ) => {
   const callbackRef = useRef(callback);
@@ -56,7 +56,7 @@ export const useKeyboardShortcut = (
 // Handles scrolling down to element on key press
 export const scrollToElementOnKeyPress = (
   event: KeyboardEvent,
-  shortcutKeyLookup?: ShortcutKeyLookup[]
+  shortcutKeyLookup: ShortcutKeyLookup[]
 ) => {
   const eventKey = event.key.toUpperCase();
   const elementId =
@@ -64,9 +64,4 @@ export const scrollToElementOnKeyPress = (
     shortcutKeyLookup.find((shortcut) => eventKey === shortcut.key)?.elementId;
   const element = document.getElementById(String(elementId));
   element?.scrollIntoView({ behavior: "instant" });
-};
-
-// Handles scrolling to top of page
-export const scrollToTop = () => {
-  window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 };
