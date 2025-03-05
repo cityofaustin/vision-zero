@@ -33,6 +33,9 @@ const shortcutKeyLookup = {
   A: "address",
   U: "units",
   P: "people",
+  C: "charges",
+  N: "notes",
+  F: "fatality",
 };
 
 // Handles scrolling down to element on key press
@@ -193,7 +196,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row>
+      <Row id="charges">
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
             records={crash.charges_cris || []}
@@ -205,7 +208,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row>
+      <Row id="notes">
         <Col sm={12} className="mb-3">
           <CrashNotesCard
             notes={crash.crash_notes || []}
@@ -215,7 +218,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row>
+      <Row id="fatality">
         <Col sm={12} md={6} className="mb-3">
           <CrashRecommendationCard
             recommendation={crash.recommendation}
