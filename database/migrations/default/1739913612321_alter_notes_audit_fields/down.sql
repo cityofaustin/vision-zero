@@ -12,3 +12,6 @@ alter table location_notes
     add column user_email text,
     alter column created_by drop not null,
     alter column updated_by drop not null;
+
+-- reset the session replication role, even though the session is about to end :)
+set session_replication_role = default;
