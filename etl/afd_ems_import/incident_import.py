@@ -1,10 +1,12 @@
 #!/usr/bin/ python
 import csv
+from datetime import datetime
 import email
 from io import BytesIO, TextIOWrapper
 import logging
 import os
 import sys
+from zoneinfo import ZoneInfo
 
 from boto3 import client, resource
 
@@ -180,6 +182,53 @@ def handle_afd_timestamps(data):
             row["call_time"] = time_str
 
 
+def combine_date_time_fields(
+    records,
+    *,
+    date_field_name,
+    time_field_name,
+    output_field_name,
+    tz="America/Chicago",
+):
+    """Combine a date and time field and format as ISO string. The new ISO
+    string is stored in the output_field_name.
+
+    Args:
+        record (list): list of CRIS record dicts
+        date_field_name (str): the name of the attribute which holds the date value
+        time_field_name (str): the name of the attribute which holds the time value
+        output_field_name (str): the name of attribute to which the date-time will be assigned
+        tz (string): The IANA time zone name of the input time value. Defaluts to America/Chicago
+
+    Returns:
+        None: records are updated in-place
+    """
+    tzinfo = ZoneInfo(tz)
+    for record in records:
+        input_date_string = record[date_field_name]
+        input_time_string = record[time_field_name]
+
+        if not input_date_string or not input_time_string:
+            continue
+
+        # parse a date string that looks like '12/22/2023'
+        year, month, day = input_date_string.split("-")
+        hour, minute, second = input_time_string.split(":")
+
+        # create a tz-aware instance of this datetime
+        dt = datetime(
+            int(year),
+            int(month),
+            int(day),
+            hour=int(hour),
+            minute=int(minute),
+            second=int(float(second)),
+            tzinfo=tzinfo,
+        )
+        # save the ISO string with tz offset
+        date_iso = dt.isoformat()
+        record[output_field_name] = date_iso
+
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
@@ -205,6 +254,14 @@ def main(*, source, skip_archive):
         rename_columns(data, COLUMNS[source]["cols_to_rename"])
         if source == "ems":
             listify_apd_incident_numbers(data)
+            combine_date_time_fields(
+                data,
+                date_field_name="incident_date_received",
+                time_field_name="incident_time_received",
+                output_field_name="incident_received_timestamp",
+            )
+            # mvc_form_extrication_datetime
+            breakpoint()
         elif source == "afd":
             listify_ems_incident_numbers(data)
             handle_afd_timestamps(data)
