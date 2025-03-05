@@ -84,6 +84,7 @@ export const useToken = (): string | null => {
         const accessToken = await getAccessTokenSilently();
         setToken(accessToken);
       } catch (err) {
+        console.error("Error getting access token:", err);
         await loginWithRedirect({
           appState: {
             returnTo: BASE_PATH + pathName,
@@ -92,7 +93,7 @@ export const useToken = (): string | null => {
       }
     };
     getToken();
-  }, [getAccessTokenSilently, isAuthenticated, loginWithRedirect]);
+  }, [getAccessTokenSilently, isAuthenticated, loginWithRedirect, pathName]);
 
   return token;
 };
