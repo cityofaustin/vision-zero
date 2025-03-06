@@ -1,50 +1,47 @@
 "use client";
-import { useCallback } from "react";
 import { notFound } from "next/navigation";
-import Row from "react-bootstrap/Row";
+import { useCallback } from "react";
 import Col from "react-bootstrap/Col";
-import CrashMapCard from "@/components/CrashMapCard";
-import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
-import { UPDATE_UNIT } from "@/queries/unit";
-import { UPDATE_PERSON } from "@/queries/person";
-import { useQuery } from "@/utils/graphql";
-import CrashHeader from "@/components/CrashHeader";
-import CrashLocationBanner from "@/components/CrashLocationBanner";
-import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
-import CrashDiagramCard from "@/components/CrashDiagramCard";
-import CrashNarrativeCard from "@/components/CrashNarrativeCard";
-import DataCard from "@/components/DataCard";
-import CrashNotesCard from "@/components/CrashNotesCard";
-import RelatedRecordTable from "@/components/RelatedRecordTable";
+import Row from "react-bootstrap/Row";
+
 import ChangeLog from "@/components/ChangeLog";
-import { crashDataCards } from "@/configs/crashDataCard";
-import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
-import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
-import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
-import { Crash } from "@/types/crashes";
+import CrashDiagramCard from "@/components/CrashDiagramCard";
+import CrashHeader from "@/components/CrashHeader";
+import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
+import CrashLocationBanner from "@/components/CrashLocationBanner";
+import CrashMapCard from "@/components/CrashMapCard";
+import CrashNarrativeCard from "@/components/CrashNarrativeCard";
+import CrashNotesCard from "@/components/CrashNotesCard";
 import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 import CrashSwapAddressButton from "@/components/CrashSwapAddressButton";
-import { useKeyboardShortcut } from "@/utils/shortcuts";
+import DataCard from "@/components/DataCard";
+import RelatedRecordTable from "@/components/RelatedRecordTable";
+import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
+import { crashDataCards } from "@/configs/crashDataCard";
+import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
+import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
+import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
+import { UPDATE_PERSON } from "@/queries/person";
+import { UPDATE_UNIT } from "@/queries/unit";
+import { Crash } from "@/types/crashes";
+import { ShortcutKeyLookup } from "@/types/keyboardShortcuts";
+import { useQuery } from "@/utils/graphql";
+import {
+  scrollToElementOnKeyPress,
+  useKeyboardShortcut,
+} from "@/utils/shortcuts";
 
 const typename = "crashes";
 
 // Lookup object that maps key shortcuts to the associated DOM element id to scroll to
-const shortcutKeyLookup = {
-  A: "address",
-  U: "units",
-  P: "people",
-};
-
-// Handles scrolling down to element on key press
-const onKeyPress = (event: KeyboardEvent) => {
-  const shortcutKey = event.key.toUpperCase();
-  const elementId =
-    // Type assertion to indicate that shortcutKey is not of type string but
-    // is a union type containing the keys of our object shortcutKeyLookup
-    shortcutKeyLookup[shortcutKey as keyof typeof shortcutKeyLookup];
-  const element = document.getElementById(elementId);
-  element?.scrollIntoView();
-};
+const shortcutKeyLookup: ShortcutKeyLookup[] = [
+  { key: "A", elementId: "address" },
+  { key: "U", elementId: "units" },
+  { key: "P", elementId: "people" },
+  { key: "C", elementId: "charges" },
+  { key: "N", elementId: "notes" },
+  { key: "F", elementId: "fatality" },
+];
 
 export default function CrashDetailsPage({
   params,
@@ -54,7 +51,7 @@ export default function CrashDetailsPage({
   const recordLocator = params.record_locator;
 
   // Call hook to watch out for the use of keyboard shortcuts
-  useKeyboardShortcut(Object.keys(shortcutKeyLookup), onKeyPress);
+  useKeyboardShortcut(shortcutKeyLookup, scrollToElementOnKeyPress);
 
   const { data, error, refetch, isValidating } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
@@ -193,7 +190,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row>
+      <Row id="charges">
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
             records={crash.charges_cris || []}
@@ -205,7 +202,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row>
+      <Row id="notes">
         <Col sm={12} className="mb-3">
           <CrashNotesCard
             notes={crash.crash_notes || []}
@@ -215,7 +212,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row>
+      <Row id="fatality">
         <Col sm={12} md={6} className="mb-3">
           <CrashRecommendationCard
             recommendation={crash.recommendation}
