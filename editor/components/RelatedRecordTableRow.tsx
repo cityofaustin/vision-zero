@@ -24,10 +24,14 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
    */
   columns: ColDataCardDef<T>[];
   /**
-   * Graphql mutation that will be exectuted when a row is edited -
-   * will also be passed to the rowActionComponent, if present
+   * Graphql mutation that will be exectuted when a row is edited
    */
   mutation: string;
+
+  /**
+   * Graphql mutation that will be exectuted in the rowActionComponent
+   */
+  rowActionMutation?: string;
   /**
    * If the SWR refetcher is (re)validating
    */
@@ -56,6 +60,7 @@ export default function RelatedRecordTableRow<
   record,
   columns,
   mutation,
+  rowActionMutation,
   isValidating,
   onSaveCallback,
   rowActionComponent: RowActionComponent,
@@ -180,7 +185,7 @@ export default function RelatedRecordTableRow<
           <td className="text-end">
             <RowActionComponent
               record={record}
-              mutation={mutation}
+              mutation={rowActionMutation || ""}
               onSaveCallback={onSaveCallback}
             />
           </td>
