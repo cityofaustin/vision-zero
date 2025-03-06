@@ -24,6 +24,7 @@ import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { UPDATE_PERSON } from "@/queries/person";
 import { UPDATE_UNIT } from "@/queries/unit";
 import { Crash } from "@/types/crashes";
+import { ShortcutKeyLookup } from "@/types/keyboardShortcuts";
 import { useQuery } from "@/utils/graphql";
 import {
   scrollToElementOnKeyPress,
@@ -33,7 +34,7 @@ import {
 const typename = "crashes";
 
 // Lookup object that maps key shortcuts to the associated DOM element id to scroll to
-const shortcutKeyLookup = [
+const shortcutKeyLookup: ShortcutKeyLookup[] = [
   { key: "A", elementId: "address" },
   { key: "U", elementId: "units" },
   { key: "P", elementId: "people" },
