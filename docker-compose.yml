@@ -26,7 +26,6 @@ services:
       -c 'max_wal_size=4GB'
       -c 'shared_buffers=1GB'
       -c 'work_mem=32MB'
-
   cr3-user-api:
     build: api
     # image: atddocker/vz-user-cr3-api
