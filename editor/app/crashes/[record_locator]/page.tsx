@@ -11,6 +11,8 @@ import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
 import CrashLocationBanner from "@/components/CrashLocationBanner";
 import CrashMapCard from "@/components/CrashMapCard";
 import CrashNarrativeCard from "@/components/CrashNarrativeCard";
+import CrashRecommendationCard from "@/components/CrashRecommendationCard";
+import CrashSwapAddressButton from "@/components/CrashSwapAddressButton";
 import DataCard from "@/components/DataCard";
 import NotesCard from "@/components/NotesCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
