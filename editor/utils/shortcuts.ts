@@ -4,14 +4,14 @@ import { ShortcutKeyLookup } from "@/types/keyboardShortcuts";
 /**
  * Custom hook for adding keyboard shortcuts.
  *
- * The shift key must be used in conjunction with the array of keys passed
- * and the focused element can't be an input or text area
+ * The shift key must be used in conjunction with the shortcut keys
+ * and the focused element can't be an input, text area, or select
  * in order to fire the handleKeyPress callback.
+ * @param shortcutKeyLookup - Array of lookup objects mapping keys to their shortcut element ids
+ * @param callback - Callback that handles what happens when the keys are pressed
  */
 export const useKeyboardShortcut = (
-  // Array of keys that should trigger the callback when used alongside the shift key
   shortcutKeyLookup: ShortcutKeyLookup[],
-  // Callback that handles what happens when the keys are pressed
   callback: (
     event: KeyboardEvent,
     shortcutKeyLookup: ShortcutKeyLookup[]
@@ -27,11 +27,11 @@ export const useKeyboardShortcut = (
       const shortcutKeys = shortcutKeyLookup.map((shortcut) => shortcut.key);
       // Type guard to access tagName property, see https://iifx.dev/en/articles/156175355
       if (event.target instanceof Element) {
-        // Don't trigger callback if focused element is an input or textarea
+        // Don't trigger callback if focused element is an input, textarea or select
         if (targetsToDisable.includes(event.target.tagName)) {
           return;
         }
-        // Check if key in shortcutKeys array and used in conjunction with shift key
+        // Check if key is in shortcutKeys array and used in conjunction with shift key
         if (
           shortcutKeys.some(
             (key) =>
@@ -53,11 +53,14 @@ export const useKeyboardShortcut = (
   }, [handleKeyPress]);
 };
 
-// Handles scrolling down to element on key press
+/**
+ * Handles scrolling down to element on key press
+ */
 export const scrollToElementOnKeyPress = (
   event: KeyboardEvent,
   shortcutKeyLookup: ShortcutKeyLookup[]
 ) => {
+  // toUpperCase makes sure the scroll is still triggered when user has caps lock on
   const eventKey = event.key.toUpperCase();
   const elementId =
     shortcutKeyLookup &&
