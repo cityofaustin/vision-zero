@@ -11,15 +11,16 @@ import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
 import CrashLocationBanner from "@/components/CrashLocationBanner";
 import CrashMapCard from "@/components/CrashMapCard";
 import CrashNarrativeCard from "@/components/CrashNarrativeCard";
-import NotesCard from "@/components/NotesCard";
 import DataCard from "@/components/DataCard";
+import NotesCard from "@/components/NotesCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
-import { crashNotesColumns } from "@/configs/notesColumns";
 import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
 import { crashDataCards } from "@/configs/crashDataCard";
+import { crashNotesColumns } from "@/configs/notesColumns";
 import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
 import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
+import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/crashNotes";
 import { UPDATE_PERSON } from "@/queries/person";
 import { UPDATE_UNIT } from "@/queries/unit";
 import { Crash } from "@/types/crashes";
@@ -29,7 +30,6 @@ import {
   scrollToElementOnKeyPress,
   useKeyboardShortcut,
 } from "@/utils/shortcuts";
-import { UPDATE_CRASH_NOTE, INSERT_CRASH_NOTE } from "@/queries/crashNotes";
 
 const typename = "crashes";
 
