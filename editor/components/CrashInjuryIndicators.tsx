@@ -33,11 +33,11 @@ const InjuryBadge = ({
  * Component which renders crash injuries (fatal, serious, etc) in a row
  * with labeled pills
  */
-const CrashInjuryIndicators = ({
+export default function CrashInjuryIndicators({
   injuries,
 }: {
   injuries: CrashInjuryMetric;
-}) => {
+}) {
   return (
     <div className="crash-injury-indicator fs-6 d-flex align-items-center rounded-3 px-3 border">
       <span className="fw-bold me-3">Injuries</span>
@@ -68,6 +68,4 @@ const CrashInjuryIndicators = ({
       />
     </div>
   );
-};
-
-export default CrashInjuryIndicators;
+}
