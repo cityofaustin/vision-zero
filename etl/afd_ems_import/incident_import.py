@@ -1,10 +1,12 @@
 #!/usr/bin/ python
 import csv
+from datetime import datetime
 import email
 from io import BytesIO, TextIOWrapper
 import logging
 import os
 import sys
+from zoneinfo import ZoneInfo
 
 from boto3 import client, resource
 
@@ -137,6 +139,18 @@ def rename_columns(data, cols_to_rename):
             row[target_key] = row.pop(source_key)
 
 
+def delete_columns(data, cols_to_delete):
+    """Delete columns in a list of row dictionaries.
+
+    Args:
+        data (list): the data to be processed
+        cols_to_delete (list): a list of column names to be deleted
+    """
+    for row in data:
+        for col in cols_to_delete:
+            row.pop(col)
+
+
 def listify_apd_incident_numbers(data):
     """Parse the apd_incident_numbers str into a list. This is only needed for EMS
     records"""
@@ -162,22 +176,80 @@ def listify_ems_incident_numbers(data):
             row["ems_incident_numbers"] = None
 
 
-def handle_afd_timestamps(data):
-    """Handle the AFD timestamp columns. We receive two, both in local time:
-    - Inc_Date (renamed to call_date): a datetime string where the time is always 00:00:00
-    - Inc_Time (renamed to call_time): a datetime string with the correct date and time
+def combine_date_time_fields(
+    data,
+    *,
+    date_field_name,
+    time_field_name,
+    output_field_name,
+    tz="America/Chicago",
+):
+    """Combine a date and time field and format as ISO string. The new ISO
+    string is stored in the output_field_name.
 
-    In the DB, we're targeting:
-        - call_date (type: date)
-        - call_time (type: time)
-        - call_datetime (type: timestamp)
+    Args:
+        data (list): list of incident dicts
+        date_field_name (str): the name of the attribute which holds the date value
+        time_field_name (str): the name of the attribute which holds the time value
+        output_field_name (str): the name of attribute to which the date-time will be assigned
+        tz (string): The IANA time zone name of the input time value. Defaluts to America/Chicago
+
+    Returns:
+        None: records are updated in-place
     """
+    tzinfo = ZoneInfo(tz)
     for row in data:
-        if row["call_time"]:
-            dt_str, time_str = row["call_time"].split(" ")
-            row["call_datetime"] = row["call_time"]
-            row["call_date"] = dt_str
-            row["call_time"] = time_str
+        input_date_string = row[date_field_name]
+        input_time_string = row[time_field_name]
+
+        if not input_date_string or not input_time_string:
+            continue
+
+        # parse a date string that looks like '12/22/2023'
+        year, month, day = input_date_string.split("-")
+        hour, minute, second = input_time_string.split(":")
+
+        # create a tz-aware instance of this datetime
+        dt = datetime(
+            int(year),
+            int(month),
+            int(day),
+            hour=int(hour),
+            minute=int(minute),
+            second=int(float(second)),
+            tzinfo=tzinfo,
+        )
+        # save the ISO string with tz offset
+        date_iso = dt.isoformat()
+        row[output_field_name] = date_iso
+
+
+def make_field_timezone_aware(
+    data, date_field_name, date_format="%Y-%m-%d %H:%M:%S", tz="America/Chicago"
+):
+    """Update a field to be timezone aware by replacing the input value with a ISO sting with a
+    tz offset
+
+    Args:
+        data (list): list of incident dicts
+        date_field_name (str): the name of the attribute which holds the date value
+        date_format (str): the format of the input date string, which will be use to parse the string
+            into a datetime object
+        tz (string): The IANA time zone name of the input time value. Defaluts to America/Chicago
+    """
+    tzinfo = ZoneInfo(tz)
+    for row in data:
+        input_date_string = row.get(date_field_name)
+        if not input_date_string:
+            continue
+
+        if "." in input_date_string:
+            # remove microseconds, which crop up on some AFD call datetimes
+            input_date_string = input_date_string.split(".")[0]
+
+        parsed_date = datetime.strptime(input_date_string, date_format)
+        parsed_date_tz = parsed_date.replace(tzinfo=tzinfo)
+        row[date_field_name] = parsed_date_tz.isoformat()
 
 
 def chunks(lst, n):
@@ -205,9 +277,22 @@ def main(*, source, skip_archive):
         rename_columns(data, COLUMNS[source]["cols_to_rename"])
         if source == "ems":
             listify_apd_incident_numbers(data)
+            combine_date_time_fields(
+                data,
+                date_field_name="incident_date_received",
+                time_field_name="incident_time_received",
+                output_field_name="incident_received_datetime",
+            )
+            make_field_timezone_aware(
+                data, date_field_name="mvc_form_extrication_datetime"
+            )
+
         elif source == "afd":
             listify_ems_incident_numbers(data)
-            handle_afd_timestamps(data)
+            make_field_timezone_aware(data, date_field_name="call_datetime")
+
+        delete_columns(data, COLUMNS[source]["cols_to_delete"])
+
         logging.info(f"{len(data):,} total records to upsert.")
         for chunk in chunks(data, BATCH_SIZE):
             logging.info(f"Upserting {len(chunk)} rows...")
