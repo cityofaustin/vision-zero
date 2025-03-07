@@ -31,11 +31,19 @@ alter table ems__incidents rename column mvc_form_extrication_datetime_tz to mvc
 -- drop these two columns which were generated via trigger from mvc_form_extrication_datetime 
 alter table ems__incidents drop column mvc_form_time, drop column mvc_form_date;
 
+-- drop redundant lat/lon columns;
+alter table ems__incidents drop column incident_location_latitude, drop column incident_location_longitude;
+
 -- create new incident_received_datetime column and drop old columns
 alter table ems__incidents add column incident_received_datetime timestamptz;
 update ems__incidents set
     incident_received_datetime = (incident_date_received || ' ' || incident_time_received)::timestamp at time zone 'america/chicago';
 alter table ems__incidents drop column incident_date_received, drop column incident_time_received;
+
+-- add audit fields and updated_at trigger;
+alter table ems__incidents add column created_at timestamptz default now();
+alter table ems__incidents add column updated_at timestamptz default now();
+create trigger set_public_ems__incidents_updated_at before update on public.ems__incidents for each row execute function public.set_current_timestamp_updated_at();
 
 -- create new trigger function
 create or replace function public.ems_incidents_trigger()
@@ -43,7 +51,7 @@ returns trigger
 language plpgsql
 as $function$
 BEGIN
-  NEW.geometry = ST_SetSRID(ST_MakePoint(NEW.incident_location_longitude, NEW.incident_location_latitude), 4326);
+  NEW.geometry = ST_SetSRID(ST_MakePoint(NEW.longitude, NEW.latitude), 4326);
 
   SELECT 
     COALESCE(EXISTS (
@@ -54,12 +62,12 @@ BEGIN
     ), FALSE),
     locations.location_id,
     (NEW.apd_incident_numbers)[1],
-    (NEW.apd_incident_numbers)[2],
+    (NEW.apd_incident_numbers)[2]
   INTO 
     NEW.austin_full_purpose,
     NEW.location_id,
     NEW.apd_incident_number_1,
-    NEW.apd_incident_number_2,
+    NEW.apd_incident_number_2
   FROM (SELECT 1) AS dummy
   LEFT JOIN atd_txdot_locations locations ON (
     locations.location_group = 1 
@@ -79,7 +87,7 @@ execute function public.ems_incidents_trigger();
 
 create trigger ems_incidents_trigger_update before update on
 ems__incidents for each row when (
-    old.incident_location_latitude is distinct from new.incident_location_latitude
-    or old.incident_location_longitude is distinct from new.incident_location_longitude
+    old.latitude is distinct from new.latitude
+    or old.longitude is distinct from new.longitude
     or old.apd_incident_numbers is distinct from new.apd_incident_numbers
 ) execute function ems_incidents_trigger();

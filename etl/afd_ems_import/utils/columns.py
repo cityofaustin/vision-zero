@@ -1,19 +1,21 @@
 COLUMNS = {
     "ems": {
         "cols_to_rename": {
-            "mvc_form_extrication_time": "mvc_form_extrication_datetime"
+            "mvc_form_extrication_time": "mvc_form_extrication_datetime",
+            "incident_location_longitude": "longitude",
+            "incident_location_latitude": "latitude",
         },
+        "cols_to_delete": ["incident_date_received", "incident_time_received"],
         "update_columns": [
             "pcr_key",
-            "incident_date_received",
-            "incident_time_received",
+            "incident_received_datetime",
             "incident_number",
             "incident_location_address",
             "incident_location_city",
             "incident_location_state",
             "incident_location_zip",
-            "incident_location_longitude",
-            "incident_location_latitude",
+            "latitude",
+            "longitude",
             "incident_problem",
             "incident_priority_number",
             "pcr_cause_of_injury",
@@ -48,8 +50,6 @@ COLUMNS = {
             "pcr_patient_acuity_final",
             "unparsed_apd_incident_numbers",
             "apd_incident_numbers",
-            "latitude",
-            "longitude",
         ],
     },
     "afd": {
@@ -58,11 +58,11 @@ COLUMNS = {
             "cad_problem": "problem",
             "calendaryear": "calendar_year",
             "ems_incidentnumber": "ems_incident_numbers",
-            "inc_date": "call_date",
-            "inc_time": "call_time",
+            "inc_time": "call_datetime",
             "x": "longitude",
-            "y": "latitude"
+            "y": "latitude",
         },
+        "cols_to_delete": ["inc_date"],
         "update_columns": [
             "unparsed_ems_incident_number",
             "ems_incident_numbers",
