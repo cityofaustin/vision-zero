@@ -16,6 +16,9 @@ export function useResizeObserver<T extends HTMLElement>(
   const containerRef = useRef<T | null>(null);
 
   useEffect(() => {
+    // Capture the current value of the ref when the effect runs
+    const currentElement = containerRef.current;
+    
     const observer = new ResizeObserver(() => {
       // This timeout has a debouncing effect that prevents
       // the map from flashing on the screen during sidebar
@@ -27,13 +30,14 @@ export function useResizeObserver<T extends HTMLElement>(
       }, debounceDelay);
     });
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
+    if (currentElement) {
+      observer.observe(currentElement);
     }
 
     return () => {
-      if (containerRef.current) {
-        observer.unobserve(containerRef.current);
+      // Use the captured value in the cleanup function
+      if (currentElement) {
+        observer.unobserve(currentElement);
       }
     };
   }, [callback, debounceDelay]);

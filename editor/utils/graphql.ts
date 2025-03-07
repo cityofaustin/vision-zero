@@ -79,10 +79,10 @@ interface UseQueryProps {
 interface UseQueryResponse<T> {
   data?: T[];
   aggregateData: HasuraAggregateData | undefined;
-  error: any;
+  error: unknown;
   isLoading: boolean;
   isError: boolean;
-  refetch: () => Promise<any>;
+  refetch: () => Promise<unknown>;
   isValidating: boolean;
 }
 

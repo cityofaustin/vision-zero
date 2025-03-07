@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
-import { ColDataCardDef, FormValues, InputType } from "@/types/types";
-import { RegisterOptions } from "react-hook-form";
+import { ColDataCardDef, InputType } from "@/types/types";
 
 /**
  * Retrieve a value from an object given a dot-noted path string.
@@ -30,7 +29,7 @@ export function getFromPath(
  */
 export const valueToString = (
   value: unknown,
-  col: ColDataCardDef<any>
+  col: ColDataCardDef<Record<string, unknown>>
 ): string => {
   if (col.inputType === "yes_no") {
     return valueToBoolString(value);
@@ -68,7 +67,7 @@ const stringToNumberNullable = (value: string): number | null => {
   if (value.trim() === "") {
     return null;
   }
-  let num = Number(value);
+  const num = Number(value);
   if (isNaN(num)) {
     // todo: handle this
     console.warn("Failed to convert value to number: ", value);

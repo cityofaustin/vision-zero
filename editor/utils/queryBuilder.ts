@@ -365,7 +365,7 @@ export const useQueryBuilder = <T extends Record<string, unknown>>(
 ): string =>
   useMemo(() => {
     return buildQuery(queryConfig, columns, includeAggregates, contextFilters);
-  }, [queryConfig, contextFilters, columns]);
+  }, [includeAggregates, queryConfig, contextFilters, columns]);
 
 /**e
  * Hook which builds a graphql query for record exporting
