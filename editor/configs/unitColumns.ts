@@ -1,5 +1,6 @@
 import { ColDataCardDef } from "@/types/types";
 import { Unit } from "@/types/unit";
+import { commonValidations } from "@/utils/formHelpers";
 
 export const ALL_UNIT_COLUMNS = {
   unit_nbr: {
@@ -35,6 +36,11 @@ export const ALL_UNIT_COLUMNS = {
   veh_mod_year: {
     path: "veh_mod_year",
     label: "Year",
+    editable: true,
+    inputType: "number",
+    inputOptions: {
+      validate: commonValidations.isNumber,
+    },
   },
   veh_make: {
     path: "veh_make.label",

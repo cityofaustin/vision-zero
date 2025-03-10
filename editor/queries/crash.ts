@@ -166,6 +166,7 @@ export const GET_CRASH = gql`
           id
           label
         }
+        prsn_type_id
         prsn_type {
           id
           label
