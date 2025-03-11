@@ -11,12 +11,9 @@ export default function EnvironmentBanner() {
   if (environment === "production") return null;
 
   const isLocal = environment === "local";
-  
+
   return (
-    <Alert 
-      variant={isLocal ? "warning" : "info"} 
-      className="mb-0 rounded-0"
-    >
+    <Alert variant={isLocal ? "warning" : "info"} className="mb-0 rounded-0">
       <AlignedLabel>
         {isLocal ? (
           <FaTriangleExclamation className="me-2" />
@@ -29,4 +26,4 @@ export default function EnvironmentBanner() {
       </AlignedLabel>
     </Alert>
   );
-} 
+}
