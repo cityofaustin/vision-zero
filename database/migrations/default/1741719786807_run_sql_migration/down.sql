@@ -1,0 +1,6 @@
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- alter table if exists atd__coordination_partners_lkp rename to coordination_partners;
+-- alter table if exists coordination_partners set schema lookups;
+-- alter table if exists lookups.coordination_partners rename column coord_partner_desc to label;
+-- alter table if exists lookups.coordination_partners add column source text default 'vz';
