@@ -18,11 +18,11 @@ export default function LoginContainer({
   return (
     <Container
       fluid
-      style={{ height: "100vh", overflow: "hidden" }}
-      className=""
+      className="d-flex flex-column flex-grow-1 p-0"
+      style={{ overflow: "hidden" }}
     >
-      <div className="d-flex justify-content-center align-content-center h-100">
-        <div className="align-self-center p-5 bg-white rounded text-center">
+      <div className="d-flex justify-content-center align-items-center flex-grow-1">
+        <div className="p-5 bg-white rounded text-center">
           <div className="mb-2">
             <Image
               fluid
