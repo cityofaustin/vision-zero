@@ -2,7 +2,6 @@ import "../styles/global.scss";
 import { Metadata } from "next";
 import AuthProvider from "@/contexts/Auth";
 import SidebarLayout from "@/components/SidebarLayout";
-import EnvironmentBanner from "@/components/EnvironmentBanner";
 
 export const metadata: Metadata = {
   title: "Vision Zero Editor",
@@ -34,7 +33,6 @@ export default function RootLayout({
     <html lang="en" style={{ fontSize: "14px" }}>
       <AuthProvider>
         <body>
-          <EnvironmentBanner />
           <SidebarLayout>{children}</SidebarLayout>
         </body>
       </AuthProvider>
