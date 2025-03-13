@@ -50,7 +50,7 @@ export default function CrashRecommendationPartners({
             }}
           >
             <Form.Check
-              label={partner.coord_partner_desc}
+              label={partner.label}
               checked={checked}
               onChange={() => null}
               style={{ pointerEvents: "none" }}

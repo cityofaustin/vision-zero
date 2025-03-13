@@ -185,9 +185,7 @@ export default function CrashRecommendationCard({
               <p>
                 {recommendation?.recommendations_partners
                   ?.map(
-                    (rec_partner) =>
-                      rec_partner.atd__coordination_partners_lkp
-                        ?.coord_partner_desc
+                    (rec_partner) => rec_partner.coordination_partners?.label
                   )
                   .join(", ") || "-"}
               </p>

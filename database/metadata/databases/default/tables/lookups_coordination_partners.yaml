@@ -1,6 +1,6 @@
 table:
-  name: atd__coordination_partners_lkp
-  schema: public
+  name: coordination_partners
+  schema: lookups
 array_relationships:
   - name: recommendations_partners
     using:
@@ -13,21 +13,21 @@ select_permissions:
   - role: editor
     permission:
       columns:
-        - coord_partner_desc
+        - label
         - id
       filter: {}
     comment: ""
   - role: readonly
     permission:
       columns:
-        - coord_partner_desc
+        - label
         - id
       filter: {}
     comment: ""
   - role: vz-admin
     permission:
       columns:
-        - coord_partner_desc
+        - label
         - id
       filter: {}
     comment: ""

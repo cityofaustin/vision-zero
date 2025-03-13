@@ -13,11 +13,9 @@ export const RECOMMENDATION_STATUS_QUERY = gql`
 
 export const RECOMMENDATION_PARTNERS_QUERY = gql`
   query GetPartners {
-    partners: atd__coordination_partners_lkp(
-      order_by: { coord_partner_desc: asc }
-    ) {
+    partners: lookups_coordination_partners(order_by: { label: asc }) {
       id
-      coord_partner_desc
+      label
     }
   }
 `;

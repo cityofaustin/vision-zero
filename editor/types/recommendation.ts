@@ -31,7 +31,7 @@ export type RecommendationPartner = {
   id: number;
   partner_id: number | null;
   recommendation_id: number | null;
-  atd__coordination_partners_lkp: CoordinationPartner | null;
+  coordination_partners: CoordinationPartner | null;
 };
 
 /**
@@ -39,7 +39,8 @@ export type RecommendationPartner = {
  */
 export type CoordinationPartner = {
   id: number;
-  coord_partner_desc: string;
+  label: string;
+  source: string;
 };
 
 /**
