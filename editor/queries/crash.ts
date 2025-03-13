@@ -216,9 +216,9 @@ export const GET_CRASH = gql`
           id
           partner_id
           recommendation_id
-          atd__coordination_partners_lkp {
+          coordination_partners {
             id
-            coord_partner_desc
+            label
           }
         }
       }
