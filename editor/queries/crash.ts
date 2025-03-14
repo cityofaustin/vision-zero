@@ -144,6 +144,10 @@ export const GET_CRASH = gql`
           id
           label
         }
+        contrib_factr_2 {
+          id
+          label
+        }
         unit_injury_metrics_view {
           vz_fatality_count
           sus_serious_injry_count
