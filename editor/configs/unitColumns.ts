@@ -76,15 +76,23 @@ export const ALL_UNIT_COLUMNS = {
   },
   contrib_factr: {
     path: "contrib_factr.label",
-    label: "Primary contrib factor",
-    editable: true,
+    label: "Contributing factors",
+    editable: false,
     inputType: "select",
-    relationship: {
-      tableSchema: "lookups",
-      tableName: "contrib_factr",
-      foreignKey: "contrib_factr_1_id",
-      idColumnName: "id",
-      labelColumnName: "label",
+    valueFormatter: (value, record, column) => {
+      console.log(record);
+      const contribFactors = [
+        record.contrib_factr?.label,
+        record.contrib_factr_2?.label,
+        // record.contrib_factr_3_id,
+      ];
+      // const possibleContribFactors = [
+      //   record.contrib_factr_p1_id,
+      //   record.contrib_factr_p2_id,
+      // ];
+      // filter out null fields then join into a string
+      const displayName = contribFactors.filter((n) => n).join("\r\n");
+      return displayName;
     },
   },
 } satisfies Record<string, ColDataCardDef<Unit>>;
