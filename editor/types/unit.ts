@@ -4,6 +4,7 @@ export type Unit = {
   id: number;
   contrib_factr: LookupTableOption | null;
   contrib_factr_1_id: number | null;
+  contrib_factr_2: LookupTableOption | null;
   unit_nbr: number | null;
   veh_body_styl: LookupTableOption | null;
   veh_body_styl_id: number | null;
