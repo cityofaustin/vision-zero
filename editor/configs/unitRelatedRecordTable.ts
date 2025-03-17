@@ -1,4 +1,4 @@
-import { ALL_UNIT_COLUMNS } from "./unitColumns";
+import { ALL_UNIT_COLUMNS } from "@/configs/unitColumns";
 
 export const unitRelatedRecordCols = [
   ALL_UNIT_COLUMNS.unit_nbr,
