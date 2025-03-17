@@ -1,6 +1,5 @@
 import { ColDataCardDef } from "@/types/types";
 import { Unit } from "@/types/unit";
-import { Row } from "react-bootstrap";
 
 export const ALL_UNIT_COLUMNS = {
   unit_nbr: {
@@ -95,24 +94,24 @@ export const ALL_UNIT_COLUMNS = {
             (factor) =>
               !!factor?.label &&
               factor.id !== 0 && (
-                <Row key={factor.label}>
+                <tr key={factor.label}>
                   <span>
                     <strong>Primary: </strong>
                     {factor.label}
                   </span>
-                </Row>
+                </tr>
               )
           )}
           {possibleContribFactors.map(
             (factor) =>
               !!factor?.label &&
               factor.id !== 0 && (
-                <Row key={factor.label}>
+                <tr key={factor.label}>
                   <span>
                     <strong>Possible: </strong>
                     {factor.label}
                   </span>
-                </Row>
+                </tr>
               )
           )}
         </>
