@@ -139,12 +139,23 @@ export const GET_CRASH = gql`
           id
           label
         }
-        contrib_factr_1_id
         contrib_factr {
           id
           label
         }
         contrib_factr_2 {
+          id
+          label
+        }
+        contrib_factr_3 {
+          id
+          label
+        }
+        contrib_factr_p1 {
+          id
+          label
+        }
+        contrib_factr_p2 {
           id
           label
         }
