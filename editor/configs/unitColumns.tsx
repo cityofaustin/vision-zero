@@ -79,9 +79,7 @@ export const ALL_UNIT_COLUMNS = {
     path: "contrib_factr.label",
     label: "Contributing factors",
     editable: false,
-    inputType: "select",
-    valueFormatter: (value, record, column) => {
-      console.log(record);
+    valueFormatter: (value, record) => {
       const primaryContribFactors = [
         record.contrib_factr,
         record.contrib_factr_2,
@@ -97,7 +95,7 @@ export const ALL_UNIT_COLUMNS = {
             (factor) =>
               !!factor?.label &&
               factor.id !== 0 && (
-                <Row key={factor.id}>
+                <Row key={factor.label}>
                   <span>
                     <strong>Primary: </strong>
                     {factor.label}
@@ -109,7 +107,7 @@ export const ALL_UNIT_COLUMNS = {
             (factor) =>
               !!factor?.label &&
               factor.id !== 0 && (
-                <Row key={factor.id}>
+                <Row key={factor.label}>
                   <span>
                     <strong>Possible: </strong>
                     {factor.label}
