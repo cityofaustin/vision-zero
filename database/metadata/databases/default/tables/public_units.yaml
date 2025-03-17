@@ -14,6 +14,33 @@ object_relationships:
         remote_table:
           name: contrib_factr
           schema: lookups
+  - name: contrib_factr_3
+    using:
+      manual_configuration:
+        column_mapping:
+          contrib_factr_3_id: id
+        insertion_order: null
+        remote_table:
+          name: contrib_factr
+          schema: lookups
+  - name: contrib_factr_p1
+    using:
+      manual_configuration:
+        column_mapping:
+          contrib_factr_p1_id: id
+        insertion_order: null
+        remote_table:
+          name: contrib_factr
+          schema: lookups
+  - name: contrib_factr_p2
+    using:
+      manual_configuration:
+        column_mapping:
+          contrib_factr_p2_id: id
+        insertion_order: null
+        remote_table:
+          name: contrib_factr
+          schema: lookups
   - name: crashes
     using:
       foreign_key_constraint_on: crash_pk
