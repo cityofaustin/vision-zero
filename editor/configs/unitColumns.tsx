@@ -79,7 +79,7 @@ export const ALL_UNIT_COLUMNS = {
     path: "contrib_factr.label",
     label: "Contributing factors",
     editable: false,
-    valueFormatter: (value, record) => {
+    valueRenderer: (record) => {
       const primaryContribFactors = [
         record.contrib_factr,
         record.contrib_factr_2,
