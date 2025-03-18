@@ -5,7 +5,8 @@ alter table if exists lookups.coordination_partners rename column coord_partner_
 alter table if exists lookups.coordination_partners add column source text default 'vz' not null;
 
 alter index lookups.atd__coordination_partners_lkp_pkey rename to coordination_partners_pkey;
-alter sequence lookups.atd__coordination_partners_lkp_id_seq rename to coordination_partners_id_seq;
+-- Cannot undo this in the down migration
+drop sequence lookups.atd__coordination_partners_lkp_id_seq cascade;
 
 -- Updating, inserting, and deleting labels of coordination partners
 update lookups.coordination_partners set label = 'Active Transportation Division' where label = 'Active Transportation';
@@ -16,12 +17,12 @@ update lookups.coordination_partners set label = 'Capital Delivery Services (Cor
 update lookups.coordination_partners set label = 'North Area Engineering' where label = 'North Area Engineering Office';
 update lookups.coordination_partners set label = 'South Area Engineering' where label = 'South Area Engineering Office';
 
-insert into lookups.coordination_partners (label)
+insert into lookups.coordination_partners (label, id)
 values
-('Homeless Strategy Office'),
-('AUS (Airport)'),
-('Project Delivery'),
-('Sidewalks and Urban Trails Division'),
-('Office of the City Engineer');
+('Homeless Strategy Office', 15),
+('AUS (Airport)', 16),
+('Project Delivery', 17),
+('Sidewalks and Urban Trails Division', 18),
+('Office of the City Engineer', 19);
 
 delete from lookups.coordination_partners where label = 'Public Works Department';
