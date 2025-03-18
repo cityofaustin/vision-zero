@@ -24,7 +24,7 @@ The design supports an editing environment which enables Vision Zero program sta
   - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
   - [Add a custom column to `crashes`, `units`, or `people`](#add-a-custom-column-to-crashes-units-or-people)
   - [Adding a computed or generated field to `crashes`, `units`, or `people`](#adding-a-computed-or-generated-field-to-crashes-units-or-people)
-  - [Refreshing lookup tables with the latest CRIS values](#refreshing-lookup-tables-with-the-latest-cris-values)
+  - [Refresh lookup tables with the latest CRIS values](#refresh-lookup-tables-with-the-latest-cris-values)
   - [Add a custom lookup value to a CRIS-managed lookup table (todo)](#add-a-custom-lookup-value-to-a-cris-managed-lookup-table-todo)
   - [Debugging record triggers](#debugging-record-triggers)
   - [Parsing change log data](#parsing-change-log-data)
@@ -185,7 +185,7 @@ Because the table has a custom value, it is configured with a check constraint (
 "injry_sev_owner_check" CHECK (id < 99 AND source = 'cris' OR id >= 99 AND source = 'vz')
 ```
 
-Any row inserted into this table must use the source `vz` if the `id` value is greater than or equal to `99`. This ensures that our lookup table helper script (todo: link) will not override our custom lookup values.
+Any row inserted into this table must use the source `vz` if the `id` value is greater than or equal to `99`. This ensures that our [lookup table helper script](/toolbox/get_lookup_table_changes) will not override our custom lookup values.
 
 Additionally, the `people_cris` table, which references this lookup, is configured with a check constraint that prevents CRIS from using our custom value:
 
@@ -337,9 +337,13 @@ values ('my_generated_column', 'crashes', false);
 
 5. When you're ready to test the trigger behavior, you can enable debug messaging for this trigger by executing the command `set client_min_messages to debug;`. This will cause the trigger debug messages to log to your SQL client.
 
-### Refreshing lookup tables with the latest CRIS values
+### Refresh lookup tables with the latest CRIS values
 
-Todo: see the helper script readme.
+We have a [helper script](/toolbox/get_lookup_table_changes) that can be used to detect changes between CRIS's lookup tables and the lookup tables in our database. This script can be used to generate migrations to bring the database in sync with CRIS, and it should be run after every CRIS softwware release. See this script's README for more information.
+
+### Add a new CRIS lookup table to the database
+
+See [PR #1546](https://github.com/cityofaustin/vision-zero/pull/1546) for an example of adding a new CRIS lookup table to the database. Remember to track the new table in our Hasura API metadata to ensure that it will be properly handled by the lookup table change detection [helper script](/toolbox/get_lookup_table_changes).
 
 ### Add a custom lookup value to a CRIS-managed lookup table (todo)
 

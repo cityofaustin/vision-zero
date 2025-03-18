@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { Variables } from "graphql-request";
 import { Relationship } from "./relationships";
 import { Path } from "./utils";
+import { RegisterOptions } from "react-hook-form";
 
 export type InputType = "text" | "number" | "yes_no" | "select" | "textarea";
 
@@ -61,6 +62,12 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    * Styles to be applied to the component's containing element
    */
   style?: React.CSSProperties;
+  /**
+   * Additional input validation options that mirror react-hook-form RegisterOptions
+   *
+   * @see https://react-hook-form.com/docs/useform/register
+   */
+  inputOptions?: RegisterOptions<FormValues, "value">;
 }
 
 export interface MutationVariables extends Variables {
@@ -69,4 +76,12 @@ export interface MutationVariables extends Variables {
     [key: string]: any;
     updated_by?: string;
   };
+}
+
+export interface FormValues {
+  // Represents the structure of form data, specifically for forms that
+  // require a single string value. This interface can be used with
+  // form libraries like react-hook-form to ensure type safety and
+  // consistency when handling form submissions.
+  value: string;
 }

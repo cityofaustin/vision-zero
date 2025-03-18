@@ -1,0 +1,11 @@
+delete from lookups.agency where id = 10233;
+delete from lookups.agency where id = 10234;
+delete from lookups.agency where id = 10235;
+delete from lookups.agency where id = 3365;
+delete from lookups.agency where id = 3366;
+delete from lookups.agency where id = 3367;
+delete from lookups.agency where id = 3368;
+delete from lookups.agency where id = 3369;
+delete from lookups.agency where id = 3370;
+delete from lookups.agency where id = 3371;
+insert into lookups.agency (id, label, source) values (10101, 'APPLICATION VERIFICATION AGENCY', 'cris');

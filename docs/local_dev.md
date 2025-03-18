@@ -1,10 +1,10 @@
 ## Local Development
 
-The suite has a python script which can be used to run and populate a local development instance of the stack. The script is found in the root of the repository, and is named `vision-zero`. It's recommended to create a virtual environment in the root of the repo, and if you name it `venv`, it will be ignored by the `.gitignore` file in place. VS Code will automatically source the activation script, if you start a terminal from within it to interface with the stack.
+The suite has a python script in the root of the respository, named `vision-zero`, which can be used to replicate and run the Vision Zero database and graphQL API locally.
+
+See the repo [README](/README.md) for quick start instructions for using this tool.
 
 The `vision-zero` program is a light wrapper around the functionality provided by `docker compose`. By inspecting the `docker-compose.yml` file, you can find the definitions of the services in the stack, and you can use the `docker compose` command to turn up, stop, and attach terminals to the running containers and execute on-off commands. This can provide you access to containers to install nodejs libraries, use postgres' supporting programs (`psql`, `pg_dump`) and other lower level utilities.
-
-Ideally, you should be able to operate the entire vision zero suite and access all needed supporting tooling from any host that can provide a working docker service & python interpreter for the orchestration script.
 
 ### `vision-zero` command auto-completion
 
@@ -36,7 +36,7 @@ Start and stop the postgres database
 
 #### `vision-zero graphql-engine-up` & `vision-zero graphql-engine-down`
 
-Start and stop the Hasura graphql-engine software
+Start and stop the Hasura graphql-engine software as well as the database
 
 ### `vision-zero api-up` & `vision-zero api-down`
 
@@ -45,14 +45,6 @@ Start and stop the Vision Zero CR3 / User API
 ### `vision-zero local-stack-up` & `vision-zero local-stack-down`
 
 Start and stop the DB, `graphql-engine`, and the API at once
-
-#### `vision-zero vze-up` & `vision-zero vze-down`
-
-Start and stop the Vision Zero Editor
-
-#### `vision-zero vzv-up` & `vision-zero vzv-down`
-
-Start and stop the Vision Zero Viewer
 
 #### `vision-zero psql`
 

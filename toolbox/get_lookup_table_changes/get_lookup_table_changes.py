@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Helper script which detects changes betwen CRIS lookup values provided in data extract and
+Helper script which detects changes between CRIS lookup values provided in data extract and
 lookup values in the VZ database. See README.md for details.
 """
 import os

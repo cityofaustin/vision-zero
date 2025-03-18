@@ -5,7 +5,7 @@ import pckg from "../package.json";
  */
 export default function AppFooter() {
   return (
-    <div className="bg-light text-secondary text-center py-2 px-3 border-top d-flex justify-content-between">
+    <div className="app-footer text-secondary text-center py-2 px-3 border-top d-flex justify-content-between">
       <span>Vision Zero Editor v{pckg.version}</span>
       <span>
         Built by{" "}
