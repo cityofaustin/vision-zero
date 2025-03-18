@@ -5,7 +5,8 @@ alter table if exists lookups.coordination_partners rename column coord_partner_
 alter table if exists lookups.coordination_partners add column source text default 'vz' not null;
 
 alter index lookups.atd__coordination_partners_lkp_pkey rename to coordination_partners_pkey;
--- Cannot undo this in the down migration
+
+-- Cannot undo dropping the sequence in the down migration
 drop sequence lookups.atd__coordination_partners_lkp_id_seq cascade;
 
 -- Updating, inserting, and deleting labels of coordination partners
