@@ -94,24 +94,24 @@ export const ALL_UNIT_COLUMNS = {
             (factor) =>
               !!factor?.label &&
               factor.id !== 0 && (
-                <tr key={factor.label}>
+                <div key={factor.label}>
                   <span>
                     <strong>Primary: </strong>
                     {factor.label}
                   </span>
-                </tr>
+                </div>
               )
           )}
           {possibleContribFactors.map(
             (factor) =>
               !!factor?.label &&
               factor.id !== 0 && (
-                <tr key={factor.label}>
+                <div key={factor.label}>
                   <span>
                     <strong>Possible: </strong>
                     {factor.label}
                   </span>
-                </tr>
+                </div>
               )
           )}
         </>
