@@ -138,7 +138,7 @@ export default function RelatedRecordTableRow<
               }}
             >
               {!isEditingThisColumn && (
-                <div className="mb-3" style={{ whiteSpace: "pre-wrap" }}>
+                <div style={{ whiteSpace: "pre-wrap" }}>
                   {renderColumnValue(record, col)}
                 </div>
               )}
