@@ -20,8 +20,8 @@ alter table afd__incidents rename column call_datetime_tz to call_datetime;
 alter table afd__incidents drop column call_date, drop column call_time;
 
 -- add audit fields and updated_at trigger;
-alter table afd__incidents add column created_at timestamptz default now();
-alter table afd__incidents add column updated_at timestamptz default now();
+alter table afd__incidents add column created_at timestamptz not null default now();
+alter table afd__incidents add column updated_at timestamptz not null default now();
 create trigger set_public_afd__incidents_updated_at before update on public.afd__incidents for each row execute function public.set_current_timestamp_updated_at();
 
 create function public.afd_incidents_trigger()

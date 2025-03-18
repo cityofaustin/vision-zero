@@ -41,8 +41,8 @@ update ems__incidents set
 alter table ems__incidents drop column incident_date_received, drop column incident_time_received;
 
 -- add audit fields and updated_at trigger;
-alter table ems__incidents add column created_at timestamptz default now();
-alter table ems__incidents add column updated_at timestamptz default now();
+alter table ems__incidents add column created_at timestamptz not null default now();
+alter table ems__incidents add column updated_at timestamptz not null default now();
 create trigger set_public_ems__incidents_updated_at before update on public.ems__incidents for each row execute function public.set_current_timestamp_updated_at();
 
 -- create new trigger function
