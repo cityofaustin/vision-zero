@@ -82,15 +82,46 @@ export const ALL_UNIT_COLUMNS = {
   },
   contrib_factr: {
     path: "contrib_factr.label",
-    label: "Primary contrib factor",
-    editable: true,
-    inputType: "select",
-    relationship: {
-      tableSchema: "lookups",
-      tableName: "contrib_factr",
-      foreignKey: "contrib_factr_1_id",
-      idColumnName: "id",
-      labelColumnName: "label",
+    label: "Contributing factors",
+    editable: false,
+    valueRenderer: (record) => {
+      const primaryContribFactors = [
+        record.contrib_factr,
+        record.contrib_factr_2,
+        record.contrib_factr_3,
+      ];
+      const possibleContribFactors = [
+        record.contrib_factr_p1,
+        record.contrib_factr_p2,
+      ];
+      return (
+        <>
+          {primaryContribFactors.map(
+            (factor) =>
+              !!factor?.label &&
+              factor.id !== 0 && (
+                <div key={factor.label}>
+                  <span>
+                    <strong>Primary: </strong>
+                    {factor.label}
+                  </span>
+                </div>
+              )
+          )}
+          {possibleContribFactors.map(
+            (factor) =>
+              !!factor?.label &&
+              factor.id !== 0 && (
+                <div key={factor.label}>
+                  <span>
+                    <strong>Possible: </strong>
+                    {factor.label}
+                  </span>
+                </div>
+              )
+          )}
+        </>
+      );
     },
   },
 } satisfies Record<string, ColDataCardDef<Unit>>;

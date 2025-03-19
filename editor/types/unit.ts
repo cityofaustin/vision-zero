@@ -3,7 +3,10 @@ import { LookupTableOption } from "./relationships";
 export type Unit = {
   id: number;
   contrib_factr: LookupTableOption | null;
-  contrib_factr_1_id: number | null;
+  contrib_factr_2: LookupTableOption | null;
+  contrib_factr_3: LookupTableOption | null;
+  contrib_factr_p1: LookupTableOption | null;
+  contrib_factr_p2: LookupTableOption | null;
   unit_nbr: number | null;
   veh_body_styl: LookupTableOption | null;
   veh_body_styl_id: number | null;
