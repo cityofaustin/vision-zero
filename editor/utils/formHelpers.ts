@@ -27,9 +27,9 @@ export function getFromPath(
  * Convert a record value to a string so that it can be used as the initial value
  * in a form input
  */
-export const valueToString = (
+export const valueToString = <T extends Record<string, unknown>>(
   value: unknown,
-  col: ColDataCardDef<Record<string, unknown>>
+  col: ColDataCardDef<T>
 ): string => {
   if (col.inputType === "yes_no") {
     return valueToBoolString(value);

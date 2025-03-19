@@ -17,7 +17,7 @@ interface CrashNotesCardProps {
   notes: CrashNote[];
   crashPk: number;
   onSaveCallback: () => Promise<void>;
-  refetch: () => Promise<void>;
+  refetch: () => Promise<unknown>;
 }
 
 const notesColumns: ColDataCardDef<CrashNote>[] = [

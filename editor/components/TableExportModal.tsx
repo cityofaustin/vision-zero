@@ -157,7 +157,7 @@ export default function TableExportModal<T extends Record<string, unknown>>({
         <Button variant="danger" onClick={onClose}>
           Cancel
         </Button>
-        {error && (
+        {!!error && (
           <Alert variant="danger">
             <p>Something went wrong</p>
             <p>
