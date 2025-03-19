@@ -11,13 +11,13 @@ const isNewRecordEvent = (change: ChangeLogEntryEnriched): boolean =>
 /**
  * Modal which renders change log details when a change log entry is clicked
  */
-const ChangeLogDetails = ({
+export default function ChangeLogDetails({
   selectedChange,
   setSelectedChange,
 }: {
   selectedChange: ChangeLogEntryEnriched;
   setSelectedChange: Dispatch<SetStateAction<ChangeLogEntryEnriched | null>>;
-}) => {
+}) {
   return (
     <Modal
       show={!!selectedChange}
@@ -56,6 +56,4 @@ const ChangeLogDetails = ({
       </Modal.Footer>
     </Modal>
   );
-};
-
-export default ChangeLogDetails;
+}

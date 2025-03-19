@@ -45,6 +45,15 @@ export const ALL_PEOPLE_COLUMNS = {
   prsn_type: {
     path: "prsn_type.label",
     label: "Type",
+    editable: true,
+    inputType: "select",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "prsn_type",
+      foreignKey: "prsn_type_id",
+      idColumnName: "id",
+      labelColumnName: "label",
+    },
   },
   prsn_age: {
     path: "prsn_age",
