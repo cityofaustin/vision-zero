@@ -22,7 +22,7 @@ insert into lookups.coordination_partners (label, id)
 values
 ('Homeless Strategy Office', 15),
 ('AUS (Airport)', 16),
-('Project Delivery', 17),
+('Project Delivery Division', 17),
 ('Sidewalks and Urban Trails Division', 18),
 ('Office of the City Engineer', 19);
 
