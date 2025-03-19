@@ -13,6 +13,7 @@ import PermissionsRequired from "@/components/PermissionsRequired";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import AppFooter from "@/components/AppFooter";
 import { darkModelocalStorageKey } from "@/components/DarkModeToggle";
+import EnvironmentBanner from "@/components/EnvironmentBanner";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -62,70 +63,79 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
 
   if (!isAuthenticated || !user) {
     return (
-      <LoginContainer
-        onLogin={() =>
-          loginWithRedirect({
-            appState: {
-              returnTo: BASE_PATH + pathName,
-            },
-          })
-        }
-      />
+      <div
+        className="d-flex flex-column"
+        style={{ height: "100vh", overflow: "hidden" }}
+      >
+        <EnvironmentBanner />
+        <LoginContainer
+          onLogin={() =>
+            loginWithRedirect({
+              appState: {
+                returnTo: BASE_PATH + pathName,
+              },
+            })
+          }
+        />
+      </div>
     );
   }
 
   return (
-    <div style={{ height: "100vh", overflow: "hidden" }} className="d-flex">
-      {/* Sidebar */}
-      <div
-        className={`bg-dark app-sidebar app-sidebar-${
-          isCollapsed ? "collapsed" : "expanded"
-        }`}
-      >
-        <div className="p-2">
-          <Button
-            onClick={toggleSidebar}
-            variant="dark"
-            className="w-100 text-secondary"
-          >
-            <FaAngleRight
-              className={`sidebar-toggle-${isCollapsed ? "closed" : "open"}`}
-            />
-          </Button>
-        </div>
-        <ListGroup variant="flush" className="px-2">
-          {routes.map((route) => (
-            <PermissionsRequired
-              allowedRoles={route.allowedRoles}
-              key={route.path}
-            >
-              <SideBarListItem
-                isCollapsed={isCollapsed}
-                isCurrentPage={segments.includes(route.path)}
-                Icon={route.icon}
-                label={route.label}
-                href={`/${route.path}`}
-              />
-            </PermissionsRequired>
-          ))}
-        </ListGroup>
-      </div>
-      {/* Main content */}
-      <div
-        className="flex-grow-1 d-flex flex-column w-100"
-        style={{ minWidth: 0 }}
-      >
-        <AppNavBar user={user} logout={logout} />
-        <main
-          className="flex-grow-1 d-flex flex-column"
-          style={{
-            overflowY: "auto",
-          }}
+    <div
+      className="d-flex flex-column overflow-hidden"
+      style={{ height: "100vh" }}
+    >
+      <EnvironmentBanner />
+      <div className="d-flex flex-grow-1 overflow-hidden">
+        {/* Sidebar */}
+        <div
+          className={`bg-dark app-sidebar d-flex flex-column app-sidebar-${
+            isCollapsed ? "collapsed" : "expanded"
+          }`}
         >
-          <AppBreadCrumb />
-          <div className="flex-grow-1 px-3 pb-3">{children}</div>
-          <AppFooter />
-        </main>
+          <div className="p-2">
+            <Button
+              onClick={toggleSidebar}
+              variant="dark"
+              className="w-100 text-secondary"
+            >
+              <FaAngleRight
+                className={`sidebar-toggle-${isCollapsed ? "closed" : "open"}`}
+              />
+            </Button>
+          </div>
+          <div className="flex-grow-1 overflow-y-auto">
+            <ListGroup variant="flush" className="px-2">
+              {routes.map((route) => (
+                <PermissionsRequired
+                  allowedRoles={route.allowedRoles}
+                  key={route.path}
+                >
+                  <SideBarListItem
+                    isCollapsed={isCollapsed}
+                    isCurrentPage={segments.includes(route.path)}
+                    Icon={route.icon}
+                    label={route.label}
+                    href={`/${route.path}`}
+                  />
+                </PermissionsRequired>
+              ))}
+            </ListGroup>
+          </div>
+        </div>
+        {/* Main content */}
+        <div
+          className="flex-grow-1 d-flex flex-column w-100"
+          style={{ minWidth: 0 }}
+        >
+          <AppNavBar user={user} logout={logout} />
+          <main className="flex-grow-1 d-flex flex-column overflow-y-auto">
+            <AppBreadCrumb />
+            <div className="flex-grow-1 px-3 pb-3">{children}</div>
+            <AppFooter />
+          </main>
+        </div>
       </div>
     </div>
   );
