@@ -37,18 +37,18 @@
     "react-icons": "^5.5.0",
     "react-map-gl": "^7.1.9",
     "react-zoom-pan-pinch": "^3.7.0",
-    "swr": "^2.3.2",
+    "swr": "^2.3.3",
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@types/node": "^20.17.23",
+    "@types/node": "^20.17.24",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "eslint": "^8.57.1",
     "eslint-config-next": "14.2.13",
-    "eslint-config-prettier": "^10.0.2",
+    "eslint-config-prettier": "^10.1.1",
     "prettier": "^3.5.3",
-    "sass": "^1.85.1",
+    "sass": "^1.86.0",
     "typescript": "^5.8.2"
   }
 }
