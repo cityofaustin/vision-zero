@@ -2,7 +2,7 @@ table:
   name: recommendations_partners
   schema: public
 object_relationships:
-  - name: atd__coordination_partners_lkp
+  - name: coordination_partners
     using:
       foreign_key_constraint_on: partner_id
   - name: recommendation

@@ -139,8 +139,23 @@ export const GET_CRASH = gql`
           id
           label
         }
-        contrib_factr_1_id
         contrib_factr {
+          id
+          label
+        }
+        contrib_factr_2 {
+          id
+          label
+        }
+        contrib_factr_3 {
+          id
+          label
+        }
+        contrib_factr_p1 {
+          id
+          label
+        }
+        contrib_factr_p2 {
           id
           label
         }
@@ -166,6 +181,7 @@ export const GET_CRASH = gql`
           id
           label
         }
+        prsn_type_id
         prsn_type {
           id
           label
@@ -216,9 +232,9 @@ export const GET_CRASH = gql`
           id
           partner_id
           recommendation_id
-          atd__coordination_partners_lkp {
+          coordination_partners {
             id
-            coord_partner_desc
+            label
           }
         }
       }

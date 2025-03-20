@@ -36,7 +36,7 @@ interface FormValues {
  * Component that manages the form UI for a single
  * editable field
  */
-const EditableField = ({
+export default function EditableField({
   initialValue,
   inputType,
   isMutating,
@@ -44,7 +44,7 @@ const EditableField = ({
   onSave,
   onCancel,
   inputOptions,
-}: EditableFieldProps) => {
+}: EditableFieldProps) {
   const {
     register,
     handleSubmit,
@@ -133,6 +133,4 @@ const EditableField = ({
       </div>
     </Form>
   );
-};
-
-export default EditableField;
+}

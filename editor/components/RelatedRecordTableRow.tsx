@@ -138,9 +138,9 @@ export default function RelatedRecordTableRow<
               }}
             >
               {!isEditingThisColumn && (
-                <p style={{ whiteSpace: "pre-wrap" }}>
+                <div style={{ whiteSpace: "pre-wrap" }}>
                   {renderColumnValue(record, col)}
-                </p>
+                </div>
               )}
               {isEditingThisColumn &&
                 col.customEditComponent &&

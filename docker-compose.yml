@@ -14,6 +14,7 @@ services:
       - postgis
 
   postgis:
+    shm_size: 2g
     build: database
     env_file:
       - .env
@@ -22,10 +23,10 @@ services:
     ports:
       - 5431:5432
     command: postgres 
-      -c 'maintenance_work_mem=2GB'
-      -c 'max_wal_size=4GB'
-      -c 'shared_buffers=1GB'
-      -c 'work_mem=32MB'
+      -c 'maintenance_work_mem=1GB'
+      -c 'max_wal_size=5GB'
+      -c 'shared_buffers=2GB'
+      -c 'work_mem=64MB'
   cr3-user-api:
     build: api
     # image: atddocker/vz-user-cr3-api
