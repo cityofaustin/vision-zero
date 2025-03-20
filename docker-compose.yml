@@ -1,6 +1,6 @@
 services:
   graphql-engine:
-    image: hasura/graphql-engine:v2.45.1
+    image: hasura/graphql-engine:v2.46.0
     volumes:
       - ./viewer/graphql-engine-metadata:/metadata
     ports:
@@ -22,7 +22,7 @@ services:
       - ./database/snapshots:/snapshots
     ports:
       - 5431:5432
-    command: postgres 
+    command: postgres
       -c 'maintenance_work_mem=1GB'
       -c 'max_wal_size=5GB'
       -c 'shared_buffers=2GB'
