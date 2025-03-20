@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
@@ -106,15 +106,8 @@ export default function CrashRecommendationCard({
       typename: "partners",
     });
 
-  const {
-    register,
-    reset,
-    handleSubmit,
-    formState: { isDirty },
-    setValue,
-    watch,
-  } = useForm<RecommendationFormInputs>({
-    defaultValues: recommendation
+  const defaultValues = useMemo(() => {
+    return recommendation
       ? {
           rec_text: recommendation.rec_text,
           rec_update: recommendation.rec_update,
@@ -130,7 +123,25 @@ export default function CrashRecommendationCard({
           crash_pk,
           created_by: user?.email,
           recommendations_partners: [],
-        },
+        };
+  }, [recommendation]);
+
+  /**
+   * Reset the form values after the recommendation is saved
+   */
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues]);
+
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { isDirty },
+    setValue,
+    watch,
+  } = useForm<RecommendationFormInputs>({
+    defaultValues,
   });
 
   const { mutate } = useMutation(
