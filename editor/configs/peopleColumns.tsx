@@ -36,7 +36,7 @@ export const ALL_PEOPLE_COLUMNS = {
       idColumnName: "id",
       labelColumnName: "label",
     },
-    valueRenderer: (record, column) => {
+    valueRenderer: (record) => {
       const value = record.injry_sev.label;
       const className = `${getInjuryColorClass(value)} px-2 py-1 rounded`;
       return <span className={className}>{value}</span>;
@@ -101,7 +101,7 @@ export const ALL_PEOPLE_COLUMNS = {
     path: "prsn_last_name",
     label: "Name",
     editable: true,
-    valueFormatter: (value, record, column) => {
+    valueFormatter: (value, record) => {
       const nameFields = [
         record.prsn_first_name,
         record.prsn_mid_name,
