@@ -136,7 +136,7 @@ export default function LocationDetailsPage({
             insertMutation={INSERT_LOCATION_NOTE}
             onSaveCallback={onSaveCallback}
             recordId={location.location_id}
-            refetch={refetch}
+            refetch={onSaveCallback}
           />
         </Col>
       </Row>

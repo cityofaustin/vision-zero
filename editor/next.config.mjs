@@ -8,6 +8,20 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const nextConfig = {
   reactStrictMode: true,
   basePath: BASE_PATH,
+  eslint: {
+    dirs: [
+      "app",
+      "components",
+      "configs",
+      "contexts",
+      "utils",
+      "queries",
+      "schema",
+      "types",
+      "utils",
+    ],
+    ignoreDuringBuilds: false,
+  },
   async redirects() {
     return [
       // handle when client navigates to the root
