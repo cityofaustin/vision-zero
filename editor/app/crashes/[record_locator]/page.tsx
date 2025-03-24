@@ -83,6 +83,9 @@ export default function CrashDetailsPage({
 
   return (
     <>
+      <title>{`${crash.cris_crash_id} - ${crash.address_primary ? crash.address_primary : ""} ${
+        crash.address_secondary ? "& " + crash.address_secondary : ""
+      }`}</title>
       <CrashHeader crash={crash} />
       {
         // show alert if crash on private drive or outside of Austin full purpose
