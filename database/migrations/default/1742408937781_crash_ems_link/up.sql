@@ -2,11 +2,18 @@
 
 -- rename fk column to crash_pk and add fk constraint
 alter table ems__incidents rename column crash_id to crash_pk;
-alter table  ems__incidents 
-    add constraint ems__incidents_crashes_crash_pk_fkey foreign key (crash_pk)
-    references public.crashes(id) on update cascade on delete set null;
+alter table ems__incidents
+add constraint ems__incidents_crashes_crash_pk_fkey foreign key (crash_pk)
+references public.crashes (id) on update cascade on delete set null;
 
 comment on column ems__incidents.crash_pk is 'Crash ID matched to this record';
+
+alter table ems__incidents add column person_id integer,
+add constraint ems__incidents_person_id foreign key (
+    person_id
+) references people (id);
+
+comment on column ems__incidents.person_id is 'Person ID matched to this record';
 
 --
 -- i don't think we need this column or index anymore
@@ -22,31 +29,69 @@ alter table ems__incidents add column match_status text default 'unmatched';
 comment on column ems__incidents.match_status is 'The status of the crash record match - updated by update_crash_ems_match trigger';
 
 -- add column to assign injury severity
-ALTER TABLE ems__incidents
-ADD COLUMN patient_injry_sev integer GENERATED ALWAYS AS (
-    CASE
-        WHEN lower(pcr_provider_impression_primary) = 'death on scene' THEN 4
-        WHEN pcr_outcome = 'DECEASED ON SCENE' THEN 4
-        WHEN pcr_patient_acuity_final = 'DEAD WITHOUT RESUSCITATION EFFORTS (BLACK)' THEN 4
-        WHEN UPPER(RIGHT(pcr_transport_priority, 1)) = '3' AND LOWER(pcr_patient_acuity_final) = 'lower acuity (green)' THEN 2
-        WHEN UPPER(RIGHT(pcr_transport_priority, 1)) = '3' AND LOWER(pcr_patient_acuity_final) = 'critical (red)' THEN 1
-        WHEN UPPER(RIGHT(pcr_transport_priority, 1)) = '3' AND LOWER(pcr_patient_acuity_final) = 'emergent (yellow)' THEN 1
-        WHEN UPPER(RIGHT(pcr_transport_priority, 1)) = '3' AND LOWER(pcr_patient_acuity_initial) = 'critical (red)' THEN 1
-        WHEN UPPER(RIGHT(pcr_transport_priority, 1)) = '3' AND LOWER(pcr_patient_acuity_initial) = 'emergent (yellow)' THEN 1
-        WHEN UPPER(RIGHT(pcr_transport_priority, 1)) = '3' AND LOWER(pcr_patient_acuity_level) = 'high acuity' THEN 1
+alter table ems__incidents
+add column patient_injry_sev integer generated always as (
+    case
+        when lower(pcr_provider_impression_primary) = 'death on scene' then 4
+        when pcr_outcome = 'DECEASED ON SCENE' then 4
+        when
+            pcr_patient_acuity_final
+            = 'DEAD WITHOUT RESUSCITATION EFFORTS (BLACK)'
+            then 4
+        when
+            upper(right(pcr_transport_priority, 1)) = '3'
+            and lower(pcr_patient_acuity_final) = 'lower acuity (green)'
+            then 2
+        when
+            upper(right(pcr_transport_priority, 1)) = '3'
+            and lower(pcr_patient_acuity_final) = 'critical (red)'
+            then 1
+        when
+            upper(right(pcr_transport_priority, 1)) = '3'
+            and lower(pcr_patient_acuity_final) = 'emergent (yellow)'
+            then 1
+        when
+            upper(right(pcr_transport_priority, 1)) = '3'
+            and lower(pcr_patient_acuity_initial) = 'critical (red)'
+            then 1
+        when
+            upper(right(pcr_transport_priority, 1)) = '3'
+            and lower(pcr_patient_acuity_initial) = 'emergent (yellow)'
+            then 1
+        when
+            upper(right(pcr_transport_priority, 1)) = '3'
+            and lower(pcr_patient_acuity_level) = 'high acuity'
+            then 1
         -- what is this pcr_transport_priority?
-        WHEN UPPER(LEFT(pcr_transport_priority, 1)) = 'CHARLIE' OR UPPER(LEFT(pcr_transport_priority, 1)) = 'D' THEN 1
-        WHEN UPPER(RIGHT(pcr_transport_priority, 1)) = '3' AND LOWER(pcr_patient_acuity_initial) = 'lower acuity (green)' THEN 2
-        WHEN UPPER(LEFT(pcr_transport_priority, 1)) = 'minor injury' OR UPPER(LEFT(pcr_transport_priority, 1)) = 'possible injury' THEN 2
-        WHEN UPPER(RIGHT(pcr_transport_priority, 1)) <> '3' AND LOWER(pcr_patient_acuity_initial) = 'lower acuity (green)' THEN 3
-        WHEN UPPER(RIGHT(pcr_outcome, 7)) = 'REFUSED' AND LEFT(LOWER(pcr_patient_acuity_level), 10) = 'low acuity' THEN 3
-        ELSE 5
-    END
-) STORED;
+        when
+            upper(left(pcr_transport_priority, 1)) = 'CHARLIE'
+            or upper(left(pcr_transport_priority, 1)) = 'D'
+            then 1
+        when
+            upper(right(pcr_transport_priority, 1)) = '3'
+            and lower(pcr_patient_acuity_initial) = 'lower acuity (green)'
+            then 2
+        when
+            upper(left(pcr_transport_priority, 1)) = 'minor injury'
+            or upper(left(pcr_transport_priority, 1)) = 'possible injury'
+            then 2
+        when
+            upper(right(pcr_transport_priority, 1)) != '3'
+            and lower(pcr_patient_acuity_initial) = 'lower acuity (green)'
+            then 3
+        when
+            upper(right(pcr_outcome, 7)) = 'REFUSED'
+            and left(lower(pcr_patient_acuity_level), 10) = 'low acuity'
+            then 3
+        else 5
+    end
+) stored;
 
-alter table  ems__incidents 
-    add constraint ems__incidents_patient_injry_sev_fk foreign key (patient_injry_sev)
-    references lookups.injry_sev on update restrict on delete restrict;
+alter table ems__incidents
+add constraint ems__incidents_patient_injry_sev_fk foreign key (
+    patient_injry_sev
+)
+references lookups.injry_sev on update restrict on delete restrict;
 
 comment on column ems__incidents.patient_injry_sev is 'The patient injury severity as mapped to the CRIS injury severity lookup';
 
@@ -71,16 +116,28 @@ comment on column ems__incidents.patient_injry_sev is 'The patient injury severi
 
 
 -- add some indexes
-create index ems__incidents_crashes_crash_pk_index on public.ems__incidents (crash_pk);
-create index ems__incidents_crashes_incident_received_datetime_index 
-    on public.ems__incidents (incident_received_datetime);
-create index ems__incidents_apd_incident_numbers_index on ems__incidents using gin (apd_incident_numbers);
-create index ems__incidents_geometry_index on ems__incidents using gist (geometry);
-create index ems__incidents_patient_injry_sev_index on ems__incidents (patient_injry_sev);
+create index ems__incidents_crashes_crash_pk_index on public.ems__incidents (
+    crash_pk
+);
+create index ems__incidents_crashes_incident_received_datetime_index
+on public.ems__incidents (incident_received_datetime);
+create index ems__incidents_apd_incident_numbers_index on ems__incidents using gin (
+    apd_incident_numbers
+);
+create index ems__incidents_geometry_index on ems__incidents using gist (
+    geometry
+);
+create index ems__incidents_patient_injry_sev_index on ems__incidents (
+    patient_injry_sev
+);
 create index crashes_case_id_index on crashes (case_id);
 -- these indexes optimize our ST_Distance operations, which require geography types and are the fastes way to check point-to-point proximity
-CREATE INDEX idx_ems_geometry_geography ON ems__incidents USING GIST((geometry::geography));
-CREATE INDEX idx_crashes_position_geography ON crashes USING GIST((position::geography));
+create index idx_ems_geometry_geography on ems__incidents using gist (
+    (geometry::geography)
+);
+create index idx_crashes_position_geography on crashes using gist (
+    (position::geography)
+);
 
 
 -- todo: do we want to ignore already-matched records?
@@ -88,8 +145,8 @@ CREATE INDEX idx_crashes_position_geography ON crashes USING GIST((position::geo
 -- todo: don't fire trigger for temp records
 
 -- Create or replace the trigger function for the crashes table
-CREATE OR REPLACE FUNCTION update_crash_ems_match()
-RETURNS TRIGGER AS $$
+create or replace function update_crash_ems_match()
+returns trigger as $$
 DECLARE
     matching_ems RECORD;
     ems_record RECORD;
@@ -159,21 +216,85 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ language plpgsql;
 
 
 -- INSERT trigger
-CREATE OR REPLACE TRIGGER crash_insert_ems_match_trigger
-AFTER INSERT ON crashes
-FOR EACH ROW EXECUTE FUNCTION update_crash_ems_match();
+create or replace trigger crash_insert_ems_match_trigger
+after insert on crashes
+for each row execute function update_crash_ems_match();
 
 -- UPDATE trigger
-CREATE OR REPLACE TRIGGER crash_update_ems_match_trigger
-AFTER UPDATE ON crashes
-FOR EACH ROW WHEN ((new.latitude IS DISTINCT FROM old.latitude) OR (new.longitude IS DISTINCT FROM old.longitude) OR (new.crash_timestamp IS DISTINCT FROM old.crash_timestamp)) EXECUTE FUNCTION update_crash_ems_match();
+create or replace trigger crash_update_ems_match_trigger
+after update on crashes
+for each row when (
+    (new.latitude is distinct from old.latitude)
+    or (new.longitude is distinct from old.longitude)
+    or (new.crash_timestamp is distinct from old.crash_timestamp)
+) execute function update_crash_ems_match();
 
 -- testing with all crashes since 2024-01-01
 -- 300 meters and interval 60 minutes: 4230 matches with 88 multiple
 -- 300 meters and interval 90 minutes: 4300 with 88 multiple
 -- 1000 meters and interval 60 minutes: 5056 matches with 125 multiple
 -- 1000 meters interval 90 minutes: 5156 and 141 multiple
+
+
+--
+-- drop redundant ems_id column and rebuild people_list_view
+--
+alter table people drop column ems_id cascade;
+
+create view people_list_view as (
+    select
+        people.id,
+        people.created_at,
+        people.created_by,
+        people.drvr_city_name,
+        people.drvr_drg_cat_1_id,
+        people.drvr_zip,
+        people.est_comp_cost_crash_based,
+        people.is_deleted,
+        people.is_primary_person,
+        people.prsn_age,
+        people.prsn_alc_rslt_id,
+        people.prsn_alc_spec_type_id,
+        people.prsn_bac_test_rslt,
+        people.prsn_death_timestamp,
+        people.prsn_drg_rslt_id,
+        people.prsn_drg_spec_type_id,
+        people.prsn_ethnicity_id,
+        people.prsn_exp_homelessness,
+        people.prsn_first_name,
+        people.prsn_gndr_id,
+        people.prsn_helmet_id,
+        people.prsn_injry_sev_id,
+        people.prsn_last_name,
+        people.prsn_mid_name,
+        people.prsn_name_sfx,
+        people.prsn_nbr,
+        people.prsn_occpnt_pos_id,
+        people.prsn_rest_id,
+        people.prsn_taken_by,
+        people.prsn_taken_to,
+        people.prsn_type_id,
+        people.unit_id,
+        people.updated_at,
+        people.updated_by,
+        people.years_of_life_lost,
+        crashes.id as crash_pk,
+        crashes.cris_crash_id,
+        crashes.crash_timestamp,
+        injry_sev.label as prsn_injry_sev_desc,
+        units.unit_nbr,
+        units.unit_desc_id,
+        mode_category.label as mode_desc
+    from people
+    left join units as units on people.unit_id = units.id
+    left join people_cris as people_cris on people.id = people_cris.id
+    left join crashes as crashes on units.crash_pk = crashes.id
+    left join lookups.injry_sev on people.prsn_injry_sev_id = injry_sev.id
+    left join
+        lookups.mode_category
+        on units.vz_mode_category_id = mode_category.id
+);
