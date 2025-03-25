@@ -1,4 +1,5 @@
 -- todo: modify AFD/EMS ETL to do nothing on conflict?
+-- todo: enforce ems/person 1-1 constraint?
 
 -- rename fk column to crash_pk and add fk constraint
 alter table ems__incidents rename column crash_id to crash_pk;
@@ -168,6 +169,8 @@ BEGIN
             AND e.incident_received_datetime  <= (NEW.crash_timestamp + INTERVAL '60 minutes')
             AND e.geometry IS NOT NULL
             AND NEW.position IS NOT NULL
+
+            -- todo: try use_spheroid = false
             AND ST_DWithin(e.geometry::geography, NEW.position::geography, meters_threshold)
     ) LOOP
         -- Find all crashes which match this EMS record location + time
