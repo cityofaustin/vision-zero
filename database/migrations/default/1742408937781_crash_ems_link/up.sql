@@ -199,7 +199,7 @@ BEGIN
         END IF;
     END LOOP;
 
-    -- When a crash is updated, handle previously matched EMS records more efficiently
+    -- handle previously matched EMS records which may need to be unlinked
     -- todo: are we sure we want to remove matches?
     IF TG_OP = 'UPDATE' THEN
         UPDATE ems__incidents 
@@ -211,7 +211,7 @@ BEGIN
               OR incident_received_datetime  > (NEW.crash_timestamp + INTERVAL '60 minutes')
               OR geometry IS NULL
               OR NEW.position IS NULL
-              OR ST_Distance(geometry::geography, NEW.position::geography) > meters_threshold
+              OR (NOT ST_DWithin(geometry::geography, NEW.position::geography, meters_threshold))
           );
     END IF;
     RETURN NEW;
@@ -219,12 +219,12 @@ END;
 $$ language plpgsql;
 
 
--- INSERT trigger
+-- insert trigger
 create or replace trigger crash_insert_ems_match_trigger
 after insert on crashes
 for each row execute function update_crash_ems_match();
 
--- UPDATE trigger
+-- update trigger
 create or replace trigger crash_update_ems_match_trigger
 after update on crashes
 for each row when (
