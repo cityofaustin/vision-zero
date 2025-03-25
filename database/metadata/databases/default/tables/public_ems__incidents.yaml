@@ -1,3 +1,7 @@
 table:
   name: ems__incidents
   schema: public
+object_relationships:
+  - name: crash
+    using:
+      foreign_key_constraint_on: crash_pk
