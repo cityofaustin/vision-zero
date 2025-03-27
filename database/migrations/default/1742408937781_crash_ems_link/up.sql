@@ -8,6 +8,9 @@ add constraint ems__incidents_crashes_crash_pk_fkey foreign key (crash_pk)
 
 comment on column ems__incidents.crash_pk is 'Crash ID matched to this record';
 
+--
+-- add people fk column
+--
 alter table ems__incidents
     add column person_id integer unique deferrable initially deferred,
     add constraint ems__incidents_person_id foreign key (
@@ -35,6 +38,7 @@ add constraint matched_crash_pks_non_null check (
     or (matched_crash_pks is NULL)
 );
 comment on column ems__incidents.crash_match_status is 'The status of the crash record match';
+comment on column ems__incidents.matched_crash_pks is 'The IDs of multiple crashes that were found to match this record. Can only be populated when crash_match_status is ''multiple_matches_by_automation''';
 
 --
 -- add column to assign injury severity
