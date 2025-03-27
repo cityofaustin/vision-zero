@@ -1,6 +1,6 @@
 "use client";
 import { notFound } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
@@ -69,6 +69,15 @@ export default function CrashDetailsPage({
     await refetch();
   }, [refetch]);
 
+  // When data is loaded or updated this sets the title of the page inside the HTML head element
+  useEffect(() => {
+    if (!!data) {
+      document.title = `${data[0].cris_crash_id} - ${data[0].address_primary ? data[0].address_primary : ""} ${
+        data[0].address_secondary ? "& " + data[0].address_secondary : ""
+      }`;
+    }
+  }, [data]);
+
   if (!data) {
     // todo: loading spinner (would be nice to use a spinner inside cards)
     return;
@@ -83,9 +92,6 @@ export default function CrashDetailsPage({
 
   return (
     <>
-      <title>{`${crash.cris_crash_id} - ${crash.address_primary ? crash.address_primary : ""} ${
-        crash.address_secondary ? "& " + crash.address_secondary : ""
-      }`}</title>
       <CrashHeader crash={crash} />
       {
         // show alert if crash on private drive or outside of Austin full purpose
