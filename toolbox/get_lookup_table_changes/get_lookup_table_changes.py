@@ -17,7 +17,7 @@ CRIS_LOOKUP_FNAME = "lookups.xml"
 
 # veh_direction_of_force is referenced by CRIS but no longer provided in the CRIS extract
 # the other tables here are custom
-LOOKUP_TABLES_TO_IGNORE = ["veh_direction_of_force", "mode_category", "movt"]
+LOOKUP_TABLES_TO_IGNORE = ["veh_direction_of_force", "mode_category", "movt", "coordination_partners"]
 
 
 def get_vz_lookup_table_names():
