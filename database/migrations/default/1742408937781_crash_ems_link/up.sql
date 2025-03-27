@@ -324,13 +324,13 @@ create trigger ems_incidents_trigger_update before update on ems__incidents for 
 --
 -- drop these individual incident number columns. a record may contain dozens of apd_incident_numbers
 -- 
-alter table ems__incidents drop column apd_incident_number_1;
-alter table ems__incidents drop column apd_incident_number_2;
+alter table ems__incidents drop column if exists apd_incident_number_1;
+alter table ems__incidents drop column if exists apd_incident_number_2;
 
 --
 -- drop redundant ems_id column and rebuild people_list_view
 --
-alter table people drop column ems_id cascade;
+alter table people drop column if exists ems_id cascade;
 
 create view people_list_view as (
     select
