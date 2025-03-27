@@ -165,7 +165,7 @@ create index crashes_case_id_index on crashes (case_id);
 create index crashes_is_temp_record_index on crashes (
     is_temp_record
 );
--- these indexes optimize our ST_Distance operations, which require geography types and are the fastes way to check point-to-point proximity
+-- these indexes optimize our ST_DWithin operations, which require geography types and are the fastes way to check point-to-point proximity
 create index idx_ems_geometry_geography on ems__incidents using gist (
     (geometry::geography)
 );
