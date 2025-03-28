@@ -1,5 +1,6 @@
 import { Crash } from "@/types/crashes";
-import CrashInjuryIndicators from "./CrashInjuryIndicators";
+import CrashInjuryIndicators from "@/components/CrashInjuryIndicators";
+import { formatAddresses } from "@/utils/formatters";
 
 interface CrashHeaderProps {
   crash: Crash;
@@ -12,9 +13,7 @@ export default function CrashHeader({ crash }: CrashHeaderProps) {
   return (
     <div className="d-flex justify-content-between mb-3">
       <span className="fs-3 fw-bold text-uppercase">
-        {`${crash.address_primary ? crash.address_primary : ""} ${
-          crash.address_secondary ? "& " + crash.address_secondary : ""
-        }`}
+        {formatAddresses(crash)}
       </span>
       {crash.crash_injury_metrics_view && (
         <CrashInjuryIndicators injuries={crash.crash_injury_metrics_view} />

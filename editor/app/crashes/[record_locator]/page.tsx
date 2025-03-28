@@ -32,6 +32,7 @@ import {
   scrollToElementOnKeyPress,
   useKeyboardShortcut,
 } from "@/utils/shortcuts";
+import { formatAddresses } from "@/utils/formatters";
 
 const typename = "crashes";
 
@@ -72,9 +73,7 @@ export default function CrashDetailsPage({
   // When data is loaded or updated this sets the title of the page inside the HTML head element
   useEffect(() => {
     if (!!data) {
-      document.title = `${data[0].cris_crash_id} - ${data[0].address_primary ? data[0].address_primary : ""} ${
-        data[0].address_secondary ? "& " + data[0].address_secondary : ""
-      }`;
+      document.title = `${data[0].cris_crash_id} - ${formatAddresses(data[0])}`;
     }
   }, [data]);
 
