@@ -1,7 +1,9 @@
-import { LookupTableOption } from "./relationships";
+import { Crash } from "@/types/crashes";
+import { LookupTableOption } from "@/types/relationships";
 
 export type EMSPatientCareRecord = {
   apd_incident_numbers: number[] | null;
+  crash: Crash | null;
   crash_match_status: string;
   crash_pk: number | null;
   id: number;

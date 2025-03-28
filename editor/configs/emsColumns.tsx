@@ -2,6 +2,8 @@ import { getInjuryColorClass } from "@/utils/people";
 import { ColDataCardDef } from "@/types/types";
 import { EMSPatientCareRecord } from "@/types/ems";
 import { formatDate } from "@/utils/formatters";
+import { Crash } from "@/types/crashes";
+import Link from "next/link";
 
 const formatCrashMatchStatus = (value: unknown) => {
   if (!value || typeof value !== "string") {
@@ -36,6 +38,27 @@ export const ALL_EMS_COLUMNS = {
   crash_pk: {
     path: "crash_pk",
     label: "Crash ID",
+  },
+  cris_crash_id: {
+    path: "crash.cris_crash_id",
+    label: "Crash ID",
+    relationship: {
+      tableSchema: "public",
+      tableName: "crashes",
+      foreignKey: "crash_pk",
+      idColumnName: "cris_crash_id",
+      labelColumnName: "Crash ID",
+    },
+    valueRenderer: (record: EMSPatientCareRecord) => {
+      if (!record.crash?.cris_crash_id) {
+        return "";
+      }
+      return (
+        <Link href={`/crashes/${record.crash.cris_crash_id}`} prefetch={false}>
+          {record.crash.cris_crash_id}
+        </Link>
+      );
+    },
   },
   id: {
     path: "id",
@@ -72,7 +95,7 @@ export const ALL_EMS_COLUMNS = {
   pcr_patient_age: { path: "pcr_patient_age", label: "Age" },
   pcr_patient_gender: { path: "pcr_patient_gender", label: "Sex" },
   pcr_patient_race: { path: "pcr_patient_race", label: "Race" },
-  patient_injry_sev_id: {
+  patient_injry_sev: {
     path: "injry_sev.label",
     label: "Injury severity",
     relationship: {
@@ -100,8 +123,9 @@ export const emsListViewColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
   ALL_EMS_COLUMNS.incident_location_address,
   ALL_EMS_COLUMNS.travel_mode,
   ALL_EMS_COLUMNS.incident_problem,
-  ALL_EMS_COLUMNS.patient_injry_sev_id,
+  ALL_EMS_COLUMNS.patient_injry_sev,
   ALL_EMS_COLUMNS.mvc_form_position_in_vehicle,
   ALL_EMS_COLUMNS.apd_incident_numbers,
   ALL_EMS_COLUMNS.crash_match_status,
+  ALL_EMS_COLUMNS.cris_crash_id,
 ];
