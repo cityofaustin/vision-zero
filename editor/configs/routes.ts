@@ -7,6 +7,7 @@ import {
   FaHeart,
 } from "react-icons/fa6";
 import { IconType } from "react-icons";
+import { FaAmbulance } from "react-icons/fa";
 
 interface Route {
   path: string;
@@ -35,6 +36,11 @@ export const routes: Route[] = [
     path: "locations",
     label: "Locations",
     icon: FaLocationDot,
+  },
+  {
+    path: "ems",
+    label: "EMS",
+    icon: FaAmbulance,
   },
   {
     path: "upload-non-cr3",

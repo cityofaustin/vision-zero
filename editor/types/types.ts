@@ -42,11 +42,19 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    */
   relationship?: Relationship<T>;
   sortable?: boolean;
+  /**
+   * Function which formats a column value as a string. See formHelpers.getRecordValue()
+   * as an example of how the column value arg is supplied
+   */
   valueFormatter?: (
     value: unknown,
     record: T,
     column: ColDataCardDef<T>
   ) => string;
+  /**
+   * Function which returns a ReactNode given an input record and column definition.
+   * Enables custom value accessing and rendering.
+   */
   valueRenderer?: (record: T, column: ColDataCardDef<T>) => ReactNode;
   /**
    * Function that returns a custom component, used for display and/or editing
