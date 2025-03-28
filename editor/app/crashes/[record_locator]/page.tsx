@@ -196,11 +196,11 @@ export default function CrashDetailsPage({
       <Row id="ems">
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
-            records={crash.people_list_view || []}
+            records={crash.ems__incidents || []}
             isValidating={isValidating}
             title="EMS Patient care"
             columns={emsRelatedRecordCols}
-            mutation={UPDATE_PERSON}
+            mutation=""
             onSaveCallback={onSaveCallback}
           />
         </Col>
