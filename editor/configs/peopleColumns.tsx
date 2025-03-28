@@ -1,19 +1,7 @@
+import { getInjuryColorClass } from "@/utils/people";
 import { ColDataCardDef } from "@/types/types";
 import { Person } from "@/types/person";
 import PersonNameField from "@/components/PersonNameField";
-
-const getInjuryColorClass = (
-  injurySeverity: string
-): "bg-danger-subtle" | "bg-warning-subtle" | "" => {
-  switch (injurySeverity) {
-    case "SUSPECTED SERIOUS INJURY":
-      return "bg-warning-subtle";
-    case "FATAL INJURY":
-      return "bg-danger-subtle";
-    default:
-      return "";
-  }
-};
 
 export const ALL_PEOPLE_COLUMNS = {
   drvr_city_name: {

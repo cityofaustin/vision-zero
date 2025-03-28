@@ -7,6 +7,7 @@ import { Person } from "@/types/person";
 import { Recommendation } from "@/types/recommendation";
 import { CrashesListRow } from "@/types/crashesList";
 import { CrashNote } from "./crashNote";
+import { EMSPatientCareRecord } from "@/types/ems";
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
@@ -21,6 +22,7 @@ export type Crash = {
   crash_timestamp: string | null;
   cris_crash_id: number | null;
   collsn: LookupTableOption | null;
+  ems__incidents: EMSPatientCareRecord[] | null;
   fhe_collsn_id: number | null;
   id: number;
   in_austin_full_purpose: boolean;

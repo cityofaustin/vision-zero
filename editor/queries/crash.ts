@@ -248,6 +248,27 @@ export const GET_CRASH = gql`
         text
         crash_pk
       }
+      ems__incidents(order_by: { id: asc }) {
+        id
+        apd_incident_numbers
+        crash_match_status
+        incident_location_address
+        incident_number
+        incident_problem
+        incident_received_datetime
+        injry_sev {
+          id
+          label
+        }
+        mvc_form_position_in_vehicle
+        patient_injry_sev_id
+        pcr_patient_age
+        pcr_patient_gender
+        pcr_patient_race
+        person_id
+        travel_mode
+        unparsed_apd_incident_numbers
+      }
     }
   }
 `;
