@@ -17,6 +17,7 @@ select_permissions:
         - crash_pk
         - id
         - incident_location_address
+        - incident_number
         - incident_problem
         - incident_received_datetime
         - matched_crash_pks
@@ -27,6 +28,7 @@ select_permissions:
         - pcr_patient_race
         - person_id
         - travel_mode
+        - unparsed_apd_incident_numbers
         - updated_at
       filter: {}
       allow_aggregations: true
@@ -39,6 +41,7 @@ select_permissions:
         - crash_pk
         - id
         - incident_location_address
+        - incident_number
         - incident_problem
         - incident_received_datetime
         - matched_crash_pks
@@ -49,6 +52,7 @@ select_permissions:
         - pcr_patient_race
         - person_id
         - travel_mode
+        - unparsed_apd_incident_numbers
         - updated_at
       filter: {}
       allow_aggregations: true
@@ -61,6 +65,7 @@ select_permissions:
         - crash_pk
         - id
         - incident_location_address
+        - incident_number
         - incident_problem
         - incident_received_datetime
         - matched_crash_pks
@@ -71,6 +76,7 @@ select_permissions:
         - pcr_patient_race
         - person_id
         - travel_mode
+        - unparsed_apd_incident_numbers
         - updated_at
       filter: {}
       allow_aggregations: true
