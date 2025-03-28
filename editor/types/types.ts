@@ -38,7 +38,7 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
   inputType?: InputType;
   /**
    * Lookup table metadata, which is used to fetch lookup values
-   * and update the foreign key column with editing
+   * and update the foreign key column when editing
    */
   relationship?: Relationship<T>;
   sortable?: boolean;
