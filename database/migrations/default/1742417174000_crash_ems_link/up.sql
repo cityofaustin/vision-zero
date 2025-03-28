@@ -44,7 +44,7 @@ comment on column ems__incidents.matched_crash_pks is 'The IDs of multiple crash
 -- add column to assign injury severity
 --
 alter table ems__incidents
-add column patient_injry_sev integer generated always as (
+add column patient_injry_sev_id integer generated always as (
     case
         when lower(pcr_provider_impression_primary) = 'death on scene' then 4
         when pcr_outcome = 'DECEASED ON SCENE' then 4
@@ -102,12 +102,12 @@ add column patient_injry_sev integer generated always as (
 ) stored;
 
 alter table ems__incidents
-add constraint ems__incidents_patient_injry_sev_fk foreign key (
-    patient_injry_sev
+add constraint ems__incidents_patient_injry_sev_id_fk foreign key (
+    patient_injry_sev_id
 )
 references lookups.injry_sev on update restrict on delete restrict;
 
-comment on column ems__incidents.patient_injry_sev is 'The patient injury severity as mapped to the CRIS injury severity lookup';
+comment on column ems__incidents.patient_injry_sev_id is 'The patient injury severity as mapped to the CRIS injury severity lookup';
 
 --
 -- add travel_mode column
@@ -155,8 +155,8 @@ create index ems__incidents_apd_incident_numbers_index on ems__incidents using g
 create index ems__incidents_geometry_index on ems__incidents using gist (
     geometry
 );
-create index ems__incidents_patient_injry_sev_index on ems__incidents (
-    patient_injry_sev
+create index ems__incidents_patient_injry_sev_id_index on ems__incidents (
+    patient_injry_sev_id
 );
 create index ems__incidents_crash_match_status_index on ems__incidents (
     crash_match_status

@@ -1,13 +1,6 @@
 drop trigger if exists crash_insert_ems_match_trigger on crashes;
 drop trigger if exists crash_update_ems_match_trigger on crashes;
 drop function update_crash_ems_match();
-alter table ems__incidents drop column apd_case_ids;
-alter table ems__incidents rename column crash_pk to crash_id;
-alter table ems__incidents drop column crash_match_status;
-alter table ems__incidents drop column matched_crash_pks;
-alter table ems__incidents drop column patient_injry_sev;
-alter table ems__incidents drop column person_id;
-alter table ems__incidents drop column travel_mode;
 drop index ems__incidents_crashes_crash_pk_index;
 drop index ems__incidents_crashes_incident_received_datetime_index;
 drop index ems__incidents_apd_incident_numbers_index;
@@ -18,6 +11,14 @@ drop index idx_ems_geometry_geography;
 drop index idx_crashes_position_geography;
 drop index ems__incidents_patient_injry_sev_index;
 drop index ems__incidents_crash_match_status_index;
+alter table ems__incidents drop column apd_case_ids;
+alter table ems__incidents rename column crash_pk to crash_id;
+alter table ems__incidents drop column crash_match_status;
+alter table ems__incidents drop column matched_crash_pks;
+alter table ems__incidents drop column patient_injry_sev_id;
+alter table ems__incidents drop column person_id;
+alter table ems__incidents drop column travel_mode;
+
 
 --
 -- restore apd_incident_number parsing
