@@ -11,7 +11,7 @@ export type EMSPatientCareRecord = {
   incident_number: number | null;
   incident_problem: string | null;
   incident_received_datetime: string | null;
-  injry_sev: LookupTableOption;
+  injry_sev: LookupTableOption | null;
   mvc_form_position_in_vehicle: string | null;
   patient_injry_sev_id: number | null;
   pcr_patient_age: number | null;
