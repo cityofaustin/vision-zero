@@ -2,9 +2,6 @@ table:
   name: people
   schema: public
 object_relationships:
-  - name: ems__incident
-    using:
-      foreign_key_constraint_on: ems_id
   - name: units
     using:
       foreign_key_constraint_on: unit_id
@@ -15,7 +12,6 @@ select_permissions:
         - is_primary_person
         - prsn_exp_homelessness
         - drvr_drg_cat_1_id
-        - ems_id
         - est_comp_cost_crash_based
         - id
         - prsn_age
@@ -55,7 +51,6 @@ select_permissions:
         - is_primary_person
         - prsn_exp_homelessness
         - drvr_drg_cat_1_id
-        - ems_id
         - est_comp_cost_crash_based
         - id
         - prsn_age
@@ -95,7 +90,6 @@ select_permissions:
         - is_primary_person
         - prsn_exp_homelessness
         - drvr_drg_cat_1_id
-        - ems_id
         - est_comp_cost_crash_based
         - id
         - prsn_age
@@ -136,7 +130,6 @@ update_permissions:
         - drvr_city_name
         - drvr_drg_cat_1_id
         - drvr_zip
-        - ems_id
         - id
         - is_primary_person
         - prsn_age
@@ -172,7 +165,6 @@ update_permissions:
         - drvr_city_name
         - drvr_drg_cat_1_id
         - drvr_zip
-        - ems_id
         - id
         - is_primary_person
         - prsn_age

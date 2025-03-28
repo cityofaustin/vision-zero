@@ -89,6 +89,13 @@ array_relationships:
         table:
           name: crash_notes
           schema: public
+  - name: ems__incidents
+    using:
+      foreign_key_constraint_on:
+        column: crash_pk
+        table:
+          name: ems__incidents
+          schema: public
   - name: people_list_view
     using:
       manual_configuration:
