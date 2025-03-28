@@ -5,3 +5,73 @@ object_relationships:
   - name: crash
     using:
       foreign_key_constraint_on: crash_pk
+  - name: injry_sev
+    using:
+      foreign_key_constraint_on: patient_injry_sev
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - apd_incident_numbers
+        - crash_match_status
+        - crash_pk
+        - id
+        - incident_location_address
+        - incident_problem
+        - incident_received_datetime
+        - matched_crash_pks
+        - mvc_form_position_in_vehicle
+        - patient_injry_sev
+        - pcr_patient_age
+        - pcr_patient_gender
+        - pcr_patient_race
+        - person_id
+        - travel_mode
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - apd_incident_numbers
+        - crash_match_status
+        - crash_pk
+        - id
+        - incident_location_address
+        - incident_problem
+        - incident_received_datetime
+        - matched_crash_pks
+        - mvc_form_position_in_vehicle
+        - patient_injry_sev
+        - pcr_patient_age
+        - pcr_patient_gender
+        - pcr_patient_race
+        - person_id
+        - travel_mode
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - apd_incident_numbers
+        - crash_match_status
+        - crash_pk
+        - id
+        - incident_location_address
+        - incident_problem
+        - incident_received_datetime
+        - matched_crash_pks
+        - mvc_form_position_in_vehicle
+        - patient_injry_sev
+        - pcr_patient_age
+        - pcr_patient_gender
+        - pcr_patient_race
+        - person_id
+        - travel_mode
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: ""
