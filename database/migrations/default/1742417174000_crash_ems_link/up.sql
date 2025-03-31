@@ -183,8 +183,8 @@ DECLARE
     ems_record RECORD;
     match_count INTEGER;
     matched_crash_ids INTEGER[];
-    meters_threshold INTEGER := 1000;
-    time_threshold INTERVAL := '60 minutes';
+    meters_threshold INTEGER := 1200;
+    time_threshold INTERVAL := '30 minutes';
 BEGIN
     -- Find all EMS records near the crash location + time
     FOR matching_ems IN (
@@ -244,6 +244,9 @@ BEGIN
         END IF;
     END LOOP;
 
+    --
+    -- nullify the crash_pk for EMS records that no longer match this crash
+    --
     IF TG_OP = 'UPDATE' THEN
         UPDATE ems__incidents
         SET crash_pk = NULL,
@@ -255,6 +258,8 @@ BEGIN
               OR incident_received_datetime  > (NEW.crash_timestamp + time_threshold)
               OR geometry IS NULL
               OR NEW.position IS NULL
+              OR NEW.is_temp_record is TRUE
+              or NEW.is_deleted is TRUE
               OR (NOT ST_DWithin(geometry::geography, NEW.position::geography, meters_threshold))
           )
           AND 
