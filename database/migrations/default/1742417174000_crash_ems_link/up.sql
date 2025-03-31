@@ -4,7 +4,7 @@
 alter table ems__incidents rename column crash_id to crash_pk;
 alter table ems__incidents
 add constraint ems__incidents_crashes_crash_pk_fkey foreign key (crash_pk)
-    references public.crashes (id) on update cascade on delete set null;
+references public.crashes (id) on update cascade on delete set null;
 
 comment on column ems__incidents.crash_pk is 'Crash ID matched to this record';
 
@@ -12,10 +12,10 @@ comment on column ems__incidents.crash_pk is 'Crash ID matched to this record';
 -- add people fk column
 --
 alter table ems__incidents
-    add column person_id integer unique deferrable initially deferred,
-    add constraint ems__incidents_person_id foreign key (
-        person_id
-    ) references people (id);
+add column person_id integer unique deferrable initially deferred,
+add constraint ems__incidents_person_id foreign key (
+    person_id
+) references people (id);
 
 comment on column ems__incidents.person_id is 'Person ID matched to this record';
 
@@ -46,34 +46,34 @@ comment on column ems__incidents.matched_crash_pks is 'The IDs of multiple crash
 alter table ems__incidents
 add column patient_injry_sev_id integer generated always as (
     case
-        when lower(pcr_provider_impression_primary) = 'death on scene' then 4
-        when pcr_outcome = 'DECEASED ON SCENE' then 4
         when
-            pcr_patient_acuity_final
-            = 'DEAD WITHOUT RESUSCITATION EFFORTS (BLACK)'
+            lower(pcr_provider_impression_primary) = 'death on scene'
+            or lower(pcr_outcome) = 'deceased on scene'
+            or lower(pcr_patient_acuity_final)
+            = 'dead without resuscitation efforts (black)'
             then 4
         when
-            upper(right(pcr_transport_priority, 1)) = '3'
+            right(pcr_transport_priority, 1) = '3'
             and lower(pcr_patient_acuity_final) = 'lower acuity (green)'
             then 2
         when
-            upper(right(pcr_transport_priority, 1)) = '3'
+            right(pcr_transport_priority, 1) = '3'
             and lower(pcr_patient_acuity_final) = 'critical (red)'
             then 1
         when
-            upper(right(pcr_transport_priority, 1)) = '3'
+            right(pcr_transport_priority, 1) = '3'
             and lower(pcr_patient_acuity_final) = 'emergent (yellow)'
             then 1
         when
-            upper(right(pcr_transport_priority, 1)) = '3'
+            right(pcr_transport_priority, 1) = '3'
             and lower(pcr_patient_acuity_initial) = 'critical (red)'
             then 1
         when
-            upper(right(pcr_transport_priority, 1)) = '3'
+            right(pcr_transport_priority, 1) = '3'
             and lower(pcr_patient_acuity_initial) = 'emergent (yellow)'
             then 1
         when
-            upper(right(pcr_transport_priority, 1)) = '3'
+            right(pcr_transport_priority, 1) = '3'
             and lower(pcr_patient_acuity_level) = 'high acuity'
             then 1
         -- what is this pcr_transport_priority?
@@ -82,7 +82,7 @@ add column patient_injry_sev_id integer generated always as (
             or upper(left(pcr_transport_priority, 1)) = 'D'
             then 1
         when
-            upper(right(pcr_transport_priority, 1)) = '3'
+            right(pcr_transport_priority, 1) = '3'
             and lower(pcr_patient_acuity_initial) = 'lower acuity (green)'
             then 2
         when
@@ -90,7 +90,7 @@ add column patient_injry_sev_id integer generated always as (
             or upper(left(pcr_transport_priority, 1)) = 'possible injury'
             then 2
         when
-            upper(right(pcr_transport_priority, 1)) != '3'
+            right(pcr_transport_priority, 1) != '3'
             and lower(pcr_patient_acuity_initial) = 'lower acuity (green)'
             then 3
         when
@@ -117,6 +117,8 @@ add column travel_mode text generated always as (
     case
         when lower(mvc_form_vehicle_type) = 'motorcycle' then 'Motorcycle'
         when lower(mvc_form_vehicle_type) = 'moped' then 'Motorcycle'
+        -- todo: dicuss with Xavier, he had this as the second-two-last case
+        when lower(mvc_form_vehicle_type) = 'motorized scooter' then 'E-Scooter'
         when lower(pcr_cause_of_injury) like '%motorcy%' then 'Motorcycle'
         when
             lower(pcr_cause_of_injury) like '%scoot%'
@@ -125,17 +127,25 @@ add column travel_mode text generated always as (
         when
             lower(pcr_cause_of_injury) like '%bike%'
             or lower(pcr_cause_of_injury) like '%bicy%'
-            or lower(pcr_patient_complaints) like '%bike%' or lower(pcr_patient_complaints) like '%bicy%' then 'Bicycle'
+            or lower(pcr_patient_complaints) like '%bike%'
+            or lower(pcr_patient_complaints) like '%bicy%'
+            then 'Bicycle'
         when
             lower(pcr_cause_of_injury) like '%pede%'
             or lower(pcr_patient_complaints) like '%pede%'
-            or (lower(pcr_cause_of_injury) like '%auto%' and lower(pcr_cause_of_injury) like '%ped%')
-            or (lower(pcr_patient_complaints) like '%auto%' and lower(pcr_patient_complaints) like '%ped%') then 'Pedestrian'
+            or (
+                lower(pcr_cause_of_injury) like '%auto%'
+                and lower(pcr_cause_of_injury) like '%ped%'
+            )
+            or (
+                lower(pcr_patient_complaints) like '%auto%'
+                and lower(pcr_patient_complaints) like '%ped%'
+            )
+            then 'Pedestrian'
         when
             lower(pcr_cause_of_injury) like '%motorcy%'
             or lower(pcr_patient_complaints) like '%mc %'
             then 'Motorcycle'
-        when lower(mvc_form_vehicle_type) = 'motorized scooter' then 'E-Scooter'
         else 'Motor Vehicle'
     end
 ) stored;
@@ -293,10 +303,10 @@ for each row when (
 --
 -- remove apd_incident_number parsing from this trigger
 --
-CREATE OR REPLACE FUNCTION public.ems_incidents_trigger()
- RETURNS trigger
- LANGUAGE plpgsql
-AS $function$
+create or replace function public.ems_incidents_trigger()
+returns trigger
+language plpgsql
+as $function$
 BEGIN
   NEW.geometry = ST_SetSRID(ST_MakePoint(NEW.longitude, NEW.latitude), 4326);
 
@@ -327,8 +337,11 @@ $function$;
 drop trigger if exists ems_incidents_trigger_update on ems__incidents;
 
 create trigger ems_incidents_trigger_update before update on ems__incidents for each row
-    when (old.latitude is distinct from new.latitude or old.longitude is distinct from new.longitude)
-    execute function ems_incidents_trigger();
+when (
+    old.latitude is distinct from new.latitude
+    or old.longitude is distinct from new.longitude
+)
+execute function ems_incidents_trigger();
 
 --
 -- drop these individual incident number columns. a record may contain dozens of apd_incident_numbers
