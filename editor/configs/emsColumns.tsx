@@ -27,6 +27,7 @@ export const ALL_EMS_COLUMNS = {
   apd_incident_numbers: {
     path: "apd_incident_numbers",
     label: "APD Case IDs",
+    sortable: true,
     valueFormatter: (value) => (Array.isArray(value) ? value.join(", ") : ""),
   },
   crash_match_status: {
