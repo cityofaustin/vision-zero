@@ -23,8 +23,8 @@ alter table ems__incidents drop column travel_mode;
 --
 -- restore apd_incident_number parsing
 --
-alter table ems__incidents add drop column apd_incident_number_1 integer;
-alter table ems__incidents add drop column apd_incident_number_2 integer;
+alter table ems__incidents drop column apd_incident_number_1 integer;
+alter table ems__incidents drop column apd_incident_number_2 integer;
 
 CREATE OR REPLACE FUNCTION public.ems_incidents_trigger()
  RETURNS trigger
