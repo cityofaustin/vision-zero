@@ -117,7 +117,6 @@ add column travel_mode text generated always as (
     case
         when lower(mvc_form_vehicle_type) = 'motorcycle' then 'Motorcycle'
         when lower(mvc_form_vehicle_type) = 'moped' then 'Motorcycle'
-        -- todo: dicuss with Xavier, he had this as the second-two-last case
         when lower(mvc_form_vehicle_type) = 'motorized scooter' then 'E-Scooter'
         when lower(pcr_cause_of_injury) like '%motorcy%' then 'Motorcycle'
         when
