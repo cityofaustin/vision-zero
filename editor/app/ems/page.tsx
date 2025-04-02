@@ -7,7 +7,6 @@ const localStorageKey = "emsListQueryConfig";
 
 export default function EMS() {
   return (
-    <>
       <Card className="mt-3">
         <Card.Header className="fs-3 fw-bold">EMS Patient care</Card.Header>
         <Card.Body>
@@ -18,6 +17,5 @@ export default function EMS() {
           />
         </Card.Body>
       </Card>
-    </>
   );
 }

@@ -2,8 +2,8 @@ import { ALL_EMS_COLUMNS } from "./emsColumns";
 
 export const emsRelatedRecordCols = [
   ALL_EMS_COLUMNS.id,
-  ALL_EMS_COLUMNS.incident_location_address,
   ALL_EMS_COLUMNS.travel_mode,
+  ALL_EMS_COLUMNS.incident_location_address,
   ALL_EMS_COLUMNS.incident_problem,
   ALL_EMS_COLUMNS.patient_injry_sev,
   ALL_EMS_COLUMNS.mvc_form_position_in_vehicle,
