@@ -20,6 +20,7 @@ import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { crashNotesColumns } from "@/configs/notesColumns";
 import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
+import { emsRelatedRecordCols } from "@/configs/emsRelatedRecordTable";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
 import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/crashNotes";
@@ -73,7 +74,7 @@ export default function CrashDetailsPage({
   // When data is loaded or updated this sets the title of the page inside the HTML head element
   useEffect(() => {
     if (!!data) {
-      document.title = `${data[0].cris_crash_id} - ${formatAddresses(data[0])}`;
+      document.title = `${data[0].record_locator} - ${formatAddresses(data[0])}`;
     }
   }, [data]);
 
@@ -196,6 +197,18 @@ export default function CrashDetailsPage({
             title="People"
             columns={peopleRelatedRecordCols}
             mutation={UPDATE_PERSON}
+            onSaveCallback={onSaveCallback}
+          />
+        </Col>
+      </Row>
+      <Row id="ems">
+        <Col sm={12} className="mb-3">
+          <RelatedRecordTable
+            records={crash.ems__incidents || []}
+            isValidating={isValidating}
+            title="EMS Patient care"
+            columns={emsRelatedRecordCols}
+            mutation=""
             onSaveCallback={onSaveCallback}
           />
         </Col>
