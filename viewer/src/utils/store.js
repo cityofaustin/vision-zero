@@ -5,7 +5,7 @@ import { mapFilterReducer } from "../views/nav/SideMapControl";
 
 export const StoreContext = React.createContext(null);
 
-export default ({ children }) => {
+export default function StoreProvider({ children }) {
   const [isOpen, setIsOpen] = useState(false);
   const [mapFilters, mapFilterDispatch] = useReducer(mapFilterReducer, []);
   const [isMapTypeSet, setIsMapTypeSet] = useState({
@@ -43,4 +43,4 @@ export default ({ children }) => {
   return (
     <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
   );
-};
+}
