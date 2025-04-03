@@ -2,8 +2,7 @@
 
 ### User roles
 
-The app has three user roles: **Admin**, **Editor**, and **Viewer**. Test accounts are available for all three accounts in 1pass. 
-
+The app has three user roles: **Admin**, **Editor**, and **Viewer**. Test accounts are available for all three accounts in 1pass.
 
 The below features should be tested with each role. Features with role-based access or visibility are are indicated as such below, with the exception of editing in-general, which the **Viewer** role is completely prohitbed from doing.
 
@@ -29,7 +28,7 @@ The below features should be tested with each role. Features with role-based acc
 - Reset filters button appears when sort column is changed
 - Column sort setting is persisted when refresh page
 - Loading spinner appearas when column sort triggers data refetch
-- Use download button to export records
+- Use download button to export records to csv
 - Download modal: Info banner appears with message about # of records to be downloaded
 - Download modal: Download button is disabled and displays a spinner while data is being fetched
 - Download modal: use Download button to save exported data
@@ -60,6 +59,7 @@ The below features should be tested with each role. Features with role-based acc
 - Crash map: crash map displays crash location with nearmap aerials
 - Crash map: edit crash location by dragging map
 - Crash map: edit crash location by keying in lat/lon
+- Crash map: in edit mode, use the address search to find a location within Austin metro area
 - Crash map: verify **Location ID** updates when crash is moved to another intersection
 - Crash map: validation restricts keying in lat/lon with alpha characters
 - Crash map: validation restricts keying in empty/blank lat/lon
@@ -123,12 +123,18 @@ The below features should be tested with each role. Features with role-based acc
   - filter using search input and selecting a field to search on
   - reset filters
   - filters are preserved (in local storage) when refreshing the page or navigating back to it
+  - export records to CSV
 
 ### Location details `/locations/[location_id]`
 
 - Location polygon map
 - Location data card displays the location ID, crash counts and comp costs
 - combined cr3 and noncr3 crashes list
+  - this will not load locally until you manually refresh the view:
+
+```sql
+refresh materialized view location_crashes_view;
+```
 
 ### EMS list - `/ems`
 
@@ -150,6 +156,11 @@ The below features should be tested with each role. Features with role-based acc
   - signout link
   - external links to report a bug, request enhancement, and TxDOT's CR3 codesheet
 
+### Dashboard page
+
+- Page loads with embedded VZV
+- Card hyperlinks work
+
 ### Users - `/users`
 
 - user list view
@@ -159,31 +170,6 @@ The below features should be tested with each role. Features with role-based acc
 - delete a user
 - copy user emails
 
-## Todo
-
-- permissions-based features:
-  - side nav
-  - field editing
-  - etc. see <Can/> component from VZE
-- crash details
-
-  - crash injury widgets
-  - notes
-  - misc column editing + placement
-  - Crash map: show coordinates and enable editing by tying into input
-  - crash diagram: zoom/tilt control
-
-- locations
-  - export records
-- location details
-  - crash charts and widgets
-- upload non-cr3
-- dashboard
-- login page: make it look nice
-- versioned localstorage
-- error boundary (see Moped's for reference)
-- map geocoder (technically an enhancement vis a vis current state)
-
 ### Misc
 
 - The route path ( `/editor`) redirects to `/editor/crashes`. Locally, `http://localhost:3002/` should also redirect to `/editor/crashes`
@@ -191,3 +177,6 @@ The below features should be tested with each role. Features with role-based acc
 - The app favicon appears in the browser tab
 - Locally, the environment banner shows at the top of the screen with a light yellow background. On staging/netlify, the banner shows with a light blue background
 - login page
+- location details
+  - crash charts and widgets
+- upload non-cr3
