@@ -74,7 +74,7 @@ export default function CrashDetailsPage({
   // When data is loaded or updated this sets the title of the page inside the HTML head element
   useEffect(() => {
     if (!!data) {
-      document.title = `${data[0].cris_crash_id} - ${formatAddresses(data[0])}`;
+      document.title = `${data[0].record_locator} - ${formatAddresses(data[0])}`;
     }
   }, [data]);
 
