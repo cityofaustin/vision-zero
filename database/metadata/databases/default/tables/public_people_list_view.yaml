@@ -47,7 +47,6 @@ select_permissions:
         - crash_pk
         - cris_crash_id
         - drvr_drg_cat_1_id
-        - ems_id
         - est_comp_cost_crash_based
         - id
         - prsn_age
@@ -94,7 +93,6 @@ select_permissions:
         - crash_pk
         - cris_crash_id
         - drvr_drg_cat_1_id
-        - ems_id
         - est_comp_cost_crash_based
         - id
         - prsn_age
@@ -141,7 +139,6 @@ select_permissions:
         - crash_pk
         - cris_crash_id
         - drvr_drg_cat_1_id
-        - ems_id
         - est_comp_cost_crash_based
         - id
         - prsn_age
