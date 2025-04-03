@@ -44,7 +44,7 @@ The below features should be tested with each role. Features with role-based acc
 - On crashes list, the **Temporary records only** filter switch shows only temporary records
 - Verify that crash details page of the temp record reflects units + people injuries correctly
 - Delete temporary crash record
-- After deleting temporary crash, use back button to navigate to it's details page and veryify 404 page shows
+- After deleting temporary crash, use back button to navigate to it's details page and verify 404 page shows
 
 ### Crash details - `/crashes/[record_locator]`
 
@@ -72,7 +72,7 @@ The below features should be tested with each role. Features with role-based acc
 - Crash diagram: danger alert shows when no diagram is available and is not temp record
 - Crash narrative: loads normally and is scrollable for long narratives
 - Crash narrative: download CR3 pdf
-- Crash data card: **Flags** card. Edit set **Private drive** to **No** and veryify that warning banner appears with notification that the crash is not included in VZ statistical reporting
+- Crash data card: **Flags** card. Edit set **Private drive** to **No** and verify that warning banner appears with notification that the crash is not included in VZ statistical reporting
 - Crash data card: edit various field types:
   - Yes/No - e.g., **At intersection**
   - Select lookup value — e.g., **Collision type**
@@ -92,7 +92,7 @@ The below features should be tested with each role. Features with role-based acc
   - Edit unit **Year**, **Body style**, **Type**, and **Movement**
 - Related records - **People**
   - Edit person **Name** and person **Type**
-  - Edit person **Injury severity** and veryif the crash injury widget (top of page to the right of crash address) updates accordingly
+  - Edit person **Injury severity** and verify the crash injury widget (top of page to the right of crash address) updates accordingly
 - Related records - **EMS Patient Care**
   - Verify records are populated (use EMS list view to find a crash with EMS records)
   - Verify records which were "automatically matched" are unmatched (disappear from table) when crash is moved +1200 meters
