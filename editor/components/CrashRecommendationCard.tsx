@@ -124,14 +124,8 @@ export default function CrashRecommendationCard({
           created_by: user?.email,
           recommendations_partners: [],
         };
-  }, [recommendation]);
+  }, [recommendation, crash_pk, user]);
 
-  /**
-   * Reset the form values after the recommendation is saved
-   */
-  useEffect(() => {
-    reset(defaultValues);
-  }, [defaultValues]);
 
   const {
     register,
@@ -143,6 +137,13 @@ export default function CrashRecommendationCard({
   } = useForm<RecommendationFormInputs>({
     defaultValues,
   });
+
+  /**
+   * Reset the form values after the recommendation is saved
+   */
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues, reset]);
 
   const { mutate } = useMutation(
     recommendation
