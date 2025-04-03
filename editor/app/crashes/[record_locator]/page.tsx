@@ -1,6 +1,6 @@
 "use client";
 import { notFound } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
@@ -20,6 +20,7 @@ import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { crashNotesColumns } from "@/configs/notesColumns";
 import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
+import { emsRelatedRecordCols } from "@/configs/emsRelatedRecordTable";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
 import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/crashNotes";
@@ -32,6 +33,7 @@ import {
   scrollToElementOnKeyPress,
   useKeyboardShortcut,
 } from "@/utils/shortcuts";
+import { formatAddresses } from "@/utils/formatters";
 
 const typename = "crashes";
 
@@ -68,6 +70,13 @@ export default function CrashDetailsPage({
   const onSaveCallback = useCallback(async () => {
     await refetch();
   }, [refetch]);
+
+  // When data is loaded or updated this sets the title of the page inside the HTML head element
+  useEffect(() => {
+    if (!!data) {
+      document.title = `${data[0].record_locator} - ${formatAddresses(data[0])}`;
+    }
+  }, [data]);
 
   if (!data) {
     // todo: loading spinner (would be nice to use a spinner inside cards)
@@ -188,6 +197,18 @@ export default function CrashDetailsPage({
             title="People"
             columns={peopleRelatedRecordCols}
             mutation={UPDATE_PERSON}
+            onSaveCallback={onSaveCallback}
+          />
+        </Col>
+      </Row>
+      <Row id="ems">
+        <Col sm={12} className="mb-3">
+          <RelatedRecordTable
+            records={crash.ems__incidents || []}
+            isValidating={isValidating}
+            title="EMS Patient care"
+            columns={emsRelatedRecordCols}
+            mutation=""
             onSaveCallback={onSaveCallback}
           />
         </Col>

@@ -124,7 +124,8 @@ export default function CrashRecommendationCard({
           created_by: user?.email,
           recommendations_partners: [],
         };
-  }, [recommendation, crash_pk, user?.email]);
+  }, [recommendation, crash_pk, user]);
+
 
   const {
     register,
