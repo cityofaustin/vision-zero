@@ -7,38 +7,40 @@ import { Container } from "reactstrap";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
 
+const LOGO_URL = `${process.env.PUBLIC_URL}/vz_logo.png`;
+
+const StyledDrawerHeader = styled.div`
+  background-color: ${colors.white};
+  color: ${colors.dark};
+  padding: 20px;
+  height: ${responsive.headerHeight}px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
+    display: none;
+  }
+  .vz-logo {
+    height: 40px;
+
+    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
+      height: 30px;
+    }
+  }
+`;
+
 const SideDrawerContent = ({ type }) => {
   const currentPath = usePath();
-
-  const StyledDrawerHeader = styled.div`
-    background-color: ${colors.white};
-    color: ${colors.dark};
-    padding: 20px;
-    height: ${responsive.headerHeight}px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
-      display: none;
-    }
-    .vz-logo {
-      height: 40px;
-
-      @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
-        height: 30px;
-      }
-    }
-  `;
 
   return (
     <div className="side-menu">
       <StyledDrawerHeader>
-        {/* Need to adjust location of public folder to account for /viewer/ basepath */}
         <img
           className="vz-logo"
-          src={process.env.PUBLIC_URL + "/vz_logo.png"}
+          src={LOGO_URL}
           alt="Vision Zero Austin Logo"
-        ></img>
+          key="vz-logo-static"
+        />
       </StyledDrawerHeader>
       <Container className="pt-3 pb-3 drawer-content">
         <SideDrawerMobileNav />
