@@ -1,5 +1,12 @@
 # Testing
 
+### User roles
+
+The app has three user roles: **Admin**, **Editor**, and **Viewer**. Test accounts are available for all three accounts in 1pass. 
+
+
+The below features should be tested with each role. Features with role-based access or visibility are are indicated as such below, with the exception of editing in-general, which the **Viewer** role is completely prohitbed from doing.
+
 ### Crashes list - `/crashes`
 
 - [role: editor, admin] **Create Crash Record** button is visibile in top-right corner of card
@@ -48,9 +55,12 @@
 - Crash injury widget reflects injuries from **People** card (test by editing person injuries)
 - Temporary record banner is visible for (temp crashes only)
 - [role: editor, admin] Delete tempoary crash record button inside temp record banner (temp crashes only)
+- Crash map: card header: displays hyperlinked **Location ID** (if crash is matched to a location)
+- Crash map: card header: displays **Provider** as **TxDOT CRIS** (default for new crashes from CRIS) or **Manual Q/A** (if a crash location is edited)
 - Crash map: crash map displays crash location with nearmap aerials
 - Crash map: edit crash location by dragging map
 - Crash map: edit crash location by keying in lat/lon
+- Crash map: verify **Location ID** updates when crash is moved to another intersection
 - Crash map: validation restricts keying in lat/lon with alpha characters
 - Crash map: validation restricts keying in empty/blank lat/lon
 - Crash map: validation restricts keying in lat/lon outside of Austin metro area
@@ -62,6 +72,7 @@
 - Crash diagram: danger alert shows when no diagram is available and is not temp record
 - Crash narrative: loads normally and is scrollable for long narratives
 - Crash narrative: download CR3 pdf
+- Crash data card: **Flags** card. Edit set **Private drive** to **No** and veryify that warning banner appears with notification that the crash is not included in VZ statistical reporting
 - Crash data card: edit various field types:
   - Yes/No - e.g., **At intersection**
   - Select lookup value — e.g., **Collision type**
@@ -76,22 +87,24 @@
 - Crash data card - **Flags**
 - Crash data card: nullify a value (e.g. street name) by clearing its input and saving it
 - [role: editor, admin] Crash data card - **Swap addresses** button is visibile in **Primary address** card header can be used to swap primary and secondary addresses
-- FRB Recommendations
-  - Create recommendation
-  - Edit recommendation
-- Related records - units
+- Related records - **Units**
   - Verify unit **Contributing factors** are listed and prefixed with either **Primary** or **Possible**
-  - [Role: editor, admin] edit unit **Year**, **Body style**, **Type**, and **Movement**
-- Related records - charges
-- Related records - people
-  - [Role: editor, viewer] Edit person **Name** and person **Type**
-  - [Role: editor, viewer] Edit person **Injury severity** and veryif the crash injury widget (top of page to the right of crash address) updates accordingly
-- Related records - EMS Patient Care
+  - Edit unit **Year**, **Body style**, **Type**, and **Movement**
+- Related records - **People**
+  - Edit person **Name** and person **Type**
+  - Edit person **Injury severity** and veryif the crash injury widget (top of page to the right of crash address) updates accordingly
+- Related records - **EMS Patient Care**
   - Verify records are populated (use EMS list view to find a crash with EMS records)
-  - [Role: editor, admin] Verify records which were "automatically matched" are unmatched (disappear from table) when crash is moved +1200 meters
+  - Verify records which were "automatically matched" are unmatched (disappear from table) when crash is moved +1200 meters
 - Record history: changes to crash, units, people are being tracked.
 - Record history: Details modal opens on row collect.
 - Record history: Card is collapseable and collapsed state is persisted when refreshing the page
+- Related records - **Notes**
+  - [role: admin, editor] Ability to add, edit, and delete notes
+  - [role: admin, editor] Note cannot be added or edited when the **Note** input is blank
+  - Note **Created at** and **Updated by** are correct
+- FRB Recommendations
+  - [role: Admin, editor] Create and edit all recommendation fields
 - Keyboard shortcuts to scroll instantly to various cards:
   - `shift` + `a`: Primary address
   - `shift` + `u`: Units
