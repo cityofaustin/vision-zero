@@ -2,7 +2,6 @@ import { getInjuryColorClass } from "@/utils/people";
 import { ColDataCardDef } from "@/types/types";
 import { EMSPatientCareRecord } from "@/types/ems";
 import { formatDate } from "@/utils/formatters";
-import { Crash } from "@/types/crashes";
 import Link from "next/link";
 
 const formatCrashMatchStatus = (value: unknown) => {
