@@ -194,6 +194,7 @@ DECLARE
     match_count INTEGER;
     matched_crash_ids INTEGER[];
     meters_threshold INTEGER := 1200;
+    -- 30 min threshold equates to a 60 minute window (+/- 30 minutes of crash timestamp)
     time_threshold INTERVAL := '30 minutes';
 BEGIN
     -- Find all EMS records near the crash location + time
