@@ -9,12 +9,18 @@ import { CRASH_NAV_SEARCH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
 import { useQuery } from "@/utils/graphql";
 
+const navSearchLocalStorageKey = "navBarSearchField";
+
 /**
  * Allows users to search for and route to a crash by
  * typing in its crash id or case id
  */
 export default function NavBarSearch() {
-  const [searchField, setSearchField] = useState("record_locator");
+  const [searchField, setSearchField] = useState<"case_id" | "record_locator">(
+    localStorage.getItem(navSearchLocalStorageKey) === "record_locator"
+      ? "record_locator"
+      : "case_id"
+  );
   const [searchValue, setSearchValue] = useState("");
   const [searchClicked, setSearchClicked] = useState(false);
 
@@ -43,6 +49,10 @@ export default function NavBarSearch() {
       }
     }
   }, [searchClicked, data, router]);
+
+  useEffect(() => {
+    localStorage.setItem(navSearchLocalStorageKey, searchField);
+  }, [searchField]);
 
   const onSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

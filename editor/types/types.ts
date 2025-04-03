@@ -79,9 +79,9 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
 }
 
 export interface MutationVariables extends Variables {
-  [key: string]: any;
+  [key: string]: unknown;
   updates?: {
-    [key: string]: any;
+    [key: string]: unknown;
     updated_by?: string;
   };
 }

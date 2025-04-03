@@ -1,6 +1,6 @@
 "use client";
 import { notFound } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
@@ -33,6 +33,7 @@ import {
   scrollToElementOnKeyPress,
   useKeyboardShortcut,
 } from "@/utils/shortcuts";
+import { formatAddresses } from "@/utils/formatters";
 
 const typename = "crashes";
 
@@ -69,6 +70,13 @@ export default function CrashDetailsPage({
   const onSaveCallback = useCallback(async () => {
     await refetch();
   }, [refetch]);
+
+  // When data is loaded or updated this sets the title of the page inside the HTML head element
+  useEffect(() => {
+    if (!!data) {
+      document.title = `${data[0].cris_crash_id} - ${formatAddresses(data[0])}`;
+    }
+  }, [data]);
 
   if (!data) {
     // todo: loading spinner (would be nice to use a spinner inside cards)
@@ -226,7 +234,7 @@ export default function CrashDetailsPage({
             insertMutation={INSERT_CRASH_NOTE}
             onSaveCallback={onSaveCallback}
             recordId={crash.id}
-            refetch={refetch}
+            refetch={onSaveCallback}
           />
         </Col>
       </Row>
