@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-
 import ChangeLog from "@/components/ChangeLog";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import CrashHeader from "@/components/CrashHeader";
@@ -34,6 +33,7 @@ import {
   useKeyboardShortcut,
 } from "@/utils/shortcuts";
 import { formatAddresses } from "@/utils/formatters";
+import EMSCardHeader from "@/components/EMSCardHeader";
 
 const typename = "crashes";
 
@@ -182,7 +182,8 @@ export default function CrashDetailsPage({
           <RelatedRecordTable
             records={crash.units || []}
             isValidating={isValidating}
-            title="Units"
+            noRowsMessage="No unit records found"
+            header="Units"
             columns={unitRelatedRecordCols}
             mutation={UPDATE_UNIT}
             onSaveCallback={onSaveCallback}
@@ -194,7 +195,8 @@ export default function CrashDetailsPage({
           <RelatedRecordTable
             records={crash.people_list_view || []}
             isValidating={isValidating}
-            title="People"
+            noRowsMessage="No people records found"
+            header="People"
             columns={peopleRelatedRecordCols}
             mutation={UPDATE_PERSON}
             onSaveCallback={onSaveCallback}
@@ -206,7 +208,8 @@ export default function CrashDetailsPage({
           <RelatedRecordTable
             records={crash.ems__incidents || []}
             isValidating={isValidating}
-            title="EMS Patient care"
+            header={<EMSCardHeader />}
+            noRowsMessage="No EMS records found"
             columns={emsRelatedRecordCols}
             mutation=""
             onSaveCallback={onSaveCallback}
@@ -218,7 +221,8 @@ export default function CrashDetailsPage({
           <RelatedRecordTable
             records={crash.charges_cris || []}
             isValidating={isValidating}
-            title="Charges"
+            noRowsMessage="No charge records found"
+            header="Charges"
             columns={chargeRelatedRecordCols}
             mutation={""}
             onSaveCallback={onSaveCallback}

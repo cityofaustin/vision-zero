@@ -26,13 +26,14 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
    */
   isValidating: boolean;
   /**
-   * The title to be rendered in the table's card header
+   * Optional message to be rendered when the table has no rows
    */
-  title: string;
+  noRowsMessage?: string;
   /**
-   * Optional React component to be rendered in the card's header
+   * The card header string or component to be rendered in the table's card header. If a string is
+   * provided, it will be rendered as a <Card.Title>
    */
-  headerActionComponent?: React.ReactNode;
+  header: React.ReactNode;
   /**
    * Optional react component to be rendered in the rightmost
    * column of every row
@@ -68,18 +69,19 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
   mutation,
   rowActionMutation,
   isValidating,
-  title,
-  headerActionComponent,
+  noRowsMessage,
+  header,
   onSaveCallback,
   rowActionComponent,
 }: RelatedRecordTableProps<T>) {
   return (
     <Card>
       <Card.Header>
-        <div className="d-flex justify-content-between">
-          <Card.Title>{title}</Card.Title>
-          {!!headerActionComponent && headerActionComponent}
-        </div>
+        {typeof header === "string" ? (
+          <Card.Title>{header}</Card.Title>
+        ) : (
+          header
+        )}
       </Card.Header>
       <Card.Body>
         <Table hover responsive>
@@ -101,7 +103,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
                   colSpan={columns.length + (rowActionComponent ? 1 : 0)}
                   className="text-center text-secondary"
                 >
-                  No {title.toLowerCase()} found
+                  {noRowsMessage ? noRowsMessage : "No records found"}
                 </td>
               </tr>
             ) : (
