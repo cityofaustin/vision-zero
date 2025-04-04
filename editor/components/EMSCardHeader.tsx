@@ -12,9 +12,9 @@ export default function EMSCardHeader() {
       </div>
       <div className="fw-light text-secondary">
         <span className="d-flex align-items-center">
-          <FaCircleInfo className="me-2" style={{minWidth: "1rem"}} />
+          <FaCircleInfo className="me-2" style={{ minWidth: "1rem" }} />
           <span>
-            EMS is currently in beta. Data may be inaccurate or change
+            EMS analysis is currently in beta. Data may be inaccurate or change
             significantly as we continue to refine the system.
           </span>
         </span>

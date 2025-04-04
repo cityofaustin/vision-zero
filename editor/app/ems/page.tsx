@@ -23,7 +23,8 @@ export default function EMS() {
           <AlignedLabel>
             <FaCircleInfo className="me-2" />
             <span>
-              EMS is currently in beta. Data may be inaccurate or change significantly as we continue to refine the system.
+              EMS analysis is currently in beta. Data may be inaccurate or
+              change significantly as we continue to refine the system.
             </span>
           </AlignedLabel>
         </Card.Subtitle>
