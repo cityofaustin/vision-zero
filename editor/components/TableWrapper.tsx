@@ -12,7 +12,7 @@ import { makeDateFilterFromMode } from "@/utils/dates";
 import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
 import { useQueryBuilder, useExportQuery } from "@/utils/queryBuilder";
 import { QueryConfig, Filter } from "@/types/queryBuilder";
-import { ColDataCardDef } from "@/types/types";
+import { ColDataCardDef, ColumnVisibilitySetting } from "@/types/types";
 import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
 import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFilterToggle";
 import TableExportModal from "@/components/TableExportModal";
@@ -58,8 +58,28 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 }: TableProps<T>) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [areFiltersDirty, setAreFiltersDirty] = useState(false);
-  const [isLocalStorageLoaded, setIsLocalStorageLoaded] = useState(false);
+  const [isQueryConfigLocalStorageLoaded, setIsQueryConfigLocalStorageLoaded] =
+    useState(false);
+  const [
+    isColVisibilityLocalStorageLoaded,
+    setIsColVisibilityLocalStorageLoaded,
+  ] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+
+  /**
+   * Initialize column visibility from provided columns
+   */
+  const [columnVisbilitySettings, setColumnVisbilitySettings] = useState<
+    ColumnVisibilitySetting[]
+  >(
+    columns
+      .filter((col) => !col.exportOnly)
+      .map((col) => ({
+        path: String(col.path),
+        isVisible: !col.defaultHidden,
+        label: col.label,
+      }))
+  );
   const [searchSettings, setSearchSettings] = useState<SearchSettings>({
     searchString: String(initialQueryConfig.searchFilter.value),
     searchColumn: initialQueryConfig.searchFilter.column,
@@ -68,10 +88,26 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     ...initialQueryConfig,
   });
 
+  /**
+   * Construct the table's visibile columns
+   */
   const visibleColumns = useMemo(
-    () => columns.filter((col) => !col.exportOnly),
-    [columns]
+    () =>
+      columns.filter((col) => {
+        const colFromVisibilitySettings = columnVisbilitySettings.find(
+          (visibleColumn) => visibleColumn.path === col.path
+        );
+        /**
+         * if a matching column is found in the visibility settings, use it
+         * otherwise the column is visible unless it's exportOnly or defaultHidden
+         */
+        return colFromVisibilitySettings
+          ? colFromVisibilitySettings.isVisible
+          : !col.exportOnly && !col.defaultHidden;
+      }),
+    [columns, columnVisbilitySettings]
   );
+
   const query = useQueryBuilder(
     queryConfig,
     visibleColumns,
@@ -82,7 +118,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   const { data, aggregateData, isLoading, error, refetch } = useQuery<T>({
     // don't fire first query until localstorage is loaded
-    query: isLocalStorageLoaded ? query : null,
+    query: isQueryConfigLocalStorageLoaded ? query : null,
     typename: queryConfig.tableName,
     hasAggregates: true,
   });
@@ -96,25 +132,24 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   const rows = data || [];
 
   /**
-   * Load query config from local storage
+   * Load queryConfig settings from localstorage
    */
   useEffect(() => {
+    /**
+     * Try to load queryConfig
+     */
     const configFromStorageString = localStorage.getItem(localStorageKey) || "";
     let queryConfigFromStorage: QueryConfig | undefined;
 
-    /**
-     * Try to parse any config we can find
-     */
     try {
       queryConfigFromStorage = JSON.parse(configFromStorageString);
     } catch {
       console.error(
         "Unable to parse queryConfig from local storage. Using default config instead"
       );
-      setIsLocalStorageLoaded(true);
+      setIsQueryConfigLocalStorageLoaded(true);
       return;
     }
-
     /**
      * Validate the query config we found in local storage
      */
@@ -125,10 +160,9 @@ export default function TableWrapper<T extends Record<string, unknown>>({
         "Invalid QueryConfig found in local storage. Using default config instead."
       );
       console.error(err);
-      setIsLocalStorageLoaded(true);
+      setIsQueryConfigLocalStorageLoaded(true);
       return;
     }
-
     /**
      * If date mode filters (YTD, 1Y, 5Y, etc) are in use, bring them into sync
      * with current date. We do this by recalculating the date filter start / end
@@ -149,20 +183,93 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       queryConfigFromStorage.dateFilter = newDateFilter;
     }
 
-    setIsLocalStorageLoaded(true);
+    setIsQueryConfigLocalStorageLoaded(true);
     if (queryConfigFromStorage) {
       setQueryConfig(queryConfigFromStorage);
     }
   }, [localStorageKey]);
 
   /**
+   * Load column visibility settings from localstorage
+   */
+  useEffect(() => {
+    if (!isColVisibilityLocalStorageLoaded) {
+      console.log("SKIP LOADING VIS");
+    }
+    /**
+     * Try to load column visibility
+     */
+    const columnLocalStorageKey = localStorageKey + "_columnVisibility";
+    const columnVisibilityFromStorageString =
+      localStorage.getItem(columnLocalStorageKey) || "";
+    let columnVisibilityFromStorage: ColumnVisibilitySetting[] | undefined;
+
+    try {
+      columnVisibilityFromStorage = JSON.parse(
+        columnVisibilityFromStorageString
+      );
+    } catch {
+      console.error(
+        "Unable to parse column visibility from local storage. Using default visibility instead"
+      );
+      setIsColVisibilityLocalStorageLoaded(true);
+      return;
+    }
+
+    if (columnVisibilityFromStorage) {
+      /**
+       * Update the default visibility from what was found in local storage. This
+       * ensures that stale col visibility data from storage is brought into sync
+       * with the current version of the table config
+       */
+      const updatedColVisibilitySettings = columnVisbilitySettings.map(
+        (col) => {
+          const savedCol = columnVisibilityFromStorage.find(
+            (savedCol) => savedCol.path === col.path
+          );
+          if (savedCol) {
+            // use visibility from saved column
+            return { ...col, isVisible: savedCol.isVisible };
+          } else {
+            return { ...col };
+          }
+        }
+      );
+      setColumnVisbilitySettings(updatedColVisibilitySettings);
+      setIsColVisibilityLocalStorageLoaded(true);
+    }
+  }, [
+    localStorageKey,
+    columns,
+    columnVisbilitySettings,
+    isColVisibilityLocalStorageLoaded,
+  ]);
+
+  /**
    * Keep changes to query config in sync with localstorage
    */
   useEffect(() => {
-    if (isLocalStorageLoaded) {
+    if (isQueryConfigLocalStorageLoaded) {
       localStorage.setItem(localStorageKey, JSON.stringify(queryConfig));
     }
-  }, [isLocalStorageLoaded, queryConfig, localStorageKey]);
+  }, [isQueryConfigLocalStorageLoaded, queryConfig, localStorageKey]);
+
+  /**
+   * Keep changes to col visibility in sync with localstorage
+   */
+  useEffect(() => {
+    if (isColVisibilityLocalStorageLoaded) {
+      const columnVisLocalStorageKey = localStorageKey + "_columnVisibility";
+      localStorage.setItem(
+        columnVisLocalStorageKey,
+        JSON.stringify(columnVisbilitySettings)
+      );
+    }
+  }, [
+    isColVisibilityLocalStorageLoaded,
+    localStorageKey,
+    columnVisbilitySettings,
+  ]);
 
   /**
    * Keep the search settings string in sync with queryConfig changes
@@ -182,7 +289,6 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   useEffect(() => {
     const queryConfigMutable = cloneDeep(queryConfig);
     const initialQueryConfigMutable = cloneDeep(initialQueryConfig);
-
     /**
      * Ignore date timestamps if not using a custom range
      */
@@ -211,7 +317,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
    * wait until the localstorage hook resolves to render anything
    * to prevent filter UI elements from jumping
    */
-  if (!isLocalStorageLoaded) {
+  if (!isQueryConfigLocalStorageLoaded) {
     return;
   }
 
@@ -267,6 +373,8 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           </Col>
           <Col className="d-flex justify-content-end mt-2" xs="auto">
             <TablePaginationControls
+              columnVisbilitySettings={columnVisbilitySettings}
+              setColumnVisbilitySettings={setColumnVisbilitySettings}
               queryConfig={queryConfig}
               setQueryConfig={setQueryConfig}
               recordCount={rows.length}

@@ -3,12 +3,18 @@ import { produce } from "immer";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
-import AlignedLabel from "./AlignedLabel";
-import { QueryConfig } from "@/types/queryBuilder";
-import "react-datepicker/dist/react-datepicker.css";
 import { FaAngleLeft, FaAngleRight, FaDownload } from "react-icons/fa6";
+import AlignedLabel from "./AlignedLabel";
+import TableSettingsMenu from "@/components/TableSettingsMenu";
+import { QueryConfig } from "@/types/queryBuilder";
+import { ColumnVisibilitySetting } from "@/types/types";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface PaginationControlProps {
+  columnVisbilitySettings: ColumnVisibilitySetting[];
+  setColumnVisbilitySettings: Dispatch<
+    SetStateAction<ColumnVisibilitySetting[]>
+  >;
   queryConfig: QueryConfig;
   setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
   recordCount: number;
@@ -19,10 +25,11 @@ interface PaginationControlProps {
 }
 
 /**
- * UI component that controls pagination by setting the
- * QueryConfig offset
+ * UI component that controls pagination, export, and column settings
  */
 export default function TablePaginationControls({
+  columnVisbilitySettings,
+  setColumnVisbilitySettings,
   queryConfig,
   setQueryConfig,
   recordCount,
@@ -86,7 +93,7 @@ export default function TablePaginationControls({
         </Button>
         <span
           aria-label="Current page number"
-          className="btn text-secondary mx-2 text-nowrap border-0"
+          className="my-auto text-center text-secondary mx-2 text-nowrap border-0"
         >
           {`Page ${currentPageNum}`}
         </span>
@@ -108,6 +115,10 @@ export default function TablePaginationControls({
           <FaAngleRight />
         </Button>
       </ButtonGroup>
+      <TableSettingsMenu
+        columnVisbilitySettings={columnVisbilitySettings}
+        setColumnVisbilitySettings={setColumnVisbilitySettings}
+      />
     </ButtonToolbar>
   );
 }
