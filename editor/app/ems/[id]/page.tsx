@@ -1,22 +1,25 @@
 "use client";
 import { notFound } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { useQuery } from "@/utils/graphql";
+import { commonValidations } from "@/utils/formHelpers";
 import { GET_EMS_RECORD } from "@/queries/ems";
 import { EMSPatientCareRecord } from "@/types/ems";
 
 const typename = "ems__incidents";
 
-export default function CrashDetailsPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function EMSDetailsPage({ params }: { params: { id: string } }) {
+  const id = params.id;
+
   const { data, error } = useQuery<EMSPatientCareRecord>({
-    query: params.id ? GET_EMS_RECORD : null,
-    variables: { id: parseInt(params.id) || 0 },
+    query: id ? GET_EMS_RECORD : null,
+    // if ID is provided, query for it, coercing non-numbers to zero and
+    // thereby triggering the 404
+    variables: {
+      id: commonValidations.isNumber(id) === true ? parseInt(id) : 0,
+    },
     typename,
   });
 
