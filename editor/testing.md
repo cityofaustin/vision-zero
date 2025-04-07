@@ -141,7 +141,7 @@ refresh materialized view location_crashes_view;
 - filter using various search input fields and filter card switches
 - filters are preserved (in local storage) when refreshing the page or navigating back to it
 - for records with a matching crash, the **Crash ID** column is populated with working URL to the crash details page
-- **ID** column has a working hyperlink to the crash details (`/crashes/[record_locator]`) page to navigates to the EMS details page
+- **ID** column has a working hyperlink to the crash details (`/crashes/[record_locator]`)
 
 ### EMS details - `/ems/[id]`
 
