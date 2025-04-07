@@ -193,8 +193,8 @@ export default function TableWrapper<T extends Record<string, unknown>>({
    * Load column visibility settings from localstorage
    */
   useEffect(() => {
-    if (!isColVisibilityLocalStorageLoaded) {
-      console.log("SKIP LOADING VIS");
+    if (isColVisibilityLocalStorageLoaded) {
+      return;
     }
     /**
      * Try to load column visibility
