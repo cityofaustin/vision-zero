@@ -38,15 +38,23 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
   inputType?: InputType;
   /**
    * Lookup table metadata, which is used to fetch lookup values
-   * and update the foreign key column with editing
+   * and update the foreign key column when editing
    */
   relationship?: Relationship<T>;
   sortable?: boolean;
+  /**
+   * Function which formats a column value as a string. See formHelpers.getRecordValue()
+   * as an example of how the column value arg is supplied
+   */
   valueFormatter?: (
     value: unknown,
     record: T,
     column: ColDataCardDef<T>
   ) => string;
+  /**
+   * Function which returns a ReactNode given an input record and column definition.
+   * Enables custom value accessing and rendering.
+   */
   valueRenderer?: (record: T, column: ColDataCardDef<T>) => ReactNode;
   /**
    * Function that returns a custom component, used for display and/or editing
@@ -71,9 +79,9 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
 }
 
 export interface MutationVariables extends Variables {
-  [key: string]: any;
+  [key: string]: unknown;
   updates?: {
-    [key: string]: any;
+    [key: string]: unknown;
     updated_by?: string;
   };
 }

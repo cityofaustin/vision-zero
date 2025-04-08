@@ -1,3 +1,5 @@
 env
 extract
 *.sql
+*.zip
+!lookups.xml

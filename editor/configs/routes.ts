@@ -1,10 +1,11 @@
 import {
-  FaShieldHeart,
   FaGaugeHigh,
   FaLocationDot,
   FaUserGroup,
   FaCloudArrowUp,
   FaHeart,
+  FaCarBurst,
+  FaTruckMedical,
 } from "react-icons/fa6";
 import { IconType } from "react-icons";
 
@@ -24,7 +25,7 @@ export const routes: Route[] = [
   {
     path: "crashes",
     label: "Crashes",
-    icon: FaShieldHeart,
+    icon: FaCarBurst,
   },
   {
     path: "fatalities",
@@ -35,6 +36,11 @@ export const routes: Route[] = [
     path: "locations",
     label: "Locations",
     icon: FaLocationDot,
+  },
+  {
+    path: "ems",
+    label: "EMS",
+    icon: FaTruckMedical,
   },
   {
     path: "upload-non-cr3",

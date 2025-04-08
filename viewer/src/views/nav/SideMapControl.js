@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { StoreContext } from "../../utils/store";
 
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";
 import SideMapControlOverlays from "./SideMapControlOverlays";
 import SideMapFooter from "./SideMapFooter";
-import { trackPageEvent } from "../../constants/nav";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { colors } from "../../constants/colors";
@@ -127,125 +126,133 @@ const SideMapControl = ({ type }) => {
     mapFilterType: [isMapTypeSet, setIsMapTypeSet],
   } = React.useContext(StoreContext);
 
-  const setTypeFilters = (typeArray) => {
-    // Set types in array as true and others as false
-    const updatedState = Object.keys(isMapTypeSet).reduce((acc, type) => {
-      if (typeArray.includes(type)) {
-        acc = { ...acc, [type]: true };
-      } else {
-        acc = { ...acc, [type]: false };
-      }
-      return acc;
-    }, {});
+  const setTypeFilters = useCallback(
+    (typeArray) => {
+      // Set types in array as true and others as false
+      const updatedState = Object.keys(isMapTypeSet).reduce((acc, type) => {
+        if (typeArray.includes(type)) {
+          acc = { ...acc, [type]: true };
+        } else {
+          acc = { ...acc, [type]: false };
+        }
+        return acc;
+      }, {});
 
-    setIsMapTypeSet(updatedState);
-  };
+      setIsMapTypeSet(updatedState);
+    },
+    [isMapTypeSet, setIsMapTypeSet]
+  );
 
   // Update mode syntax (fatal, injury, or both) when type filter updates
   useEffect(() => {
     dispatchFilters({ type: "updateModeSyntax", payload: isMapTypeSet });
   }, [isMapTypeSet, dispatchFilters]);
 
-  const handleTypeFilterClick = (filterArr) => {
-    setTypeFilters(filterArr);
-    // Track single filter clicks with Google Analytics
-    filterArr.length === 1 && trackPageEvent(filterArr[0]);
-  };
+  const handleTypeFilterClick = useCallback(
+    (filterArr) => {
+      setTypeFilters(filterArr);
+    },
+    [setTypeFilters]
+  );
 
   // Define groups of map button filters
-  const mapFiltersConfig = {
-    type: {
-      shared: {
-        eachClass: `type-button`,
-        uiType: "button",
-      },
-      each: {
-        all: {
-          text: `All`,
-          colSize: "auto",
-          handler: () => handleTypeFilterClick(["injury", "fatal"]),
-          isSelected: isMapTypeSet.injury && isMapTypeSet.fatal,
-          default: false,
+
+  const mapFiltersConfig = useMemo(
+    () => ({
+      type: {
+        shared: {
+          eachClass: `type-button`,
+          uiType: "button",
         },
-        fatal: {
-          text: `Fatal`,
-          colSize: "auto",
-          icon: faHeartbeat,
-          iconColor: colors.fatalities,
-          handler: () => handleTypeFilterClick(["fatal"]),
-          isSelected: isMapTypeSet.fatal && !isMapTypeSet.injury,
-          default: false,
-        },
-        seriousInjury: {
-          text: `Serious Injuries`,
-          colSize: "auto",
-          icon: faMedkit,
-          iconColor: colors.seriousInjuries,
-          handler: () => handleTypeFilterClick(["injury"]),
-          isSelected: isMapTypeSet.injury && !isMapTypeSet.fatal,
-          default: false,
-        },
-      },
-    },
-    mode: {
-      shared: {
-        uiType: "checkbox",
-        allClass: "outlined py-2 px-0",
-        eachClass: "dark-checkbox",
-      },
-      each: {
-        pedestrian: {
-          icon: faWalking, // Font Awesome icon object
-          fatalSyntax: `pedestrian_death_count > 0`, // Fatality query string
-          injurySyntax: `pedestrian_serious_injury_count > 0`, // Injury query string
-          type: `where`, // Socrata SoQL query type
-          operator: `OR`, // Logical operator for joining multiple query strings
-          default: true, // Apply filter as default on render
-        },
-        bicyclist: {
-          icon: faBiking,
-          fatalSyntax: `bicycle_death_count > 0`,
-          injurySyntax: `bicycle_serious_injury_count > 0`,
-          type: `where`,
-          operator: `OR`,
-          default: true,
-        },
-        motorist: {
-          icon: faCar,
-          fatalSyntax: `motor_vehicle_death_count > 0`,
-          injurySyntax: `motor_vehicle_serious_injury_count > 0`,
-          type: `where`,
-          operator: `OR`,
-          default: true,
-        },
-        motorcyclist: {
-          icon: faMotorcycle,
-          fatalSyntax: `motorcycle_death_count > 0`,
-          injurySyntax: `motorcycle_serious_injury_count > 0`,
-          type: `where`,
-          operator: `OR`,
-          default: true,
-        },
-        scooter: {
-          text: "E-Scooter Rider",
-          icon: faMobileAlt,
-          fatalSyntax: `micromobility_death_count > 0`,
-          injurySyntax: `micromobility_serious_injury_count > 0`,
-          type: `where`,
-          operator: `OR`,
-          default: true,
-        },
-        other: {
-          icon: faEllipsisH,
-          fatalSyntax: `other_death_count > 0`,
-          injurySyntax: `other_serious_injury_count > 0`,
-          type: `where`,
-          operator: `OR`,
-          default: true,
+        each: {
+          all: {
+            text: `All`,
+            colSize: "auto",
+            handler: () => handleTypeFilterClick(["injury", "fatal"]),
+            isSelected: isMapTypeSet.injury && isMapTypeSet.fatal,
+            default: false,
+          },
+          fatal: {
+            text: `Fatal`,
+            colSize: "auto",
+            icon: faHeartbeat,
+            iconColor: colors.fatalities,
+            handler: () => handleTypeFilterClick(["fatal"]),
+            isSelected: isMapTypeSet.fatal && !isMapTypeSet.injury,
+            default: false,
+          },
+          seriousInjury: {
+            text: `Serious Injuries`,
+            colSize: "auto",
+            icon: faMedkit,
+            iconColor: colors.seriousInjuries,
+            handler: () => handleTypeFilterClick(["injury"]),
+            isSelected: isMapTypeSet.injury && !isMapTypeSet.fatal,
+            default: false,
+          },
         },
       },
-    },
-  };
+      mode: {
+        shared: {
+          uiType: "checkbox",
+          allClass: "outlined py-2 px-0",
+          eachClass: "dark-checkbox",
+        },
+        each: {
+          pedestrian: {
+            icon: faWalking, // Font Awesome icon object
+            fatalSyntax: `pedestrian_death_count > 0`, // Fatality query string
+            injurySyntax: `pedestrian_serious_injury_count > 0`, // Injury query string
+            type: `where`, // Socrata SoQL query type
+            operator: `OR`, // Logical operator for joining multiple query strings
+            default: true, // Apply filter as default on render
+          },
+          bicyclist: {
+            icon: faBiking,
+            fatalSyntax: `bicycle_death_count > 0`,
+            injurySyntax: `bicycle_serious_injury_count > 0`,
+            type: `where`,
+            operator: `OR`,
+            default: true,
+          },
+          motorist: {
+            icon: faCar,
+            fatalSyntax: `motor_vehicle_death_count > 0`,
+            injurySyntax: `motor_vehicle_serious_injury_count > 0`,
+            type: `where`,
+            operator: `OR`,
+            default: true,
+          },
+          motorcyclist: {
+            icon: faMotorcycle,
+            fatalSyntax: `motorcycle_death_count > 0`,
+            injurySyntax: `motorcycle_serious_injury_count > 0`,
+            type: `where`,
+            operator: `OR`,
+            default: true,
+          },
+          scooter: {
+            text: "E-Scooter Rider",
+            icon: faMobileAlt,
+            fatalSyntax: `micromobility_death_count > 0`,
+            injurySyntax: `micromobility_serious_injury_count > 0`,
+            type: `where`,
+            operator: `OR`,
+            default: true,
+          },
+          other: {
+            icon: faEllipsisH,
+            fatalSyntax: `other_death_count > 0`,
+            injurySyntax: `other_serious_injury_count > 0`,
+            type: `where`,
+            operator: `OR`,
+            default: true,
+          },
+        },
+      },
+    }),
+    [handleTypeFilterClick, isMapTypeSet.fatal, isMapTypeSet.injury]
+  );
 
   const mapOtherFilters = {
     timeOfDay: {

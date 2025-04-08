@@ -78,23 +78,23 @@ add column patient_injry_sev_id integer generated always as (
             then 1
         -- what is this pcr_transport_priority?
         when
-            upper(left(pcr_transport_priority, 1)) = 'CHARLIE'
-            or upper(left(pcr_transport_priority, 1)) = 'D'
+            lower(left(pcr_transport_priority, 1)) = 'charlie'
+            or lower(left(pcr_transport_priority, 1)) = 'd'
             then 1
         when
             right(pcr_transport_priority, 1) = '3'
             and lower(pcr_patient_acuity_initial) = 'lower acuity (green)'
             then 2
         when
-            upper(left(pcr_transport_priority, 1)) = 'minor injury'
-            or upper(left(pcr_transport_priority, 1)) = 'possible injury'
+            lower(left(pcr_transport_priority, 1)) = 'minor injury'
+            or lower(left(pcr_transport_priority, 1)) = 'possible injury'
             then 2
         when
             right(pcr_transport_priority, 1) != '3'
             and lower(pcr_patient_acuity_initial) = 'lower acuity (green)'
             then 3
         when
-            upper(right(pcr_outcome, 7)) = 'REFUSED'
+            lower(right(pcr_outcome, 7)) = 'refused'
             and left(lower(pcr_patient_acuity_level), 10) = 'low acuity'
             then 3
         else 5
@@ -107,7 +107,7 @@ add constraint ems__incidents_patient_injry_sev_id_fk foreign key (
 )
 references lookups.injry_sev on update restrict on delete restrict;
 
-comment on column ems__incidents.patient_injry_sev_id is 'The patient injury severity as mapped to the CRIS injury severity lookup';
+comment on column ems__incidents.patient_injry_sev_id is 'The patient injury severity as mapped to the CRIS injury severity lookup. Based on methodology provided by Xavier A.';
 
 --
 -- add travel_mode column
@@ -117,7 +117,6 @@ add column travel_mode text generated always as (
     case
         when lower(mvc_form_vehicle_type) = 'motorcycle' then 'Motorcycle'
         when lower(mvc_form_vehicle_type) = 'moped' then 'Motorcycle'
-        -- todo: dicuss with Xavier, he had this as the second-two-last case
         when lower(mvc_form_vehicle_type) = 'motorized scooter' then 'E-Scooter'
         when lower(pcr_cause_of_injury) like '%motorcy%' then 'Motorcycle'
         when
@@ -150,6 +149,7 @@ add column travel_mode text generated always as (
     end
 ) stored;
 
+comment on column ems__incidents.travel_mode is 'The travel mode used by the patient. Based on methodology provided by Xavier A.';
 
 --
 -- add some indexes
@@ -194,6 +194,7 @@ DECLARE
     match_count INTEGER;
     matched_crash_ids INTEGER[];
     meters_threshold INTEGER := 1200;
+    -- 30 min threshold equates to a 60 minute window (+/- 30 minutes of crash timestamp)
     time_threshold INTERVAL := '30 minutes';
 BEGIN
     -- Find all EMS records near the crash location + time
@@ -211,7 +212,6 @@ BEGIN
             AND e.incident_received_datetime  <= (NEW.crash_timestamp + time_threshold)
             AND e.geometry IS NOT NULL
             AND NEW.position IS NOT NULL
-            -- todo: try use_spheroid = false
             AND ST_DWithin(e.geometry::geography, NEW.position::geography, meters_threshold)
     ) LOOP
         -- Find all crashes which match this EMS record location + time

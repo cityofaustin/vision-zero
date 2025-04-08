@@ -1,9 +1,8 @@
 "use client";
 import { notFound } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-
 import ChangeLog from "@/components/ChangeLog";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import CrashHeader from "@/components/CrashHeader";
@@ -20,6 +19,7 @@ import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { crashNotesColumns } from "@/configs/notesColumns";
 import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
+import { emsRelatedRecordCols } from "@/configs/emsRelatedRecordTable";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
 import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/crashNotes";
@@ -32,6 +32,8 @@ import {
   scrollToElementOnKeyPress,
   useKeyboardShortcut,
 } from "@/utils/shortcuts";
+import { formatAddresses } from "@/utils/formatters";
+import EMSCardHeader from "@/components/EMSCardHeader";
 
 const typename = "crashes";
 
@@ -68,6 +70,13 @@ export default function CrashDetailsPage({
   const onSaveCallback = useCallback(async () => {
     await refetch();
   }, [refetch]);
+
+  // When data is loaded or updated this sets the title of the page inside the HTML head element
+  useEffect(() => {
+    if (!!data) {
+      document.title = `${data[0].record_locator} - ${formatAddresses(data[0])}`;
+    }
+  }, [data]);
 
   if (!data) {
     // todo: loading spinner (would be nice to use a spinner inside cards)
@@ -173,7 +182,8 @@ export default function CrashDetailsPage({
           <RelatedRecordTable
             records={crash.units || []}
             isValidating={isValidating}
-            title="Units"
+            noRowsMessage="No unit records found"
+            header="Units"
             columns={unitRelatedRecordCols}
             mutation={UPDATE_UNIT}
             onSaveCallback={onSaveCallback}
@@ -185,9 +195,23 @@ export default function CrashDetailsPage({
           <RelatedRecordTable
             records={crash.people_list_view || []}
             isValidating={isValidating}
-            title="People"
+            noRowsMessage="No people records found"
+            header="People"
             columns={peopleRelatedRecordCols}
             mutation={UPDATE_PERSON}
+            onSaveCallback={onSaveCallback}
+          />
+        </Col>
+      </Row>
+      <Row id="ems">
+        <Col sm={12} className="mb-3">
+          <RelatedRecordTable
+            records={crash.ems__incidents || []}
+            isValidating={isValidating}
+            header={<EMSCardHeader />}
+            noRowsMessage="No EMS records found"
+            columns={emsRelatedRecordCols}
+            mutation=""
             onSaveCallback={onSaveCallback}
           />
         </Col>
@@ -197,7 +221,8 @@ export default function CrashDetailsPage({
           <RelatedRecordTable
             records={crash.charges_cris || []}
             isValidating={isValidating}
-            title="Charges"
+            noRowsMessage="No charge records found"
+            header="Charges"
             columns={chargeRelatedRecordCols}
             mutation={""}
             onSaveCallback={onSaveCallback}
@@ -213,7 +238,7 @@ export default function CrashDetailsPage({
             insertMutation={INSERT_CRASH_NOTE}
             onSaveCallback={onSaveCallback}
             recordId={crash.id}
-            refetch={refetch}
+            refetch={onSaveCallback}
           />
         </Col>
       </Row>
