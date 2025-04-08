@@ -29,7 +29,8 @@ export const NonCr3UploadSchema = z.object({
         return regex.test(val);
       },
       {
-        message: "Case timestamp must be in format YYYY-MM-DD HH:MM:SS or YYYY-MM-DD H:MM:SS",
+        message:
+          "Case timestamp must be in format YYYY-MM-DD HH:MM:SS or YYYY-MM-DD H:MM:SS",
       }
     )
     .transform((datestring) => {
@@ -38,7 +39,7 @@ export const NonCr3UploadSchema = z.object({
       const [hours, minutes, seconds] = timePart.split(":").map(Number);
 
       /**
-       * We cannot construct the date as TZDate(datestring, "America/Chicago") because this will 
+       * We cannot construct the date as TZDate(datestring, "America/Chicago") because this will
        * interpret the input datestring as being in local/system time
        */
       const chicagoDate = new TZDate(
@@ -63,22 +64,30 @@ export const NonCr3UploadSchema = z.object({
     .refine((value) => value.trim() !== "", {
       message: "Address is missing or invalid",
     }),
-  longitude: z.coerce
-    .number()
-    .min(ATX_BBOX.longitude.min, {
-      message: `Longitude is less than the minimum bounds (${ATX_BBOX.longitude.min})`,
-    })
-    .max(ATX_BBOX.longitude.max, {
-      message: `Longitude is greater than the maximum bounds (${ATX_BBOX.longitude.max})`,
-    }),
-  latitude: z.coerce
-    .number()
-    .min(ATX_BBOX.latitude.min, {
-      message: `Latitude is less than the maximum bounds (${ATX_BBOX.latitude.min})`,
-    })
-    .max(ATX_BBOX.latitude.max, {
-      message: `Latitude is greater than the maximum bounds (${ATX_BBOX.latitude.max})`,
-    }),
+  longitude: z.preprocess(
+    (val) => (val ? Number(val) : null),
+    z.number({
+        invalid_type_error: "Longitude is required and must be a number",
+      })
+      .min(ATX_BBOX.longitude.min, {
+        message: `Longitude is less than the minimum bounds (${ATX_BBOX.longitude.min})`,
+      })
+      .max(ATX_BBOX.longitude.max, {
+        message: `Longitude is greater than the maximum bounds (${ATX_BBOX.longitude.max})`,
+      })
+  ),
+  latitude: z.preprocess(
+    (val) => (val ? Number(val) : null),
+    z.number({
+        invalid_type_error: "Latitude is required and must be a number",
+      })
+      .min(ATX_BBOX.latitude.min, {
+        message: `Latitude is less than the minimum bounds (${ATX_BBOX.latitude.min})`,
+      })
+      .max(ATX_BBOX.latitude.max, {
+        message: `Latitude is greater than the maximum bounds (${ATX_BBOX.latitude.max})`,
+      })
+  ),
 });
 
 /**
