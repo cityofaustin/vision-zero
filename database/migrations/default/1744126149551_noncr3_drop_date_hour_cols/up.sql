@@ -60,7 +60,7 @@ non_cr3_crash_counts as (
     from atd_apd_blueform
     where
         atd_apd_blueform.location_id is not null
-        and atd_apd_blueform = false
+        and atd_apd_blueform.is_deleted = false
         and atd_apd_blueform.case_timestamp > (now() - '5 years'::interval)
     group by atd_apd_blueform.location_id
 )
