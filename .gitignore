@@ -75,7 +75,7 @@ build-iPhoneSimulator/
 *.log
 *.xml
 
-# allow the VZE Non-CR3 upload upload template
+# allow the VZE Non-CR3 upload template
 !editor/public/files/non_cr3_template.csv
 
 # Ignore any json files within these directories
