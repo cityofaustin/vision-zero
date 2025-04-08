@@ -60,8 +60,7 @@ export default function UploadNonCr3() {
             try {
               const parsedData: NonCr3Upload[] =
                 NonCr3UploadDedupedSchema.parse(results.data);
-                setData(parsedData);
-              
+              setData(parsedData);
             } catch (err) {
               if (err instanceof ZodError) {
                 const formattedErrors = err.issues.map((issue) => {
