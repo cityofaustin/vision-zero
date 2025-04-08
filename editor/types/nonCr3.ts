@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TZDate } from "@date-fns/tz";
 
 /**
  * This is a 4x4 decimal degree bounding box centered on the tx state
@@ -19,7 +20,39 @@ const ATX_BBOX = {
  * Validation schema for a non-CR3 record uploaded through the UI
  */
 export const NonCr3UploadSchema = z.object({
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date is missing or invalid"),
+  case_timestamp: z
+    .string()
+    .refine(
+      (val) => {
+        // expected format: YYYY-MM-DD H:MM:SS or YYYY-MM-DD HH:MM:SS
+        const regex = /^\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}$/;
+        return regex.test(val);
+      },
+      {
+        message: "Case timestamp must be in format YYYY-MM-DD HH:MM:SS",
+      }
+    )
+    .transform((datestring) => {
+      const [datePart, timePart] = datestring.split(" ");
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hours, minutes, seconds] = timePart.split(":").map(Number);
+
+      /**
+       * We cannot construct the date as TZDate(datestring, "America/Chicago") because this will 
+       * interpret the input datestring as being in local/system time
+       */
+      const chicagoDate = new TZDate(
+        year,
+        month - 1,
+        day,
+        hours,
+        minutes,
+        seconds,
+        0,
+        "America/Chicago"
+      );
+      return chicagoDate.toISOString();
+    }),
   case_id: z.string().regex(/^\d+$/, "Case ID is missing or invalid"),
   address: z
     .string()
@@ -46,7 +79,6 @@ export const NonCr3UploadSchema = z.object({
     .max(ATX_BBOX.latitude.max, {
       message: `Latitude is greater than the maximum bounds (${ATX_BBOX.latitude.max})`,
     }),
-  hour: z.coerce.number().int().min(0).max(23, "Hour must be between 0 and 23"),
 });
 
 /**

@@ -57,11 +57,11 @@ export default function UploadNonCr3() {
             setValidationErrors(formattedErrors);
           } else {
             // CSV has been parsed — run schema validations
-            console.log(results.data);
             try {
               const parsedData: NonCr3Upload[] =
                 NonCr3UploadDedupedSchema.parse(results.data);
-              setData(parsedData);
+                setData(parsedData);
+              
             } catch (err) {
               if (err instanceof ZodError) {
                 const formattedErrors = err.issues.map((issue) => {
@@ -202,7 +202,7 @@ export default function UploadNonCr3() {
                     <FaTriangleExclamation className="me-2" />
                     <span>
                       Your file is invalid — please correct the below errors and
-                      try again.
+                      try again
                     </span>
                   </AlignedLabel>
                 </Alert>
