@@ -76,7 +76,7 @@ build-iPhoneSimulator/
 *.xml
 
 # allow the VZE Non-CR3 upload upload template
-!app/public/files/non_cr3_template.csv
+!editor/public/files/non_cr3_template.csv
 
 # Ignore any json files within these directories
 atd-events/**/*.json
