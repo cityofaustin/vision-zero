@@ -29,7 +29,7 @@ export const NonCr3UploadSchema = z.object({
         return regex.test(val);
       },
       {
-        message: "Case timestamp must be in format YYYY-MM-DD HH:MM:SS",
+        message: "Case timestamp must be in format YYYY-MM-DD HH:MM:SS or YYYY-MM-DD H:MM:SS",
       }
     )
     .transform((datestring) => {
