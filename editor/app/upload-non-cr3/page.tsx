@@ -234,7 +234,7 @@ export default function UploadNonCr3() {
                       .map(({ fieldName, rowNumber, message }, i) => (
                         <tr key={i}>
                           {/* if dupes are detected, rowNumber will be NaN and  the fieldname will be the string literal `"undefined"` */}
-                          <td>{isNaN(rowNumber) ? "" : rowNumber}</td>
+                          <td>{isNaN(rowNumber) ? "" : rowNumber + 1}</td>
                           <td>{fieldName === "undefined" ? "" : fieldName}</td>
                           <td>{message}</td>
                         </tr>
