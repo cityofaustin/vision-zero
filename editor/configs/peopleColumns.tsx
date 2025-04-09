@@ -96,7 +96,7 @@ export const ALL_PEOPLE_COLUMNS = {
     path: "drvr_zip",
     label: "Zip",
     editable: true,
-    inputType: "number",
+    inputType: "text",
     inputOptions: {
       validate: commonValidations.isZipCode,
     },
