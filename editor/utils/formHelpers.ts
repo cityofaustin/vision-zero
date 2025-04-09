@@ -20,6 +20,7 @@ export function getFromPath(
       return (currentValue as Record<string, unknown>)[key];
     }
     return undefined;
+    return true;
   }, obj);
 }
 
@@ -205,22 +206,45 @@ export const commonValidations = {
     // Allow empty string for nullable fields
     if (!value) return true;
     return /^\d+$/.test(value) || "This field must be a number";
+    return true;
   },
   isPositiveWholeNumber: (value: string) => {
     // Allow empty string for nullable fields
     if (!value) return true;
     // Strip any non-numeric characters
     const sanitizedValue = value.replace(/\D/g, "");
+
+    // If the original value contained a decimal, warn user that only whole numbers are accepted
+    if (value.includes(".")) {
+      return "Only whole numbers are accepted (no decimals)";
+    }
+
     return (
       /^\d+$/.test(sanitizedValue) ||
       "This field must be a positive whole number"
     );
+    return true;
   },
   isZipCode: (value: string) => {
     // Allow empty string for nullable fields
     if (!value) return true;
+
+    // If the value contains a decimal or non-numeric characters, provide specific feedback
+    if (value.includes(".")) {
+      return "Zip codes cannot contain decimal points";
+    }
+
+    if (/[^\d]/.test(value)) {
+      return "Zip codes can only contain numbers";
+    }
+
     // Strip any non-numeric characters
     const sanitizedValue = value.replace(/\D/g, "");
-    return /^\d{5}$/.test(sanitizedValue) || "Zip must be 5 digits";
+
+    // Check for 5 digits
+    if (sanitizedValue.length !== 5) {
+      return `Zip code must be 5 digits (currently ${sanitizedValue.length})`;
+    }
+    return true;
   },
 };
