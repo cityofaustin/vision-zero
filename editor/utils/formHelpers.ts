@@ -178,13 +178,22 @@ export const handleFormValueOutput = (
   isLookup: boolean,
   inputType?: InputType
 ): unknown | null | boolean => {
+  if (isLookup) {
+    return value ? Number(value) : null;
+  }
+
   if (inputType === "yes_no") {
     return stringToBoolNullable(value);
   }
-  if (inputType === "number" || (inputType === "select" && isLookup)) {
-    return stringToNumberNullable(value);
+
+  if (inputType === "number") {
+    if (!value) return null;
+    // Strip any non-numeric characters except decimal point and negative sign
+    const sanitizedValue = value.replace(/[^\d.-]/g, "");
+    const parsedValue = parseFloat(sanitizedValue);
+    return isNaN(parsedValue) ? null : parsedValue;
   }
-  // handle everything else as a nulllable string
+
   return trimStringNullable(value);
 };
 
@@ -193,6 +202,25 @@ export const handleFormValueOutput = (
  */
 export const commonValidations = {
   isNumber: (value: string) => {
+    // Allow empty string for nullable fields
+    if (!value) return true;
     return /^\d+$/.test(value) || "This field must be a number";
+  },
+  isPositiveWholeNumber: (value: string) => {
+    // Allow empty string for nullable fields
+    if (!value) return true;
+    // Strip any non-numeric characters
+    const sanitizedValue = value.replace(/\D/g, "");
+    return (
+      /^\d+$/.test(sanitizedValue) ||
+      "This field must be a positive whole number"
+    );
+  },
+  isZipCode: (value: string) => {
+    // Allow empty string for nullable fields
+    if (!value) return true;
+    // Strip any non-numeric characters
+    const sanitizedValue = value.replace(/\D/g, "");
+    return /^\d{5}$/.test(sanitizedValue) || "Zip must be 5 digits";
   },
 };
