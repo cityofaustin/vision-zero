@@ -162,10 +162,6 @@ export const handleFormValueOutput = (
   isLookup: boolean,
   inputType?: InputType
 ): unknown | null | boolean => {
-  if (isLookup) {
-    return value ? Number(value) : null;
-  }
-
   if (inputType === "yes_no") {
     return stringToBoolNullable(value);
   }
