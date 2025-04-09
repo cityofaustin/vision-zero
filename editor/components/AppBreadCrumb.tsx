@@ -22,19 +22,16 @@ const useCrumbs = (path: string): Crumb[] =>
       return crumbs;
     }
     // find the formatted route label
-    const pathPart = parts[0].split("?")[0];
+    const pathPart = parts[0];
     const route = routes.find((route) => route.path === pathPart.toLowerCase());
     crumbs.push({
-      // if we don't remove the query string, nextjs can hit a server/client mismatch on login
-      // todo: this can't be the right way to fix this
-      // todo: test if still an issue with app router
       label: route ? route.label : pathPart,
       type: "page",
       path: pathPart,
     });
     if (parts.length > 1) {
       crumbs.push({
-        label: decodeURI(parts[1].split("?")[0]),
+        label: decodeURI(parts[1]),
         type: "id",
         path: pathPart,
       });
