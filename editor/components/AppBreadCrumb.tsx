@@ -5,6 +5,7 @@ import Col from "react-bootstrap/Col";
 import { routes } from "@/configs/routes";
 
 interface Crumb {
+  path: string;
   label: string;
   type: "page" | "id";
 }
@@ -21,21 +22,21 @@ const useCrumbs = (path: string): Crumb[] =>
       return crumbs;
     }
     // find the formatted route label
-    const crumb = parts[0].split("?")[0].toLowerCase();
-    const crumbLabel = routes.find(
-      (route) => route.label.toLowerCase() === crumb
-    );
+    const pathPart = parts[0].split("?")[0];
+    const route = routes.find((route) => route.path === pathPart.toLowerCase());
     crumbs.push({
       // if we don't remove the query string, nextjs can hit a server/client mismatch on login
       // todo: this can't be the right way to fix this
       // todo: test if still an issue with app router
-      label: crumbLabel ? crumbLabel.label : crumb,
+      label: route ? route.label : pathPart,
       type: "page",
+      path: pathPart,
     });
     if (parts.length > 1) {
       crumbs.push({
         label: decodeURI(parts[1].split("?")[0]),
         type: "id",
+        path: pathPart,
       });
     }
     // only two levels deep supported
@@ -66,7 +67,7 @@ export default function AppBreadCrumb() {
                   <span>
                     <Link
                       className="text-decoration-none"
-                      href={`/${crumb.label}`}
+                      href={`/${crumb.path}`}
                     >
                       {crumb.label}
                     </Link>
