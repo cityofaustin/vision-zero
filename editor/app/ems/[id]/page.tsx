@@ -1,6 +1,6 @@
 "use client";
 import { notFound } from "next/navigation";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import DataCard from "@/components/DataCard";
@@ -39,9 +39,9 @@ export default function EMSDetailsPage({ params }: { params: { id: string } }) {
 
   const {
     data: matchingCrashes,
-    error: matchingCrashesError,
-    isValidating: isValidatingCrashMatches,
-    refetch: refetchMatchingCrashes,
+    // error: matchingCrashesError,
+    // isValidating: isValidatingCrashMatches,
+    // refetch: refetchMatchingCrashes,
   } = useQuery<Crash>({
     query: record?.matched_crash_pks ? GET_MATCHING_CRASHES : null,
     // if ID is provided, query for it, coercing non-numbers to zero and
