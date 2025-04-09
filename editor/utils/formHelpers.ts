@@ -61,23 +61,6 @@ const trimStringNullable = (value: string): string | null => {
 };
 
 /**
- * Convert strings to numbers and coerce non-zero falsey values to `null`.
- * Invalid (NaN) numbers are also converted to null.
- */
-const stringToNumberNullable = (value: string): number | null => {
-  if (value.trim() === "") {
-    return null;
-  }
-  const num = Number(value);
-  if (isNaN(num)) {
-    // todo: handle this
-    console.warn("Failed to convert value to number: ", value);
-    return null;
-  }
-  return num;
-};
-
-/**
  * Stringify an unknown value and coerce null and undefined to empty string
  *
  * @example
