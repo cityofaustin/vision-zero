@@ -1,16 +1,17 @@
 "use client";
 import { notFound } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import DataCard from "@/components/DataCard";
 import { emsDataCards } from "@/configs/emsDataCards";
 import { useQuery } from "@/utils/graphql";
 import { commonValidations } from "@/utils/formHelpers";
-import { GET_EMS_RECORD } from "@/queries/ems";
+import { GET_EMS_RECORD, GET_MATCHING_CRASHES } from "@/queries/ems";
 import { EMSPatientCareRecord } from "@/types/ems";
-
-const typename = "ems__incidents";
+import RelatedRecordTable from "@/components/RelatedRecordTable";
+import { Crash } from "@/types/crashes";
+import { crashesColumns } from "@/configs/crashesColumns";
 
 export default function EMSDetailsPage({ params }: { params: { id: string } }) {
   const id = params.id;
@@ -23,9 +24,26 @@ export default function EMSDetailsPage({ params }: { params: { id: string } }) {
       variables: {
         id: commonValidations.isNumber(id) === true ? parseInt(id) : 0,
       },
-      typename,
+      typename: "ems__incidents",
     }
   );
+
+  const record = data?.[0];
+
+  const {
+    data: matchingCrashes,
+    error: matchingCrashesError,
+    isValidating: isValidatingCrashMatches,
+    refetch: refetchMatchingCrashes,
+  } = useQuery<Crash>({
+    query: record?.matched_crash_pks ? GET_MATCHING_CRASHES : null,
+    // if ID is provided, query for it, coercing non-numbers to zero and
+    // thereby triggering the 404
+    variables: {
+      crash_pks: record?.matched_crash_pks,
+    },
+    typename: "crashes",
+  });
 
   const onSaveCallback = useCallback(async () => {
     await refetch();
@@ -47,12 +65,12 @@ export default function EMSDetailsPage({ params }: { params: { id: string } }) {
     return;
   }
 
-  if (data.length === 0) {
+  if (!record) {
     // 404
     notFound();
   }
 
-  const record = data[0];
+  console.log("matchingCrashes", matchingCrashes);
 
   return (
     <>
@@ -83,6 +101,26 @@ export default function EMSDetailsPage({ params }: { params: { id: string } }) {
           />
         </Col>
       </Row>
+      {matchingCrashes && (
+        <Row>
+          <Col sm={12} className="mb-3">
+            <RelatedRecordTable
+              records={matchingCrashes}
+              isValidating={isValidating}
+              noRowsMessage="No crashes found"
+              header="Possible matching crashes"
+              columns={[
+                crashesColumns.record_locator,
+                crashesColumns.crash_timestamp,
+                crashesColumns.case_id,
+                crashesColumns.address_combined,
+              ]}
+              mutation={""}
+              onSaveCallback={onSaveCallback}
+            />
+          </Col>
+        </Row>
+      )}
     </>
   );
 }
