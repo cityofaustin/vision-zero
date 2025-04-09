@@ -13,6 +13,13 @@ import RelatedRecordTable from "@/components/RelatedRecordTable";
 import { Crash } from "@/types/crashes";
 import { crashesColumns } from "@/configs/crashesColumns";
 
+const potentialCrashesColumns = [
+  crashesColumns.record_locator,
+  crashesColumns.crash_timestamp,
+  crashesColumns.case_id,
+  crashesColumns.address_combined,
+];
+
 export default function EMSDetailsPage({ params }: { params: { id: string } }) {
   const id = params.id;
 
@@ -109,12 +116,7 @@ export default function EMSDetailsPage({ params }: { params: { id: string } }) {
               isValidating={isValidating}
               noRowsMessage="No crashes found"
               header="Possible matching crashes"
-              columns={[
-                crashesColumns.record_locator,
-                crashesColumns.crash_timestamp,
-                crashesColumns.case_id,
-                crashesColumns.address_combined,
-              ]}
+              columns={potentialCrashesColumns}
               mutation={""}
               onSaveCallback={onSaveCallback}
             />
