@@ -2,8 +2,10 @@ import { useMemo, Fragment } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Col from "react-bootstrap/Col";
+import { routes } from "@/configs/routes";
 
 interface Crumb {
+  path: string;
   label: string;
   type: "page" | "id";
 }
@@ -19,17 +21,19 @@ const useCrumbs = (path: string): Crumb[] =>
       // we are at root
       return crumbs;
     }
+    // find the formatted route label
+    const pathPart = parts[0];
+    const route = routes.find((route) => route.path === pathPart.toLowerCase());
     crumbs.push({
-      // if we don't remove the query string, nextjs can hit a server/client mismatch on login
-      // todo: this can't be the right way to fix this
-      // todo: test if still an issue with app router
-      label: parts[0].split("?")[0],
+      label: route ? route.label : pathPart,
       type: "page",
+      path: pathPart,
     });
     if (parts.length > 1) {
       crumbs.push({
-        label: decodeURI(parts[1].split("?")[0]),
+        label: decodeURI(parts[1]),
         type: "id",
+        path: pathPart,
       });
     }
     // only two levels deep supported
@@ -48,6 +52,7 @@ export default function AppBreadCrumb() {
   if (!isDetailsPage) {
     return null;
   }
+
   return (
     <div className="px-3 py-2">
       <Col>
@@ -58,8 +63,8 @@ export default function AppBreadCrumb() {
                 <Fragment key={crumb.label}>
                   <span>
                     <Link
-                      className="text-decoration-none text-capitalize"
-                      href={`/${crumb.label}`}
+                      className="text-decoration-none"
+                      href={`/${crumb.path}`}
                     >
                       {crumb.label}
                     </Link>

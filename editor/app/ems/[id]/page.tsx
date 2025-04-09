@@ -1,8 +1,10 @@
 "use client";
 import { notFound } from "next/navigation";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+import DataCard from "@/components/DataCard";
+import { emsDataCards } from "@/configs/emsDataCards";
 import { useQuery } from "@/utils/graphql";
 import { commonValidations } from "@/utils/formHelpers";
 import { GET_EMS_RECORD } from "@/queries/ems";
@@ -13,15 +15,21 @@ const typename = "ems__incidents";
 export default function EMSDetailsPage({ params }: { params: { id: string } }) {
   const id = params.id;
 
-  const { data, error } = useQuery<EMSPatientCareRecord>({
-    query: id ? GET_EMS_RECORD : null,
-    // if ID is provided, query for it, coercing non-numbers to zero and
-    // thereby triggering the 404
-    variables: {
-      id: commonValidations.isNumber(id) === true ? parseInt(id) : 0,
-    },
-    typename,
-  });
+  const { data, error, isValidating, refetch } = useQuery<EMSPatientCareRecord>(
+    {
+      query: id ? GET_EMS_RECORD : null,
+      // if ID is provided, query for it, coercing non-numbers to zero and
+      // thereby triggering the 404
+      variables: {
+        id: commonValidations.isNumber(id) === true ? parseInt(id) : 0,
+      },
+      typename,
+    }
+  );
+
+  const onSaveCallback = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   if (error) {
     console.error(error);
@@ -44,18 +52,35 @@ export default function EMSDetailsPage({ params }: { params: { id: string } }) {
     notFound();
   }
 
-  const ems_pcr = data[0];
+  const record = data[0];
 
   return (
     <>
       <Row>
         <Col>
-          <h3>{ems_pcr.incident_location_address}</h3>
+          <h3>{record.incident_location_address}</h3>
         </Col>
       </Row>
       <Row>
         <Col sm={12} md={6} lg={4} className="mb-3">
-          <p>Future content here 👍</p>
+          <DataCard<EMSPatientCareRecord>
+            record={record}
+            isValidating={isValidating}
+            title="Summary"
+            columns={emsDataCards.summary}
+            mutation={""}
+            onSaveCallback={onSaveCallback}
+          />
+        </Col>
+        <Col sm={12} md={6} lg={4} className="mb-3">
+          <DataCard<EMSPatientCareRecord>
+            record={record}
+            isValidating={isValidating}
+            title="Patient"
+            columns={emsDataCards.patient}
+            mutation={""}
+            onSaveCallback={onSaveCallback}
+          />
         </Col>
       </Row>
     </>

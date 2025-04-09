@@ -1,7 +1,7 @@
 import { getInjuryColorClass } from "@/utils/people";
 import { ColDataCardDef } from "@/types/types";
 import { EMSPatientCareRecord } from "@/types/ems";
-import { formatDate } from "@/utils/formatters";
+import { formatDate, formatDateTime } from "@/utils/formatters";
 import Link from "next/link";
 
 const formatCrashMatchStatus = (value: unknown) => {
@@ -64,6 +64,11 @@ export const ALL_EMS_COLUMNS = {
     path: "id",
     label: "ID",
     sortable: true,
+  },
+  id_hyperlinked: {
+    path: "id",
+    label: "ID",
+    sortable: true,
     valueRenderer: (record: EMSPatientCareRecord) => (
       <Link href={`/ems/${record.id}`} prefetch={false}>
         {record.id}
@@ -83,6 +88,13 @@ export const ALL_EMS_COLUMNS = {
   incident_problem: {
     path: "incident_problem",
     label: "Incident problem",
+    sortable: true,
+  },
+  incident_received_datetime_with_timestamp: {
+    path: "incident_received_datetime",
+    label: "Date",
+    style: { whiteSpace: "nowrap" },
+    valueFormatter: formatDateTime,
     sortable: true,
   },
   incident_received_datetime: {
@@ -122,7 +134,7 @@ export const ALL_EMS_COLUMNS = {
 } satisfies Record<string, ColDataCardDef<EMSPatientCareRecord>>;
 
 export const emsListViewColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
-  ALL_EMS_COLUMNS.id,
+  ALL_EMS_COLUMNS.id_hyperlinked,
   ALL_EMS_COLUMNS.incident_number,
   ALL_EMS_COLUMNS.incident_received_datetime,
   ALL_EMS_COLUMNS.incident_location_address,
