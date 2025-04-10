@@ -76,7 +76,7 @@ export const ALL_EMS_COLUMNS = {
     sortable: true,
     valueRenderer: (record: EMSPatientCareRecord) => (
       <Link href={`/ems/${record.incident_number}`} prefetch={false}>
-        {record.incident_number}
+        <span style={{ whiteSpace: "nowrap" }}>{record.incident_number}</span>
       </Link>
     ),
   },
