@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { ColDataCardDef } from "@/types/types";
 import { Crash } from "@/types/crashes";
-import { formatDateTime, formatAddresses } from "@/utils/formatters";
+import { formatDateTimeWithDay } from "@/utils/formatters";
 
 export const crashesColumns = {
   active_school_zone_fl: {
@@ -10,12 +9,9 @@ export const crashesColumns = {
     editable: true,
     inputType: "yes_no",
   },
-  address_combined: {
-    path: "address_primary",
-    label: "Address",
-    valueRenderer: (record) => {
-      return formatAddresses(record);
-    },
+  record_locator: {
+    path: "record_locator",
+    label: "Crash ID",
   },
   address_primary: {
     path: "address_primary",
@@ -44,7 +40,7 @@ export const crashesColumns = {
   crash_timestamp: {
     path: "crash_timestamp",
     label: "Crash date",
-    valueFormatter: formatDateTime,
+    valueFormatter: formatDateTimeWithDay,
   },
   collsn: {
     path: "collsn.label",
@@ -119,16 +115,7 @@ export const crashesColumns = {
     editable: true,
     inputType: "yes_no",
   },
-  record_locator: {
-    path: "record_locator",
-    label: "Crash ID",
-    sortable: true,
-    valueRenderer: (record: Crash) => (
-      <Link href={`/crashes/${record.record_locator}`} prefetch={false}>
-        {record.record_locator}
-      </Link>
-    ),
-  },
+
   road_constr_zone_fl: {
     path: "road_constr_zone_fl",
     label: "Road construction zone",
