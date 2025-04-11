@@ -6,7 +6,7 @@ export const INSERT_NON_CR3 = gql`
       objects: $objects
       on_conflict: {
         constraint: atd_apd_blueform_pk
-        update_columns: [date, case_id, address, longitude, latitude, hour]
+        update_columns: [case_timestamp, case_id, address, longitude, latitude]
       }
     ) {
       affected_rows

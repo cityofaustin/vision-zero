@@ -8,51 +8,51 @@ insert_permissions:
       columns:
         - address
         - case_id
-        - date
+        - case_timestamp
         - est_comp_cost
         - est_comp_cost_crash_based
         - est_econ_cost
         - form_id
-        - hour
         - latitude
         - location_id
         - longitude
         - position
         - speed_mgmt_points
+        - is_deleted
   - role: vz-admin
     permission:
       check: {}
       columns:
         - address
         - case_id
-        - date
+        - case_timestamp
         - est_comp_cost
         - est_comp_cost_crash_based
         - est_econ_cost
         - form_id
-        - hour
         - latitude
         - location_id
         - longitude
         - position
         - speed_mgmt_points
+        - is_deleted
 select_permissions:
   - role: editor
     permission:
       columns:
         - address
         - case_id
-        - date
+        - case_timestamp
         - est_comp_cost
         - est_comp_cost_crash_based
         - est_econ_cost
         - form_id
-        - hour
         - latitude
         - location_id
         - longitude
         - position
         - speed_mgmt_points
+        - is_deleted
       filter: {}
       allow_aggregations: true
   - role: readonly
@@ -60,17 +60,17 @@ select_permissions:
       columns:
         - address
         - case_id
-        - date
+        - case_timestamp
         - est_comp_cost
         - est_comp_cost_crash_based
         - est_econ_cost
         - form_id
-        - hour
         - latitude
         - location_id
         - longitude
         - position
         - speed_mgmt_points
+        - is_deleted
       filter: {}
       allow_aggregations: true
   - role: vz-admin
@@ -78,17 +78,17 @@ select_permissions:
       columns:
         - address
         - case_id
-        - date
+        - case_timestamp
         - est_comp_cost
         - est_comp_cost_crash_based
         - est_econ_cost
         - form_id
-        - hour
         - latitude
         - location_id
         - longitude
         - position
         - speed_mgmt_points
+        - is_deleted
       filter: {}
       allow_aggregations: true
 update_permissions:
@@ -97,17 +97,17 @@ update_permissions:
       columns:
         - address
         - case_id
-        - date
+        - case_timestamp
         - est_comp_cost
         - est_comp_cost_crash_based
         - est_econ_cost
         - form_id
-        - hour
         - latitude
         - location_id
         - longitude
         - position
         - speed_mgmt_points
+        - is_deleted
       filter: {}
       check: null
   - role: vz-admin
@@ -115,16 +115,16 @@ update_permissions:
       columns:
         - address
         - case_id
-        - date
+        - case_timestamp
         - est_comp_cost
         - est_comp_cost_crash_based
         - est_econ_cost
         - form_id
-        - hour
         - latitude
         - location_id
         - longitude
         - position
         - speed_mgmt_points
+        - is_deleted
       filter: {}
       check: null
