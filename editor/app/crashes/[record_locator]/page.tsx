@@ -42,6 +42,7 @@ const shortcutKeyLookup: ShortcutKeyLookup[] = [
   { key: "A", elementId: "address" },
   { key: "U", elementId: "units" },
   { key: "P", elementId: "people" },
+  { key: "E", elementId: "ems" },
   { key: "C", elementId: "charges" },
   { key: "N", elementId: "notes" },
   { key: "F", elementId: "fatality" },
