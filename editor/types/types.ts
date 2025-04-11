@@ -28,6 +28,12 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    */
   editable?: boolean;
   /**
+   * If the field should be hidden from the UI by default - only affects
+   * when the column is used in a component which supports toggling
+   * column visibility
+   */
+  defaultHidden?: boolean;
+  /**
    * If the field should only be available in the exported table data -
    * only affects when column is used in a table config
    */
@@ -92,4 +98,13 @@ export interface FormValues {
   // form libraries like react-hook-form to ensure type safety and
   // consistency when handling form submissions.
   value: string;
+}
+
+/**
+ * Interface for column visibility picker state
+ */
+export interface ColumnVisibilitySetting {
+  path: string;
+  label: string;
+  isVisible: boolean;
 }

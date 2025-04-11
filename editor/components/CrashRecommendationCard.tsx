@@ -204,7 +204,7 @@ export default function CrashRecommendationCard({
             )}
             {isEditing && isLoadingPartners && <Spinner size="sm" />}
             {isEditing && partners && (
-              <div style={{ height: "200px", overflowY: "scroll" }}>
+              <div style={{ height: "200px", overflowY: "auto" }}>
                 <CrashRecommendationPartners
                   setValue={setValue}
                   watch={watch}

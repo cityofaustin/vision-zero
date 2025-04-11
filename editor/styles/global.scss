@@ -181,4 +181,9 @@ to make sure it renders on top is a common fix */
   background-color: $light !important;
 }
 
+/* Hide down arrow from dropdown toggle button */
+.dropdown-toggle.hide-toggle::after {
+  content: none !important;
+}
+
 @import "bootstrap/scss/bootstrap.scss";
