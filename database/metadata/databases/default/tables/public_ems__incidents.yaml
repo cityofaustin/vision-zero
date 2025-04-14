@@ -81,3 +81,22 @@ select_permissions:
       filter: {}
       allow_aggregations: true
     comment: ""
+update_permissions:
+  - role: editor
+    permission:
+      columns:
+        - crash_match_status
+        - crash_pk
+        - person_id
+      filter: {}
+      check: null
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - crash_match_status
+        - crash_pk
+        - person_id
+      filter: {}
+      check: null
+    comment: ""
