@@ -1,42 +1,138 @@
 "use client";
 import { notFound } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import DataCard from "@/components/DataCard";
 import { emsDataCards } from "@/configs/emsDataCards";
-import { useQuery } from "@/utils/graphql";
-import { GET_EMS_RECORDS, GET_MATCHING_PEOPLE } from "@/queries/ems";
+import { useMutation, useQuery } from "@/utils/graphql";
+import {
+  GET_EMS_RECORDS,
+  GET_MATCHING_PEOPLE,
+  UPDATE_EMS_INCIDENT,
+} from "@/queries/ems";
 import { EMSPatientCareRecord } from "@/types/ems";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
+import EMSLinkRecordButton, {
+  EMSLinkRecordButtonProps,
+} from "@/components/EMSLinkRecordButton";
+import EMSLinkToPersonButton, {
+  EMSLinkToPersonButtonProps,
+} from "@/components/EMSLinkToPersonButton";
 import { emsMatchingPeopleColumns } from "@/configs/emsMatchingPeopleColumns";
 import { PeopleListRow } from "@/types/peopleList";
 import { FaTruckMedical } from "react-icons/fa6";
+
+interface MatchResult {
+  ems_id: number;
+  person_id: number;
+  case_id: boolean;
+  age: boolean;
+  race: boolean;
+  sex: boolean;
+  address: boolean;
+  date: boolean;
+  score: number;
+}
+
+const useMatchSuggestions = (
+  ems_pcrs?: EMSPatientCareRecord[],
+  people?: PeopleListRow[]
+): MatchResult[] =>
+  useMemo(() => {
+    const results: MatchResult[] = [];
+
+    if (!ems_pcrs || !people) {
+      return results;
+    }
+
+    ems_pcrs.forEach((ems_pcr) => {
+      people.forEach((person) => {
+        const matchResult: MatchResult = {
+          ems_id: ems_pcr.id,
+          person_id: person.id,
+          case_id: false,
+          age: false,
+          race: false,
+          sex: false,
+          address: false,
+          date: false,
+          score: 0,
+        };
+        /**
+         * Case ID
+         */
+        if (
+          person.crash?.case_id &&
+          ems_pcr.unparsed_apd_incident_numbers?.includes(person.crash.case_id)
+        ) {
+          matchResult.case_id = true;
+          matchResult.score++;
+        }
+        /**
+         * Age
+         */
+        if (
+          ems_pcr.pcr_patient_age !== null &&
+          person.prsn_age !== null &&
+          ems_pcr.pcr_patient_age === person.prsn_age
+        ) {
+          matchResult.age = true;
+          matchResult.score++;
+        }
+        /**
+         * Sex
+         */
+        if (
+          ems_pcr.pcr_patient_gender &&
+          person.gndr.label.toLowerCase() ===
+            ems_pcr.pcr_patient_gender?.toLowerCase()
+        ) {
+          matchResult.sex = true;
+          matchResult.score++;
+        }
+        results.push(matchResult);
+      });
+    });
+    return results;
+  }, [ems_pcrs, people]);
+
+const allowedLinkRecordRoles = ["vz-admin", "editor"];
 
 export default function EMSDetailsPage({
   params,
 }: {
   params: { incident_number: string };
 }) {
+  const [selectedEmsPcr, setSelectedEmsPcr] =
+    useState<EMSPatientCareRecord | null>(null);
+
   const incident_number = params.incident_number;
 
   /** */
-  const { data, error, isValidating, refetch } = useQuery<EMSPatientCareRecord>(
-    {
-      query: incident_number ? GET_EMS_RECORDS : null,
-      // if ID is provided, query for it, coercing non-numbers to zero and
-      // thereby triggering the 404
-      variables: {
-        incident_number: incident_number,
-      },
-      typename: "ems__incidents",
-    }
-  );
+  const {
+    data: ems_pcrs,
+    error,
+    isValidating,
+    refetch,
+  } = useQuery<EMSPatientCareRecord>({
+    query: incident_number ? GET_EMS_RECORDS : null,
+    // if ID is provided, query for it, coercing non-numbers to zero and
+    // thereby triggering the 404
+    variables: {
+      incident_number: incident_number,
+    },
+    typename: "ems__incidents",
+  });
+
+  const { mutate: updateEMSIncident, loading: isMutating } =
+    useMutation(UPDATE_EMS_INCIDENT);
 
   /**
    * Treat the first record found as the "incident"
    */
-  const incident = data?.[0];
+  const incident = ems_pcrs?.[0];
 
   const matchedCrashPks = incident?.crash_pk
     ? [incident.crash_pk]
@@ -55,6 +151,7 @@ export default function EMSDetailsPage({
     typename: "people_list_view",
   });
 
+  const matchResults = useMatchSuggestions(ems_pcrs, matchingPeople);
   const onSaveCallback = useCallback(async () => {
     await refetch();
   }, [refetch]);
@@ -65,12 +162,12 @@ export default function EMSDetailsPage({
 
   // When data is loaded or updated this sets the title of the page inside the HTML head element
   useEffect(() => {
-    if (!!data && data.length > 0) {
-      document.title = `EMS ${data[0].incident_number} - ${data[0].incident_location_address}`;
+    if (incident) {
+      document.title = `EMS ${incident.incident_number} - ${incident.incident_location_address}`;
     }
-  }, [data]);
+  }, [incident]);
 
-  if (!data) {
+  if (!ems_pcrs) {
     return;
   }
 
@@ -99,28 +196,55 @@ export default function EMSDetailsPage({
         </Col>
 
         <Col sm={12} className="mb-3">
-          <RelatedRecordTable
-            records={data}
+          <RelatedRecordTable<EMSPatientCareRecord, EMSLinkRecordButtonProps>
+            records={ems_pcrs}
             isValidating={isValidating}
             noRowsMessage="No crashes found"
             header="EMS patients"
             columns={emsDataCards.patient}
-            mutation={""}
+            mutation=""
             onSaveCallback={onSaveCallback}
+            rowActionComponent={EMSLinkRecordButton}
+            rowActionComponentAdditionalProps={{
+              onClick: (emsPcr) => {
+                setSelectedEmsPcr((prevEmsPcr) => {
+                  return prevEmsPcr?.id === emsPcr?.id ? null : emsPcr;
+                });
+              },
+              selectedEmsPcr: selectedEmsPcr,
+            }}
           />
         </Col>
       </Row>
       {matchingPeople && (
         <Row>
           <Col sm={12} className="mb-3">
-            <RelatedRecordTable
+            <RelatedRecordTable<PeopleListRow, EMSLinkToPersonButtonProps>
               records={matchingPeople}
               isValidating={isValidating}
               noRowsMessage="No crashes found"
-              header="Matched people"
+              header="Associated people records"
               columns={emsMatchingPeopleColumns}
-              mutation={""}
+              mutation=""
               onSaveCallback={onSaveCallback}
+              rowActionComponent={EMSLinkToPersonButton}
+              rowActionComponentAdditionalProps={{
+                onClick: (emsId, personId, crashPk) => {
+                  updateEMSIncident(
+                    {
+                      id: emsId,
+                      person_id: personId,
+                      crash_pk: crashPk,
+                    },
+                    { skip_updated_by_setter: true }
+                  )
+                    .then(() => refetch())
+                    .then(() => {
+                      setSelectedEmsPcr(null);
+                    });
+                },
+                selectedEmsPcr: selectedEmsPcr,
+              }}
             />
           </Col>
         </Row>

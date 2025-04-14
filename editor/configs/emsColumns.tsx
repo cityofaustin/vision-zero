@@ -99,6 +99,10 @@ export const ALL_EMS_COLUMNS = {
     valueFormatter: formatDate,
     sortable: true,
   },
+  person_id: {
+    path: "person_id",
+    label: "Person ID",
+  },
   mvc_form_position_in_vehicle: {
     path: "mvc_form_position_in_vehicle",
     label: "Position in vehicle",

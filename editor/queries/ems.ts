@@ -21,7 +21,9 @@ export const GET_EMS_RECORDS = gql`
       pcr_patient_age
       pcr_patient_gender
       pcr_patient_race
+      person_id
       travel_mode
+      unparsed_apd_incident_numbers
       crash {
         cris_crash_id
       }
@@ -99,6 +101,21 @@ export const GET_MATCHING_PEOPLE = gql`
           label
         }
       }
+    }
+  }
+`;
+
+export const UPDATE_EMS_INCIDENT = gql`
+  mutation UpdateEMSIncident($id: Int!, $person_id: Int!, $crash_pk: Int!) {
+    update_ems__incidents(
+      where: { id: { _eq: $id } }
+      _set: {
+        person_id: $person_id
+        crash_pk: $crash_pk
+        crash_match_status: "matched_by_manual_qa"
+      }
+    ) {
+      affected_rows
     }
   }
 `;
