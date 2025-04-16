@@ -5,8 +5,8 @@ import { ColumnVisibilitySetting } from "@/types/types";
 import { FaGear } from "react-icons/fa6";
 
 interface TableSettingsMenuProps {
-  columnVisbilitySettings: ColumnVisibilitySetting[];
-  setColumnVisbilitySettings: Dispatch<
+  columnVisibilitySettings: ColumnVisibilitySetting[];
+  setColumnVisibilitySettings: Dispatch<
     SetStateAction<ColumnVisibilitySetting[]>
   >;
 }
@@ -15,8 +15,8 @@ interface TableSettingsMenuProps {
  * Table component that controls column visibility
  */
 export default function TableSettingsMenu({
-  columnVisbilitySettings,
-  setColumnVisbilitySettings,
+  columnVisibilitySettings,
+  setColumnVisibilitySettings,
 }: TableSettingsMenuProps) {
   const handleUpdateColVisibility = useCallback(
     (columns: ColumnVisibilitySetting[], path: string) => {
@@ -31,10 +31,10 @@ export default function TableSettingsMenu({
         (col) => col.isVisible === false
       );
       if (!willAllColumnsBeInivisible) {
-        setColumnVisbilitySettings(updatedColVisibilitySettings);
+        setColumnVisibilitySettings(updatedColVisibilitySettings);
       }
     },
-    [setColumnVisbilitySettings]
+    [setColumnVisibilitySettings]
   );
 
   return (
@@ -48,13 +48,13 @@ export default function TableSettingsMenu({
       </Dropdown.Toggle>
 
       <Dropdown.Menu style={{ maxHeight: "50vh", overflowY: "auto" }}>
-        {columnVisbilitySettings.map((col) => {
+        {columnVisibilitySettings.map((col) => {
           return (
             <Dropdown.Item
               className="d-flex align-items-center"
               key={col.path}
               onClick={(e) => {
-                handleUpdateColVisibility(columnVisbilitySettings, col.path);
+                handleUpdateColVisibility(columnVisibilitySettings, col.path);
                 e.preventDefault();
                 e.stopPropagation();
               }}

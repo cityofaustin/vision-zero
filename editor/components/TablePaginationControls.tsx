@@ -11,8 +11,8 @@ import { ColumnVisibilitySetting } from "@/types/types";
 import "react-datepicker/dist/react-datepicker.css";
 
 interface PaginationControlProps {
-  columnVisbilitySettings: ColumnVisibilitySetting[];
-  setColumnVisbilitySettings: Dispatch<
+  columnVisibilitySettings: ColumnVisibilitySetting[];
+  setColumnVisibilitySettings: Dispatch<
     SetStateAction<ColumnVisibilitySetting[]>
   >;
   queryConfig: QueryConfig;
@@ -28,8 +28,8 @@ interface PaginationControlProps {
  * UI component that controls pagination, export, and column settings
  */
 export default function TablePaginationControls({
-  columnVisbilitySettings,
-  setColumnVisbilitySettings,
+  columnVisibilitySettings,
+  setColumnVisibilitySettings,
   queryConfig,
   setQueryConfig,
   recordCount,
@@ -116,8 +116,8 @@ export default function TablePaginationControls({
         </Button>
       </ButtonGroup>
       <TableSettingsMenu
-        columnVisbilitySettings={columnVisbilitySettings}
-        setColumnVisbilitySettings={setColumnVisbilitySettings}
+        columnVisibilitySettings={columnVisibilitySettings}
+        setColumnVisibilitySettings={setColumnVisibilitySettings}
       />
     </ButtonToolbar>
   );

@@ -69,7 +69,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   /**
    * Initialize column visibility from provided columns
    */
-  const [columnVisbilitySettings, setColumnVisbilitySettings] = useState<
+  const [columnVisibilitySettings, setColumnVisibilitySettings] = useState<
     ColumnVisibilitySetting[]
   >(
     columns
@@ -94,7 +94,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   const visibleColumns = useMemo(
     () =>
       columns.filter((col) => {
-        const colFromVisibilitySettings = columnVisbilitySettings.find(
+        const colFromVisibilitySettings = columnVisibilitySettings.find(
           (visibleColumn) => visibleColumn.path === col.path
         );
         /**
@@ -105,7 +105,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           ? colFromVisibilitySettings.isVisible
           : !col.exportOnly && !col.defaultHidden;
       }),
-    [columns, columnVisbilitySettings]
+    [columns, columnVisibilitySettings]
   );
 
   const query = useQueryBuilder(
@@ -222,7 +222,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
        * ensures that stale col visibility data from storage is brought into sync
        * with the current version of the table config
        */
-      const updatedColVisibilitySettings = columnVisbilitySettings.map(
+      const updatedColVisibilitySettings = columnVisibilitySettings.map(
         (col) => {
           const savedCol = columnVisibilityFromStorage.find(
             (savedCol) => savedCol.path === col.path
@@ -235,13 +235,13 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           }
         }
       );
-      setColumnVisbilitySettings(updatedColVisibilitySettings);
+      setColumnVisibilitySettings(updatedColVisibilitySettings);
       setIsColVisibilityLocalStorageLoaded(true);
     }
   }, [
     localStorageKey,
     columns,
-    columnVisbilitySettings,
+    columnVisibilitySettings,
     isColVisibilityLocalStorageLoaded,
   ]);
 
@@ -262,13 +262,13 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       const columnVisLocalStorageKey = localStorageKey + "_columnVisibility";
       localStorage.setItem(
         columnVisLocalStorageKey,
-        JSON.stringify(columnVisbilitySettings)
+        JSON.stringify(columnVisibilitySettings)
       );
     }
   }, [
     isColVisibilityLocalStorageLoaded,
     localStorageKey,
-    columnVisbilitySettings,
+    columnVisibilitySettings,
   ]);
 
   /**
@@ -373,8 +373,8 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           </Col>
           <Col className="d-flex justify-content-end mt-2" xs="auto">
             <TablePaginationControls
-              columnVisbilitySettings={columnVisbilitySettings}
-              setColumnVisbilitySettings={setColumnVisbilitySettings}
+              columnVisibilitySettings={columnVisibilitySettings}
+              setColumnVisibilitySettings={setColumnVisibilitySettings}
               queryConfig={queryConfig}
               setQueryConfig={setQueryConfig}
               recordCount={rows.length}
