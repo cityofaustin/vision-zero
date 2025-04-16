@@ -27,10 +27,10 @@ export default function TableSettingsMenu({
         return { ...col, isVisible: !col.isVisible };
       });
       // do nothing if this will result in all columns being invisible
-      const willAllColumnsBeInivisible = updatedColVisibilitySettings.every(
+      const willAllColumnsBeInvisible = updatedColVisibilitySettings.every(
         (col) => col.isVisible === false
       );
-      if (!willAllColumnsBeInivisible) {
+      if (!willAllColumnsBeInvisible) {
         setColumnVisibilitySettings(updatedColVisibilitySettings);
       }
     },
