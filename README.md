@@ -52,7 +52,7 @@ This command will:
 
 - Download a snapshot of the production database
 - Store the file in `./database/snapshots/visionzero-{date}-{with|without}-change-log.sql
-- Drop local `atd_vz_data` database
+- Drop local `vision_zero` database
 - Create and repopulate the database from the snapshot
 
 Note: the `-f / --filename` flag can be optionally used to point to a specific data dump `.sql` file to use to restore. The way the snapshots are dated means that one will only end up downloading one copy of the data per-day, both with and without change log data.
