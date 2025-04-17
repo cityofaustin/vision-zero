@@ -25,7 +25,7 @@ The below features should be tested with each role. Features with role-based acc
 - paginate through search results
 - sort by various columns
 - Use column visibility settings menu (gear icon to right of pagination controls) to adjust column visibility
-- Veryify column visibility settings persist when page is refreshed
+- Verify column visibility settings persist when page is refreshed
 - sort indicator icon updates as sort column changes
 - Reset filters button appears when sort column is changed
 - Column sort setting is persisted when refresh page
@@ -126,7 +126,7 @@ The below features should be tested with each role. Features with role-based acc
 - reset filters
 - filters are preserved (in local storage) when refreshing the page or navigating back to it
 - Use column visibility settings menu (gear icon to right of pagination controls) to adjust column visibility
-- Veryify column visibility settings persist when page is refreshed
+- Verify column visibility settings persist when page is refreshed
 - export records to CSV
 
 ### Location details `/locations/[location_id]`
