@@ -62,7 +62,7 @@ Stop the stack
 
 - Download a snapshot of the production database
 - Store the file in `./database/snapshots/visionzero-{date}-{with|without}-change-log.sql`
-- Drop local `atd_vz_data` database
+- Drop local `vision_zero` database
 - Create and repopulate the database from the snapshot
 
 Note: the `-c / --include-change-log-data` flag can be used to opt to include the data of past change log events. The schema is created either way.
