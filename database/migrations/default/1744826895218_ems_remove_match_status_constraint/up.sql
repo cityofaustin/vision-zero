@@ -7,7 +7,8 @@ comment on column ems__incidents.matched_crash_pks is 'The IDs of multiple crash
 
 --
 -- Trigger function that sets the ems__incident `crash_pk` based on 
--- on the 
+-- on the provided person_id and updates the crash_pk of all EMS records that
+-- share the same incident number
 --
 create or replace function update_person_crash_ems_match()
 returns trigger as $$
@@ -15,28 +16,22 @@ DECLARE
     matching_person_record RECORD;
 BEGIN
     IF NEW.person_id is null
-        THEN return NEW;
+        THEN return null;
     END IF;
-    --
-    -- Use SELECT INTO to assign query results to a variable
-    --
+    -- Find matching person record
     SELECT id, crash_pk INTO matching_person_record 
     FROM people_list_view 
     WHERE id = NEW.person_id;
     
-    NEW.crash_pk = matching_person_record.crash_pk;
-    
-    --
-    -- Update related EMS records which have not already been matched to a crash
-    --
+    -- Update crah_pk of related EMS if not already matched to a crash
     UPDATE ems__incidents 
     SET 
-        crash_pk = NEW.crash_pk,
+        crash_pk = matching_person_record.crash_pk,
         updated_by = NEW.updated_by,
         crash_match_status = 'matched_by_manual_qa'
     WHERE
         incident_number = NEW.incident_number
-        AND crash_pk != NEW.crash_pk
+        AND crash_pk is distinct from matching_person_record.crash_pk
         AND person_id IS NULL;
 
     RETURN NEW;
