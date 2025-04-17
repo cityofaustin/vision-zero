@@ -5,9 +5,7 @@ export const emsDataCards = {
     columns.incident_number,
     columns.incident_received_datetime_with_timestamp,
     columns.incident_problem,
-    columns.crash_match_status,
     columns.apd_incident_numbers,
-    columns.cris_crash_id,
   ],
   patient: [
     columns.id,
@@ -17,6 +15,7 @@ export const emsDataCards = {
     columns.pcr_patient_age,
     columns.pcr_patient_gender,
     columns.pcr_patient_race,
+    columns.crash_match_status,
     columns.cris_crash_id,
     columns.person_id,
   ],

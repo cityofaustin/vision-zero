@@ -102,6 +102,8 @@ export const ALL_EMS_COLUMNS = {
   person_id: {
     path: "person_id",
     label: "Person ID",
+    editable: true,
+    inputType: "number",
   },
   mvc_form_position_in_vehicle: {
     path: "mvc_form_position_in_vehicle",

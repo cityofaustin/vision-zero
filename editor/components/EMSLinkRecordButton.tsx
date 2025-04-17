@@ -22,9 +22,11 @@ const EMSLinkRecordButton: React.FC<
     additionalProps?.selectedEmsPcr &&
     record.id === additionalProps?.selectedEmsPcr.id;
 
-  //   if (isLinkingInProgress && !isLinkingThisRecord) {
-  //     return null;
-  //   }
+  const isRecordAlreadyLinked = !!record.person_id;
+
+  if (isRecordAlreadyLinked) {
+    return null;
+  }
 
   return (
     <PermissionsRequired allowedRoles={allowedLinkRecordRoles}>
@@ -39,7 +41,7 @@ const EMSLinkRecordButton: React.FC<
         {!isLinkingThisRecord && (
           <AlignedLabel>
             <FaLink className="me-2" />
-            <span>Link</span>
+            <span>Select person</span>
           </AlignedLabel>
         )}
         {isLinkingThisRecord && <span>Cancel</span>}

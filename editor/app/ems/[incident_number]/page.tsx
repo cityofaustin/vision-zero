@@ -1,7 +1,6 @@
 "use client";
 import { notFound } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import DataCard from "@/components/DataCard";
@@ -11,6 +10,7 @@ import {
   GET_EMS_RECORDS,
   GET_MATCHING_PEOPLE,
   UPDATE_EMS_INCIDENT,
+  UPDATE_EMS_INCIDENT_CRASH_AND_PERSON,
 } from "@/queries/ems";
 import { EMSPatientCareRecord } from "@/types/ems";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
@@ -126,8 +126,9 @@ export default function EMSDetailsPage({
     typename: "ems__incidents",
   });
 
-  const { mutate: updateEMSIncident, loading: isMutating } =
-    useMutation(UPDATE_EMS_INCIDENT);
+  const { mutate: updateEMSIncident, loading: isMutating } = useMutation(
+    UPDATE_EMS_INCIDENT_CRASH_AND_PERSON
+  );
 
   /**
    * Treat the first record found as the "incident"
@@ -200,9 +201,9 @@ export default function EMSDetailsPage({
             records={ems_pcrs}
             isValidating={isValidating}
             noRowsMessage="No crashes found"
-            header="EMS patients"
+            header="EMS patient(s)"
             columns={emsDataCards.patient}
-            mutation=""
+            mutation={UPDATE_EMS_INCIDENT}
             onSaveCallback={onSaveCallback}
             rowActionComponent={EMSLinkRecordButton}
             rowActionComponentAdditionalProps={{
@@ -230,14 +231,11 @@ export default function EMSDetailsPage({
               rowActionComponent={EMSLinkToPersonButton}
               rowActionComponentAdditionalProps={{
                 onClick: (emsId, personId, crashPk) => {
-                  updateEMSIncident(
-                    {
-                      id: emsId,
-                      person_id: personId,
-                      crash_pk: crashPk,
-                    },
-                    { skip_updated_by_setter: true }
-                  )
+                  updateEMSIncident({
+                    id: emsId,
+                    person_id: personId,
+                    crash_pk: crashPk,
+                  })
                     .then(() => refetch())
                     .then(() => {
                       setSelectedEmsPcr(null);

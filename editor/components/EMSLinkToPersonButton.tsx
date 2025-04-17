@@ -18,6 +18,10 @@ const EMSLinkToPersonButton: React.FC<
 > = ({ record, additionalProps }) => {
   const isLinkingInProgress = !!additionalProps?.selectedEmsPcr;
 
+  if (!isLinkingInProgress) {
+    return null;
+  }
+
   return (
     <PermissionsRequired allowedRoles={allowedLinkRecordRoles}>
       <Button

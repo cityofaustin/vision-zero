@@ -2,7 +2,10 @@ import { gql } from "graphql-request";
 
 export const GET_EMS_RECORDS = gql`
   query EMSDetails($incident_number: String!) {
-    ems__incidents(where: { incident_number: { _eq: $incident_number } }) {
+    ems__incidents(
+      where: { incident_number: { _eq: $incident_number } }
+      order_by: { id: asc }
+    ) {
       apd_incident_numbers
       crash_match_status
       crash_pk
@@ -105,7 +108,7 @@ export const GET_MATCHING_PEOPLE = gql`
   }
 `;
 
-export const UPDATE_EMS_INCIDENT = gql`
+export const UPDATE_EMS_INCIDENT_CRASH_AND_PERSON = gql`
   mutation UpdateEMSIncident($id: Int!, $person_id: Int!, $crash_pk: Int!) {
     update_ems__incidents(
       where: { id: { _eq: $id } }
@@ -119,3 +122,15 @@ export const UPDATE_EMS_INCIDENT = gql`
     }
   }
 `;
+
+export const UPDATE_EMS_INCIDENT = gql`
+  mutation update_crashes($id: Int!, $updates: ems__incidents_set_input) {
+    update_ems__incidents(where: { id: { _eq: $id } }, _set: $updates) {
+      affected_rows
+      returning {
+        id
+      }
+    }
+  }
+`;
+

@@ -12,4 +12,5 @@ export const emsMatchingPeopleColumns = [
   ALL_PEOPLE_COLUMNS.prsn_age,
   ALL_PEOPLE_COLUMNS.gndr,
   ALL_PEOPLE_COLUMNS.drvr_ethncty,
+  ALL_PEOPLE_COLUMNS.id,
 ];

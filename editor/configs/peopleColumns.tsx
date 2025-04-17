@@ -6,6 +6,7 @@ import PersonNameField from "@/components/PersonNameField";
 import { formatAddresses, formatIsoDateTime } from "@/utils/formatters";
 
 export const ALL_PEOPLE_COLUMNS = {
+  id: { path: "id", label: "ID" },
   drvr_city_name: {
     path: "drvr_city_name",
     label: "City",
