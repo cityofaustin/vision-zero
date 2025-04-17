@@ -60,8 +60,9 @@ create index crashes_case_id_investigat_agency_id_idx on public.crashes (
 );
 
 --
--- Trigger which soft-deletes atd_apd_blueform records if there is a cr3 crash
--- with the same case_id and investigat_agency_id is 74 (Austin PD)
+-- Trigger which soft-deletes atd_apd_blueform records if there is at least
+-- one cr3 crash with the same case_id, and investigat_agency_id is 74 (Austin PD),
+-- and case/crash timestamps are within +/- 12 hours
 --
 create or replace function remove_dupe_non_cr3s()
 returns trigger as $$
@@ -85,40 +86,6 @@ $$ language plpgsql;
 create trigger remove_dupe_non_cr3s_insert_update_trigger
 before insert or update on atd_apd_blueform
 for each row execute function remove_dupe_non_cr3s();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 --
