@@ -71,11 +71,12 @@ BEGIN
     text_case_id := new.case_id::text;
     if exists (
         select 1 from crashes where
-            case_id = text_case_id
-            and investigat_agency_id = 74
-            and (new.case_timestamp - crashes.crash_timestamp) between interval '-12 hours' and interval '12 hours'
+            crashes.case_id = text_case_id
+            and crashes.investigat_agency_id = 74
+            and new.case_timestamp >= (crashes.crash_timestamp - interval '12 hours')
+            and new.case_timestamp <= (crashes.crash_timestamp + interval '12 hours')
         ) then
-        new.is_deleted = true;
+        new.is_deleted := true;
     end if;
     return new;
 END;
