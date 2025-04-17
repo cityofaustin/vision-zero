@@ -1,6 +1,6 @@
 
 alter table ems__incidents
-drop constraint matched_crash_pks_non_null
+drop constraint matched_crash_pks_non_null,
 add column created_by text not null default 'system',
 add column updated_by text not null default 'system';
 
