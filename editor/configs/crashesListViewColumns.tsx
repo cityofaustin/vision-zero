@@ -26,6 +26,12 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     valueFormatter: formatDate,
   },
   {
+    path: "crash_day_of_week",
+    label: "Day of week",
+    defaultHidden: true,
+    sortable: true,
+  },
+  {
     path: "crash_date_ct",
     label: "crash_date_ct",
     exportOnly: true,
@@ -38,6 +44,12 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
   {
     path: "address_primary",
     label: "Address",
+    sortable: true,
+  },
+  {
+    path: "council_district",
+    label: "Council district",
+    defaultHidden: true,
     sortable: true,
   },
   {
@@ -56,25 +68,21 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     sortable: true,
   },
   {
+    path: "nonincap_injry_count",
+    label: "Minor injuries",
+    defaultHidden: true,
+    sortable: true,
+  },
+  {
+    path: "unkn_injry_count",
+    label: "unkn_injry_count",
+    exportOnly: true,
+  },
+  {
     path: "est_comp_cost_crash_based",
     label: "Est Comp Cost",
     sortable: true,
     valueFormatter: formatDollars,
-  },
-  {
-    path: "nonincap_injry_count",
-    label: "nonincap_injry_count",
-    exportOnly: true,
-  },
-  {
-    path: "crash_day_of_week",
-    label: "crash_day_of_week",
-    exportOnly: true,
-  },
-  {
-    path: "council_district",
-    label: "council_district",
-    exportOnly: true,
   },
   {
     path: "crash_injry_sev_desc",
@@ -194,11 +202,6 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
   {
     path: "traffic_cntl_id",
     label: "traffic_cntl_id",
-    exportOnly: true,
-  },
-  {
-    path: "unkn_injry_count",
-    label: "unkn_injry_count",
     exportOnly: true,
   },
   {
