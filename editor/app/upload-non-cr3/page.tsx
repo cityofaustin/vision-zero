@@ -57,7 +57,6 @@ export default function UploadNonCr3() {
             setValidationErrors(formattedErrors);
           } else {
             // CSV has been parsed — run schema validations
-            console.log(results.data);
             try {
               const parsedData: NonCr3Upload[] =
                 NonCr3UploadDedupedSchema.parse(results.data);
@@ -202,7 +201,7 @@ export default function UploadNonCr3() {
                     <FaTriangleExclamation className="me-2" />
                     <span>
                       Your file is invalid — please correct the below errors and
-                      try again.
+                      try again
                     </span>
                   </AlignedLabel>
                 </Alert>
@@ -235,7 +234,7 @@ export default function UploadNonCr3() {
                       .map(({ fieldName, rowNumber, message }, i) => (
                         <tr key={i}>
                           {/* if dupes are detected, rowNumber will be NaN and  the fieldname will be the string literal `"undefined"` */}
-                          <td>{isNaN(rowNumber) ? "" : rowNumber}</td>
+                          <td>{isNaN(rowNumber) ? "" : rowNumber + 1}</td>
                           <td>{fieldName === "undefined" ? "" : fieldName}</td>
                           <td>{message}</td>
                         </tr>
