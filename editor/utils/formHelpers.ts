@@ -20,6 +20,7 @@ export function getFromPath(
       return (currentValue as Record<string, unknown>)[key];
     }
     return undefined;
+    return true;
   }, obj);
 }
 
@@ -57,23 +58,6 @@ const valueToBoolString = (value: unknown): "true" | "false" | "" =>
  */
 const trimStringNullable = (value: string): string | null => {
   return value.trim() || null;
-};
-
-/**
- * Convert strings to numbers and coerce non-zero falsey values to `null`.
- * Invalid (NaN) numbers are also converted to null.
- */
-const stringToNumberNullable = (value: string): number | null => {
-  if (value.trim() === "") {
-    return null;
-  }
-  const num = Number(value);
-  if (isNaN(num)) {
-    // todo: handle this
-    console.warn("Failed to convert value to number: ", value);
-    return null;
-  }
-  return num;
 };
 
 /**
@@ -181,10 +165,15 @@ export const handleFormValueOutput = (
   if (inputType === "yes_no") {
     return stringToBoolNullable(value);
   }
-  if (inputType === "number" || (inputType === "select" && isLookup)) {
-    return stringToNumberNullable(value);
+
+  if (inputType === "number") {
+    if (!value) return null;
+    // Strip any non-numeric characters except decimal point and negative sign
+    const sanitizedValue = value.replace(/[^\d.-]/g, "");
+    const parsedValue = parseFloat(sanitizedValue);
+    return isNaN(parsedValue) ? null : parsedValue;
   }
-  // handle everything else as a nulllable string
+
   return trimStringNullable(value);
 };
 
@@ -193,6 +182,48 @@ export const handleFormValueOutput = (
  */
 export const commonValidations = {
   isNumber: (value: string) => {
+    // Allow empty string for nullable fields
+    if (!value) return true;
     return /^\d+$/.test(value) || "This field must be a number";
+    return true;
+  },
+  isPositiveWholeNumber: (value: string) => {
+    // Allow empty string for nullable fields
+    if (!value) return true;
+    // Strip any non-numeric characters
+    const sanitizedValue = value.replace(/\D/g, "");
+
+    // If the original value contained a decimal, warn user that only whole numbers are accepted
+    if (value.includes(".")) {
+      return "Only whole numbers are accepted (no decimals)";
+    }
+
+    return (
+      /^\d+$/.test(sanitizedValue) ||
+      "This field must be a positive whole number"
+    );
+    return true;
+  },
+  isZipCode: (value: string) => {
+    // Allow empty string for nullable fields
+    if (!value) return true;
+
+    // If the value contains a decimal or non-numeric characters, provide specific feedback
+    if (value.includes(".")) {
+      return "Zip codes cannot contain decimal points";
+    }
+
+    if (/[^\d]/.test(value)) {
+      return "Zip codes can only contain numbers";
+    }
+
+    // Strip any non-numeric characters
+    const sanitizedValue = value.replace(/\D/g, "");
+
+    // Check for 5 digits
+    if (sanitizedValue.length !== 5) {
+      return `Zip code must be 5 digits (currently ${sanitizedValue.length})`;
+    }
+    return true;
   },
 };
