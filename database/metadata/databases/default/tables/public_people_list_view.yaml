@@ -29,6 +29,15 @@ object_relationships:
         remote_table:
           name: injry_sev
           schema: lookups
+  - name: occpnt_pos
+    using:
+      manual_configuration:
+        column_mapping:
+          prsn_occpnt_pos_id: id
+        insertion_order: null
+        remote_table:
+          name: occpnt_pos
+          schema: lookups
   - name: prsn_type
     using:
       manual_configuration:

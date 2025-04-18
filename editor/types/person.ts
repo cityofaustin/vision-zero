@@ -20,4 +20,6 @@ export type Person = {
   prsn_type: LookupTableOption;
   prsn_type_id: number;
   unit_nbr: number;
+  occpnt_pos: LookupTableOption;
+  prsn_occpnt_pos_id: number;
 };
