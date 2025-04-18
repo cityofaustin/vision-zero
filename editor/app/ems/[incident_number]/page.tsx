@@ -1,6 +1,6 @@
 "use client";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { notFound } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import DataCard from "@/components/DataCard";
@@ -34,7 +34,9 @@ export default function EMSDetailsPage({
 
   const incident_number = params.incident_number;
 
-  /** */
+  /**
+   * Get all EMS records associated with this incident
+   */
   const {
     data: ems_pcrs,
     error,
@@ -42,8 +44,6 @@ export default function EMSDetailsPage({
     refetch,
   } = useQuery<EMSPatientCareRecord>({
     query: incident_number ? GET_EMS_RECORDS : null,
-    // if ID is provided, query for it, coercing non-numbers to zero and
-    // thereby triggering the 404
     variables: {
       incident_number: incident_number,
     },
@@ -55,23 +55,34 @@ export default function EMSDetailsPage({
   );
 
   /**
-   * Treat the first record found as the "incident"
+   * Hook which manages which related crash PKs we should
+   * use to query people records
    */
-  const incident = ems_pcrs?.[0];
+  const relatedCrashPks: number[] | null = useMemo(() => {
+    if (!ems_pcrs) {
+      return null;
+    }
+    const relatedCrashPks: number[] = [];
+    ems_pcrs.forEach((ems) => {
+      if (ems.crash_pk) {
+        // if we have a crash_pk populated, use it
+        relatedCrashPks.push(ems.crash_pk);
+      } else if (ems.matched_crash_pks) {
+        // otherwise use any matched crash_pks
+        relatedCrashPks.push(...ems.matched_crash_pks);
+      }
+    });
+    // dedupe array with Set constructors
+    return Array.from(new Set(relatedCrashPks));
+  }, [ems_pcrs]);
 
-  const matchedCrashPks = incident?.crash_pk
-    ? [incident.crash_pk]
-    : incident?.matched_crash_pks;
-
-  const {
-    data: matchingPeople,
-    // error: matchingPeopleError,
-    // isValidating: isValidatingCrashMatches,
-    // refetch: refetchMatchingPeople,
-  } = useQuery<PeopleListRow>({
-    query: matchedCrashPks ? GET_MATCHING_PEOPLE : null,
+  /**
+   * Get all people records linked to crashes associated with these incidents
+   */
+  const { data: matchingPeople } = useQuery<PeopleListRow>({
+    query: relatedCrashPks ? GET_MATCHING_PEOPLE : null,
     variables: {
-      crash_pks: matchedCrashPks,
+      crash_pks: relatedCrashPks,
     },
     typename: "people_list_view",
   });
@@ -80,11 +91,51 @@ export default function EMSDetailsPage({
     await refetch();
   }, [refetch]);
 
+  /**
+   * Memoize the additional components props for related record tables
+   */
+  const linkRecordButtonProps: EMSLinkRecordButtonProps = useMemo(
+    () => ({
+      onClick: (emsPcr) => {
+        setSelectedEmsPcr((prevEmsPcr) => {
+          return prevEmsPcr?.id === emsPcr?.id ? null : emsPcr;
+        });
+      },
+      selectedEmsPcr: selectedEmsPcr,
+    }),
+    [selectedEmsPcr]
+  );
+
+  const linkToPersonButtonProps: EMSLinkToPersonButtonProps = useMemo(
+    () => ({
+      onClick: (emsId, personId, crashPk) => {
+        updateEMSIncident({
+          id: emsId,
+          person_id: personId,
+          crash_pk: crashPk,
+        })
+          .then(() => refetch())
+          .then(() => {
+            setSelectedEmsPcr(null);
+          });
+      },
+      selectedEmsPcr: selectedEmsPcr,
+    }),
+    [updateEMSIncident, selectedEmsPcr, refetch]
+  );
+
   if (error) {
     console.error(error);
   }
 
-  // When data is loaded or updated this sets the title of the page inside the HTML head element
+  /**
+   * Use the first EMS record as the "incident"
+   */
+  const incident = ems_pcrs?.[0];
+
+  /**
+   * Set the title of the page inside the HTML head element
+   */
   useEffect(() => {
     if (incident) {
       document.title = `EMS ${incident.incident_number} - ${incident.incident_location_address}`;
@@ -118,7 +169,6 @@ export default function EMSDetailsPage({
             onSaveCallback={onSaveCallback}
           />
         </Col>
-
         <Col sm={12} className="mb-3">
           <RelatedRecordTable<EMSPatientCareRecord, EMSLinkRecordButtonProps>
             records={ems_pcrs}
@@ -129,14 +179,7 @@ export default function EMSDetailsPage({
             mutation={UPDATE_EMS_INCIDENT}
             onSaveCallback={onSaveCallback}
             rowActionComponent={EMSLinkRecordButton}
-            rowActionComponentAdditionalProps={{
-              onClick: (emsPcr) => {
-                setSelectedEmsPcr((prevEmsPcr) => {
-                  return prevEmsPcr?.id === emsPcr?.id ? null : emsPcr;
-                });
-              },
-              selectedEmsPcr: selectedEmsPcr,
-            }}
+            rowActionComponentAdditionalProps={linkRecordButtonProps}
           />
         </Col>
       </Row>
@@ -152,20 +195,7 @@ export default function EMSDetailsPage({
               mutation=""
               onSaveCallback={onSaveCallback}
               rowActionComponent={EMSLinkToPersonButton}
-              rowActionComponentAdditionalProps={{
-                onClick: (emsId, personId, crashPk) => {
-                  updateEMSIncident({
-                    id: emsId,
-                    person_id: personId,
-                    crash_pk: crashPk,
-                  })
-                    .then(() => refetch())
-                    .then(() => {
-                      setSelectedEmsPcr(null);
-                    });
-                },
-                selectedEmsPcr: selectedEmsPcr,
-              }}
+              rowActionComponentAdditionalProps={linkToPersonButtonProps}
             />
           </Col>
         </Row>
