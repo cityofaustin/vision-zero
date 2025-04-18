@@ -24,6 +24,8 @@ The below features should be tested with each role. Features with role-based acc
 - use Reset button to reset filters. Refresh page to verify reset is persisted.
 - paginate through search results
 - sort by various columns
+- Use column visibility settings menu (gear icon to right of pagination controls) to adjust column visibility
+- Verify column visibility settings persist when page is refreshed
 - sort indicator icon updates as sort column changes
 - Reset filters button appears when sort column is changed
 - Column sort setting is persisted when refresh page
@@ -109,6 +111,7 @@ The below features should be tested with each role. Features with role-based acc
   - `shift` + `a`: Primary address
   - `shift` + `u`: Units
   - `shift` + `p`: People
+  - `shift` + `3`: EMS patient care
   - `shift` + `c`: Charges
   - `shift` + `n`: Notes
   - `shift` + `f`: Fatality Review Board recommendations
@@ -119,14 +122,16 @@ The below features should be tested with each role. Features with role-based acc
 
 ### Locations list - `/locations`
 
-- Locations list
-  - filter using search input and selecting a field to search on
-  - reset filters
-  - filters are preserved (in local storage) when refreshing the page or navigating back to it
-  - export records to CSV
+- filter using search input and selecting a field to search on
+- reset filters
+- filters are preserved (in local storage) when refreshing the page or navigating back to it
+- Use column visibility settings menu (gear icon to right of pagination controls) to adjust column visibility
+- Verify column visibility settings persist when page is refreshed
+- export records to CSV
 
 ### Location details `/locations/[location_id]`
 
+- Verify page `<title>` element is formatted as `<location-ID> - <location-description>` (check how the title is rendered in your browser tab)
 - Location polygon map
 - Location data card displays the location ID, crash counts and comp costs
 - combined cr3 and noncr3 crashes list
@@ -160,6 +165,13 @@ refresh materialized view location_crashes_view;
   - dark mode toggle
   - signout link
   - external links to report a bug, request enhancement, and TxDOT's CR3 codesheet
+
+### Upload Non-CR3 records page
+
+- **Viewer** role cannot see this page
+- download template file
+- upload unedited template file and observe validation errors
+- fix broken lines
 
 ### Dashboard page
 

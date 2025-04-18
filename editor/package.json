@@ -1,6 +1,6 @@
 {
   "name": "vision-zero-editor",
-  "version": "2.9.1",
+  "version": "2.10",
   "description": "ATD Vision Zero Editor",
   "author": "TPW Data & Technology Services",
   "license": "MIT",
@@ -14,13 +14,14 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.3.0",
+    "@date-fns/tz": "^1.2.0",
     "@mapbox/mapbox-gl-geocoder": "^5.0.3",
     "@turf/center": "^7.2.0",
     "@types/lodash": "^4.17.16",
     "@types/mapbox__mapbox-gl-geocoder": "^5.0.0",
     "@types/mapbox-gl": "^3.4.1",
     "@types/papaparse": "^5.3.15",
-    "bootstrap": "^5.3.3",
+    "bootstrap": "^5.3.5",
     "date-fns": "^4.1.0",
     "graphql": "^16.10.0",
     "graphql-request": "^7.1.2",
@@ -38,7 +39,7 @@
     "react-map-gl": "^7.1.9",
     "react-zoom-pan-pinch": "^3.7.0",
     "swr": "^2.3.3",
-    "zod": "^3.24.2"
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@types/node": "^20.17.30",
@@ -46,9 +47,9 @@
     "@types/react-dom": "^18.3.6",
     "eslint": "^8.57.1",
     "eslint-config-next": "14.2.13",
-    "eslint-config-prettier": "^10.1.1",
+    "eslint-config-prettier": "^10.1.2",
     "prettier": "^3.5.3",
-    "sass": "^1.86.1",
-    "typescript": "^5.8.2"
+    "sass": "^1.86.3",
+    "typescript": "^5.8.3"
   }
 }

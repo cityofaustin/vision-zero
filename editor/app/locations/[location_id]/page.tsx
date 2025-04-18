@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useEffect } from "react";
 import { notFound } from "next/navigation";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -67,6 +67,13 @@ export default function LocationDetailsPage({
   const onSaveCallback = useCallback(async () => {
     await refetch();
   }, [refetch]);
+
+  // When data is loaded or updated this sets the title of the page inside the HTML head element
+  useEffect(() => {
+    if (!!data) {
+      document.title = `${data[0].location_id} - ${data[0].description}`;
+    }
+  }, [data]);
 
   if (!data) {
     // todo: loading spinner (would be nice to use a spinner inside cards)
