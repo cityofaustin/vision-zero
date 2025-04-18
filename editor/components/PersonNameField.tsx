@@ -2,14 +2,14 @@ import { useCallback } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useForm } from "react-hook-form";
-import { Person } from "@/types/person";
+import { PeopleListRow } from "@/types/peopleList";
 import { useMutation } from "@/utils/graphql";
 
 interface PersonNameFieldProps {
   /**
    * Record corresponding to row being edited
    */
-  record: Person;
+  record: PeopleListRow;
   /**
    * Name of record mutation
    */
