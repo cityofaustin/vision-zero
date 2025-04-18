@@ -64,6 +64,11 @@ export const ALL_EMS_COLUMNS = {
     path: "id",
     label: "ID",
     sortable: true,
+    valueRenderer: (record: EMSPatientCareRecord) => (
+      <Link href={`/ems/${record.id}`} prefetch={false}>
+        {record.id}
+      </Link>
+    ),
   },
   incident_location_address: {
     path: "incident_location_address",
