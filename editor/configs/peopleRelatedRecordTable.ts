@@ -1,4 +1,3 @@
-import { ALL } from "dns";
 import { ALL_PEOPLE_COLUMNS } from "./peopleColumns";
 
 export const peopleRelatedRecordCols = [
