@@ -1,4 +1,3 @@
-"use client";
 import { ALL_PEOPLE_COLUMNS } from "@/configs/peopleColumns";
 
 export const emsMatchingPeopleColumns = [
