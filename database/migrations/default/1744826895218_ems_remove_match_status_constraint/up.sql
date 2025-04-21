@@ -38,7 +38,7 @@ BEGIN
 END;
 $$ language plpgsql;
 
-comment on function update_person_crash_ems_match is 'Sets the ems__incident `crash_pk` based -- Trigger function that sets the ems__incident crash_pk based on the provided person_id and updates the crash_pk of all EMS records that share the same incident number';
+comment on function update_person_crash_ems_match is 'Sets the ems__incident crash_pk based on the provided person_id and updates the crash_pk of all EMS records that share the same incident number';
 
 create or replace trigger ems_update_person_match_trigger
 after update on ems__incidents
