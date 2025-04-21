@@ -15,7 +15,6 @@ export interface EMSLinkRecordButtonProps extends Record<string, unknown> {
 const EMSLinkRecordButton: React.FC<
   RowActionComponentProps<EMSPatientCareRecord, EMSLinkRecordButtonProps>
 > = ({ record, additionalProps }) => {
-  //   const { mutate, loading: isMutating } = useMutation(mutation);
 
   const isLinkingInProgress = !!additionalProps?.selectedEmsPcr;
   const isLinkingThisRecord =
