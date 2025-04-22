@@ -34,6 +34,26 @@ export const GET_EMS_RECORDS = gql`
   }
 `;
 
+export const GET_UNMATCHED_EMS_CRASHES = gql`
+  query EMSUnmatchedCrashes(
+    $timestamp12HoursBefore: timestamptz!
+    $timestamp12HoursAfter: timestamptz!
+  ) {
+    crashes(
+      where: {
+        crash_timestamp: {
+          _gte: $timestamp12HoursBefore
+          _lte: $timestamp12HoursAfter
+        }
+      }
+    ) {
+      id
+      cris_crash_id
+      crash_timestamp
+    }
+  }
+`;
+
 export const GET_MATCHING_PEOPLE = gql`
   query EMSMatchingCrashes($crash_pks: [Int!]) {
     people_list_view(
@@ -133,4 +153,3 @@ export const UPDATE_EMS_INCIDENT = gql`
     }
   }
 `;
-
