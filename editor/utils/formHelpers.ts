@@ -204,7 +204,7 @@ export const commonValidations = {
     );
     return true;
   },
-  isZipCode: (value: string) => {
+  isNullableZipCode: (value: string) => {
     // Allow empty string for nullable fields
     if (!value) return true;
 

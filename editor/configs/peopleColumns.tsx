@@ -98,7 +98,7 @@ export const ALL_PEOPLE_COLUMNS = {
     editable: true,
     inputType: "text",
     inputOptions: {
-      validate: commonValidations.isZipCode,
+      validate: commonValidations.isNullableZipCode,
     },
   },
   prsn_exp_homelessness: {
