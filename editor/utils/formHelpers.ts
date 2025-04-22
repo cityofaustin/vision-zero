@@ -190,18 +190,12 @@ export const commonValidations = {
   isNullableInteger: (value: string) => {
     // Allow empty string for nullable fields
     if (!value) return true;
-    // Strip any non-numeric characters
-    const sanitizedValue = value.replace(/\D/g, "");
 
-    // If the original value contained a decimal, warn user that only whole numbers are accepted
-    if (value.includes(".")) {
-      return "Only whole numbers are accepted (no decimals)";
+    // Trim leading/trailing whitespace and test if it's a positive integer
+    const trimmed = value.trim();
+    if (!/^\d+$/.test(trimmed)) {
+      return "Must be a positive integer";
     }
-
-    return (
-      /^\d+$/.test(sanitizedValue) ||
-      "This field must be a positive whole number"
-    );
     return true;
   },
   isNullableZipCode: (value: string) => {
