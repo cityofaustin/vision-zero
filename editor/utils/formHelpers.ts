@@ -208,21 +208,11 @@ export const commonValidations = {
     // Allow empty string for nullable fields
     if (!value) return true;
 
-    // If the value contains a decimal or non-numeric characters, provide specific feedback
-    if (value.includes(".")) {
-      return "Zip codes cannot contain decimal points";
-    }
-
-    if (/[^\d]/.test(value)) {
-      return "Zip codes can only contain numbers";
-    }
-
-    // Strip any non-numeric characters
-    const sanitizedValue = value.replace(/\D/g, "");
-
-    // Check for 5 digits
-    if (sanitizedValue.length !== 5) {
-      return `Zip code must be 5 digits (currently ${sanitizedValue.length})`;
+    // Trim leading/trailing whitespace and test against ZIP code pattern
+    // Allows 5 digits or 5 digits followed by optional hyphen and 4 digits
+    const trimmed = value.trim();
+    if (!/^\d{5}(-\d{4})?$/.test(trimmed)) {
+      return "Not a valid zip code";
     }
     return true;
   },
