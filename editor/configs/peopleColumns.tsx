@@ -46,7 +46,8 @@ export const ALL_PEOPLE_COLUMNS = {
   occpnt_pos: {
     path: "occpnt_pos.label",
     label: "Occupant Position",
-    editable: false,
+    editable: true,
+    inputType: "select",
     relationship: {
       tableSchema: "lookups",
       tableName: "occpnt_pos",
