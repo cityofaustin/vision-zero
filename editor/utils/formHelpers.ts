@@ -166,7 +166,7 @@ export const handleFormValueOutput = (
     return stringToBoolNullable(value);
   }
 
-  if (inputType === "number") {
+  if (inputType === "number" || (inputType === "select" && isLookup)) {
     if (!value) return null;
     // Strip any non-numeric characters except decimal point and negative sign
     const sanitizedValue = value.replace(/[^\d.-]/g, "");
