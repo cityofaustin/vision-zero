@@ -34,7 +34,7 @@ export const crashesColumns = {
     editable: true,
     inputType: "number",
     inputOptions: {
-      validate: commonValidations.isPositiveWholeNumber,
+      validate: commonValidations.isNullableInteger,
       min: { value: 0, message: "Speed limit cannot be negative" },
     },
   },

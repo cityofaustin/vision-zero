@@ -62,7 +62,7 @@ export const ALL_PEOPLE_COLUMNS = {
     editable: true,
     inputType: "number",
     inputOptions: {
-      validate: commonValidations.isPositiveWholeNumber,
+      validate: commonValidations.isNullableInteger,
       min: { value: 0, message: "Age cannot be negative" },
     },
   },
