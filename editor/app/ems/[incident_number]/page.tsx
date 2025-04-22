@@ -9,6 +9,7 @@ import { useMutation, useQuery } from "@/utils/graphql";
 import {
   GET_EMS_RECORDS,
   GET_MATCHING_PEOPLE,
+  GET_UNMATCHED_EMS_CRASHES,
   UPDATE_EMS_INCIDENT,
   UPDATE_EMS_INCIDENT_CRASH_AND_PERSON,
 } from "@/queries/ems";
@@ -23,6 +24,8 @@ import EMSLinkToPersonButton, {
 import { emsMatchingPeopleColumns } from "@/configs/emsMatchingPeopleColumns";
 import { PeopleListRow } from "@/types/peopleList";
 import { FaTruckMedical } from "react-icons/fa6";
+import { parseISO, subHours, addHours } from "date-fns";
+import { Crash } from "@/types/crashes";
 
 export default function EMSDetailsPage({
   params,
@@ -55,6 +58,11 @@ export default function EMSDetailsPage({
   );
 
   /**
+   * Use the first EMS record as the "incident"
+   */
+  const incident = ems_pcrs?.[0];
+
+  /**
    * Hook which manages which related crash PKs we should
    * use to query people records
    */
@@ -76,16 +84,55 @@ export default function EMSDetailsPage({
     return Array.from(new Set(relatedCrashPks));
   }, [ems_pcrs]);
 
+  const areAnyUnmatchedRecords = ems_pcrs
+    ? ems_pcrs.some((ems) => ems.crash_match_status === "unmatched")
+    : null;
+
+  const incidentTimestamp = incident?.incident_received_datetime
+    ? parseISO(incident?.incident_received_datetime)
+    : null;
+  const time12HoursBefore = incidentTimestamp
+    ? subHours(incidentTimestamp, 12)
+    : null;
+  const time12HoursAfter = incidentTimestamp
+    ? addHours(incidentTimestamp, 12)
+    : null;
+
+  console.log(
+    time12HoursAfter,
+    time12HoursBefore,
+    incidentTimestamp,
+    areAnyUnmatchedRecords
+  );
+
+  const { data: unmatchedCrashes, error: errorUnmatched } = useQuery<Crash>({
+    query: ems_pcrs ? GET_UNMATCHED_EMS_CRASHES : null,
+    variables: {
+      timestamp12HoursBefore: time12HoursBefore,
+      timestamp12HoursAfter: time12HoursAfter,
+    },
+    typename: "crashes",
+  });
+
+  const unmatchedCrashPks = unmatchedCrashes?.map((crash) => crash.id);
+
+  console.log(relatedCrashPks, "related crash pks");
+
   /**
    * Get all people records linked to crashes associated with these incidents
    */
-  const { data: matchingPeople } = useQuery<PeopleListRow>({
-    query: relatedCrashPks ? GET_MATCHING_PEOPLE : null,
-    variables: {
-      crash_pks: relatedCrashPks,
-    },
-    typename: "people_list_view",
-  });
+  const { data: matchingPeople, error: errormatchingpeople } =
+    useQuery<PeopleListRow>({
+      query: relatedCrashPks || unmatchedCrashPks ? GET_MATCHING_PEOPLE : null,
+      variables: {
+        crash_pks: relatedCrashPks?.[0] ? relatedCrashPks : unmatchedCrashPks,
+      },
+      typename: "people_list_view",
+    });
+
+  console.log(unmatchedCrashPks, "unmatched crashes", errorUnmatched);
+
+  console.log(matchingPeople, "matching people", errormatchingpeople);
 
   const onSaveCallback = useCallback(async () => {
     await refetch();
@@ -127,11 +174,6 @@ export default function EMSDetailsPage({
   if (error) {
     console.error(error);
   }
-
-  /**
-   * Use the first EMS record as the "incident"
-   */
-  const incident = ems_pcrs?.[0];
 
   /**
    * Set the title of the page inside the HTML head element
