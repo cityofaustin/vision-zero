@@ -35,7 +35,7 @@ export const crashesColumns = {
     inputType: "number",
     inputOptions: {
       validate: commonValidations.isNullableInteger,
-      min: { value: 0, message: "Speed limit cannot be negative" },
+      min: { value: 1, message: "Speed limit cannot be negative" },
     },
   },
   crash_timestamp: {
