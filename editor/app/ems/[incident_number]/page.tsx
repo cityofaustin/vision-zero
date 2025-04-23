@@ -66,9 +66,9 @@ export default function EMSDetailsPage({
    * Hook which manages which related crash PKs we should
    * use to query people records
    */
-  const relatedCrashPks: number[] | null = useMemo(() => {
+  const relatedCrashPks: number[] = useMemo(() => {
     if (!ems_pcrs) {
-      return null;
+      return [];
     }
     const relatedCrashPks: number[] = [];
     ems_pcrs.forEach((ems) => {
@@ -88,25 +88,24 @@ export default function EMSDetailsPage({
    * Hook which manages getting the 12 hour timestamp interval
    * to be used for fetching people list for unmatched EMS records
    */
-  const unmatchedTimeInterval: Date[] | null = useMemo(() => {
-    if (incident?.crash_match_status !== "unmatched") {
-      return null;
+  const unmatchedTimeInterval: Date[] = useMemo(() => {
+    if (ems_pcrs?.some((ems) => ems.crash_match_status === "unmatched")) {
+      if (incident?.incident_received_datetime) {
+        const incidentTimestamp = parseISO(incident.incident_received_datetime);
+        const time12HoursBefore = subHours(incidentTimestamp, 12);
+        const time12HoursAfter = addHours(incidentTimestamp, 12);
+        return [time12HoursBefore, time12HoursAfter];
+      }
     }
-    if (!!incident.incident_received_datetime) {
-      const incidentTimestamp = parseISO(incident.incident_received_datetime);
-      const time12HoursBefore = subHours(incidentTimestamp, 12);
-      const time12HoursAfter = addHours(incidentTimestamp, 12);
-      return [time12HoursBefore, time12HoursAfter];
-    }
-    return null;
-  }, [incident]);
+    return [];
+  }, [incident, ems_pcrs]);
 
   /**
    * Get all crash records that occurred within 12 hours of the incidents
    * if the incidents have a crash match status of unmatched
    */
   const { data: unmatchedCrashes } = useQuery<Crash>({
-    query: unmatchedTimeInterval ? GET_UNMATCHED_EMS_CRASHES : null,
+    query: unmatchedTimeInterval[0] ? GET_UNMATCHED_EMS_CRASHES : null,
     variables: {
       time12HoursBefore: unmatchedTimeInterval?.[0],
       time12HoursAfter: unmatchedTimeInterval?.[1],
@@ -114,17 +113,21 @@ export default function EMSDetailsPage({
     typename: "crashes",
   });
 
-  const unmatchedCrashPks = unmatchedCrashes?.map((crash) => crash.id);
+  const unmatchedCrashPks: number[] = unmatchedCrashes
+    ? unmatchedCrashes?.map((crash) => crash.id)
+    : [];
+
+  const totalCrashPks = [...relatedCrashPks, ...unmatchedCrashPks];
 
   /**
    * Get all people records linked to crashes that were either automatically
-   * matched with the ems incidents or that occurred within 12 hours of the incidents
-   * if they have a crash status of unmatched
+   * matched with the ems incident or that occurred within 12 hours of the incident
+   * if it has a crash status of unmatched
    */
   const { data: matchingPeople } = useQuery<PeopleListRow>({
-    query: relatedCrashPks || unmatchedCrashPks ? GET_MATCHING_PEOPLE : null,
+    query: totalCrashPks[0] ? GET_MATCHING_PEOPLE : null,
     variables: {
-      crash_pks: relatedCrashPks?.[0] ? relatedCrashPks : unmatchedCrashPks,
+      crash_pks: totalCrashPks,
     },
     typename: "people_list_view",
   });
