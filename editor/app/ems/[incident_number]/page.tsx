@@ -84,29 +84,32 @@ export default function EMSDetailsPage({
     return Array.from(new Set(relatedCrashPks));
   }, [ems_pcrs]);
 
-  const areAnyUnmatchedRecords: boolean | undefined = ems_pcrs?.some(
-    (ems) => ems.crash_match_status === "unmatched"
-  );
-
-  const incidentTimestamp = incident?.incident_received_datetime
-    ? parseISO(incident?.incident_received_datetime)
-    : null;
-  const time12HoursBefore = incidentTimestamp
-    ? subHours(incidentTimestamp, 12)
-    : null;
-  const time12HoursAfter = incidentTimestamp
-    ? addHours(incidentTimestamp, 12)
-    : null;
+  /**
+   * Hook which manages getting the 12 hour timestamp interval
+   * to be used for fetching people list for unmatched EMS records
+   */
+  const unmatchedTimeInterval: Date[] | null = useMemo(() => {
+    if (incident?.crash_match_status !== "unmatched") {
+      return null;
+    }
+    if (!!incident.incident_received_datetime) {
+      const incidentTimestamp = parseISO(incident.incident_received_datetime);
+      const time12HoursBefore = subHours(incidentTimestamp, 12);
+      const time12HoursAfter = addHours(incidentTimestamp, 12);
+      return [time12HoursBefore, time12HoursAfter];
+    }
+    return null;
+  }, [incident]);
 
   /**
    * Get all crash records that occurred within 12 hours of the incidents
-   * if the incidents have a crash match status of "unmatched"
+   * if the incidents have a crash match status of unmatched
    */
   const { data: unmatchedCrashes } = useQuery<Crash>({
-    query: areAnyUnmatchedRecords ? GET_UNMATCHED_EMS_CRASHES : null,
+    query: unmatchedTimeInterval ? GET_UNMATCHED_EMS_CRASHES : null,
     variables: {
-      timestamp12HoursBefore: time12HoursBefore,
-      timestamp12HoursAfter: time12HoursAfter,
+      time12HoursBefore: unmatchedTimeInterval?.[0],
+      time12HoursAfter: unmatchedTimeInterval?.[1],
     },
     typename: "crashes",
   });
@@ -114,8 +117,8 @@ export default function EMSDetailsPage({
   const unmatchedCrashPks = unmatchedCrashes?.map((crash) => crash.id);
 
   /**
-   * Get all people records that are either linked to crashes associated
-   * with these incidents or that occurred within 12 hours of the incidents
+   * Get all people records linked to crashes that were either automatically
+   * matched with the ems incidents or that occurred within 12 hours of the incidents
    * if they have a crash status of unmatched
    */
   const { data: matchingPeople } = useQuery<PeopleListRow>({
