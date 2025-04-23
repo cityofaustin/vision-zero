@@ -84,9 +84,9 @@ export default function EMSDetailsPage({
     return Array.from(new Set(relatedCrashPks));
   }, [ems_pcrs]);
 
-  const areAnyUnmatchedRecords = ems_pcrs
-    ? ems_pcrs.some((ems) => ems.crash_match_status === "unmatched")
-    : null;
+  const areAnyUnmatchedRecords: boolean | undefined = ems_pcrs?.some(
+    (ems) => ems.crash_match_status === "unmatched"
+  );
 
   const incidentTimestamp = incident?.incident_received_datetime
     ? parseISO(incident?.incident_received_datetime)
@@ -98,15 +98,12 @@ export default function EMSDetailsPage({
     ? addHours(incidentTimestamp, 12)
     : null;
 
-  console.log(
-    time12HoursAfter,
-    time12HoursBefore,
-    incidentTimestamp,
-    areAnyUnmatchedRecords
-  );
-
-  const { data: unmatchedCrashes, error: errorUnmatched } = useQuery<Crash>({
-    query: ems_pcrs ? GET_UNMATCHED_EMS_CRASHES : null,
+  /**
+   * Get all crash records that occurred within 12 hours of the incidents
+   * if the incidents have a crash match status of "unmatched"
+   */
+  const { data: unmatchedCrashes } = useQuery<Crash>({
+    query: areAnyUnmatchedRecords ? GET_UNMATCHED_EMS_CRASHES : null,
     variables: {
       timestamp12HoursBefore: time12HoursBefore,
       timestamp12HoursAfter: time12HoursAfter,
@@ -116,23 +113,18 @@ export default function EMSDetailsPage({
 
   const unmatchedCrashPks = unmatchedCrashes?.map((crash) => crash.id);
 
-  console.log(relatedCrashPks, "related crash pks");
-
   /**
-   * Get all people records linked to crashes associated with these incidents
+   * Get all people records that are either linked to crashes associated
+   * with these incidents or that occurred within 12 hours of the incidents
+   * if they have a crash status of unmatched
    */
-  const { data: matchingPeople, error: errormatchingpeople } =
-    useQuery<PeopleListRow>({
-      query: relatedCrashPks || unmatchedCrashPks ? GET_MATCHING_PEOPLE : null,
-      variables: {
-        crash_pks: relatedCrashPks?.[0] ? relatedCrashPks : unmatchedCrashPks,
-      },
-      typename: "people_list_view",
-    });
-
-  console.log(unmatchedCrashPks, "unmatched crashes", errorUnmatched);
-
-  console.log(matchingPeople, "matching people", errormatchingpeople);
+  const { data: matchingPeople } = useQuery<PeopleListRow>({
+    query: relatedCrashPks || unmatchedCrashPks ? GET_MATCHING_PEOPLE : null,
+    variables: {
+      crash_pks: relatedCrashPks?.[0] ? relatedCrashPks : unmatchedCrashPks,
+    },
+    typename: "people_list_view",
+  });
 
   const onSaveCallback = useCallback(async () => {
     await refetch();
