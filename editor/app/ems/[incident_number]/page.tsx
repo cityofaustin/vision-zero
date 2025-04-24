@@ -80,30 +80,36 @@ export default function EMSDetailsPage({
   }, [ems_pcrs]);
 
   /**
-   * Hook which manages getting the 12 hour timestamp interval
+   * Function that gets the 12 hour timestamp interval
    * to be used for fetching people list for unmatched EMS records
    */
-  const unmatchedTimeInterval: Date[] = useMemo(() => {
-    // if any of the ems records have a crash match status of unmatched
-    if (ems_pcrs?.some((ems) => ems.crash_match_status === "unmatched")) {
-      if (ems_pcrs[0].incident_received_datetime) {
-        const incidentTimestamp = parseISO(
-          ems_pcrs[0].incident_received_datetime
-        );
-        const time12HoursBefore = subHours(incidentTimestamp, 12);
-        const time12HoursAfter = addHours(incidentTimestamp, 12);
-        return [time12HoursBefore, time12HoursAfter];
-      }
+  const getUnmatchedTimeInterval = () => {
+    if (ems_pcrs?.[0].incident_received_datetime) {
+      const incidentTimestamp = parseISO(
+        ems_pcrs[0].incident_received_datetime
+      );
+      const time12HoursBefore = subHours(incidentTimestamp, 12);
+      const time12HoursAfter = addHours(incidentTimestamp, 12);
+      return [time12HoursBefore, time12HoursAfter];
     }
-    return [];
-  }, [ems_pcrs]);
+    return null;
+  };
+
+  // Check if any of the ems incidents have an unmatched status
+  const areAnyUnmatchedEMSRecords = ems_pcrs?.some(
+    (ems) => ems.crash_match_status === "unmatched"
+  );
+
+  const unmatchedTimeInterval = areAnyUnmatchedEMSRecords
+    ? getUnmatchedTimeInterval()
+    : null;
 
   /**
    * Get all crash records that occurred within 12 hours of the incidents
    * if the incidents have a crash match status of unmatched
    */
   const { data: unmatchedCrashes } = useQuery<Crash>({
-    query: unmatchedTimeInterval[0] ? GET_UNMATCHED_EMS_CRASHES : null,
+    query: unmatchedTimeInterval ? GET_UNMATCHED_EMS_CRASHES : null,
     variables: {
       time12HoursBefore: unmatchedTimeInterval?.[0],
       time12HoursAfter: unmatchedTimeInterval?.[1],
