@@ -58,11 +58,6 @@ export default function EMSDetailsPage({
   );
 
   /**
-   * Use the first EMS record as the "incident"
-   */
-  const incident = ems_pcrs?.[0];
-
-  /**
    * Hook which manages which related crash PKs we should
    * use to query people records
    */
@@ -175,6 +170,11 @@ export default function EMSDetailsPage({
   if (error) {
     console.error(error);
   }
+
+  /**
+   * Use the first EMS record as the "incident"
+   */
+  const incident = ems_pcrs?.[0];
 
   /**
    * Set the title of the page inside the HTML head element
