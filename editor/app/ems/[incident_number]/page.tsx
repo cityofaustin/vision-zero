@@ -91,15 +91,17 @@ export default function EMSDetailsPage({
   const unmatchedTimeInterval: Date[] = useMemo(() => {
     // if any of the ems records have a crash match status of unmatched
     if (ems_pcrs?.some((ems) => ems.crash_match_status === "unmatched")) {
-      if (incident?.incident_received_datetime) {
-        const incidentTimestamp = parseISO(incident.incident_received_datetime);
+      if (ems_pcrs[0].incident_received_datetime) {
+        const incidentTimestamp = parseISO(
+          ems_pcrs[0].incident_received_datetime
+        );
         const time12HoursBefore = subHours(incidentTimestamp, 12);
         const time12HoursAfter = addHours(incidentTimestamp, 12);
         return [time12HoursBefore, time12HoursAfter];
       }
     }
     return [];
-  }, [incident, ems_pcrs]);
+  }, [ems_pcrs]);
 
   /**
    * Get all crash records that occurred within 12 hours of the incidents
