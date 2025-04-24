@@ -89,6 +89,7 @@ export default function EMSDetailsPage({
    * to be used for fetching people list for unmatched EMS records
    */
   const unmatchedTimeInterval: Date[] = useMemo(() => {
+    // if any of the ems records have a crash match status of unmatched
     if (ems_pcrs?.some((ems) => ems.crash_match_status === "unmatched")) {
       if (incident?.incident_received_datetime) {
         const incidentTimestamp = parseISO(incident.incident_received_datetime);
@@ -117,7 +118,7 @@ export default function EMSDetailsPage({
     ? unmatchedCrashes?.map((crash) => crash.id)
     : [];
 
-  const totalCrashPks = [...relatedCrashPks, ...unmatchedCrashPks];
+  const allCrashPks = [...relatedCrashPks, ...unmatchedCrashPks];
 
   /**
    * Get all people records linked to crashes that were either automatically
@@ -125,9 +126,9 @@ export default function EMSDetailsPage({
    * if it has a crash status of unmatched
    */
   const { data: matchingPeople } = useQuery<PeopleListRow>({
-    query: totalCrashPks[0] ? GET_MATCHING_PEOPLE : null,
+    query: allCrashPks[0] ? GET_MATCHING_PEOPLE : null,
     variables: {
-      crash_pks: totalCrashPks,
+      crash_pks: allCrashPks,
     },
     typename: "people_list_view",
   });
