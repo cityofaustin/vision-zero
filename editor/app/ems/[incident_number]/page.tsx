@@ -131,7 +131,7 @@ export default function EMSDetailsPage({
   const { data: matchingPeople } = useQuery<PeopleListRow>({
     query: allCrashPks[0] ? GET_MATCHING_PEOPLE : null,
     variables: {
-      crash_pks: allCrashPks,
+      crash_pks: unmatchedTimeInterval ? allCrashPks : relatedCrashPks,
     },
     typename: "people_list_view",
   });
