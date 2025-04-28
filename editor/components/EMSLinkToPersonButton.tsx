@@ -11,14 +11,20 @@ const allowedLinkRecordRoles = ["vz-admin", "editor"];
 export interface EMSLinkToPersonButtonProps extends Record<string, unknown> {
   onClick: (emsId: number, personId: number, crashPk: number) => void;
   selectedEmsPcr: EMSPatientCareRecord | null;
+  matchedPersonIds: number[] | undefined;
 }
 
 const EMSLinkToPersonButton: React.FC<
   RowActionComponentProps<PeopleListRow, EMSLinkToPersonButtonProps>
 > = ({ record, additionalProps }) => {
   const isLinkingInProgress = !!additionalProps?.selectedEmsPcr;
+  const isPersonAlreadyLinked = additionalProps?.matchedPersonIds
+    ? additionalProps?.matchedPersonIds.some(
+        (personId) => personId === record.id
+      )
+    : null;
 
-  if (!isLinkingInProgress) {
+  if (!isLinkingInProgress || isPersonAlreadyLinked) {
     return null;
   }
 
