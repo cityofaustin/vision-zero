@@ -20,7 +20,6 @@ export function getFromPath(
       return (currentValue as Record<string, unknown>)[key];
     }
     return undefined;
-    return true;
   }, obj);
 }
 
