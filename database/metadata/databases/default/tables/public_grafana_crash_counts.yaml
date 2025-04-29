@@ -1,3 +1,0 @@
-table:
-  name: grafana_crash_counts
-  schema: public
