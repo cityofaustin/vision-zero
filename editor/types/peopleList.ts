@@ -1,6 +1,7 @@
 import { Crash } from "@/types/crashes";
 import { LookupTableOption } from "./relationships";
 import { Unit } from "@/types/unit";
+import { EMSPatientCareRecord } from "@/types/ems";
 
 export type PeopleListRow = {
   crash_pk: number;
@@ -26,5 +27,5 @@ export type PeopleListRow = {
   unit_id: number;
   unit?: Unit;
   crash?: Crash;
-  ems_pcr: LookupTableOption;
+  ems_pcr?: EMSPatientCareRecord;
 };
