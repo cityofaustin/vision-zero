@@ -58,6 +58,11 @@ export default function EMSDetailsPage({
   );
 
   /**
+   * Use the first EMS record as the "incident"
+   */
+  const incident = ems_pcrs?.[0];
+
+  /**
    * Hook which manages which related crash PKs we should
    * use to query people records
    */
@@ -80,39 +85,31 @@ export default function EMSDetailsPage({
   }, [ems_pcrs]);
 
   /**
-   * Function that gets the 12 hour timestamp interval
+   * Hook that gets the 12 hour timestamp interval
    * to be used for fetching people list for unmatched EMS records
    */
-  const getUnmatchedTimeInterval = () => {
-    if (ems_pcrs?.[0].incident_received_datetime) {
-      const incidentTimestamp = parseISO(
-        ems_pcrs[0].incident_received_datetime
-      );
-      const time12HoursBefore = subHours(incidentTimestamp, 12);
-      const time12HoursAfter = addHours(incidentTimestamp, 12);
-      return [time12HoursBefore, time12HoursAfter];
+  const unmatchedTimeInterval: Date[] = useMemo(() => {
+    if (incident?.incident_received_datetime) {
+      // Return time interval only if we have any unmatched ems pcrs
+      if (ems_pcrs?.some((ems) => ems.crash_match_status === "unmatched")) {
+        const incidentTimestamp = parseISO(incident.incident_received_datetime);
+        const time12HoursBefore = subHours(incidentTimestamp, 12);
+        const time12HoursAfter = addHours(incidentTimestamp, 12);
+        return [time12HoursBefore, time12HoursAfter];
+      }
     }
-    return null;
-  };
-
-  // Check if any of the ems incidents have an unmatched status
-  const areAnyUnmatchedEMSRecords = ems_pcrs?.some(
-    (ems) => ems.crash_match_status === "unmatched"
-  );
-
-  const unmatchedTimeInterval = areAnyUnmatchedEMSRecords
-    ? getUnmatchedTimeInterval()
-    : null;
+    return [];
+  }, [incident, ems_pcrs]);
 
   /**
    * Get all crash records that occurred within 12 hours of the incidents
-   * if the incidents have a crash match status of unmatched
+   * if any of the ems pcrs have a crash match status of unmatched
    */
   const { data: unmatchedCrashes } = useQuery<Crash>({
-    query: unmatchedTimeInterval ? GET_UNMATCHED_EMS_CRASHES : null,
+    query: unmatchedTimeInterval[0] ? GET_UNMATCHED_EMS_CRASHES : null,
     variables: {
-      time12HoursBefore: unmatchedTimeInterval?.[0],
-      time12HoursAfter: unmatchedTimeInterval?.[1],
+      time12HoursBefore: unmatchedTimeInterval[0],
+      time12HoursAfter: unmatchedTimeInterval[1],
     },
     typename: "crashes",
   });
@@ -121,17 +118,20 @@ export default function EMSDetailsPage({
     ? unmatchedCrashes?.map((crash) => crash.id)
     : [];
 
-  const allCrashPks = [...relatedCrashPks, ...unmatchedCrashPks];
+  // Combine and dedupe related crash and unmatched crash pks
+  const allCrashPks = Array.from(
+    new Set([...relatedCrashPks, ...unmatchedCrashPks])
+  );
 
   /**
    * Get all people records linked to crashes that were either automatically
-   * matched with the ems incident or that occurred within 12 hours of the incident
+   * matched with the ems record or that occurred within 12 hours of the incident
    * if it has a crash status of unmatched
    */
   const { data: matchingPeople } = useQuery<PeopleListRow>({
     query: allCrashPks[0] ? GET_MATCHING_PEOPLE : null,
     variables: {
-      crash_pks: unmatchedTimeInterval ? allCrashPks : relatedCrashPks,
+      crash_pks: unmatchedTimeInterval[0] ? allCrashPks : relatedCrashPks,
     },
     typename: "people_list_view",
   });
@@ -186,11 +186,6 @@ export default function EMSDetailsPage({
   }
 
   /**
-   * Use the first EMS record as the "incident"
-   */
-  const incident = ems_pcrs?.[0];
-
-  /**
    * Set the title of the page inside the HTML head element
    */
   useEffect(() => {
@@ -240,23 +235,21 @@ export default function EMSDetailsPage({
           />
         </Col>
       </Row>
-      {matchingPeople && (
-        <Row>
-          <Col sm={12} className="mb-3">
-            <RelatedRecordTable<PeopleListRow, EMSLinkToPersonButtonProps>
-              records={matchingPeople}
-              isValidating={isValidating}
-              noRowsMessage="No crashes found"
-              header="Associated people records"
-              columns={emsMatchingPeopleColumns}
-              mutation=""
-              onSaveCallback={onSaveCallback}
-              rowActionComponent={EMSLinkToPersonButton}
-              rowActionComponentAdditionalProps={linkToPersonButtonProps}
-            />
-          </Col>
-        </Row>
-      )}
+      <Row>
+        <Col sm={12} className="mb-3">
+          <RelatedRecordTable<PeopleListRow, EMSLinkToPersonButtonProps>
+            records={matchingPeople ? matchingPeople : []}
+            isValidating={isValidating}
+            noRowsMessage="No people found"
+            header="Associated people records"
+            columns={emsMatchingPeopleColumns}
+            mutation=""
+            onSaveCallback={onSaveCallback}
+            rowActionComponent={EMSLinkToPersonButton}
+            rowActionComponentAdditionalProps={linkToPersonButtonProps}
+          />
+        </Col>
+      </Row>
     </>
   );
 }
