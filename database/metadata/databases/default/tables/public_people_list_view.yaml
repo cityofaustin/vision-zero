@@ -20,6 +20,15 @@ object_relationships:
         remote_table:
           name: drvr_ethncty
           schema: lookups
+  - name: ems_pcr
+    using:
+      manual_configuration:
+        column_mapping:
+          id: person_id
+        insertion_order: null
+        remote_table:
+          name: ems__incidents
+          schema: public
   - name: gndr
     using:
       manual_configuration:
