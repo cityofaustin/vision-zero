@@ -26,4 +26,5 @@ export type PeopleListRow = {
   unit_id: number;
   unit?: Unit;
   crash?: Crash;
+  ems_pcr: LookupTableOption;
 };
