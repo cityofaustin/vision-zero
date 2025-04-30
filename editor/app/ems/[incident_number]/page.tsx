@@ -129,7 +129,7 @@ export default function EMSDetailsPage({
    * if it has a crash status of unmatched
    */
   const { data: matchingPeople } = useQuery<PeopleListRow>({
-    query: GET_MATCHING_PEOPLE,
+    query: allCrashPks[0] ? GET_MATCHING_PEOPLE : null,
     variables: {
       crash_pks: unmatchedTimeInterval[0] ? allCrashPks : relatedCrashPks,
     },
@@ -227,23 +227,21 @@ export default function EMSDetailsPage({
           />
         </Col>
       </Row>
-      {matchingPeople && (
-        <Row>
-          <Col sm={12} className="mb-3">
-            <RelatedRecordTable<PeopleListRow, EMSLinkToPersonButtonProps>
-              records={matchingPeople}
-              isValidating={isValidating}
-              noRowsMessage="No people found"
-              header="Associated people records"
-              columns={emsMatchingPeopleColumns}
-              mutation=""
-              onSaveCallback={onSaveCallback}
-              rowActionComponent={EMSLinkToPersonButton}
-              rowActionComponentAdditionalProps={linkToPersonButtonProps}
-            />
-          </Col>
-        </Row>
-      )}
+      <Row>
+        <Col sm={12} className="mb-3">
+          <RelatedRecordTable<PeopleListRow, EMSLinkToPersonButtonProps>
+            records={matchingPeople ? matchingPeople : []}
+            isValidating={isValidating}
+            noRowsMessage="No people found"
+            header="Associated people records"
+            columns={emsMatchingPeopleColumns}
+            mutation=""
+            onSaveCallback={onSaveCallback}
+            rowActionComponent={EMSLinkToPersonButton}
+            rowActionComponentAdditionalProps={linkToPersonButtonProps}
+          />
+        </Col>
+      </Row>
     </>
   );
 }
