@@ -88,13 +88,13 @@ export default function EMSDetailsPage({
    * Hook that gets the 12 hour timestamp interval
    * to be used for fetching people list for unmatched EMS records
    */
-  const unmatchedTimeInterval: Date[] = useMemo(() => {
+  const unmatchedTimeInterval: string[] = useMemo(() => {
     if (incident?.incident_received_datetime) {
       // Return time interval only if we have any unmatched ems pcrs
       if (ems_pcrs?.some((ems) => ems.crash_match_status === "unmatched")) {
         const incidentTimestamp = parseISO(incident.incident_received_datetime);
-        const time12HoursBefore = subHours(incidentTimestamp, 12);
-        const time12HoursAfter = addHours(incidentTimestamp, 12);
+        const time12HoursBefore = subHours(incidentTimestamp, 12).toISOString();
+        const time12HoursAfter = addHours(incidentTimestamp, 12).toISOString();
         return [time12HoursBefore, time12HoursAfter];
       }
     }
