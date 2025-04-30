@@ -40,7 +40,7 @@ const EMSLinkToPersonButton: React.FC<
       >
         <AlignedLabel>
           <FaLink className="me-2" />
-          <span>Select</span>
+          <span>Select match</span>
         </AlignedLabel>
       </Button>
     </PermissionsRequired>

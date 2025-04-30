@@ -82,7 +82,7 @@ export const ALL_EMS_COLUMNS = {
   },
   incident_problem: {
     path: "incident_problem",
-    label: "Incident problem",
+    label: "Problem",
     sortable: true,
   },
   incident_received_datetime_with_timestamp: {
