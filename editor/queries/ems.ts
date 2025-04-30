@@ -55,7 +55,7 @@ export const GET_MATCHING_PEOPLE = gql`
   query EMSMatchingCrashes($crash_pks: [Int!]) {
     people_list_view(
       where: { crash_pk: { _in: $crash_pks } }
-      order_by: { cris_crash_id: asc, unit_nbr: asc, prsn_nbr: asc }
+      order_by: { crash_timestamp: asc, unit_nbr: asc, prsn_nbr: asc }
     ) {
       crash_pk
       crash_timestamp
