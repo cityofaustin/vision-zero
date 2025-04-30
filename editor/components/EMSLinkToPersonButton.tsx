@@ -18,11 +18,8 @@ const EMSLinkToPersonButton: React.FC<
   RowActionComponentProps<PeopleListRow, EMSLinkToPersonButtonProps>
 > = ({ record, additionalProps }) => {
   const isLinkingInProgress = !!additionalProps?.selectedEmsPcr;
-  const isPersonAlreadyLinked = additionalProps?.matchedPersonIds
-    ? additionalProps?.matchedPersonIds.some(
-        (personId) => personId === record.id
-      )
-    : null;
+  // Does the person already have a non-null ems_pcr relationship
+  const isPersonAlreadyLinked = !!record.ems_pcr;
 
   if (!isLinkingInProgress || isPersonAlreadyLinked) {
     return null;
