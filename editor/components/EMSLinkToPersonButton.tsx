@@ -11,7 +11,6 @@ const allowedLinkRecordRoles = ["vz-admin", "editor"];
 export interface EMSLinkToPersonButtonProps extends Record<string, unknown> {
   onClick: (emsId: number, personId: number, crashPk: number) => void;
   selectedEmsPcr: EMSPatientCareRecord | null;
-  matchedPersonIds: number[] | undefined;
 }
 
 const EMSLinkToPersonButton: React.FC<

@@ -136,13 +136,6 @@ export default function EMSDetailsPage({
     typename: "people_list_view",
   });
 
-  /**
-   * Array of all the person ids that have already been matched to ems records in this incident
-   */
-  const matchedPersonIds: number[] | undefined = ems_pcrs
-    ?.map((ems) => ems.person_id)
-    .filter((id) => id !== null);
-
   const onSaveCallback = useCallback(async () => {
     await refetch();
   }, [refetch]);
@@ -176,9 +169,8 @@ export default function EMSDetailsPage({
           });
       },
       selectedEmsPcr: selectedEmsPcr,
-      matchedPersonIds: matchedPersonIds,
     }),
-    [updateEMSIncident, selectedEmsPcr, refetch, matchedPersonIds]
+    [updateEMSIncident, selectedEmsPcr, refetch]
   );
 
   if (error) {
