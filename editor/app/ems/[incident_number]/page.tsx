@@ -103,7 +103,7 @@ export default function EMSDetailsPage({
 
   /**
    * Get all crash records that occurred within 12 hours of the incidents
-   * if the incidents have a crash match status of unmatched
+   * if any of the ems pcrs have a crash match status of unmatched
    */
   const { data: unmatchedCrashes } = useQuery<Crash>({
     query: unmatchedTimeInterval[0] ? GET_UNMATCHED_EMS_CRASHES : null,
@@ -125,7 +125,7 @@ export default function EMSDetailsPage({
 
   /**
    * Get all people records linked to crashes that were either automatically
-   * matched with the ems incident or that occurred within 12 hours of the incident
+   * matched with the ems record or that occurred within 12 hours of the incident
    * if it has a crash status of unmatched
    */
   const { data: matchingPeople } = useQuery<PeopleListRow>({
