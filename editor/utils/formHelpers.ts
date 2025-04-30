@@ -34,6 +34,7 @@ export const valueToString = <T extends Record<string, unknown>>(
   if (col.inputType === "yes_no") {
     return valueToBoolString(value);
   }
+  if (value === 0) return "0";
   return String(value || "");
 };
 
