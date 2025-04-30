@@ -121,6 +121,9 @@ export const GET_MATCHING_PEOPLE = gql`
           label
         }
       }
+      ems_pcr {
+        id
+      }
     }
   }
 `;
