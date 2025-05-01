@@ -1,7 +1,7 @@
 import { getInjuryColorClass } from "@/utils/people";
 import { ColDataCardDef } from "@/types/types";
 import { EMSPatientCareRecord } from "@/types/ems";
-import { formatDate } from "@/utils/formatters";
+import { formatDate, formatIsoDateTime } from "@/utils/formatters";
 import Link from "next/link";
 
 const formatCrashMatchStatus = (value: unknown) => {
@@ -64,11 +64,6 @@ export const ALL_EMS_COLUMNS = {
     path: "id",
     label: "ID",
     sortable: true,
-    valueRenderer: (record: EMSPatientCareRecord) => (
-      <Link href={`/ems/${record.id}`} prefetch={false}>
-        {record.id}
-      </Link>
-    ),
   },
   incident_location_address: {
     path: "incident_location_address",
@@ -79,10 +74,22 @@ export const ALL_EMS_COLUMNS = {
     path: "incident_number",
     label: "Incident #",
     sortable: true,
+    valueRenderer: (record: EMSPatientCareRecord) => (
+      <Link href={`/ems/${record.incident_number}`} prefetch={false}>
+        <span style={{ whiteSpace: "nowrap" }}>{record.incident_number}</span>
+      </Link>
+    ),
   },
   incident_problem: {
     path: "incident_problem",
-    label: "Incident problem",
+    label: "Problem",
+    sortable: true,
+  },
+  incident_received_datetime_with_timestamp: {
+    path: "incident_received_datetime",
+    label: "Date",
+    style: { whiteSpace: "nowrap" },
+    valueFormatter: formatIsoDateTime,
     sortable: true,
   },
   incident_received_datetime: {
@@ -91,6 +98,12 @@ export const ALL_EMS_COLUMNS = {
     style: { whiteSpace: "nowrap" },
     valueFormatter: formatDate,
     sortable: true,
+  },
+  person_id: {
+    path: "person_id",
+    label: "Person ID",
+    editable: true,
+    inputType: "number",
   },
   mvc_form_position_in_vehicle: {
     path: "mvc_form_position_in_vehicle",

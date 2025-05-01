@@ -15,6 +15,8 @@ select_permissions:
         - apd_incident_numbers
         - crash_match_status
         - crash_pk
+        - created_at
+        - created_by
         - id
         - incident_location_address
         - incident_number
@@ -30,6 +32,7 @@ select_permissions:
         - travel_mode
         - unparsed_apd_incident_numbers
         - updated_at
+        - updated_by
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -39,6 +42,8 @@ select_permissions:
         - apd_incident_numbers
         - crash_match_status
         - crash_pk
+        - created_at
+        - created_by
         - id
         - incident_location_address
         - incident_number
@@ -54,6 +59,7 @@ select_permissions:
         - travel_mode
         - unparsed_apd_incident_numbers
         - updated_at
+        - updated_by
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -63,6 +69,8 @@ select_permissions:
         - apd_incident_numbers
         - crash_match_status
         - crash_pk
+        - created_at
+        - created_by
         - id
         - incident_location_address
         - incident_number
@@ -78,6 +86,28 @@ select_permissions:
         - travel_mode
         - unparsed_apd_incident_numbers
         - updated_at
+        - updated_by
       filter: {}
       allow_aggregations: true
+    comment: ""
+update_permissions:
+  - role: editor
+    permission:
+      columns:
+        - crash_match_status
+        - crash_pk
+        - person_id
+        - updated_by
+      filter: {}
+      check: null
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - crash_match_status
+        - crash_pk
+        - person_id
+        - updated_by
+      filter: {}
+      check: null
     comment: ""

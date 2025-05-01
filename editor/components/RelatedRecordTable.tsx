@@ -3,7 +3,10 @@ import Table from "react-bootstrap/Table";
 import RelatedRecordTableRow from "@/components/RelatedRecordTableRow";
 import { ColDataCardDef } from "@/types/types";
 
-interface RelatedRecordTableProps<T extends Record<string, unknown>> {
+interface RelatedRecordTableProps<
+  T extends Record<string, unknown>,
+  P extends Record<string, unknown> = Record<string, unknown>,
+> {
   /**
    * The records to be rendered in the table
    */
@@ -38,14 +41,21 @@ interface RelatedRecordTableProps<T extends Record<string, unknown>> {
    * Optional react component to be rendered in the rightmost
    * column of every row
    */
-  rowActionComponent?: React.ComponentType<RowActionComponentProps<T>>;
+  rowActionComponent?: React.ComponentType<RowActionComponentProps<T, P>>;
+  /**
+   * Optional addition props to pass to the rowActionComponent
+   */
+  rowActionComponentAdditionalProps?: P;
   /**
    * Callback function to be executed after a row edit is saved
    */
   onSaveCallback: () => Promise<void>;
 }
 
-export interface RowActionComponentProps<T extends Record<string, unknown>> {
+export interface RowActionComponentProps<
+  T extends Record<string, unknown>,
+  P extends Record<string, unknown> = Record<string, unknown>,
+> {
   /**
    * The record in the current table row
    */
@@ -58,12 +68,19 @@ export interface RowActionComponentProps<T extends Record<string, unknown>> {
    * The callback function provided to the parent RelatedRecordTale component
    */
   onSaveCallback: () => Promise<void>;
+  /**
+   * Optional additional props passed to the component
+   */
+  additionalProps?: P;
 }
 
 /**
  * Generic component which renders editable fields in a Card
  */
-export default function RelatedRecordTable<T extends Record<string, unknown>>({
+export default function RelatedRecordTable<
+  T extends Record<string, unknown>,
+  P extends Record<string, unknown> = Record<string, unknown>,
+>({
   records,
   columns,
   mutation,
@@ -73,7 +90,8 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
   header,
   onSaveCallback,
   rowActionComponent,
-}: RelatedRecordTableProps<T>) {
+  rowActionComponentAdditionalProps,
+}: RelatedRecordTableProps<T, P>) {
   return (
     <Card>
       <Card.Header>
@@ -108,7 +126,7 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
               </tr>
             ) : (
               records.map((record, i) => (
-                <RelatedRecordTableRow
+                <RelatedRecordTableRow<T, P>
                   key={i}
                   columns={columns}
                   isValidating={isValidating}
@@ -117,6 +135,9 @@ export default function RelatedRecordTable<T extends Record<string, unknown>>({
                   mutation={mutation}
                   rowActionMutation={rowActionMutation}
                   rowActionComponent={rowActionComponent}
+                  rowActionComponentAdditionalProps={
+                    rowActionComponentAdditionalProps
+                  }
                 />
               ))
             )}

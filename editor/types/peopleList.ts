@@ -1,7 +1,11 @@
+import { Crash } from "@/types/crashes";
 import { LookupTableOption } from "./relationships";
+import { Unit } from "@/types/unit";
+import { EMSPatientCareRecord } from "@/types/ems";
 
-export type Person = {
+export type PeopleListRow = {
   crash_pk: number;
+  crash_timestamp: string;
   drvr_city_name: string;
   drvr_ethncty: LookupTableOption;
   prsn_ethnicity_id: number;
@@ -20,4 +24,8 @@ export type Person = {
   prsn_type: LookupTableOption;
   prsn_type_id: number;
   unit_nbr: number;
+  unit_id: number;
+  unit?: Unit;
+  crash?: Crash;
+  ems_pcr?: EMSPatientCareRecord;
 };
