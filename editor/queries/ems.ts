@@ -109,12 +109,11 @@ export const GET_MATCHING_PEOPLE = gql`
 `;
 
 export const UPDATE_EMS_INCIDENT_CRASH_AND_PERSON = gql`
-  mutation UpdateEMSIncident($id: Int!, $person_id: Int!, $crash_pk: Int!) {
+  mutation UpdateEMSIncident($id: Int!, $person_id: Int!) {
     update_ems__incidents(
       where: { id: { _eq: $id } }
       _set: {
         person_id: $person_id
-        crash_pk: $crash_pk
         crash_match_status: "matched_by_manual_qa"
       }
     ) {
