@@ -14,7 +14,10 @@ import { LookupTableOption } from "@/types/relationships";
 import { RowActionComponentProps } from "@/components/RelatedRecordTable";
 import { hasRole } from "@/utils/auth";
 
-interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
+interface RelatedRecordTableRowProps<
+  T extends Record<string, unknown>,
+  P extends Record<string, unknown> = Record<string, unknown>,
+> {
   /**
    * The records to be rendered in the table
    */
@@ -44,7 +47,11 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
    * Optional react component to be rendered in the rightmost column
    * of every row
    */
-  rowActionComponent?: React.ComponentType<RowActionComponentProps<T>>;
+  rowActionComponent?: React.ComponentType<RowActionComponentProps<T, P>>;
+  /**
+   * Optional addition props to pass to the rowActionComponent
+   */
+  rowActionComponentAdditionalProps?: P;
 }
 
 /**
@@ -56,6 +63,7 @@ interface RelatedRecordTableRowProps<T extends Record<string, unknown>> {
  */
 export default function RelatedRecordTableRow<
   T extends Record<string, unknown>,
+  P extends Record<string, unknown> = Record<string, unknown>,
 >({
   record,
   columns,
@@ -64,7 +72,8 @@ export default function RelatedRecordTableRow<
   isValidating,
   onSaveCallback,
   rowActionComponent: RowActionComponent,
-}: RelatedRecordTableRowProps<T>) {
+  rowActionComponentAdditionalProps,
+}: RelatedRecordTableRowProps<T, P>) {
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
   const [editColumn, setEditColumn] = useState<ColDataCardDef<T> | null>(null);
@@ -187,6 +196,7 @@ export default function RelatedRecordTableRow<
               record={record}
               mutation={rowActionMutation || ""}
               onSaveCallback={onSaveCallback}
+              additionalProps={rowActionComponentAdditionalProps}
             />
           </td>
         )}

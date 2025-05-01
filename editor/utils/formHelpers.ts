@@ -34,6 +34,7 @@ export const valueToString = <T extends Record<string, unknown>>(
   if (col.inputType === "yes_no") {
     return valueToBoolString(value);
   }
+  if (value === 0) return "0";
   return String(value || "");
 };
 
@@ -57,23 +58,6 @@ const valueToBoolString = (value: unknown): "true" | "false" | "" =>
  */
 const trimStringNullable = (value: string): string | null => {
   return value.trim() || null;
-};
-
-/**
- * Convert strings to numbers and coerce non-zero falsey values to `null`.
- * Invalid (NaN) numbers are also converted to null.
- */
-const stringToNumberNullable = (value: string): number | null => {
-  if (value.trim() === "") {
-    return null;
-  }
-  const num = Number(value);
-  if (isNaN(num)) {
-    // todo: handle this
-    console.warn("Failed to convert value to number: ", value);
-    return null;
-  }
-  return num;
 };
 
 /**
@@ -181,10 +165,15 @@ export const handleFormValueOutput = (
   if (inputType === "yes_no") {
     return stringToBoolNullable(value);
   }
+
   if (inputType === "number" || (inputType === "select" && isLookup)) {
-    return stringToNumberNullable(value);
+    if (!value) return null;
+    // Strip any non-numeric characters except decimal point and negative sign
+    const sanitizedValue = value.replace(/[^\d.-]/g, "");
+    const parsedValue = parseFloat(sanitizedValue);
+    return isNaN(parsedValue) ? null : parsedValue;
   }
-  // handle everything else as a nulllable string
+
   return trimStringNullable(value);
 };
 
@@ -193,6 +182,32 @@ export const handleFormValueOutput = (
  */
 export const commonValidations = {
   isNumber: (value: string) => {
+    // Allow empty string for nullable fields
+    if (!value) return true;
     return /^\d+$/.test(value) || "This field must be a number";
+    return true;
+  },
+  isNullableInteger: (value: string) => {
+    // Allow empty string for nullable fields
+    if (!value) return true;
+
+    // Trim leading/trailing whitespace and test if it's a positive integer
+    const trimmed = value.trim();
+    if (!/^\d+$/.test(trimmed)) {
+      return "Must be a positive integer";
+    }
+    return true;
+  },
+  isNullableZipCode: (value: string) => {
+    // Allow empty string for nullable fields
+    if (!value) return true;
+
+    // Trim leading/trailing whitespace and test against ZIP code pattern
+    // Allows 5 digits or 5 digits followed by optional hyphen and 4 digits
+    const trimmed = value.trim();
+    if (!/^\d{5}(-\d{4})?$/.test(trimmed)) {
+      return "Not a valid zip code";
+    }
+    return true;
   },
 };

@@ -196,6 +196,11 @@ export const GET_CRASH = gql`
           id
           label
         }
+        prsn_occpnt_pos_id
+        occpnt_pos {
+          id
+          label
+        }
       }
       charges_cris {
         unit_nbr

@@ -1,9 +1,13 @@
+import Link from "next/link";
 import { getInjuryColorClass } from "@/utils/people";
 import { ColDataCardDef } from "@/types/types";
-import { Person } from "@/types/person";
+import { PeopleListRow } from "@/types/peopleList";
 import PersonNameField from "@/components/PersonNameField";
+import { formatAddresses, formatIsoDateTime } from "@/utils/formatters";
+import { commonValidations } from "@/utils/formHelpers";
 
 export const ALL_PEOPLE_COLUMNS = {
+  id: { path: "id", label: "ID" },
   drvr_city_name: {
     path: "drvr_city_name",
     label: "City",
@@ -43,11 +47,28 @@ export const ALL_PEOPLE_COLUMNS = {
       labelColumnName: "label",
     },
   },
+  occpnt_pos: {
+    path: "occpnt_pos.label",
+    label: "Occupant Position",
+    editable: true,
+    inputType: "select",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "occpnt_pos",
+      foreignKey: "prsn_occpnt_pos_id",
+      idColumnName: "id",
+      labelColumnName: "label",
+    },
+  },
   prsn_age: {
     path: "prsn_age",
     label: "Age",
     editable: true,
     inputType: "number",
+    inputOptions: {
+      validate: commonValidations.isNullableInteger,
+      min: { value: 0, message: "Age cannot be negative" },
+    },
   },
   gndr: {
     path: "gndr.label",
@@ -78,6 +99,11 @@ export const ALL_PEOPLE_COLUMNS = {
   drvr_zip: {
     path: "drvr_zip",
     label: "Zip",
+    editable: true,
+    inputType: "text",
+    inputOptions: {
+      validate: commonValidations.isNullableZipCode,
+    },
   },
   prsn_exp_homelessness: {
     path: "prsn_exp_homelessness",
@@ -108,4 +134,33 @@ export const ALL_PEOPLE_COLUMNS = {
       />
     ),
   },
-} satisfies Record<string, ColDataCardDef<Person>>;
+  case_id: {
+    path: "crash.case_id",
+    label: "Case ID",
+  },
+  crash_timestamp: {
+    path: "crash_timestamp",
+    label: "Crash date",
+    valueFormatter: formatIsoDateTime,
+  },
+  address_combined: {
+    path: "crash.address_primary",
+    label: "Address",
+    valueRenderer: (record) => {
+      return record.crash ? formatAddresses(record.crash) : "";
+    },
+  },
+  record_locator: {
+    path: "crash.record_locator",
+    label: "Crash ID",
+    sortable: true,
+    valueRenderer: (record: PeopleListRow) =>
+      record.crash?.record_locator ? (
+        <Link href={`/crashes/${record.crash.record_locator}`} prefetch={false}>
+          {record.crash.record_locator}
+        </Link>
+      ) : (
+        ""
+      ),
+  },
+} satisfies Record<string, ColDataCardDef<PeopleListRow>>;

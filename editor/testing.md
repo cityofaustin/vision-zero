@@ -86,14 +86,16 @@ The below features should be tested with each role. Features with role-based acc
 - Crash data card: edit a text input
 - Crash data card: edit a number input
 - Crash data card: edit a yes/no field
-- Crash data card - **Flags**
+- Crash data card - **Other**: cannot save a speed limit that is not a positive integer
 - Crash data card: nullify a value (e.g. street name) by clearing its input and saving it
 - [role: editor, admin] Crash data card - **Swap addresses** button is visibile in **Primary address** card header can be used to swap primary and secondary addresses
 - Related records - **Units**
   - Verify unit **Contributing factors** are listed and prefixed with either **Primary** or **Possible**
   - Edit unit **Year**, **Body style**, **Type**, and **Movement**
+  - Edit unit: cannot save a **Year** value less than 1900 or after the current year + 1
 - Related records - **People**
   - Edit person **Name** and person **Type**
+  - Edit person **Zipcode** and verify only pattern xxxxx or xxxxx-xxxx is valid
   - Edit person **Injury severity** and verify the crash injury widget (top of page to the right of crash address) updates accordingly
 - Related records - **EMS Patient Care**
   - Verify records are populated (use EMS list view to find a crash with EMS records)
@@ -143,10 +145,19 @@ refresh materialized view location_crashes_view;
 
 ### EMS list - `/ems`
 
-- EMS list
-  - filter using various search input fields and filter card switches
-  - filters are preserved (in local storage) when refreshing the page or navigating back to it
-  - for records with a matching crash, the **Crash ID** column is populated with working URL to the crash details page
+- filter using various search input fields and filter card switches
+- filters are preserved (in local storage) when refreshing the page or navigating back to it
+- for records with a matching crash, the **Crash ID** column is populated with working URL to the crash details page
+- **Incident #** column has a working hyperlink to the EMS details page (`/ems/[incident_number]`)
+
+### EMS incident details - `/ems/[incident-number]`
+
+- Page breadcrumb and title—which is the EMS record address—look normal
+- Navigating to a bogus incident number such as `/ems/1abc` results in 404
+- The **EMS Patients** card displays EMS incidents with the same incident number.
+- The **Select person** button is displayed for each EMS patient row
+- Click **Select person** to enable the **Select match** button to appear next to any unlinked person records in the **Associated people records** table
+- Click the **Person ID** column for any **EMS Patients** row to manually edit a person ID value
 
 ### Top nav
 

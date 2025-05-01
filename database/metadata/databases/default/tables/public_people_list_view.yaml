@@ -2,6 +2,15 @@ table:
   name: people_list_view
   schema: public
 object_relationships:
+  - name: crash
+    using:
+      manual_configuration:
+        column_mapping:
+          crash_pk: id
+        insertion_order: null
+        remote_table:
+          name: crashes
+          schema: public
   - name: drvr_ethncty
     using:
       manual_configuration:
@@ -11,6 +20,15 @@ object_relationships:
         remote_table:
           name: drvr_ethncty
           schema: lookups
+  - name: ems_pcr
+    using:
+      manual_configuration:
+        column_mapping:
+          id: person_id
+        insertion_order: null
+        remote_table:
+          name: ems__incidents
+          schema: public
   - name: gndr
     using:
       manual_configuration:
@@ -29,6 +47,15 @@ object_relationships:
         remote_table:
           name: injry_sev
           schema: lookups
+  - name: occpnt_pos
+    using:
+      manual_configuration:
+        column_mapping:
+          prsn_occpnt_pos_id: id
+        insertion_order: null
+        remote_table:
+          name: occpnt_pos
+          schema: lookups
   - name: prsn_type
     using:
       manual_configuration:
@@ -38,6 +65,15 @@ object_relationships:
         remote_table:
           name: prsn_type
           schema: lookups
+  - name: unit
+    using:
+      manual_configuration:
+        column_mapping:
+          unit_id: id
+        insertion_order: null
+        remote_table:
+          name: units
+          schema: public
 select_permissions:
   - role: editor
     permission:

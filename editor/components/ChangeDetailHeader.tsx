@@ -1,5 +1,5 @@
 import { ChangeLogEntryEnriched } from "@/types/changeLog";
-import { formatDateTime } from "@/utils/formatters";
+import { formatDateTimeWithDay } from "@/utils/formatters";
 
 /**
  * Header component of the change details table
@@ -15,7 +15,7 @@ export default function ChangeDetailHeader({
       <span>{selectedChange.operation_type}</span>
       {" | "} <span>{selectedChange.created_by}</span>
       {" | "}
-      {formatDateTime(selectedChange.created_at)}
+      {formatDateTimeWithDay(selectedChange.created_at)}
     </div>
   );
 }
