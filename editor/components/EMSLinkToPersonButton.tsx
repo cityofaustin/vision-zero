@@ -9,7 +9,7 @@ import AlignedLabel from "@/components/AlignedLabel";
 const allowedLinkRecordRoles = ["vz-admin", "editor"];
 
 export interface EMSLinkToPersonButtonProps extends Record<string, unknown> {
-  onClick: (emsId: number, personId: number, crashPk: number) => void;
+  onClick: (emsId: number, personId: number) => void;
   selectedEmsPcr: EMSPatientCareRecord | null;
 }
 
@@ -32,8 +32,7 @@ const EMSLinkToPersonButton: React.FC<
           if (additionalProps?.selectedEmsPcr) {
             additionalProps?.onClick(
               additionalProps.selectedEmsPcr.id,
-              record.id,
-              record.crash_pk
+              record.id
             );
           }
         }}

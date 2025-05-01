@@ -108,11 +108,10 @@ export default function EMSDetailsPage({
 
   const linkToPersonButtonProps: EMSLinkToPersonButtonProps = useMemo(
     () => ({
-      onClick: (emsId, personId, crashPk) => {
+      onClick: (emsId, personId) => {
         updateEMSIncident({
           id: emsId,
           person_id: personId,
-          crash_pk: crashPk,
         })
           .then(() => refetch())
           .then(() => {

@@ -1,3 +1,8 @@
+DROP TRIGGER IF EXISTS ems_update_person_crash_id_trigger ON ems__incidents;
+DROP TRIGGER IF EXISTS ems_update_incident_crash_pk_trigger ON ems__incidents;
+DROP FUNCTION IF EXISTS ems_update_person_crash_id();
+DROP FUNCTION IF EXISTS ems_update_incident_crash_pk();
+
 alter table ems__incidents
 drop column created_by,
 drop column updated_by,
