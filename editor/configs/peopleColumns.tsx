@@ -2,6 +2,7 @@ import { getInjuryColorClass } from "@/utils/people";
 import { ColDataCardDef } from "@/types/types";
 import { Person } from "@/types/person";
 import PersonNameField from "@/components/PersonNameField";
+import { commonValidations } from "@/utils/formHelpers";
 
 export const ALL_PEOPLE_COLUMNS = {
   drvr_city_name: {
@@ -48,6 +49,10 @@ export const ALL_PEOPLE_COLUMNS = {
     label: "Age",
     editable: true,
     inputType: "number",
+    inputOptions: {
+      validate: commonValidations.isNullableInteger,
+      min: { value: 0, message: "Age cannot be negative" },
+    },
   },
   gndr: {
     path: "gndr.label",
@@ -78,6 +83,11 @@ export const ALL_PEOPLE_COLUMNS = {
   drvr_zip: {
     path: "drvr_zip",
     label: "Zip",
+    editable: true,
+    inputType: "text",
+    inputOptions: {
+      validate: commonValidations.isNullableZipCode,
+    },
   },
   prsn_exp_homelessness: {
     path: "prsn_exp_homelessness",
