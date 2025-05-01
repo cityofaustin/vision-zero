@@ -61,7 +61,7 @@ BEGIN
         updated_by = NEW.updated_by,
         crash_match_status = 'matched_by_manual_qa'
     WHERE
-        id != NEW.person_id
+        id != NEW.id
         AND incident_number = NEW.incident_number
         AND crash_pk is distinct from matching_person_record.crash_pk
         AND person_id IS NULL;
