@@ -23,12 +23,12 @@ BEGIN
     WHERE id = NEW.person_id;
 
     NEW.crash_pk = matching_person_record.crash_pk;
-    NEW.crash_match_status = 'matched_by_manual_qa'
+    NEW.crash_match_status = 'matched_by_manual_qa';
     return NEW;
 END;
 $$ language plpgsql;
 
-comment on function ems_update_person_crash_idis 'Sets the ems__incident crash_pk based on its person_id';
+comment on function ems_update_person_crash_id is 'Sets the ems__incident crash_pk based on its person_id';
 
 create or replace trigger ems_update_person_crash_id_trigger
 before update on ems__incidents
@@ -69,7 +69,7 @@ BEGIN
 END;
 $$ language plpgsql;
 
-comment on function ems_update_incident_crash_pkis 'Sets the ems__incident crash_pk based on the provided person_id and updates the crash_pk of all EMS records that share the same incident number';
+comment on function ems_update_incident_crash_pk is 'Sets the ems__incident crash_pk based on the provided person_id and updates the crash_pk of all EMS records that share the same incident number';
 
 create or replace trigger ems_update_incident_crash_pk_trigger
 after update on ems__incidents
