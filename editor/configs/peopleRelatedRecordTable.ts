@@ -4,6 +4,7 @@ export const peopleRelatedRecordCols = [
   ALL_PEOPLE_COLUMNS.unit_nbr,
   ALL_PEOPLE_COLUMNS.injry_sev,
   ALL_PEOPLE_COLUMNS.prsn_type,
+  ALL_PEOPLE_COLUMNS.occpnt_pos,
   ALL_PEOPLE_COLUMNS.prsn_age,
   ALL_PEOPLE_COLUMNS.gndr,
   ALL_PEOPLE_COLUMNS.drvr_ethncty,

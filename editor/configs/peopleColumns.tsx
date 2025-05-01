@@ -44,6 +44,19 @@ export const ALL_PEOPLE_COLUMNS = {
       labelColumnName: "label",
     },
   },
+  occpnt_pos: {
+    path: "occpnt_pos.label",
+    label: "Occupant Position",
+    editable: true,
+    inputType: "select",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "occpnt_pos",
+      foreignKey: "prsn_occpnt_pos_id",
+      idColumnName: "id",
+      labelColumnName: "label",
+    },
+  },
   prsn_age: {
     path: "prsn_age",
     label: "Age",
