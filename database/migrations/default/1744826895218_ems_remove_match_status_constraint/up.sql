@@ -69,7 +69,7 @@ BEGIN
 END;
 $$ language plpgsql;
 
-comment on function ems_update_incident_crash_pk is 'Sets the ems__incident crash_pk based on the provided person_id and updates the crash_pk of all EMS records that share the same incident number';
+comment on function ems_update_incident_crash_pk is 'Updates the crash_pk of all EMS records that share the same incident number. Serves as a complement to ems_update_person_crash_id, which controls the crash_pk of the updated EMS record.';
 
 create or replace trigger ems_update_incident_crash_pk_trigger
 after update on ems__incidents
