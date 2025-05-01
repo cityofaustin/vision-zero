@@ -20,10 +20,6 @@ Nodejs tool load ArcGIS Online (AGOL) layers into the Vision Zero database.
 
 Script which compares lookup tables between a CRIS extract and the VZ database and generates database migrations. We should run this script after CRIS software releases.
 
-### Read replica proxy server - `read_replica_proxy`
-
-This is the Docker stack used to host the database read replica proxy server, which enables our read-only database users to connect to the read replica instance via the public internet.
-
 ## Archive
 
 These toolbox scripts were deleted from the repository. Most of them are incompatible with v2.0 of our database. These deletions were committed at hash `569511cc0d598120be4146920623f55c1a8501a3`.

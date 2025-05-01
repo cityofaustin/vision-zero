@@ -39,7 +39,12 @@ export const ALL_UNIT_COLUMNS = {
     editable: true,
     inputType: "number",
     inputOptions: {
-      validate: commonValidations.isNumber,
+      validate: commonValidations.isNullableInteger,
+      min: { value: 1900, message: "Year must be 1900 or later" },
+      max: {
+        value: new Date().getFullYear() + 1,
+        message: "Year cannot be greater than current model year",
+      },
     },
   },
   veh_make: {

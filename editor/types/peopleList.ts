@@ -28,4 +28,6 @@ export type PeopleListRow = {
   unit?: Unit;
   crash?: Crash;
   ems_pcr?: EMSPatientCareRecord;
+  occpnt_pos: LookupTableOption;
+  prsn_occpnt_pos_id: number;
 };

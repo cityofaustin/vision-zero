@@ -1,6 +1,7 @@
 import { ColDataCardDef } from "@/types/types";
 import { Crash } from "@/types/crashes";
 import { formatDateTimeWithDay } from "@/utils/formatters";
+import { commonValidations } from "@/utils/formHelpers";
 
 export const crashesColumns = {
   active_school_zone_fl: {
@@ -36,6 +37,10 @@ export const crashesColumns = {
     label: "Speed limit",
     editable: true,
     inputType: "number",
+    inputOptions: {
+      validate: commonValidations.isNullableInteger,
+      min: { value: 1, message: "Must be a positive integer" },
+    },
   },
   crash_timestamp: {
     path: "crash_timestamp",
