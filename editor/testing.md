@@ -143,10 +143,15 @@ refresh materialized view location_crashes_view;
 
 ### EMS list - `/ems`
 
-- EMS list
-  - filter using various search input fields and filter card switches
-  - filters are preserved (in local storage) when refreshing the page or navigating back to it
-  - for records with a matching crash, the **Crash ID** column is populated with working URL to the crash details page
+- filter using various search input fields and filter card switches
+- filters are preserved (in local storage) when refreshing the page or navigating back to it
+- for records with a matching crash, the **Crash ID** column is populated with working URL to the crash details page
+- **Incident #** column has a working hyperlink to the EMS details page (`/ems/[incident_number]`)
+
+### EMS details - `/ems/[id]`
+
+- Page breadcrumb and title—which is the EMS record address—look normal
+- Navigating to a bogus EMS record such as `/ems/1abc` results in 404
 
 ### Top nav
 

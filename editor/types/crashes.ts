@@ -3,7 +3,7 @@ import { LookupTableOption } from "@/types/relationships";
 import { ChangeLogEntry } from "@/types/changeLog";
 import { Unit } from "@/types/unit";
 import { Charge } from "@/types/charge";
-import { Person } from "@/types/person";
+import { PeopleListRow } from "@/types/peopleList";
 import { Recommendation } from "@/types/recommendation";
 import { CrashesListRow } from "@/types/crashesList";
 import { CrashNote } from "./crashNote";
@@ -73,6 +73,6 @@ export type Crash = {
   change_logs: ChangeLogEntry[] | null;
   units: Unit[] | null;
   charges_cris: Charge[] | null;
-  people_list_view: Person[] | null;
+  people_list_view: PeopleListRow[] | null;
   crashes_list_view: CrashesListRow;
 };

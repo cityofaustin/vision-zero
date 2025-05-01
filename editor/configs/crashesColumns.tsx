@@ -1,6 +1,6 @@
 import { ColDataCardDef } from "@/types/types";
 import { Crash } from "@/types/crashes";
-import { formatDateTime } from "@/utils/formatters";
+import { formatDateTimeWithDay } from "@/utils/formatters";
 import { commonValidations } from "@/utils/formHelpers";
 
 export const crashesColumns = {
@@ -9,6 +9,10 @@ export const crashesColumns = {
     label: "Active school zone",
     editable: true,
     inputType: "yes_no",
+  },
+  record_locator: {
+    path: "record_locator",
+    label: "Crash ID",
   },
   address_primary: {
     path: "address_primary",
@@ -41,7 +45,7 @@ export const crashesColumns = {
   crash_timestamp: {
     path: "crash_timestamp",
     label: "Crash date",
-    valueFormatter: formatDateTime,
+    valueFormatter: formatDateTimeWithDay,
   },
   collsn: {
     path: "collsn.label",
@@ -116,6 +120,7 @@ export const crashesColumns = {
     editable: true,
     inputType: "yes_no",
   },
+
   road_constr_zone_fl: {
     path: "road_constr_zone_fl",
     label: "Road construction zone",
