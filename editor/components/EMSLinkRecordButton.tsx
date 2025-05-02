@@ -1,4 +1,5 @@
-import Button from "react-bootstrap/Button";
+import { Dropdown, Button } from "react-bootstrap";
+import { FaEllipsisVertical } from "react-icons/fa6";
 import { EMSPatientCareRecord } from "@/types/ems";
 import { RowActionComponentProps } from "@/components/RelatedRecordTable";
 import { FaLink } from "react-icons/fa6";
@@ -15,7 +16,6 @@ export interface EMSLinkRecordButtonProps extends Record<string, unknown> {
 const EMSLinkRecordButton: React.FC<
   RowActionComponentProps<EMSPatientCareRecord, EMSLinkRecordButtonProps>
 > = ({ record, additionalProps }) => {
-
   const isLinkingInProgress = !!additionalProps?.selectedEmsPcr;
   const isLinkingThisRecord =
     additionalProps?.selectedEmsPcr &&
@@ -29,22 +29,33 @@ const EMSLinkRecordButton: React.FC<
 
   return (
     <PermissionsRequired allowedRoles={allowedLinkRecordRoles}>
-      <Button
-        size="sm"
-        variant={isLinkingThisRecord ? "secondary" : "primary"}
-        disabled={isLinkingInProgress && !isLinkingThisRecord}
-        onClick={() => {
-          additionalProps?.onClick(record);
-        }}
-      >
-        {!isLinkingThisRecord && (
-          <AlignedLabel>
-            <FaLink className="me-2" />
-            <span>Select person</span>
-          </AlignedLabel>
-        )}
-        {isLinkingThisRecord && <span>Cancel</span>}
-      </Button>
+      <div className="d-flex">
+        <Button
+          size="sm"
+          variant={isLinkingThisRecord ? "secondary" : "primary"}
+          disabled={isLinkingInProgress && !isLinkingThisRecord}
+          onClick={() => {
+            additionalProps?.onClick(record);
+          }}
+        >
+          {!isLinkingThisRecord && (
+            <AlignedLabel>
+              <FaLink className="me-2" />
+              <span>Select person</span>
+            </AlignedLabel>
+          )}
+          {isLinkingThisRecord && <span>Cancel</span>}
+        </Button>
+        <Dropdown className="ms-1">
+          <Dropdown.Toggle variant="outline-primary" size="sm">
+            <FaEllipsisVertical />
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item>Set as unmatched</Dropdown.Item>
+            <Dropdown.Item>Reset</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
     </PermissionsRequired>
   );
 };
