@@ -59,6 +59,7 @@ $dark: $night;
   border-color: #495057 !important;
   // bs tertiary background
   background-color: rgb(42.5, 47.5, 52.5);
+
   &:hover,
   &:active,
   &:focus,
@@ -72,6 +73,7 @@ $dark: $night;
   background-color: $light !important;
   border-color: $light !important;
   color: #000;
+
   &:hover,
   &:active,
   &:focus,
@@ -182,8 +184,9 @@ to make sure it renders on top is a common fix */
 }
 
 /* Hide down arrow from dropdown toggle button */
-.dropdown-toggle.hide-toggle::after {
-  content: none !important;
+.dropdown-toggle::after {
+  display: none !important;
 }
+
 
 @import "bootstrap/scss/bootstrap.scss";
