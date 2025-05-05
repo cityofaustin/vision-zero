@@ -93,8 +93,8 @@ export default function EMSDetailsPage({
       // Return time interval only if we have any unmatched ems pcrs
       if (ems_pcrs?.some((ems) => ems.crash_match_status === "unmatched")) {
         const incidentTimestamp = parseISO(incident.incident_received_datetime);
-        const time12HoursBefore = subHours(incidentTimestamp, 4).toISOString();
-        const time12HoursAfter = addHours(incidentTimestamp, 4).toISOString();
+        const time4HoursBefore = subHours(incidentTimestamp, 4).toISOString();
+        const time4HoursAfter = addHours(incidentTimestamp, 4).toISOString();
         return [time4HoursBefore, time4HoursAfter];
       }
     }
