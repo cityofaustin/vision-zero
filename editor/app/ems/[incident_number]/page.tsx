@@ -223,6 +223,7 @@ export default function EMSDetailsPage({
             onSaveCallback={onSaveCallback}
             rowActionComponent={EMSLinkRecordButton}
             rowActionComponentAdditionalProps={linkRecordButtonProps}
+            rowActionMutation={UPDATE_EMS_INCIDENT}
           />
         </Col>
       </Row>
