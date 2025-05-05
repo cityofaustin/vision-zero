@@ -50,7 +50,7 @@ const EMSLinkRecordButton: React.FC<
           <Dropdown.Toggle variant="outline-primary" size="sm">
             <FaEllipsisVertical />
           </Dropdown.Toggle>
-          <Dropdown.Menu>
+          <Dropdown.Menu popperConfig={{ strategy: "fixed" }}>
             <Dropdown.Item>Set as unmatched</Dropdown.Item>
             <Dropdown.Item>Reset</Dropdown.Item>
           </Dropdown.Menu>
