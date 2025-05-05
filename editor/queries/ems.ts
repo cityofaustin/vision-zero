@@ -143,7 +143,10 @@ export const UPDATE_EMS_INCIDENT_CRASH_AND_PERSON = gql`
 `;
 
 export const UPDATE_EMS_INCIDENT = gql`
-  mutation update_crashes($id: Int!, $updates: ems__incidents_set_input) {
+  mutation UpdateEMSIncidentGeneral(
+    $id: Int!
+    $updates: ems__incidents_set_input
+  ) {
     update_ems__incidents(where: { id: { _eq: $id } }, _set: $updates) {
       affected_rows
       returning {
