@@ -221,6 +221,20 @@ const emsListViewFilterCards: FilterGroup[] = [
           },
         ],
       },
+      {
+        id: "unmatched_by_manual_qa",
+        label: "Unmatched by review/QA",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "unmatched_by_manual_qa",
+            column: "crash_match_status",
+            operator: "_eq",
+            value: "unmatched_by_manual_qa",
+          },
+        ],
+      },
     ],
   },
 ];
