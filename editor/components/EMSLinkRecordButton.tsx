@@ -47,7 +47,7 @@ const EMSLinkRecordButton: React.FC<
           <Dropdown.Toggle variant="outline-primary" size="sm">
             <FaEllipsisVertical />
           </Dropdown.Toggle>
-          <Dropdown.Menu popperConfig={{ strategy: "fixed" }}>
+          <Dropdown.Menu renderOnMount popperConfig={{ strategy: "fixed" }}>
             <Dropdown.Item
               onClick={async () => {
                 await setRecordManualUnmatched({
