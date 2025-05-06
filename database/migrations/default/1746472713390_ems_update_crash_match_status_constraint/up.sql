@@ -1,3 +1,5 @@
+-- Add unmatched by manual QA as a crash match status 
+
 alter table ems__incidents
 drop constraint ems__incidents_crash_match_status_check;
 
