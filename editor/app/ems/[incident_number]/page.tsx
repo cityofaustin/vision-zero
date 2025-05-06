@@ -128,17 +128,16 @@ export default function EMSDetailsPage({
    * matched with the ems record or that occurred within 12 hours of the incident
    * if it has a crash status of unmatched
    */
-  const { data: matchingPeople, isValidating: personIsValidating } =
-    useQuery<PeopleListRow>({
-      query: allCrashPks[0] ? GET_MATCHING_PEOPLE : null,
-      variables: {
-        crash_pks: unmatchedTimeInterval[0] ? allCrashPks : relatedCrashPks,
-      },
-      typename: "people_list_view",
-      options: {
-        keepPreviousData: false,
-      },
-    });
+  const { data: matchingPeople } = useQuery<PeopleListRow>({
+    query: allCrashPks[0] ? GET_MATCHING_PEOPLE : null,
+    variables: {
+      crash_pks: unmatchedTimeInterval[0] ? allCrashPks : relatedCrashPks,
+    },
+    typename: "people_list_view",
+    options: {
+      keepPreviousData: false,
+    },
+  });
 
   const onSaveCallback = useCallback(async () => {
     await refetch();
