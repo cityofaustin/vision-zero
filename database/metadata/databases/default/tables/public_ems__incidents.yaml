@@ -96,6 +96,7 @@ update_permissions:
       columns:
         - crash_match_status
         - crash_pk
+        - matched_crash_pks
         - person_id
         - updated_by
       filter: {}
@@ -106,6 +107,7 @@ update_permissions:
       columns:
         - crash_match_status
         - crash_pk
+        - matched_crash_pks
         - person_id
         - updated_by
       filter: {}
