@@ -22,13 +22,7 @@ const EMSLinkRecordButton: React.FC<
     additionalProps?.selectedEmsPcr &&
     record.id === additionalProps?.selectedEmsPcr.id;
 
-  const isRecordAlreadyLinked = !!record.person_id;
-
   const { mutate: setRecordManualUnmatched } = useMutation(mutation);
-
-  if (isRecordAlreadyLinked) {
-    return null;
-  }
 
   return (
     <PermissionsRequired allowedRoles={allowedLinkRecordRoles}>
@@ -60,12 +54,15 @@ const EMSLinkRecordButton: React.FC<
                   id: record.id,
                   updates: {
                     crash_match_status: "unmatched_by_manual_qa",
+                    crash_pk: null,
+                    person_id: null,
+                    matched_crash_pks: null,
                   },
                 });
                 await onSaveCallback();
               }}
             >
-              Set as unmatched
+              Match not found
             </Dropdown.Item>
             <Dropdown.Item>Reset</Dropdown.Item>
           </Dropdown.Menu>
