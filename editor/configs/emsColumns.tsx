@@ -17,6 +17,8 @@ const formatCrashMatchStatus = (value: unknown) => {
       return "Matched automatically";
     case "matched_by_manual_qa":
       return "Matched by review/QA";
+    case "unmatched_by_manual_qa":
+      return "Unmatched by review/QA";
     default:
       return "";
   }

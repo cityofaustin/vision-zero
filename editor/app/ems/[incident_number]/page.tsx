@@ -134,6 +134,9 @@ export default function EMSDetailsPage({
       crash_pks: unmatchedTimeInterval[0] ? allCrashPks : relatedCrashPks,
     },
     typename: "people_list_view",
+    options: {
+      keepPreviousData: false,
+    },
   });
 
   const onSaveCallback = useCallback(async () => {
@@ -223,6 +226,7 @@ export default function EMSDetailsPage({
             onSaveCallback={onSaveCallback}
             rowActionComponent={EMSLinkRecordButton}
             rowActionComponentAdditionalProps={linkRecordButtonProps}
+            rowActionMutation={UPDATE_EMS_INCIDENT}
           />
         </Col>
       </Row>
