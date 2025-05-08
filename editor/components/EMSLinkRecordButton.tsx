@@ -44,7 +44,11 @@ const EMSLinkRecordButton: React.FC<
           {isLinkingThisRecord && <span>Cancel</span>}
         </Button>
         <Dropdown className="ms-1">
-          <Dropdown.Toggle variant="outline-primary" size="sm">
+          <Dropdown.Toggle
+            className="hide-toggle"
+            variant="outline-primary"
+            size="sm"
+          >
             <FaEllipsisVertical />
           </Dropdown.Toggle>
           <Dropdown.Menu renderOnMount popperConfig={{ strategy: "fixed" }}>
@@ -56,7 +60,6 @@ const EMSLinkRecordButton: React.FC<
                     crash_match_status: "unmatched_by_manual_qa",
                     crash_pk: null,
                     person_id: null,
-                    matched_crash_pks: null,
                   },
                 });
                 await onSaveCallback();
