@@ -184,8 +184,8 @@ to make sure it renders on top is a common fix */
 }
 
 /* Hide down arrow from dropdown toggle button */
-.dropdown-toggle::after {
-  display: none !important;
+.dropdown-toggle.hide-toggle::after {
+  content: none !important;
 }
 
 
