@@ -36,12 +36,12 @@ export const GET_EMS_RECORDS = gql`
 
 export const GET_UNMATCHED_EMS_CRASHES = gql`
   query EMSUnmatchedCrashes(
-    $time12HoursBefore: timestamptz!
-    $time12HoursAfter: timestamptz!
+    $time4HoursBefore: timestamptz!
+    $time4HoursAfter: timestamptz!
   ) {
     crashes(
       where: {
-        crash_timestamp: { _gte: $time12HoursBefore, _lte: $time12HoursAfter }
+        crash_timestamp: { _gte: $time4HoursBefore, _lte: $time4HoursAfter }
       }
     ) {
       id
