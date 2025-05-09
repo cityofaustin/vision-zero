@@ -6,6 +6,7 @@ import { FaLink } from "react-icons/fa6";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import AlignedLabel from "@/components/AlignedLabel";
 import { useMutation } from "@/utils/graphql";
+import { useMemo } from "react";
 
 const allowedLinkRecordRoles = ["vz-admin", "editor"];
 
@@ -21,6 +22,33 @@ const EMSLinkRecordButton: React.FC<
   const isLinkingThisRecord =
     additionalProps?.selectedEmsPcr &&
     record.id === additionalProps?.selectedEmsPcr.id;
+
+  /**
+   * Hook that gets the variables to be used in the reset button mutation
+   */
+  const resetVariables = useMemo(() => {
+    let updates = {};
+    if (record.matched_crash_pks === null) {
+      updates = {
+        crash_pk: null,
+        person_id: null,
+        crash_match_status: "unmatched",
+      };
+    } else if (record.matched_crash_pks.length === 1) {
+      updates = {
+        crash_pk: record.matched_crash_pks[0],
+        person_id: null,
+        crash_match_status: "matched_by_automation",
+      };
+    } else if (record.matched_crash_pks.length > 1) {
+      updates = {
+        crash_pk: null,
+        person_id: null,
+        crash_match_status: "multiple_matches_by_automation",
+      };
+    }
+    return updates;
+  }, [record]);
 
   const { mutate: setRecordManualUnmatched } = useMutation(mutation);
 
@@ -67,7 +95,17 @@ const EMSLinkRecordButton: React.FC<
             >
               Match not found
             </Dropdown.Item>
-            <Dropdown.Item>Reset</Dropdown.Item>
+            <Dropdown.Item
+              onClick={async () => {
+                await setRecordManualUnmatched({
+                  id: record.id,
+                  updates: resetVariables,
+                });
+                await onSaveCallback();
+              }}
+            >
+              Reset
+            </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
       </div>
