@@ -43,6 +43,12 @@ add column patient_injry_sev_id integer generated always as (
                 and lower(pcr_outcome) in ('transported', 'care transferred')
             )
             or
+            (
+                lower(pcr_patient_acuity_initial) = 'emergent (yellow)'
+                and lower(pcr_patient_acuity_final) is NULL
+                and lower(pcr_outcome) in ('transported', 'care transferred')
+            )
+            or
             (right(pcr_transport_priority, 1) = '3')
             or
             (lower(pcr_transport_priority) like 'charlie%')
@@ -50,12 +56,6 @@ add column patient_injry_sev_id integer generated always as (
             (lower(pcr_transport_priority) like 'delta%')
             or
             (lower(pcr_transport_priority) like 'echo%')
-            or
-            (
-                lower(pcr_patient_acuity_initial) = 'emergent (yellow)'
-                and lower(pcr_patient_acuity_final) is NULL
-                and lower(pcr_outcome) in ('transported', 'care transferred')
-            )
             or
             lower(pcr_provider_impression_primary) like 'fracture%'
             or
