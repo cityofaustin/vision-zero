@@ -1,3 +1,5 @@
+-- Updating this trigger to always keep the matched_crash_pks up to date with automatic matching results
+-- regardless of crash match status
 CREATE OR REPLACE FUNCTION public.update_crash_ems_match()
  RETURNS trigger
  LANGUAGE plpgsql
@@ -16,13 +18,12 @@ BEGIN
         SELECT 
             e.id,
             e.incident_received_datetime,
-            e.geometry
+            e.geometry,
+            e.crash_match_status
         FROM 
             ems__incidents e
         WHERE
-            -- ignore manual qa matches: these should not be modified
-            e.crash_match_status != 'matched_by_manual_qa'
-            AND e.incident_received_datetime  >= (NEW.crash_timestamp - time_threshold)
+            e.incident_received_datetime  >= (NEW.crash_timestamp - time_threshold)
             AND e.incident_received_datetime  <= (NEW.crash_timestamp + time_threshold)
             AND e.geometry IS NOT NULL
             AND NEW.position IS NOT NULL
@@ -44,27 +45,42 @@ BEGIN
             
         -- Get the count from the array length (handling when array_length is null as 0)
         SELECT COALESCE(array_length(matched_crash_ids, 1), 0) INTO match_count;
-        
-        IF match_count = 0 THEN
+
+        -- For records that have been manually matched we want to only update the automated match column
+        IF matching_ems.crash_match_status === 'matched_by_manual_qa' THEN
+          IF match_count = 0 THEN
             UPDATE ems__incidents 
-            SET crash_pk = NULL,
-                crash_match_status = 'unmatched',
-                matched_crash_pks = NULL
+            SET matched_crash_pks = NULL
             WHERE id = matching_ems.id;
-        ELSIF match_count = 1 THEN
-            -- this EMS record is only matched to one crash - we can assign the crash_pk
+          ELSE 
+            -- if the match count is more than one we will update the matched_crash_pks
             UPDATE ems__incidents 
-            SET crash_pk = NEW.id,
-                crash_match_status = 'matched_by_automation',
-                matched_crash_pks = NULL
+            SET matched_crash_pks = matched_crash_ids
             WHERE id = matching_ems.id;
+          END IF;
+        -- If the record has not been manually matched
         ELSE
-            -- multiple matching crashes found - cannot assign crash_pk
-            UPDATE ems__incidents 
-            SET crash_match_status = 'multiple_matches_by_automation',
-                crash_pk = NULL,
-                matched_crash_pks = matched_crash_ids
-            WHERE id = matching_ems.id;
+          IF match_count = 0 THEN
+              UPDATE ems__incidents 
+              SET crash_pk = NULL,
+                  crash_match_status = 'unmatched',
+                  matched_crash_pks = NULL
+              WHERE id = matching_ems.id;
+          ELSIF match_count = 1 THEN
+              -- this EMS record is only matched to one crash - we can assign the crash_pk and matched_crash_pks
+              UPDATE ems__incidents 
+              SET crash_pk = NEW.id,
+                  crash_match_status = 'matched_by_automation',
+                  matched_crash_pks = matched_crash_ids
+              WHERE id = matching_ems.id;
+          ELSE
+              -- multiple matching crashes found - can assign the matched_crash_pks but not crash_pk
+              UPDATE ems__incidents 
+              SET crash_match_status = 'multiple_matches_by_automation',
+                  crash_pk = NULL,
+                  matched_crash_pks = matched_crash_ids
+              WHERE id = matching_ems.id;
+          END IF;
         END IF;
     END LOOP;
 
@@ -92,4 +108,8 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$function$
+$function$;
+
+COMMENT ON COLUMN ems__incidents.matched_crash_pks IS 'The IDs of crashes that were found to match this record. Set via trigger, always kept up to date regdardless of EMS crash match status.';
+
+COMMENT ON COLUMN ems__incidents.crash_pk IS 'Crash ID matched to this record, could be assigned automatically via trigger or manually by user.';
