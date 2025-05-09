@@ -24,9 +24,6 @@ add column patient_injry_sev_id integer generated always as (
                 )
                 and (
                     pcr_patient_acuity_final is NULL
-                    or
-                    lower(pcr_patient_acuity_final)
-                    = 'dead without resuscitation efforts (black)'
                 )
             )
             then 4
