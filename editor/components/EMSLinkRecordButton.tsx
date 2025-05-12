@@ -71,43 +71,45 @@ const EMSLinkRecordButton: React.FC<
           )}
           {isLinkingThisRecord && <span>Cancel</span>}
         </Button>
-        <Dropdown className="ms-1">
-          <Dropdown.Toggle
-            className="hide-toggle"
-            variant="outline-primary"
-            size="sm"
-          >
-            <FaEllipsisVertical />
-          </Dropdown.Toggle>
-          <Dropdown.Menu renderOnMount popperConfig={{ strategy: "fixed" }}>
-            <Dropdown.Item
-              onClick={async () => {
-                await updateEMSRecord({
-                  id: record.id,
-                  updates: {
-                    crash_match_status: "unmatched_by_manual_qa",
-                    crash_pk: null,
-                    person_id: null,
-                  },
-                });
-                await onSaveCallback();
-              }}
+        {!isLinkingThisRecord && (
+          <Dropdown className="ms-1">
+            <Dropdown.Toggle
+              className="hide-toggle"
+              variant="outline-primary"
+              size="sm"
             >
-              Match not found
-            </Dropdown.Item>
-            <Dropdown.Item
-              onClick={async () => {
-                await updateEMSRecord({
-                  id: record.id,
-                  updates: resetButtonUpdates,
-                });
-                await onSaveCallback();
-              }}
-            >
-              Reset
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+              <FaEllipsisVertical />
+            </Dropdown.Toggle>
+            <Dropdown.Menu renderOnMount popperConfig={{ strategy: "fixed" }}>
+              <Dropdown.Item
+                onClick={async () => {
+                  await updateEMSRecord({
+                    id: record.id,
+                    updates: {
+                      crash_match_status: "unmatched_by_manual_qa",
+                      crash_pk: null,
+                      person_id: null,
+                    },
+                  });
+                  await onSaveCallback();
+                }}
+              >
+                Match not found
+              </Dropdown.Item>
+              <Dropdown.Item
+                onClick={async () => {
+                  await updateEMSRecord({
+                    id: record.id,
+                    updates: resetButtonUpdates,
+                  });
+                  await onSaveCallback();
+                }}
+              >
+                Reset
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
       </div>
     </PermissionsRequired>
   );
