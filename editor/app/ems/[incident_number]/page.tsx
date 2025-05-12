@@ -44,7 +44,7 @@ export default function EMSDetailsPage({
     data: ems_pcrs,
     error,
     isValidating,
-    refetch,
+    refetch: refetchEMS,
   } = useQuery<EMSPatientCareRecord>({
     query: incident_number ? GET_EMS_RECORDS : null,
     variables: {
@@ -135,20 +135,22 @@ export default function EMSDetailsPage({
    * matched with the ems record or that occurred within 12 hours of the incident
    * if it has a crash status of unmatched
    */
-  const { data: matchingPeople } = useQuery<PeopleListRow>({
-    query: allCrashPks[0] ? GET_MATCHING_PEOPLE : null,
-    variables: {
-      crash_pks: unmatchedTimeInterval[0] ? allCrashPks : matchedCrashPks,
-    },
-    typename: "people_list_view",
-    options: {
-      keepPreviousData: false,
-    },
-  });
+  const { data: matchingPeople, refetch: refetchPeople } =
+    useQuery<PeopleListRow>({
+      query: allCrashPks[0] ? GET_MATCHING_PEOPLE : null,
+      variables: {
+        crash_pks: unmatchedTimeInterval[0] ? allCrashPks : matchedCrashPks,
+      },
+      typename: "people_list_view",
+      options: {
+        keepPreviousData: false,
+      },
+    });
 
   const onSaveCallback = useCallback(async () => {
-    await refetch();
-  }, [refetch]);
+    await refetchEMS();
+    await refetchPeople();
+  }, [refetchEMS, refetchPeople]);
 
   /**
    * Memoize the additional components props for related record tables
@@ -172,14 +174,15 @@ export default function EMSDetailsPage({
           id: emsId,
           person_id: personId,
         })
-          .then(() => refetch())
+          .then(() => refetchEMS())
+          .then(() => refetchPeople())
           .then(() => {
             setSelectedEmsPcr(null);
           });
       },
       selectedEmsPcr: selectedEmsPcr,
     }),
-    [updateEMSIncident, selectedEmsPcr, refetch]
+    [updateEMSIncident, selectedEmsPcr, refetchEMS, refetchPeople]
   );
 
   if (error) {
