@@ -26,7 +26,7 @@ const EMSLinkRecordButton: React.FC<
   /**
    * Hook that gets the variables to be used in the reset button mutation
    */
-  const resetVariables = useMemo(() => {
+  const resetButtonUpdates = useMemo(() => {
     let updates = {};
     if (record.matched_crash_pks === null) {
       updates = {
@@ -50,7 +50,7 @@ const EMSLinkRecordButton: React.FC<
     return updates;
   }, [record]);
 
-  const { mutate: setRecordManualUnmatched } = useMutation(mutation);
+  const { mutate: updateEMSRecord } = useMutation(mutation);
 
   return (
     <PermissionsRequired allowedRoles={allowedLinkRecordRoles}>
@@ -82,7 +82,7 @@ const EMSLinkRecordButton: React.FC<
           <Dropdown.Menu renderOnMount popperConfig={{ strategy: "fixed" }}>
             <Dropdown.Item
               onClick={async () => {
-                await setRecordManualUnmatched({
+                await updateEMSRecord({
                   id: record.id,
                   updates: {
                     crash_match_status: "unmatched_by_manual_qa",
@@ -97,9 +97,9 @@ const EMSLinkRecordButton: React.FC<
             </Dropdown.Item>
             <Dropdown.Item
               onClick={async () => {
-                await setRecordManualUnmatched({
+                await updateEMSRecord({
                   id: record.id,
-                  updates: resetVariables,
+                  updates: resetButtonUpdates,
                 });
                 await onSaveCallback();
               }}
