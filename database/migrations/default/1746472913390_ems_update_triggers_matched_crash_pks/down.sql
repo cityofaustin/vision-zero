@@ -94,6 +94,8 @@ BEGIN
 END;
 $function$;
 
+UPDATE ems__incidents set matched_crash_pks = null where crash_match_status = 'matched_by_automation';
+
 COMMENT ON COLUMN ems__incidents.matched_crash_pks IS 'The IDs of multiple crashes that were found to match this record. Set via trigger.';
 
 COMMENT ON COLUMN ems__incidents.crash_pk IS 'Crash ID matched to this record';
