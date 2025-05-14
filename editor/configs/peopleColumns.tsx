@@ -40,7 +40,7 @@ export const ALL_PEOPLE_COLUMNS = {
   },
   prsn_nbr: {
     path: "prsn_nbr",
-    label: "Person #",
+    label: "Person",
   },
   prsn_type: {
     path: "prsn_type.label",

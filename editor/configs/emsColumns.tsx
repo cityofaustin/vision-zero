@@ -74,7 +74,7 @@ export const ALL_EMS_COLUMNS = {
   },
   incident_number: {
     path: "incident_number",
-    label: "Incident #",
+    label: "Incident",
     sortable: true,
     valueRenderer: (record: EMSPatientCareRecord) => (
       <Link href={`/ems/${record.incident_number}`} prefetch={false}>
@@ -109,11 +109,11 @@ export const ALL_EMS_COLUMNS = {
   },
   prsn_nbr: {
     path: "person.prsn_nbr",
-    label: "Person #",
+    label: "Person",
   },
   unit_nbr: {
     path: "person.unit_nbr",
-    label: "Unit #",
+    label: "Unit",
   },
   mvc_form_position_in_vehicle: {
     path: "mvc_form_position_in_vehicle",

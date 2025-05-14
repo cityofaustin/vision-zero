@@ -167,6 +167,7 @@ export const GET_CRASH = gql`
       people_list_view(order_by: { unit_nbr: asc, prsn_nbr: asc }) {
         crash_pk
         id
+        prsn_nbr
         unit_nbr
         is_primary_person
         prsn_age
