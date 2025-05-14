@@ -112,6 +112,6 @@ $function$;
 
 UPDATE ems__incidents set matched_crash_pks = ARRAY[crash_pk] where crash_match_status = 'matched_by_automation';
 
-COMMENT ON COLUMN ems__incidents.matched_crash_pks IS 'The IDs of crashes that were found to match this record. Set via trigger, always kept up to date regdardless of EMS crash match status.';
+COMMENT ON COLUMN ems__incidents.matched_crash_pks IS 'The IDs of crashes that were found to match this record. Set via trigger, always kept up to date regardless of EMS crash match status.';
 
 COMMENT ON COLUMN ems__incidents.crash_pk IS 'Crash ID matched to this record, could be assigned automatically via trigger or manually by user.';
