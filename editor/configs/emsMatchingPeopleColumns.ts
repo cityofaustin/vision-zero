@@ -9,6 +9,7 @@ export const emsMatchingPeopleColumns = [
   ALL_PEOPLE_COLUMNS.gndr,
   ALL_PEOPLE_COLUMNS.unit_type,
   ALL_PEOPLE_COLUMNS.occpnt_pos,
+  ALL_PEOPLE_COLUMNS.prsn_taken_to,
   ALL_PEOPLE_COLUMNS.case_id,
   ALL_PEOPLE_COLUMNS.crash_timestamp,
   ALL_PEOPLE_COLUMNS.address_combined,

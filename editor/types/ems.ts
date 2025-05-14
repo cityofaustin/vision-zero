@@ -18,6 +18,7 @@ export type EMSPatientCareRecord = {
   pcr_patient_age: number | null;
   pcr_patient_gender: string | null;
   pcr_patient_race: string | null;
+  pcr_transport_destination?: string | null;
   person_id: number | null;
   travel_mode: string | null;
   unparsed_apd_incident_numbers: string | null;

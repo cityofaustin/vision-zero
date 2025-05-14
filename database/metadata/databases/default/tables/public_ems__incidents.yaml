@@ -28,6 +28,7 @@ select_permissions:
         - pcr_patient_age
         - pcr_patient_gender
         - pcr_patient_race
+        - pcr_transport_destination
         - person_id
         - travel_mode
         - unparsed_apd_incident_numbers
@@ -55,6 +56,7 @@ select_permissions:
         - pcr_patient_age
         - pcr_patient_gender
         - pcr_patient_race
+        - pcr_transport_destination
         - person_id
         - travel_mode
         - unparsed_apd_incident_numbers
@@ -82,6 +84,7 @@ select_permissions:
         - pcr_patient_age
         - pcr_patient_gender
         - pcr_patient_race
+        - pcr_transport_destination
         - person_id
         - travel_mode
         - unparsed_apd_incident_numbers

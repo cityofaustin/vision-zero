@@ -24,6 +24,7 @@ export const GET_EMS_RECORDS = gql`
       pcr_patient_age
       pcr_patient_gender
       pcr_patient_race
+      pcr_transport_destination
       person_id
       travel_mode
       unparsed_apd_incident_numbers
@@ -95,6 +96,7 @@ export const GET_MATCHING_PEOPLE = gql`
         id
         label
       }
+      prsn_taken_to
       crash {
         id
         cris_crash_id

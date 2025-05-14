@@ -78,6 +78,10 @@ export const ALL_PEOPLE_COLUMNS = {
       min: { value: 0, message: "Age cannot be negative" },
     },
   },
+  prsn_taken_to: {
+    path: "prsn_taken_to",
+    label: "Transported to",
+  },
   gndr: {
     path: "gndr.label",
     label: "Sex",

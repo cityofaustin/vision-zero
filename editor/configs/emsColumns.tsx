@@ -115,6 +115,10 @@ export const ALL_EMS_COLUMNS = {
   pcr_patient_age: { path: "pcr_patient_age", label: "Age" },
   pcr_patient_gender: { path: "pcr_patient_gender", label: "Sex" },
   pcr_patient_race: { path: "pcr_patient_race", label: "Race" },
+  pcr_transport_destination: {
+    path: "pcr_transport_destination",
+    label: "Transported to",
+  },
   patient_injry_sev: {
     path: "injry_sev.label",
     label: "Injury severity",

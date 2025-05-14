@@ -14,6 +14,7 @@ export const emsDataCards = {
     columns.pcr_patient_gender,
     columns.travel_mode,
     columns.mvc_form_position_in_vehicle,
+    columns.pcr_transport_destination,
     columns.id,
     columns.crash_match_status,
     columns.cris_crash_id,
