@@ -26,6 +26,8 @@ interface EditableFieldProps {
 
   /** Validation rules that mirror react-hook-form RegisterOptions */
   inputOptions?: RegisterOptions<FormValues, "value">;
+
+  mutationErrorMessage?: string | null;
 }
 
 interface FormValues {
@@ -44,6 +46,7 @@ export default function EditableField({
   onSave,
   onCancel,
   inputOptions,
+  mutationErrorMessage,
 }: EditableFieldProps) {
   const {
     register,
@@ -69,7 +72,7 @@ export default function EditableField({
             size="sm"
             type="text"
             inputMode={inputType === "number" ? "numeric" : undefined}
-            isInvalid={!!errors.value}
+            isInvalid={!!errors.value || !!mutationErrorMessage}
           />
         )}
         {inputType === "textarea" && (
@@ -111,6 +114,11 @@ export default function EditableField({
         {errors.value && (
           <Form.Control.Feedback type="invalid">
             {errors.value.message}
+          </Form.Control.Feedback>
+        )}
+        {mutationErrorMessage && (
+          <Form.Control.Feedback type="invalid">
+            {mutationErrorMessage}
           </Form.Control.Feedback>
         )}
       </div>
