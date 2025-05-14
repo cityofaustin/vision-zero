@@ -80,11 +80,6 @@ export const GET_MATCHING_PEOPLE = gql`
         id
         label
       }
-      prsn_type_id
-      prsn_type {
-        id
-        label
-      }
       prsn_gndr_id
       gndr {
         id

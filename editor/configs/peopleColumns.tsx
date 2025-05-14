@@ -16,6 +16,10 @@ export const ALL_PEOPLE_COLUMNS = {
     path: "unit_nbr",
     label: "Unit",
   },
+  unit_type: {
+    path: "unit.unit_desc.label",
+    label: "Travel mode",
+  },
   injry_sev: {
     path: "injry_sev.label",
     label: "Injury severity",
