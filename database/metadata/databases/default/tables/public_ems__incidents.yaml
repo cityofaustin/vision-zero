@@ -8,6 +8,15 @@ object_relationships:
   - name: injry_sev
     using:
       foreign_key_constraint_on: patient_injry_sev_id
+  - name: person
+    using:
+      manual_configuration:
+        column_mapping:
+          person_id: id
+        insertion_order: null
+        remote_table:
+          name: people_list_view
+          schema: public
 select_permissions:
   - role: editor
     permission:
