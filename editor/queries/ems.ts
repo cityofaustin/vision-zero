@@ -55,11 +55,17 @@ export const GET_MATCHING_PEOPLE = gql`
   query EMSMatchingCrashes($crash_pks: [Int!]) {
     people_list_view(
       where: { crash_pk: { _in: $crash_pks } }
-      order_by: { crash_timestamp: asc, unit_nbr: asc, prsn_nbr: asc }
+      order_by: {
+        crash_timestamp: asc
+        crash_pk: asc
+        unit_nbr: asc
+        prsn_nbr: asc
+      }
     ) {
       crash_pk
       crash_timestamp
       id
+      prsn_nbr
       unit_nbr
       is_primary_person
       prsn_age
@@ -86,6 +92,11 @@ export const GET_MATCHING_PEOPLE = gql`
       }
       prsn_ethnicity_id
       drvr_ethncty {
+        id
+        label
+      }
+      prsn_occpnt_pos_id
+      occpnt_pos {
         id
         label
       }

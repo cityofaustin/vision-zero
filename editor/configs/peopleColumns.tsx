@@ -34,6 +34,10 @@ export const ALL_PEOPLE_COLUMNS = {
       return <span className={className}>{value}</span>;
     },
   },
+  prsn_nbr: {
+    path: "prsn_nbr",
+    label: "Person #",
+  },
   prsn_type: {
     path: "prsn_type.label",
     label: "Type",
@@ -49,7 +53,7 @@ export const ALL_PEOPLE_COLUMNS = {
   },
   occpnt_pos: {
     path: "occpnt_pos.label",
-    label: "Occupant Position",
+    label: "Position in vehicle",
     editable: true,
     inputType: "select",
     relationship: {
