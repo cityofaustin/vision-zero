@@ -9,6 +9,6 @@ export const emsRelatedRecordCols = [
   ALL_EMS_COLUMNS.pcr_patient_gender,
   ALL_EMS_COLUMNS.travel_mode,
   ALL_EMS_COLUMNS.mvc_form_position_in_vehicle,
-  ALL_EMS_COLUMNS.id,
+  ALL_EMS_COLUMNS.incident_number,
   ALL_EMS_COLUMNS.crash_match_status,
 ];
