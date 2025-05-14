@@ -77,7 +77,7 @@ export default function RelatedRecordTableRow<
   // todo: loading state, error state
   // todo: handling of null/undefined values in select input
   const [editColumn, setEditColumn] = useState<ColDataCardDef<T> | null>(null);
-  const { mutate, loading: isMutating } = useMutation(mutation);
+  const { mutate, loading: isMutating, error } = useMutation(mutation);
   const [query, typename] = useLookupQuery(
     editColumn?.editable && editColumn?.relationship
       ? editColumn.relationship
@@ -126,6 +126,9 @@ export default function RelatedRecordTableRow<
         {columns.map((col) => {
           const isEditingThisColumn = col.path === editColumn?.path;
           const isEditable = col.editable;
+          const mutationErrorMessage = col.mutationErrorMessage
+            ? col.mutationErrorMessage(error)
+            : null;
 
           return (
             <td
@@ -183,6 +186,7 @@ export default function RelatedRecordTableRow<
                       selectOptions={selectOptions}
                       isMutating={isMutating || isValidating}
                       inputOptions={col.inputOptions}
+                      mutationErrorMessage={mutationErrorMessage}
                     />
                   )}
                 </>
