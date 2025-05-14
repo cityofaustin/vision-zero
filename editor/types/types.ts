@@ -82,8 +82,6 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    * @see https://react-hook-form.com/docs/useform/register
    */
   inputOptions?: RegisterOptions<FormValues, "value">;
-
-  errorMessage?: (error: unknown) => string | null;
 }
 
 export interface MutationVariables extends Variables {
