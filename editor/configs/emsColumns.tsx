@@ -106,6 +106,12 @@ export const ALL_EMS_COLUMNS = {
     label: "Person ID",
     editable: true,
     inputType: "number",
+    errorMessage: (error) => {
+      if (!!error) {
+        return "Person ID is invalid or in use";
+      }
+      return null;
+    },
   },
   mvc_form_position_in_vehicle: {
     path: "mvc_form_position_in_vehicle",
