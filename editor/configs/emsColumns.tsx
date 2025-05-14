@@ -107,6 +107,14 @@ export const ALL_EMS_COLUMNS = {
     editable: true,
     inputType: "number",
   },
+  prsn_nbr: {
+    path: "person.prsn_nbr",
+    label: "Person #",
+  },
+  unit_nbr: {
+    path: "person.unit_nbr",
+    label: "Unit #",
+  },
   mvc_form_position_in_vehicle: {
     path: "mvc_form_position_in_vehicle",
     label: "Position in vehicle",

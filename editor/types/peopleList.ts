@@ -29,7 +29,8 @@ export type PeopleListRow = {
   unit_id: number;
   unit?: Unit;
   crash?: Crash;
-  ems_pcr?: EMSPatientCareRecord;
+  // we are using Omit to avoid a circular reference
+  ems_pcr?: Omit<EMSPatientCareRecord, "person">;
   occpnt_pos: LookupTableOption;
   prsn_occpnt_pos_id: number;
 };

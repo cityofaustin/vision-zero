@@ -267,6 +267,10 @@ export const GET_CRASH = gql`
         }
         mvc_form_position_in_vehicle
         patient_injry_sev_id
+        person {
+          prsn_nbr
+          unit_nbr
+        }
         pcr_patient_age
         pcr_patient_gender
         pcr_patient_race
