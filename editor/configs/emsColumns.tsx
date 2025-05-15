@@ -74,7 +74,7 @@ export const ALL_EMS_COLUMNS = {
   },
   incident_number: {
     path: "incident_number",
-    label: "Incident #",
+    label: "Incident",
     sortable: true,
     valueRenderer: (record: EMSPatientCareRecord) => (
       <Link href={`/ems/${record.incident_number}`} prefetch={false}>
@@ -107,6 +107,14 @@ export const ALL_EMS_COLUMNS = {
     editable: true,
     inputType: "number",
   },
+  prsn_nbr: {
+    path: "person.prsn_nbr",
+    label: "Person",
+  },
+  unit_nbr: {
+    path: "person.unit_nbr",
+    label: "Unit",
+  },
   mvc_form_position_in_vehicle: {
     path: "mvc_form_position_in_vehicle",
     label: "Position in vehicle",
@@ -115,6 +123,10 @@ export const ALL_EMS_COLUMNS = {
   pcr_patient_age: { path: "pcr_patient_age", label: "Age" },
   pcr_patient_gender: { path: "pcr_patient_gender", label: "Sex" },
   pcr_patient_race: { path: "pcr_patient_race", label: "Race" },
+  pcr_transport_destination: {
+    path: "pcr_transport_destination",
+    label: "Transported to",
+  },
   patient_injry_sev: {
     path: "injry_sev.label",
     label: "Injury severity",

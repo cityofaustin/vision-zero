@@ -246,7 +246,7 @@ export default function EMSDetailsPage({
             records={matchingPeople ? matchingPeople : []}
             isValidating={isValidating}
             noRowsMessage="No people found"
-            header="Associated people records"
+            header="Possible people matches"
             columns={emsMatchingPeopleColumns}
             mutation=""
             onSaveCallback={onSaveCallback}
