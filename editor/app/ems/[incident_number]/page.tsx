@@ -44,7 +44,7 @@ export default function EMSDetailsPage({
     data: ems_pcrs,
     error,
     isValidating,
-    refetch,
+    refetch: refetchEMS,
   } = useQuery<EMSPatientCareRecord>({
     query: incident_number ? GET_EMS_RECORDS : null,
     variables: {
@@ -66,7 +66,7 @@ export default function EMSDetailsPage({
    * Hook which manages which related crash PKs we should
    * use to query people records
    */
-  const relatedCrashPks: number[] = useMemo(() => {
+  const matchedCrashPks: number[] = useMemo(() => {
     if (!ems_pcrs) {
       return [];
     }
@@ -90,8 +90,15 @@ export default function EMSDetailsPage({
    */
   const unmatchedTimeInterval: string[] = useMemo(() => {
     if (incident?.incident_received_datetime) {
-      // Return time interval only if we have any unmatched ems pcrs
-      if (ems_pcrs?.some((ems) => ems.crash_match_status === "unmatched")) {
+      // Return time interval only if the record doesnt have a crash_pk or any matched_crash_pks
+      if (
+        ems_pcrs?.some(
+          (ems) =>
+            ems.crash_pk === null &&
+            (ems.matched_crash_pks === null ||
+              ems.matched_crash_pks.length === 0)
+        )
+      ) {
         const incidentTimestamp = parseISO(incident.incident_received_datetime);
         const time4HoursBefore = subHours(incidentTimestamp, 4).toISOString();
         const time4HoursAfter = addHours(incidentTimestamp, 4).toISOString();
@@ -103,7 +110,7 @@ export default function EMSDetailsPage({
 
   /**
    * Get all crash records that occurred within 12 hours of the incidents
-   * if any of the ems pcrs have a crash match status of unmatched
+   * if any of the ems pcrs are unmatched
    */
   const { data: unmatchedCrashes } = useQuery<Crash>({
     query: unmatchedTimeInterval[0] ? GET_UNMATCHED_EMS_CRASHES : null,
@@ -120,7 +127,7 @@ export default function EMSDetailsPage({
 
   // Combine and dedupe related crash and unmatched crash pks
   const allCrashPks = Array.from(
-    new Set([...relatedCrashPks, ...unmatchedCrashPks])
+    new Set([...matchedCrashPks, ...unmatchedCrashPks])
   );
 
   /**
@@ -128,17 +135,22 @@ export default function EMSDetailsPage({
    * matched with the ems record or that occurred within 12 hours of the incident
    * if it has a crash status of unmatched
    */
-  const { data: matchingPeople } = useQuery<PeopleListRow>({
-    query: allCrashPks[0] ? GET_MATCHING_PEOPLE : null,
-    variables: {
-      crash_pks: unmatchedTimeInterval[0] ? allCrashPks : relatedCrashPks,
-    },
-    typename: "people_list_view",
-  });
+  const { data: matchingPeople, refetch: refetchPeople } =
+    useQuery<PeopleListRow>({
+      query: allCrashPks[0] ? GET_MATCHING_PEOPLE : null,
+      variables: {
+        crash_pks: unmatchedTimeInterval[0] ? allCrashPks : matchedCrashPks,
+      },
+      typename: "people_list_view",
+      options: {
+        keepPreviousData: false,
+      },
+    });
 
   const onSaveCallback = useCallback(async () => {
-    await refetch();
-  }, [refetch]);
+    await refetchEMS();
+    await refetchPeople();
+  }, [refetchEMS, refetchPeople]);
 
   /**
    * Memoize the additional components props for related record tables
@@ -162,14 +174,15 @@ export default function EMSDetailsPage({
           id: emsId,
           person_id: personId,
         })
-          .then(() => refetch())
+          .then(() => refetchEMS())
+          .then(() => refetchPeople())
           .then(() => {
             setSelectedEmsPcr(null);
           });
       },
       selectedEmsPcr: selectedEmsPcr,
     }),
-    [updateEMSIncident, selectedEmsPcr, refetch]
+    [updateEMSIncident, selectedEmsPcr, refetchEMS, refetchPeople]
   );
 
   if (error) {
@@ -223,6 +236,7 @@ export default function EMSDetailsPage({
             onSaveCallback={onSaveCallback}
             rowActionComponent={EMSLinkRecordButton}
             rowActionComponentAdditionalProps={linkRecordButtonProps}
+            rowActionMutation={UPDATE_EMS_INCIDENT}
           />
         </Col>
       </Row>
