@@ -83,7 +83,8 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    */
   inputOptions?: RegisterOptions<FormValues, "value">;
 
-  errorMessage?: (error: unknown) => string | null;
+  /** Function that gets the message to be displayed in the case of a graphql mutation error */
+  getMutationErrorMessage?: (error: unknown) => string | null;
 }
 
 export interface MutationVariables extends Variables {

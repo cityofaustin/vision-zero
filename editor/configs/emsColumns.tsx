@@ -106,7 +106,7 @@ export const ALL_EMS_COLUMNS = {
     label: "Person ID",
     editable: true,
     inputType: "number",
-    mutationErrorMessage: (error) => {
+    getMutationErrorMessage: (error) => {
       if (!!error) {
         return "Person ID is invalid or in use";
       }
