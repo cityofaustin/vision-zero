@@ -24,8 +24,8 @@ const EMSLinkRecordButton: React.FC<
   onSaveCallback,
   isEditingColumn,
 }) => {
-  const isLinkingInProgress = !!additionalProps?.selectedEmsPcr;
-  const isInLinkMode =
+  const isLinkingAnyRecord = !!additionalProps?.selectedEmsPcr;
+  const isLinkingThisRecord =
     additionalProps?.selectedEmsPcr &&
     record.id === additionalProps?.selectedEmsPcr.id;
 
@@ -64,22 +64,22 @@ const EMSLinkRecordButton: React.FC<
         {!isEditingColumn && (
           <Button
             size="sm"
-            variant={isInLinkMode ? "secondary" : "primary"}
-            disabled={isLinkingInProgress && !isInLinkMode}
+            variant={isLinkingThisRecord ? "secondary" : "primary"}
+            disabled={isLinkingAnyRecord && !isLinkingThisRecord}
             onClick={() => {
               additionalProps?.onClick(record);
             }}
           >
-            {!isInLinkMode && (
+            {!isLinkingThisRecord && (
               <AlignedLabel>
                 <FaLink className="me-2" />
                 <span>Select person</span>
               </AlignedLabel>
             )}
-            {isInLinkMode && <span>Cancel</span>}
+            {isLinkingThisRecord && <span>Cancel</span>}
           </Button>
         )}
-        {!isInLinkMode && !isEditingColumn && (
+        {!isLinkingThisRecord && !isEditingColumn && (
           <Dropdown className="ms-1">
             <Dropdown.Toggle
               className="hide-toggle"
