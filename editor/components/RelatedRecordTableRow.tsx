@@ -52,8 +52,6 @@ interface RelatedRecordTableRowProps<
    * Optional addition props to pass to the rowActionComponent
    */
   rowActionComponentAdditionalProps?: P;
-
-  isEditingColumn: boolean | null;
 }
 
 /**
@@ -73,7 +71,6 @@ export default function RelatedRecordTableRow<
   rowActionMutation,
   isValidating,
   onSaveCallback,
-  isEditingColumn,
   rowActionComponent: RowActionComponent,
   rowActionComponentAdditionalProps,
 }: RelatedRecordTableRowProps<T, P>) {
