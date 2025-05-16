@@ -85,7 +85,7 @@ export default function EMSDetailsPage({
   }, [ems_pcrs]);
 
   /**
-   * Hook that gets the 12 hour timestamp interval
+   * Hook that gets the 4 hour timestamp interval
    * to be used for fetching people list for unmatched EMS records
    */
   const unmatchedTimeInterval: string[] = useMemo(() => {
@@ -100,9 +100,9 @@ export default function EMSDetailsPage({
         )
       ) {
         const incidentTimestamp = parseISO(incident.incident_received_datetime);
-        const time12HoursBefore = subHours(incidentTimestamp, 12).toISOString();
-        const time12HoursAfter = addHours(incidentTimestamp, 12).toISOString();
-        return [time12HoursBefore, time12HoursAfter];
+        const time4HoursBefore = subHours(incidentTimestamp, 4).toISOString();
+        const time4HoursAfter = addHours(incidentTimestamp, 4).toISOString();
+        return [time4HoursBefore, time4HoursAfter];
       }
     }
     return [];
@@ -115,8 +115,8 @@ export default function EMSDetailsPage({
   const { data: unmatchedCrashes } = useQuery<Crash>({
     query: unmatchedTimeInterval[0] ? GET_UNMATCHED_EMS_CRASHES : null,
     variables: {
-      time12HoursBefore: unmatchedTimeInterval[0],
-      time12HoursAfter: unmatchedTimeInterval[1],
+      time4HoursBefore: unmatchedTimeInterval[0],
+      time4HoursAfter: unmatchedTimeInterval[1],
     },
     typename: "crashes",
   });
@@ -246,7 +246,7 @@ export default function EMSDetailsPage({
             records={matchingPeople ? matchingPeople : []}
             isValidating={isValidating}
             noRowsMessage="No people found"
-            header="Associated people records"
+            header="Possible people matches"
             columns={emsMatchingPeopleColumns}
             mutation=""
             onSaveCallback={onSaveCallback}

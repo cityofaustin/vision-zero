@@ -24,6 +24,7 @@ export const GET_EMS_RECORDS = gql`
       pcr_patient_age
       pcr_patient_gender
       pcr_patient_race
+      pcr_transport_destination
       person_id
       travel_mode
       unparsed_apd_incident_numbers
@@ -36,12 +37,12 @@ export const GET_EMS_RECORDS = gql`
 
 export const GET_UNMATCHED_EMS_CRASHES = gql`
   query EMSUnmatchedCrashes(
-    $time12HoursBefore: timestamptz!
-    $time12HoursAfter: timestamptz!
+    $time4HoursBefore: timestamptz!
+    $time4HoursAfter: timestamptz!
   ) {
     crashes(
       where: {
-        crash_timestamp: { _gte: $time12HoursBefore, _lte: $time12HoursAfter }
+        crash_timestamp: { _gte: $time4HoursBefore, _lte: $time4HoursAfter }
       }
     ) {
       id
@@ -55,11 +56,17 @@ export const GET_MATCHING_PEOPLE = gql`
   query EMSMatchingCrashes($crash_pks: [Int!]) {
     people_list_view(
       where: { crash_pk: { _in: $crash_pks } }
-      order_by: { crash_timestamp: asc, unit_nbr: asc, prsn_nbr: asc }
+      order_by: {
+        crash_timestamp: asc
+        crash_pk: asc
+        unit_nbr: asc
+        prsn_nbr: asc
+      }
     ) {
       crash_pk
       crash_timestamp
       id
+      prsn_nbr
       unit_nbr
       is_primary_person
       prsn_age
@@ -74,11 +81,6 @@ export const GET_MATCHING_PEOPLE = gql`
         id
         label
       }
-      prsn_type_id
-      prsn_type {
-        id
-        label
-      }
       prsn_gndr_id
       gndr {
         id
@@ -89,6 +91,12 @@ export const GET_MATCHING_PEOPLE = gql`
         id
         label
       }
+      prsn_occpnt_pos_id
+      occpnt_pos {
+        id
+        label
+      }
+      prsn_taken_to
       crash {
         id
         cris_crash_id
