@@ -61,7 +61,7 @@ export interface RowActionComponentProps<
    */
   record: T;
   /**
-   * Graphql mutation that was provided to the parent RelatedRecordTable compoennt
+   * Graphql mutation that was provided to the parent RelatedRecordTable component
    */
   mutation: string;
   /**
