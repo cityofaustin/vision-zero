@@ -61,22 +61,24 @@ const EMSLinkRecordButton: React.FC<
   return (
     <PermissionsRequired allowedRoles={allowedLinkRecordRoles}>
       <div className="d-flex">
-        <Button
-          size="sm"
-          variant={isInLinkMode ? "secondary" : "primary"}
-          disabled={(isLinkingInProgress && !isInLinkMode) || !!isEditingColumn}
-          onClick={() => {
-            additionalProps?.onClick(record);
-          }}
-        >
-          {!isInLinkMode && (
-            <AlignedLabel>
-              <FaLink className="me-2" />
-              <span>Select person</span>
-            </AlignedLabel>
-          )}
-          {isInLinkMode && <span>Cancel</span>}
-        </Button>
+        {!isEditingColumn && (
+          <Button
+            size="sm"
+            variant={isInLinkMode ? "secondary" : "primary"}
+            disabled={isLinkingInProgress && !isInLinkMode}
+            onClick={() => {
+              additionalProps?.onClick(record);
+            }}
+          >
+            {!isInLinkMode && (
+              <AlignedLabel>
+                <FaLink className="me-2" />
+                <span>Select person</span>
+              </AlignedLabel>
+            )}
+            {isInLinkMode && <span>Cancel</span>}
+          </Button>
+        )}
         {!isInLinkMode && !isEditingColumn && (
           <Dropdown className="ms-1">
             <Dropdown.Toggle
