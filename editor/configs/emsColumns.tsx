@@ -3,6 +3,7 @@ import { ColDataCardDef } from "@/types/types";
 import { EMSPatientCareRecord } from "@/types/ems";
 import { formatDate, formatIsoDateTime } from "@/utils/formatters";
 import Link from "next/link";
+import { ClientError } from "graphql-request";
 
 const formatCrashMatchStatus = (value: unknown) => {
   if (!value || typeof value !== "string") {
@@ -106,6 +107,16 @@ export const ALL_EMS_COLUMNS = {
     label: "Person ID",
     editable: true,
     inputType: "number",
+    getMutationErrorMessage: (error) => {
+      if (error instanceof ClientError) {
+        // Assume the problem is related to the person ID
+        return "Person ID is invalid or in use";
+      } else if (error instanceof Error) {
+        // Handle other errors
+        return "Something went wrong";
+      }
+      return null;
+    },
   },
   prsn_nbr: {
     path: "person.prsn_nbr",

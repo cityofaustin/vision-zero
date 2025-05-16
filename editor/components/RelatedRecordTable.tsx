@@ -61,7 +61,7 @@ export interface RowActionComponentProps<
    */
   record: T;
   /**
-   * Graphql mutation that was provided to the parent RelatedRecordTable compoennt
+   * Graphql mutation that was provided to the parent RelatedRecordTable component
    */
   mutation: string;
   /**
@@ -72,6 +72,11 @@ export interface RowActionComponentProps<
    * Optional additional props passed to the component
    */
   additionalProps?: P;
+
+  /**
+   * Is a column in the row currently being edited
+   */
+  isEditingColumn?: boolean | null;
 }
 
 /**

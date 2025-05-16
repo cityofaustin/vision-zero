@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { InputType } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
+import { useState } from "react";
 
 interface EditableFieldProps {
   /** The initial value to populate the input */
@@ -26,6 +27,9 @@ interface EditableFieldProps {
 
   /** Validation rules that mirror react-hook-form RegisterOptions */
   inputOptions?: RegisterOptions<FormValues, "value">;
+
+  /** Function that gets the message to be displayed in the case of a graphql mutation error */
+  getMutationErrorMessage?: (error: unknown) => string | null;
 }
 
 interface FormValues {
@@ -44,6 +48,7 @@ export default function EditableField({
   onSave,
   onCancel,
   inputOptions,
+  getMutationErrorMessage,
 }: EditableFieldProps) {
   const {
     register,
@@ -55,8 +60,15 @@ export default function EditableField({
     },
   });
 
+  // Sets the message to be shown if there was an error in the graphql mutation
+  const [mutationError, setMutationError] = useState<string | null>(null);
+
   const onSubmit = async (data: FormValues) => {
-    await onSave(data.value);
+    await onSave(data.value).catch((error) => {
+      setMutationError(
+        getMutationErrorMessage ? getMutationErrorMessage(error) : null
+      );
+    });
   };
 
   return (
@@ -69,7 +81,7 @@ export default function EditableField({
             size="sm"
             type="text"
             inputMode={inputType === "number" ? "numeric" : undefined}
-            isInvalid={!!errors.value}
+            isInvalid={!!errors.value || !!mutationError}
           />
         )}
         {inputType === "textarea" && (
@@ -108,9 +120,9 @@ export default function EditableField({
             <option value="false">No</option>
           </Form.Select>
         )}
-        {errors.value && (
+        {(errors.value || mutationError) && (
           <Form.Control.Feedback type="invalid">
-            {errors.value.message}
+            {errors.value ? errors.value.message : mutationError}
           </Form.Control.Feedback>
         )}
       </div>

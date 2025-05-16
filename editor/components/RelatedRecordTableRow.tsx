@@ -119,14 +119,12 @@ export default function RelatedRecordTableRow<
   };
 
   const onCancel = () => setEditColumn(null);
-
   return (
     <>
       <tr>
         {columns.map((col) => {
           const isEditingThisColumn = col.path === editColumn?.path;
           const isEditable = col.editable;
-
           return (
             <td
               key={String(col.path)}
@@ -183,6 +181,7 @@ export default function RelatedRecordTableRow<
                       selectOptions={selectOptions}
                       isMutating={isMutating || isValidating}
                       inputOptions={col.inputOptions}
+                      getMutationErrorMessage={col.getMutationErrorMessage}
                     />
                   )}
                 </>
@@ -197,6 +196,7 @@ export default function RelatedRecordTableRow<
               mutation={rowActionMutation || ""}
               onSaveCallback={onSaveCallback}
               additionalProps={rowActionComponentAdditionalProps}
+              isEditingColumn={!!editColumn}
             />
           </td>
         )}
