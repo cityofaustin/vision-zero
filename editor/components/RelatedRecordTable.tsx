@@ -72,6 +72,11 @@ export interface RowActionComponentProps<
    * Optional additional props passed to the component
    */
   additionalProps?: P;
+
+  /**
+   * Is a column in the row currently being edited
+   */
+  isEditingColumn?: boolean | null;
 }
 
 /**
