@@ -17,9 +17,15 @@ export interface EMSLinkRecordButtonProps extends Record<string, unknown> {
 
 const EMSLinkRecordButton: React.FC<
   RowActionComponentProps<EMSPatientCareRecord, EMSLinkRecordButtonProps>
-> = ({ record, additionalProps, mutation, onSaveCallback }) => {
+> = ({
+  record,
+  additionalProps,
+  mutation,
+  onSaveCallback,
+  isEditingColumn,
+}) => {
   const isLinkingInProgress = !!additionalProps?.selectedEmsPcr;
-  const isLinkingThisRecord =
+  const isInLinkMode =
     additionalProps?.selectedEmsPcr &&
     record.id === additionalProps?.selectedEmsPcr.id;
 
@@ -57,21 +63,21 @@ const EMSLinkRecordButton: React.FC<
       <div className="d-flex">
         <Button
           size="sm"
-          variant={isLinkingThisRecord ? "secondary" : "primary"}
-          disabled={isLinkingInProgress && !isLinkingThisRecord}
+          variant={isInLinkMode ? "secondary" : "primary"}
+          disabled={(isLinkingInProgress && !isInLinkMode) || !!isEditingColumn}
           onClick={() => {
             additionalProps?.onClick(record);
           }}
         >
-          {!isLinkingThisRecord && (
+          {!isInLinkMode && (
             <AlignedLabel>
               <FaLink className="me-2" />
               <span>Select person</span>
             </AlignedLabel>
           )}
-          {isLinkingThisRecord && <span>Cancel</span>}
+          {isInLinkMode && <span>Cancel</span>}
         </Button>
-        {!isLinkingThisRecord && (
+        {!isInLinkMode && !isEditingColumn && (
           <Dropdown className="ms-1">
             <Dropdown.Toggle
               className="hide-toggle"
