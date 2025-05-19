@@ -14,6 +14,8 @@ interface EditableFieldProps {
   inputType?: InputType;
   /** Array of lookup table options that will populate a <select> input */
   selectOptions?: LookupTableOption[];
+  /** If there was a graphql error when fetching the select options */
+  selectOptionsError?: unknown;
   /**
    * The function to call on save button click, which is expected to mutate the field
    * with the current `editValue`
@@ -24,10 +26,8 @@ interface EditableFieldProps {
    * to set control the parent component's edit state
    */
   onCancel: () => void;
-
   /** Validation rules that mirror react-hook-form RegisterOptions */
   inputOptions?: RegisterOptions<FormValues, "value">;
-
   /** Function that gets the message to be displayed in the case of a graphql mutation error */
   getMutationErrorMessage?: (error: unknown) => string | null;
 }
@@ -45,6 +45,7 @@ export default function EditableField({
   inputType,
   isMutating,
   selectOptions,
+  selectOptionsError,
   onSave,
   onCancel,
   inputOptions,
@@ -95,15 +96,16 @@ export default function EditableField({
             isInvalid={!!errors.value || !!mutationError}
           />
         )}
-        {inputType === "select" && selectOptions && (
+        {inputType === "select" && (selectOptions || !!selectOptionsError) && (
           <Form.Select
             {...register("value", inputOptions)}
             autoFocus
             size="sm"
-            isInvalid={!!errors.value || !!mutationError}
+            disabled={!selectOptions}
+            isInvalid={!!errors.value || !!mutationError || !!selectOptionsError}
           >
             <option value="">Select...</option>
-            {selectOptions.map((option) => (
+            {selectOptions?.map((option) => (
               <option key={option.id} value={String(option.id)}>
                 {option.label}
               </option>
@@ -122,9 +124,13 @@ export default function EditableField({
             <option value="false">No</option>
           </Form.Select>
         )}
-        {(errors.value || mutationError) && (
+        {(errors.value || mutationError || !!selectOptionsError) && (
           <Form.Control.Feedback type="invalid">
-            {errors.value ? errors.value.message : mutationError}
+            {errors.value
+              ? errors.value.message
+              : selectOptionsError
+                ? "Failed to retrieve lookup table options"
+                : mutationError}
           </Form.Control.Feedback>
         )}
       </div>
