@@ -66,7 +66,9 @@ export default function EditableField({
   const onSubmit = async (data: FormValues) => {
     await onSave(data.value).catch((error) => {
       setMutationError(
-        getMutationErrorMessage ? getMutationErrorMessage(error) : null
+        getMutationErrorMessage
+          ? getMutationErrorMessage(error)
+          : "Something went wrong"
       );
     });
   };
@@ -90,7 +92,7 @@ export default function EditableField({
             autoFocus
             size="sm"
             as="textarea"
-            isInvalid={!!errors.value}
+            isInvalid={!!errors.value || !!mutationError}
           />
         )}
         {inputType === "select" && selectOptions && (
@@ -98,7 +100,7 @@ export default function EditableField({
             {...register("value", inputOptions)}
             autoFocus
             size="sm"
-            isInvalid={!!errors.value}
+            isInvalid={!!errors.value || !!mutationError}
           >
             <option value="">Select...</option>
             {selectOptions.map((option) => (
@@ -113,7 +115,7 @@ export default function EditableField({
             {...register("value", inputOptions)}
             autoFocus
             size="sm"
-            isInvalid={!!errors.value}
+            isInvalid={!!errors.value || !!mutationError}
           >
             <option value="">Select...</option>
             <option value="true">Yes</option>
