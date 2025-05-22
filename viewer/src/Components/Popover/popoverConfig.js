@@ -1,4 +1,3 @@
-import React from "react";
 import raceEthnicityTable2018 from "./raceEthnicityTable2018.png";
 import { popEsts } from "../../constants/popEsts";
 
