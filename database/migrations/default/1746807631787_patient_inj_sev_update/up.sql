@@ -26,6 +26,8 @@ add column patient_injry_sev_id integer generated always as (
                     pcr_patient_acuity_final is NULL
                 )
             )
+            or
+            lower(mvc_form_collision_indicators) LIKE 'death%';
             then 4
         --
         -- serious injuries
@@ -99,118 +101,6 @@ add column patient_injry_sev_id integer generated always as (
             (lower(pcr_provider_impression_primary) like 'injury%')
             or
             (lower(pcr_provider_impression_secondary) like 'injury%')
-            or
-            (
-                lower(pcr_provider_impression_primary) in
-                (
-                    'altered mental status',
-                    'assault - physical',
-                    'burn - chemical',
-                    'cardiac - arrhythmia/dysrythmia',
-                    'cardiac - myocardial infarction',
-                    'cardiac - palpitations',
-                    'confusion',
-                    'diarrhea',
-                    'dizziness',
-                    'epistaxis',
-                    'fatigue',
-                    'fever',
-                    'foreign body - alimentary tract',
-                    'foreign body - respiratory tract',
-                    'generalized weakness',
-                    'headache',
-                    'hemorrhage',
-                    'hemorrhage - vaginal',
-                    'hypertension',
-                    'hypertensive crisis',
-                    'hypotension',
-                    'malaise',
-                    'nausea',
-                    'neurological - visual disturbance',
-                    'ob',
-                    'ob - pre eclampsia',
-                    'ob - vomiting',
-                    'obstruction - esophageal',
-                    'pain - abdomen',
-                    'pain - acute',
-                    'pain - acute - trauma',
-                    'pain - back',
-                    'pain - chest',
-                    'pain - chest - non cardiac',
-                    'pain - chest - with breathing',
-                    'pain - chronic',
-                    'pain - extremity',
-                    'pain - eye',
-                    'pain - non traumatic',
-                    'pain - pelvis/perineum',
-                    'pain - tooth',
-                    'problem - ear',
-                    'respiratory - distress',
-                    'respiratory - dyspnea',
-                    'respiratory - hyperventilation',
-                    'seizure',
-                    'seizure - postictal',
-                    'seizure - status epilepticus',
-                    'trauma - minor',
-                    'vomiting'
-                )
-            )
-            or
-            (
-                lower(pcr_provider_impression_secondary) in
-                (
-                    'altered mental status',
-                    'assault - physical',
-                    'burn - chemical',
-                    'cardiac - arrhythmia/dysrythmia',
-                    'cardiac - myocardial infarction',
-                    'cardiac - palpitations',
-                    'confusion',
-                    'diarrhea',
-                    'dizziness',
-                    'epistaxis',
-                    'fatigue',
-                    'fever',
-                    'foreign body - alimentary tract',
-                    'foreign body - respiratory tract',
-                    'generalized weakness',
-                    'headache',
-                    'hemorrhage',
-                    'hemorrhage - vaginal',
-                    'hypertension',
-                    'hypertensive crisis',
-                    'hypotension',
-                    'malaise',
-                    'nausea',
-                    'neurological - visual disturbance',
-                    'ob',
-                    'ob - pre eclampsia',
-                    'ob - vomiting',
-                    'obstruction - esophageal',
-                    'pain - abdomen',
-                    'pain - acute',
-                    'pain - acute - trauma',
-                    'pain - back',
-                    'pain - chest',
-                    'pain - chest - non cardiac',
-                    'pain - chest - with breathing',
-                    'pain - chronic',
-                    'pain - extremity',
-                    'pain - eye',
-                    'pain - non traumatic',
-                    'pain - pelvis/perineum',
-                    'pain - tooth',
-                    'problem - ear',
-                    'respiratory - distress',
-                    'respiratory - dyspnea',
-                    'respiratory - hyperventilation',
-                    'seizure',
-                    'seizure - postictal',
-                    'seizure - status epilepticus',
-                    'trauma - minor',
-                    'vomiting'
-                )
-            )
             then 2
         --
         -- possible injuries
@@ -238,12 +128,12 @@ add column patient_injry_sev_id integer generated always as (
                 )
             )
             then 3
+        --
+        -- not injured
+        --
         else 5
     end
 ) stored;
-
-
-
 
 alter table ems__incidents
 add constraint ems__incidents_patient_injry_sev_id_fk foreign key (
@@ -251,7 +141,11 @@ add constraint ems__incidents_patient_injry_sev_id_fk foreign key (
 )
 references lookups.injry_sev on update restrict on delete restrict;
 
+alter table ems__incidents add column patient_injry_sev_reason_text;
+
 comment on column ems__incidents.patient_injry_sev_id is 'The patient injury severity as mapped to the CRIS injury severity lookup';
+
+comment on column ems__incidents.patient_injry_sev_reason_text is 'The reason why the patient_injry_sev_id level was assigned';
 
 create index ems__incidents_patient_injry_sev_id_index on ems__incidents (
     patient_injry_sev_id
