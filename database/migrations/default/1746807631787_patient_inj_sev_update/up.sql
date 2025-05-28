@@ -1,3 +1,7 @@
+--
+-- Reworks logic of patient_injry_sev_id, adds a new patient_injry_sev_reason column
+-- and sets both columns via trigger instead of column generation
+--
 alter table ems__incidents drop column patient_injry_sev_id;
 
 alter table ems__incidents
