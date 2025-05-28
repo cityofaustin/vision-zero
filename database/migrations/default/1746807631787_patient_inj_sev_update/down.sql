@@ -1,4 +1,8 @@
-alter table ems__incidents drop column patient_injry_sev_id;
+drop trigger if exists ems_incidents_trigger_insert_set_patient_injry_sev on ems__incidents;
+
+drop function if exists update_ems_patient_injry_sev;
+
+alter table ems__incidents drop column patient_injry_sev_id, drop column patient_injry_sev_reason;
 
 alter table ems__incidents
 add column patient_injry_sev_id integer generated always as (
