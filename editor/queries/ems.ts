@@ -24,6 +24,7 @@ export const GET_EMS_RECORDS = gql`
       pcr_patient_age
       pcr_patient_gender
       pcr_patient_race
+      pcr_transport_destination
       person_id
       travel_mode
       unparsed_apd_incident_numbers
@@ -55,11 +56,17 @@ export const GET_MATCHING_PEOPLE = gql`
   query EMSMatchingCrashes($crash_pks: [Int!]) {
     people_list_view(
       where: { crash_pk: { _in: $crash_pks } }
-      order_by: { crash_timestamp: asc, unit_nbr: asc, prsn_nbr: asc }
+      order_by: {
+        crash_timestamp: asc
+        crash_pk: asc
+        unit_nbr: asc
+        prsn_nbr: asc
+      }
     ) {
       crash_pk
       crash_timestamp
       id
+      prsn_nbr
       unit_nbr
       is_primary_person
       prsn_age
@@ -74,11 +81,6 @@ export const GET_MATCHING_PEOPLE = gql`
         id
         label
       }
-      prsn_type_id
-      prsn_type {
-        id
-        label
-      }
       prsn_gndr_id
       gndr {
         id
@@ -89,6 +91,12 @@ export const GET_MATCHING_PEOPLE = gql`
         id
         label
       }
+      prsn_occpnt_pos_id
+      occpnt_pos {
+        id
+        label
+      }
+      prsn_taken_to
       crash {
         id
         cris_crash_id
@@ -129,7 +137,7 @@ export const GET_MATCHING_PEOPLE = gql`
 `;
 
 export const UPDATE_EMS_INCIDENT_CRASH_AND_PERSON = gql`
-  mutation UpdateEMSIncident($id: Int!, $person_id: Int!) {
+  mutation UpdateEMSPersonCrashStatus($id: Int!, $person_id: Int!) {
     update_ems__incidents(
       where: { id: { _eq: $id } }
       _set: {
@@ -143,7 +151,7 @@ export const UPDATE_EMS_INCIDENT_CRASH_AND_PERSON = gql`
 `;
 
 export const UPDATE_EMS_INCIDENT = gql`
-  mutation update_crashes($id: Int!, $updates: ems__incidents_set_input) {
+  mutation UpdateEMSIncident($id: Int!, $updates: ems__incidents_set_input) {
     update_ems__incidents(where: { id: { _eq: $id } }, _set: $updates) {
       affected_rows
       returning {

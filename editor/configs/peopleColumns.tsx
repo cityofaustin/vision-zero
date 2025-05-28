@@ -16,6 +16,10 @@ export const ALL_PEOPLE_COLUMNS = {
     path: "unit_nbr",
     label: "Unit",
   },
+  unit_type: {
+    path: "unit.unit_desc.label",
+    label: "Travel mode",
+  },
   injry_sev: {
     path: "injry_sev.label",
     label: "Injury severity",
@@ -34,6 +38,10 @@ export const ALL_PEOPLE_COLUMNS = {
       return <span className={className}>{value}</span>;
     },
   },
+  prsn_nbr: {
+    path: "prsn_nbr",
+    label: "Person",
+  },
   prsn_type: {
     path: "prsn_type.label",
     label: "Type",
@@ -49,7 +57,7 @@ export const ALL_PEOPLE_COLUMNS = {
   },
   occpnt_pos: {
     path: "occpnt_pos.label",
-    label: "Occupant Position",
+    label: "Position in vehicle",
     editable: true,
     inputType: "select",
     relationship: {
@@ -69,6 +77,10 @@ export const ALL_PEOPLE_COLUMNS = {
       validate: commonValidations.isNullableInteger,
       min: { value: 0, message: "Age cannot be negative" },
     },
+  },
+  prsn_taken_to: {
+    path: "prsn_taken_to",
+    label: "Transported to",
   },
   gndr: {
     path: "gndr.label",
