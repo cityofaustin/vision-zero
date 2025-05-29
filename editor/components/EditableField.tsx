@@ -102,7 +102,9 @@ export default function EditableField({
             autoFocus
             size="sm"
             disabled={!selectOptions}
-            isInvalid={!!errors.value || !!mutationError || !!selectOptionsError}
+            isInvalid={
+              !!errors.value || !!mutationError || !!selectOptionsError
+            }
           >
             <option value="">Select...</option>
             {selectOptions?.map((option) => (
@@ -124,13 +126,17 @@ export default function EditableField({
             <option value="false">No</option>
           </Form.Select>
         )}
+
         {(errors.value || mutationError || !!selectOptionsError) && (
           <Form.Control.Feedback type="invalid">
-            {errors.value
-              ? errors.value.message
-              : selectOptionsError
-                ? "Failed to retrieve lookup table options"
-                : mutationError}
+            {/* react-hook-form validation error message */}
+            {errors.value && errors.value.message}
+            {/* Lookup option error message */}
+            {!errors.value &&
+              !!selectOptionsError &&
+              "Failed to retrieve menu options"}
+            {/* Mutation error message */}
+            {!errors.value && !selectOptionsError && mutationError}
           </Form.Control.Feedback>
         )}
       </div>
