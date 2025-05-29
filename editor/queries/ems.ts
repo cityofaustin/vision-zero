@@ -17,7 +17,7 @@ export const GET_EMS_RECORDS = gql`
       matched_crash_pks
       mvc_form_position_in_vehicle
       patient_injry_sev_id
-      injry_sev {
+      patient_injry_sev {
         id
         label
       }

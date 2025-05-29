@@ -262,7 +262,7 @@ export const GET_CRASH = gql`
         incident_number
         incident_problem
         incident_received_datetime
-        injry_sev {
+        patient_injry_sev {
           id
           label
         }
