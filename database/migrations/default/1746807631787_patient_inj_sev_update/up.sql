@@ -113,9 +113,6 @@ BEGIN
     --
     -- minor injuries
     --
-    when (lower(NEW.pcr_outcome) in ('transported', 'care transferred')) then
-        NEW.patient_injry_sev_id = 2;
-        NEW.patient_injry_sev_reason = 'lower(pcr_outcome) in (''transported'', ''care transferred'')';
     when (NEW.mvc_form_patient_injured_flag = 1) then
         NEW.patient_injry_sev_id = 2;
         NEW.patient_injry_sev_reason = 'mvc_form_patient_injured_flag = 1)';
@@ -125,6 +122,9 @@ BEGIN
     when (lower(NEW.pcr_provider_impression_secondary) like 'injury%') then
         NEW.patient_injry_sev_id = 2;
         NEW.patient_injry_sev_reason = 'lower(pcr_provider_impression_secondary) like ''injury%'')';
+    when (lower(NEW.pcr_outcome) in ('transported', 'care transferred')) then
+        NEW.patient_injry_sev_id = 2;
+        NEW.patient_injry_sev_reason = 'lower(pcr_outcome) in (''transported'', ''care transferred'')';
     --
     -- possible injuries
     --
@@ -161,7 +161,6 @@ for each row execute function update_ems_patient_injry_sev();
 
 update ems__incidents set id = id, updated_by = 'dts_automation';
 
-
 --
 --  And now replace the update trigger so that fires on changes to our dependent fields only
 --
@@ -186,5 +185,3 @@ when (
     OLD.mvc_form_patient_injured_flag is distinct from NEW.mvc_form_patient_injured_flag
 )
 execute function update_ems_patient_injry_sev();
-
-drop trigger ems_incidents_trigger_update_set_patient_injry_sev on ems__incidents;
