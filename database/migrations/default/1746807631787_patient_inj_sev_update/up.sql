@@ -161,4 +161,30 @@ for each row execute function update_ems_patient_injry_sev();
 
 update ems__incidents set id = id, updated_by = 'dts_automation';
 
+
+--
+--  And now replace the update trigger so that fires on changes to our dependent fields only
+--
+create or replace trigger ems_incidents_trigger_update_set_patient_injry_sev
+before update on ems__incidents
+for each row 
+when (
+    OLD.pcr_provider_impression_primary is distinct from NEW.pcr_provider_impression_primary
+    or
+    OLD.pcr_provider_impression_secondary is distinct from NEW.pcr_provider_impression_secondary
+    or
+    OLD.pcr_outcome is distinct from NEW.pcr_outcome
+    or
+    OLD.pcr_patient_acuity_final is distinct from NEW.pcr_patient_acuity_final
+    or
+    OLD.pcr_patient_acuity_initial is distinct from NEW.pcr_patient_acuity_initial
+    or
+    OLD.mvc_form_collision_indicators is distinct from NEW.mvc_form_collision_indicators
+    or
+    OLD.pcr_transport_priority is distinct from NEW.pcr_transport_priority
+    or
+    OLD.mvc_form_patient_injured_flag is distinct from NEW.mvc_form_patient_injured_flag
+)
+execute function update_ems_patient_injry_sev();
+
 drop trigger ems_incidents_trigger_update_set_patient_injry_sev on ems__incidents;

@@ -1,4 +1,5 @@
 drop trigger if exists ems_incidents_trigger_insert_set_patient_injry_sev on ems__incidents;
+drop trigger if exists ems_incidents_trigger_update_set_patient_injry_sev on ems__incidents;
 
 drop function if exists update_ems_patient_injry_sev;
 
