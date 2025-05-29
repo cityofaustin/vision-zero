@@ -2,6 +2,24 @@
 -- Reworks logic of patient_injry_sev_id, adds a new patient_injry_sev_reason column
 -- and sets both columns via trigger instead of column generation
 --
+
+--
+-- Create lookup table for injury severity
+--
+CREATE TABLE lookups.ems_patient_injry_sev (
+    id integer primary key,
+    label text NOT NULL,
+    source text DEFAULT 'cris'::text NOT NULL,
+    CONSTRAINT injry_sev_owner_check CHECK ((((id < 99) AND (source = 'cris'::text)) OR ((id >= 99) AND (source = 'vz'::text))))
+);
+
+comment on table lookups.ems_patient_injry_sev is 'Injury severity lookup values for EMS patient care records. The rows in this table should exactly mirror the lookups.injry_sev table';
+
+INSERT INTO lookups.ems_patient_injry_sev select * from lookups.injry_sev;
+
+--
+-- Re-create patient_injry_sev_id column and add patient_injry_sev_reason
+--
 alter table ems__incidents drop column patient_injry_sev_id;
 
 alter table ems__incidents
@@ -12,9 +30,9 @@ alter table ems__incidents
 add constraint ems__incidents_patient_injry_sev_id_fk foreign key (
     patient_injry_sev_id
 )
-references lookups.injry_sev on update restrict on delete restrict;
+references lookups.ems_patient_injry_sev on update restrict on delete restrict;
 
-comment on column ems__incidents.patient_injry_sev_id is 'The patient injury severity as mapped to the CRIS injury severity lookup';
+comment on column ems__incidents.patient_injry_sev_id is 'The patient injury severity based on the CRIS injury classifications';
 
 comment on column ems__incidents.patient_injry_sev_reason is 'The business logic used to assign the patient_injry_sev_id';
 
@@ -22,6 +40,9 @@ create index ems__incidents_patient_injry_sev_id_index on ems__incidents (
     patient_injry_sev_id
 );
 
+--
+-- Create funciton to assign injury severity ID and reason
+--
 create or replace function update_ems_patient_injry_sev()
 returns trigger as $$
 BEGIN

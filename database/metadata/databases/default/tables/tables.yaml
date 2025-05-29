@@ -17,6 +17,7 @@
 - "!include lookups_drvr_ethncty.yaml"
 - "!include lookups_drvr_lic_type.yaml"
 - "!include lookups_e_scooter.yaml"
+- "!include lookups_ems_patient_injry_sev.yaml"
 - "!include lookups_gndr.yaml"
 - "!include lookups_harm_evnt.yaml"
 - "!include lookups_helmet.yaml"
