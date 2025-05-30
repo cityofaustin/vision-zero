@@ -15,7 +15,7 @@ services:
 
   postgis:
     shm_size: 2g
-    build: database
+    image: atddocker/postgis:unified-db
     env_file:
       - .env
     volumes:
