@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { InputType } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
+import { useState } from "react";
 
 interface EditableFieldProps {
   /** The initial value to populate the input */
@@ -13,6 +14,8 @@ interface EditableFieldProps {
   inputType?: InputType;
   /** Array of lookup table options that will populate a <select> input */
   selectOptions?: LookupTableOption[];
+  /** If there was a graphql error when fetching the select options */
+  selectOptionsError?: unknown;
   /**
    * The function to call on save button click, which is expected to mutate the field
    * with the current `editValue`
@@ -23,9 +26,10 @@ interface EditableFieldProps {
    * to set control the parent component's edit state
    */
   onCancel: () => void;
-
   /** Validation rules that mirror react-hook-form RegisterOptions */
   inputOptions?: RegisterOptions<FormValues, "value">;
+  /** Function that gets the message to be displayed in the case of a graphql mutation error */
+  getMutationErrorMessage?: (error: unknown) => string | null;
 }
 
 interface FormValues {
@@ -41,9 +45,11 @@ export default function EditableField({
   inputType,
   isMutating,
   selectOptions,
+  selectOptionsError,
   onSave,
   onCancel,
   inputOptions,
+  getMutationErrorMessage,
 }: EditableFieldProps) {
   const {
     register,
@@ -55,8 +61,17 @@ export default function EditableField({
     },
   });
 
+  // Sets the message to be shown if there was an error in the graphql mutation
+  const [mutationError, setMutationError] = useState<string | null>(null);
+
   const onSubmit = async (data: FormValues) => {
-    await onSave(data.value);
+    await onSave(data.value).catch((error) => {
+      setMutationError(
+        getMutationErrorMessage
+          ? getMutationErrorMessage(error)
+          : "Something went wrong"
+      );
+    });
   };
 
   return (
@@ -69,7 +84,7 @@ export default function EditableField({
             size="sm"
             type="text"
             inputMode={inputType === "number" ? "numeric" : undefined}
-            isInvalid={!!errors.value}
+            isInvalid={!!errors.value || !!mutationError}
           />
         )}
         {inputType === "textarea" && (
@@ -78,18 +93,21 @@ export default function EditableField({
             autoFocus
             size="sm"
             as="textarea"
-            isInvalid={!!errors.value}
+            isInvalid={!!errors.value || !!mutationError}
           />
         )}
-        {inputType === "select" && selectOptions && (
+        {inputType === "select" && (selectOptions || !!selectOptionsError) && (
           <Form.Select
             {...register("value", inputOptions)}
             autoFocus
             size="sm"
-            isInvalid={!!errors.value}
+            disabled={!selectOptions}
+            isInvalid={
+              !!errors.value || !!mutationError || !!selectOptionsError
+            }
           >
             <option value="">Select...</option>
-            {selectOptions.map((option) => (
+            {selectOptions?.map((option) => (
               <option key={option.id} value={String(option.id)}>
                 {option.label}
               </option>
@@ -101,16 +119,24 @@ export default function EditableField({
             {...register("value", inputOptions)}
             autoFocus
             size="sm"
-            isInvalid={!!errors.value}
+            isInvalid={!!errors.value || !!mutationError}
           >
             <option value="">Select...</option>
             <option value="true">Yes</option>
             <option value="false">No</option>
           </Form.Select>
         )}
-        {errors.value && (
+
+        {(errors.value || mutationError || !!selectOptionsError) && (
           <Form.Control.Feedback type="invalid">
-            {errors.value.message}
+            {/* react-hook-form validation error message */}
+            {errors.value && errors.value.message}
+            {/* Lookup option error message */}
+            {!errors.value &&
+              !!selectOptionsError &&
+              "Failed to retrieve menu options"}
+            {/* Mutation error message */}
+            {!errors.value && !selectOptionsError && mutationError}
           </Form.Control.Feedback>
         )}
       </div>
