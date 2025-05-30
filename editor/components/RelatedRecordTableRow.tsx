@@ -74,8 +74,6 @@ export default function RelatedRecordTableRow<
   rowActionComponent: RowActionComponent,
   rowActionComponentAdditionalProps,
 }: RelatedRecordTableRowProps<T, P>) {
-  // todo: loading state, error state
-  // todo: handling of null/undefined values in select input
   const [editColumn, setEditColumn] = useState<ColDataCardDef<T> | null>(null);
   const { mutate, loading: isMutating } = useMutation(mutation);
   const [query, typename] = useLookupQuery(
@@ -88,13 +86,16 @@ export default function RelatedRecordTableRow<
 
   const isReadOnlyUser = user && hasRole(["readonly"], user);
 
-  const { data: selectOptions, isLoading: isLoadingLookups } =
-    useQuery<LookupTableOption>({
-      query,
-      // we don't need to refetch lookup table options
-      options: { revalidateIfStale: false },
-      typename,
-    });
+  const {
+    data: selectOptions,
+    isLoading: isLoadingSelectOptions,
+    error: selectOptionsError,
+  } = useQuery<LookupTableOption>({
+    query,
+    // we don't need to refetch lookup table options
+    options: { revalidateIfStale: false },
+    typename,
+  });
 
   const onSave = async (recordId: number, value: unknown) => {
     if (!editColumn) {
@@ -159,8 +160,8 @@ export default function RelatedRecordTableRow<
                 )}
               {isEditingThisColumn && !col?.customEditComponent && (
                 <>
-                  {isLoadingLookups && <Spinner size="sm" />}
-                  {!isLoadingLookups && (
+                  {isLoadingSelectOptions && <Spinner size="sm" />}
+                  {!isLoadingSelectOptions && (
                     <EditableField
                       initialValue={valueToString(
                         getRecordValue(record, col, true),
@@ -179,6 +180,7 @@ export default function RelatedRecordTableRow<
                       onCancel={onCancel}
                       inputType={col.inputType}
                       selectOptions={selectOptions}
+                      selectOptionsError={selectOptionsError}
                       isMutating={isMutating || isValidating}
                       inputOptions={col.inputOptions}
                       getMutationErrorMessage={col.getMutationErrorMessage}
