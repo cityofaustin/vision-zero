@@ -139,17 +139,17 @@ export const ALL_EMS_COLUMNS = {
     label: "Transported to",
   },
   patient_injry_sev: {
-    path: "injry_sev.label",
+    path: "patient_injry_sev.label",
     label: "Injury severity",
     relationship: {
       tableSchema: "lookups",
-      tableName: "injry_sev",
+      tableName: "ems_patient_injry_sev",
       foreignKey: "patient_injry_sev_id",
       idColumnName: "id",
       labelColumnName: "label",
     },
     valueRenderer: (record) => {
-      const value = record?.injry_sev?.label || "";
+      const value = record?.patient_injry_sev?.label || "";
       const className = `${getInjuryColorClass(value)} px-2 py-1 rounded`;
       return <span className={className}>{value}</span>;
     },
