@@ -52,31 +52,31 @@ BEGIN
     --
     when (lower(NEW.pcr_provider_impression_primary) = 'death on scene') then
         NEW.patient_injry_sev_id = 4;
-        NEW.patient_injry_sev_reason = 'lower(pcr_provider_impression_primary) = ''death on scene'')';
+        NEW.patient_injry_sev_reason = 'lower(pcr_provider_impression_primary) = ''death on scene''';
     when (lower(NEW.pcr_provider_impression_secondary) = 'death on scene') then
         NEW.patient_injry_sev_id = 4;
-        NEW.patient_injry_sev_reason = 'lower(pcr_provider_impression_secondary) = ''death on scene'')';
+        NEW.patient_injry_sev_reason = 'lower(pcr_provider_impression_secondary) = ''death on scene''';
     when (lower(NEW.pcr_outcome) = 'deceased on scene') then
         NEW.patient_injry_sev_id = 4;
-        NEW.patient_injry_sev_reason = 'lower(pcr_outcome) = ''deceased on scene'')';
+        NEW.patient_injry_sev_reason = 'lower(pcr_outcome) = ''deceased on scene''';
     when (lower(NEW.pcr_patient_acuity_final) = 'dead without resuscitation efforts (black)') then
         NEW.patient_injry_sev_id = 4;
-        NEW.patient_injry_sev_reason = 'lower(pcr_patient_acuity_final) = ''dead without resuscitation efforts (black)'')';
+        NEW.patient_injry_sev_reason = 'lower(pcr_patient_acuity_final) = ''dead without resuscitation efforts (black)''';
     when ((lower(NEW.pcr_patient_acuity_initial) = 'dead without resuscitation efforts (black)') and (NEW.pcr_patient_acuity_final is NULL)) then
         NEW.patient_injry_sev_id = 4;
         NEW.patient_injry_sev_reason = 'lower(pcr_patient_acuity_initial) = ''dead without resuscitation efforts (black)'') and (pcr_patient_acuity_final is NULL)';
     when (lower(NEW.mvc_form_collision_indicators) LIKE 'death%') then
         NEW.patient_injry_sev_id = 4;
-        NEW.patient_injry_sev_reason = 'lower(mvc_form_collision_indicators) LIKE ''death%'')';
+        NEW.patient_injry_sev_reason = 'lower(mvc_form_collision_indicators) LIKE ''death%''';
     --
     -- serious injuries
     --
     when (lower(NEW.pcr_patient_acuity_final) = 'critical (red)') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'lower(pcr_patient_acuity_final) = ''critical (red)'')';
+        NEW.patient_injry_sev_reason = 'lower(pcr_patient_acuity_final) = ''critical (red)''';
     when (lower(NEW.pcr_patient_acuity_initial) = 'critical (red)' and NEW.pcr_patient_acuity_final is NULL) then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'lower(pcr_patient_acuity_initial) = ''critical (red)'' and pcr_patient_acuity_final is NULL)';
+        NEW.patient_injry_sev_reason = 'lower(pcr_patient_acuity_initial) = ''critical (red)'' and pcr_patient_acuity_final is NULL';
     when (lower(NEW.pcr_patient_acuity_final) = 'emergent (yellow)' and lower(NEW.pcr_outcome) in ('transported', 'care transferred')) then
         NEW.patient_injry_sev_id = 1;
         NEW.patient_injry_sev_reason = 'lower(pcr_patient_acuity_final) = ''emergent (yellow)'' and lower(pcr_outcome) in (''transported'', ''care transferred'')';
@@ -85,25 +85,25 @@ BEGIN
         NEW.patient_injry_sev_reason = 'lower(pcr_patient_acuity_initial) = ''emergent (yellow)'' and lower(pcr_patient_acuity_final) is NULL and lower(pcr_outcome) in (''transported'', ''care transferred'')';
     when (right(NEW.pcr_transport_priority, 1) = '3') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'right(pcr_transport_priority, 1) = ''3'')';
+        NEW.patient_injry_sev_reason = 'right(pcr_transport_priority, 1) = ''3''';
     when (lower(NEW.pcr_transport_priority) like 'charlie%') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'lower(pcr_transport_priority) like ''charlie%'')';
+        NEW.patient_injry_sev_reason = 'lower(pcr_transport_priority) like ''charlie%''';
     when (lower(NEW.pcr_transport_priority) like 'delta%') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'lower(pcr_transport_priority) like ''delta%'')';
+        NEW.patient_injry_sev_reason = 'lower(pcr_transport_priority) like ''delta%''';
     when (lower(NEW.pcr_transport_priority) like 'echo%') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'lower(pcr_transport_priority) like ''echo%'')';
+        NEW.patient_injry_sev_reason = 'lower(pcr_transport_priority) like ''echo%''';
     when (lower(NEW.pcr_provider_impression_primary) like 'fracture%') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'lower(pcr_provider_impression_primary) like ''fracture%'')';
+        NEW.patient_injry_sev_reason = 'lower(pcr_provider_impression_primary) like ''fracture%''';
     when (lower(NEW.pcr_provider_impression_secondary) like 'fracture%') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'lower(pcr_provider_impression_secondary) like ''fracture%'')';
+        NEW.patient_injry_sev_reason = 'lower(pcr_provider_impression_secondary) like ''fracture%''';
     when (lower(NEW.pcr_patient_acuity_level_reason) = 'evidence of major trauma/hemorrhage') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'lower(pcr_patient_acuity_level_reason) = ''evidence of major trauma/hemorrhage'')';
+        NEW.patient_injry_sev_reason = 'lower(pcr_patient_acuity_level_reason) = ''evidence of major trauma/hemorrhage''';
     when (lower(NEW.pcr_provider_impression_primary) in ('burn', 'cardiac - cardiac arrest', 'cardiac - cardiac arrest - traumatic', 'syncope', 'unconsciousness')) then
         NEW.patient_injry_sev_id = 1;
         NEW.patient_injry_sev_reason = 'lower(pcr_provider_impression_primary) in (''burn'', ''cardiac - cardiac arrest'', ''cardiac - cardiac arrest - traumatic'', ''syncope'', ''unconsciousness'')';
@@ -115,13 +115,13 @@ BEGIN
     --
     when (NEW.mvc_form_patient_injured_flag = 1) then
         NEW.patient_injry_sev_id = 2;
-        NEW.patient_injry_sev_reason = 'mvc_form_patient_injured_flag = 1)';
+        NEW.patient_injry_sev_reason = 'mvc_form_patient_injured_flag = 1';
     when (lower(NEW.pcr_provider_impression_primary) like 'injury%') then
         NEW.patient_injry_sev_id = 2;
-        NEW.patient_injry_sev_reason = 'lower(pcr_provider_impression_primary) like ''injury%'')';
+        NEW.patient_injry_sev_reason = 'lower(pcr_provider_impression_primary) like ''injury%''';
     when (lower(NEW.pcr_provider_impression_secondary) like 'injury%') then
         NEW.patient_injry_sev_id = 2;
-        NEW.patient_injry_sev_reason = 'lower(pcr_provider_impression_secondary) like ''injury%'')';
+        NEW.patient_injry_sev_reason = 'lower(pcr_provider_impression_secondary) like ''injury%''';
     when (lower(NEW.pcr_outcome) in ('transported', 'care transferred')) then
         NEW.patient_injry_sev_id = 2;
         NEW.patient_injry_sev_reason = 'lower(pcr_outcome) in (''transported'', ''care transferred'')';
