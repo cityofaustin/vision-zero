@@ -1,19 +1,19 @@
 export const popEsts = {
   years: {
-    2026: 1040252,
-    2025: 1023982,
-    2024: 1007643, 
-    2023: 987508,
-    2022: 960915,
-    2021: 951989,
-    2020: 943549,
-    2019: 924887,
-    2018: 912041,
-    2017: 898677,
-    2016: 881422,
+    2026: 1074501,
+    2025: 1061233,
+    2024: 1046493,
+    2023: 1030277,
+    2022: 1015470,
+    2021: 1003160,
+    2020: 987722,
+    2019: 971512,
+    2018: 954138,
+    2017: 936238,
+    2016: 913245,
   },
   sourceURL:
-    "https://demographics-austin.hub.arcgis.com/documents/27bd25c8afff4017a66cd4c467893c3f/explore",
+    "https://demographics-austin.hub.arcgis.com/documents/d00bff21b4ec4165941664709ce6a348/about",
   sourceString:
-    "City of Austin Full Purpose Population figures. Lila Valencia, City Demographer, Planning Department, City of Austin.  Based on data accessed in November, 2023."
+    "Demographics & Data Division, Planning Department, City of Austin. Based on data accessed in May 2025.",
 };

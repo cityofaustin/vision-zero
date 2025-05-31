@@ -159,6 +159,18 @@ refresh materialized view location_crashes_view;
 - Click **Select person** to enable the **Select match** button to appear next to any unlinked person records in the **Associated people records** table
 - Click the **Person ID** column for any **EMS Patients** row to manually edit a person ID value
 
+#### These steps test the DB trigger that matches EMS records to crashes
+
+1. Visit the crash details for CRIS Crash `17357278`: `http://localhost:3002/editor/crashes/17357278`
+2. Scroll down to **EMS Patient care** and observe that there is a single EMS record with status of **Matched automatically**
+3. Edit the crash's **Longitude** to be `-98.12642144`. Scroll down to the EMS table and notice that there are no EMS records listed.
+4. Edit the crash's **Longitude** back to the original value of `-97.676720393005`. Notice that the matched EMS record is listed in the EMS table. Use it's hyperlinked incident # to visit the incident details page.
+5. Use the match UI to match the EMS record to any person record. Notice that it's status changes to **Matched by review/QA**
+6. Navigate back to the crash details page, and again edit the longitude to  `-98.12642144`. Notice that the EMS record remains listed in the table.
+7. Navigate back to the EMS incident details page, and use the falafel menu to "Reset" the record's status.
+8. Notice that the EMS record now has a status of **Unmatched**
+9.  Finally, go back to the crash details and once again restore the crash to it's original **Longitude**: `-97.676720393005`. Notice that the EMS record is again listed in the table with a status of **Matched automatically**
+
 ### Top nav
 
 - Vision Zero logo displays on left side

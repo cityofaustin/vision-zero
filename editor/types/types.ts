@@ -82,6 +82,9 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    * @see https://react-hook-form.com/docs/useform/register
    */
   inputOptions?: RegisterOptions<FormValues, "value">;
+
+  /** Function that gets the message to be displayed in the case of a graphql mutation error */
+  getMutationErrorMessage?: (error: unknown) => string | null;
 }
 
 export interface MutationVariables extends Variables {

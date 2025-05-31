@@ -3,6 +3,7 @@ import { ColDataCardDef } from "@/types/types";
 import { EMSPatientCareRecord } from "@/types/ems";
 import { formatDate, formatIsoDateTime } from "@/utils/formatters";
 import Link from "next/link";
+import { ClientError } from "graphql-request";
 
 const formatCrashMatchStatus = (value: unknown) => {
   if (!value || typeof value !== "string") {
@@ -106,6 +107,16 @@ export const ALL_EMS_COLUMNS = {
     label: "Person ID",
     editable: true,
     inputType: "number",
+    getMutationErrorMessage: (error) => {
+      if (error instanceof ClientError) {
+        // Assume the problem is related to the person ID
+        return "Person ID is invalid or in use";
+      } else if (error instanceof Error) {
+        // Handle other errors
+        return "Something went wrong";
+      }
+      return null;
+    },
   },
   prsn_nbr: {
     path: "person.prsn_nbr",
@@ -128,17 +139,17 @@ export const ALL_EMS_COLUMNS = {
     label: "Transported to",
   },
   patient_injry_sev: {
-    path: "injry_sev.label",
+    path: "patient_injry_sev.label",
     label: "Injury severity",
     relationship: {
       tableSchema: "lookups",
-      tableName: "injry_sev",
+      tableName: "ems_patient_injry_sev",
       foreignKey: "patient_injry_sev_id",
       idColumnName: "id",
       labelColumnName: "label",
     },
     valueRenderer: (record) => {
-      const value = record?.injry_sev?.label || "";
+      const value = record?.patient_injry_sev?.label || "";
       const className = `${getInjuryColorClass(value)} px-2 py-1 rounded`;
       return <span className={className}>{value}</span>;
     },

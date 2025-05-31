@@ -33,7 +33,7 @@ $ docker compose run import afd --skip-archive
 $ docker compose run import ems --skip-archive
 ```
 
-Note that the `--skip-archive` directive prevents the script from moving each processed file to the `/archive` directory. This option for local development and should not be used in production.
+Note that the `--skip-archive` directive prevents the script from moving each processed file to the `/archive` directory. This option is for local development and should not be used in production.
 
 ## Deployment + CI
 
