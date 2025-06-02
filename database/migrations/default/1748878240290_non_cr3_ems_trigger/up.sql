@@ -1,6 +1,9 @@
+--
+-- Adds a non_cr3_match_status column to ems__incidents and sets it via trigger
+--
 alter table ems__incidents
 add column non_cr3_match_status text not null default 'unmatched',
-add column matched_non_cr3_case_ids integer[],
+add column matched_non_cr3_case_ids integer [],
 add constraint ems__incidents_non_cr3_match_status_check
 check (
     non_cr3_match_status in (
@@ -15,8 +18,9 @@ check (
 comment on column ems__incidents.non_cr3_match_status is 'The status of the non-CR3 crash record match';
 comment on column ems__incidents.matched_non_cr3_case_ids is 'The IDs of non-cr3 crases that were found to match this record. Set via trigger, always kept up to date regardless of EMS match status.';
 
--- todo: any other indexes needed?
-CREATE INDEX ems__incidents_non_cr3_match_status_index on public.ems__incidents (non_cr3_match_status);
+create index ems__incidents_non_cr3_match_status_index on public.ems__incidents (
+    non_cr3_match_status
+);
 
 create or replace function public.update_noncr3_ems_match()
 returns trigger
@@ -28,8 +32,8 @@ DECLARE
     match_count INTEGER;
     matched_case_ids INTEGER[];
     meters_threshold INTEGER := 600;
-    -- 15 min threshold equates to a 30 minute window (+/- 15 minutes of crash timestamp)
-    time_threshold INTERVAL := '15 minutes';
+    -- 30 min threshold equates to a 60 minute window (+/- 30 minutes of crash timestamp)
+    time_threshold INTERVAL := '30 minutes';
 BEGIN
     -- Find all EMS records near the crash location + time
     FOR matching_ems IN (
@@ -132,7 +136,7 @@ BEGIN
 END;
 $function$;
 
-comment on function public.update_noncr3_ems_match is 'Trigger function which assigns non-CR3 case IDs to EMS incidents and updates the match status';
+comment on function public.update_noncr3_ems_matchis 'Trigger function which assigns non-CR3 case IDs to EMS incidents and updates the match status';
 
 --
 -- create insert trigger
