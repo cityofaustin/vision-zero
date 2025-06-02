@@ -60,6 +60,9 @@ export default function Dashboard() {
               public crash data
             </a>
             &nbsp;and exclude crashes that occurred within the last 14 days.
+            Data includes crashes that occurred within current City of Austin
+            Full Purpose boundaries, inclusive of all public safety
+            jurisdictions.
           </p>
         </Col>
       </Row>
