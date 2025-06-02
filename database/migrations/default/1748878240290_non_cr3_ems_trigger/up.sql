@@ -136,7 +136,7 @@ BEGIN
 END;
 $function$;
 
-comment on function public.update_noncr3_ems_matchis 'Trigger function which assigns non-CR3 case IDs to EMS incidents and updates the match status';
+comment on function public.update_noncr3_ems_match is 'Trigger function which assigns non-CR3 case IDs to EMS incidents and updates the match status';
 
 --
 -- create insert trigger
