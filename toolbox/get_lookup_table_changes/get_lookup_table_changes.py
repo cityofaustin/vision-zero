@@ -17,7 +17,13 @@ CRIS_LOOKUP_FNAME = "lookups.xml"
 
 # veh_direction_of_force is referenced by CRIS but no longer provided in the CRIS extract
 # the other tables here are custom
-LOOKUP_TABLES_TO_IGNORE = ["veh_direction_of_force", "mode_category", "movt", "coordination_partners"]
+LOOKUP_TABLES_TO_IGNORE = [
+    "veh_direction_of_force",
+    "mode_category",
+    "movt",
+    "coordination_partners",
+    "ems_patient_injry_sev",
+]
 
 
 def get_vz_lookup_table_names():
@@ -72,7 +78,10 @@ def main():
                 continue
             # if this happens we'll have to figure out how to deal with this situation
             raise Exception(
-                """It appears a lookup table has been deleted or renamed by CRIS. This script cannot handle that case. Aborting."""
+                f"""Encountered a lookup table named `{table_name}` which is unknown to CRIS. 
+This lookup table may be a custom lookup table which needs to be added to the `LOOKUP_TABLES_TO_IGNORE` list,
+or it's possible that CRIS deleted this lookup table from it's schema.
+This script cannot continue until the problem is addressed. Aborting."""
             )
 
         print(f"Getting lookup values for {table_name}")
