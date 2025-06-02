@@ -154,4 +154,5 @@ for each row when (
     (new.latitude is distinct from old.latitude)
     or (new.longitude is distinct from old.longitude)
     or (new.case_timestamp is distinct from old.case_timestamp)
+    or (new.is_deleted is distinct from old.is_deleted)
 ) execute function update_noncr3_ems_match();
