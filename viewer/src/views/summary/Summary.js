@@ -105,8 +105,9 @@ const Summary = () => {
                   <div>
                     Data through {lastUpdated}. <strong>Crash data</strong>{" "}
                     <InfoPopover config={popoverConfig.map.trafficCrashes} />{" "}
-                    includes crashes within City of Austin geographic
-                    boundaries, inclusive of all public safety jurisdictions.
+                    includes crashes that occurred within current City of Austin
+                    Full Purpose boundaries, inclusive of all public safety
+                    jurisdictions.
                   </div>
                 </Alert>
               </Row>

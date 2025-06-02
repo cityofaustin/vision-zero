@@ -36,7 +36,7 @@ export const popoverConfig = {
           <div className="font-weight-bold">Demographics Data</div>
           <div className="mb-2">
             To compare crash demographics data with historical and estimated
-            demographics data for the City of Austin geographic boundaries,
+            demographics data for the City of Austin Full Purpose boundaries,
             visit the US Census Bureau's latest{" "}
             <a
               href="https://data.census.gov/cedsci/table?g=1600000US4805000&tid=ACSDP5Y2018.DP05&t=Hispanic%20or%20Latino&layer=VT_2018_160_00_PY_D1&hidePreview=true&moe=false"
@@ -223,8 +223,8 @@ export const popoverConfig = {
                 motorized scooter
               </li>
               <li>
-                <strong>Other</strong>: Any other modality, such as
-                a pedicab, or when the modality is unreported or unknown
+                <strong>Other</strong>: Any other modality, such as a pedicab,
+                or when the modality is unreported or unknown
               </li>
             </ul>
           </div>
@@ -258,10 +258,10 @@ export const popoverConfig = {
             .
           </div>
           <div className="mb-2">
-            Crash data included in Vision Zero Viewer includes crashes within
-            City of Austin geographic boundaries, inclusive of all public safety
-            jurisdictions. This data may differ from APD data in that it
-            includes crashes to which APD officers did not respond.
+            Crash data in Vision Zero Viewer includes crashes that occurred
+            within current City of Austin Full Purpose boundaries, inclusive of
+            all public safety jurisdictions. This data may differ from APD data
+            in that it includes crashes to which APD officers did not respond.
           </div>
           <div className="mb-2">
             Crash data in Vision Zero Viewer is updated monthly. Vision Zero
