@@ -17,8 +17,14 @@ export interface EMSLinkRecordButtonProps extends Record<string, unknown> {
 
 const EMSLinkRecordButton: React.FC<
   RowActionComponentProps<EMSPatientCareRecord, EMSLinkRecordButtonProps>
-> = ({ record, additionalProps, mutation, onSaveCallback }) => {
-  const isLinkingInProgress = !!additionalProps?.selectedEmsPcr;
+> = ({
+  record,
+  additionalProps,
+  mutation,
+  onSaveCallback,
+  isEditingColumn,
+}) => {
+  const isLinkingAnyRecord = !!additionalProps?.selectedEmsPcr;
   const isLinkingThisRecord =
     additionalProps?.selectedEmsPcr &&
     record.id === additionalProps?.selectedEmsPcr.id;
@@ -55,23 +61,25 @@ const EMSLinkRecordButton: React.FC<
   return (
     <PermissionsRequired allowedRoles={allowedLinkRecordRoles}>
       <div className="d-flex">
-        <Button
-          size="sm"
-          variant={isLinkingThisRecord ? "secondary" : "primary"}
-          disabled={isLinkingInProgress && !isLinkingThisRecord}
-          onClick={() => {
-            additionalProps?.onClick(record);
-          }}
-        >
-          {!isLinkingThisRecord && (
-            <AlignedLabel>
-              <FaLink className="me-2" />
-              <span>Select person</span>
-            </AlignedLabel>
-          )}
-          {isLinkingThisRecord && <span>Cancel</span>}
-        </Button>
-        {!isLinkingThisRecord && (
+        {!isEditingColumn && (
+          <Button
+            size="sm"
+            variant={isLinkingThisRecord ? "secondary" : "primary"}
+            disabled={isLinkingAnyRecord && !isLinkingThisRecord}
+            onClick={() => {
+              additionalProps?.onClick(record);
+            }}
+          >
+            {!isLinkingThisRecord && (
+              <AlignedLabel>
+                <FaLink className="me-2" />
+                <span>Select person</span>
+              </AlignedLabel>
+            )}
+            {isLinkingThisRecord && <span>Cancel</span>}
+          </Button>
+        )}
+        {!isLinkingThisRecord && !isEditingColumn && (
           <Dropdown className="ms-1">
             <Dropdown.Toggle
               className="hide-toggle"
