@@ -56,7 +56,7 @@ $ python get_lookup_table_changes.py
 1. To test the migrations, navigate to `./database` and create a new migration with the Hasura console.
 
 ```shell
-$ hasura migrate create lookup_table_migrations_cris_v28
+$ hasura migrate create lookup_table_migrations_cris_<current-cris-version>
 ```
 
 4. Copy the `up` and `down` migrations that the script generated into the new migration folder, and apply them.
