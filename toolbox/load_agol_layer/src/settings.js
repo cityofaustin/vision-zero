@@ -25,11 +25,11 @@ const DEFAULT_ESRI_QUERY_PARAMS = {
  */
 const LAYERS = {
   apd_sectors: {
-    service_name: "BOUNDARIES_apd_districts",
+    service_name: "APD_Proposed_Sector_Districts_Jan_2025",
     layer_id: 0,
     query_params: { ...DEFAULT_ESRI_QUERY_PARAMS },
     fields: [
-      "PRIMARY_KEY",
+      "OBJECT_ID",
       "DISTRICT_NAME",
       "BATTALION_CODE",
       "SECTOR_NAME",
@@ -56,7 +56,10 @@ const LAYERS = {
   jurisdictions: {
     service_name: "BOUNDARIES_jurisdictions_planning",
     layer_id: 0,
-    query_params: { ...DEFAULT_ESRI_QUERY_PARAMS, where: "JURISDICTION_LABEL = 'AUSTIN FULL PURPOSE'" },
+    query_params: {
+      ...DEFAULT_ESRI_QUERY_PARAMS,
+      where: "JURISDICTION_LABEL = 'AUSTIN FULL PURPOSE'",
+    },
     fields: ["JURISDICTIONS_ID", "CITY_NAME", "JURISDICTION_LABEL"],
     tableName: "jurisdictions",
   },
