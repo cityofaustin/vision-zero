@@ -259,9 +259,10 @@ export const popoverConfig = {
           </div>
           <div className="mb-2">
             Crash data in Vision Zero Viewer includes crashes that occurred
-            within current City of Austin Full Purpose boundaries, inclusive of
-            all public safety jurisdictions. This data may differ from APD data
-            in that it includes crashes to which APD officers did not respond.
+            within the current City of Austin Full Purpose boundaries, inclusive
+            of all public safety jurisdictions. This data may differ from APD
+            data in that it includes crashes to which APD officers did not
+            respond.
           </div>
           <div className="mb-2">
             Crash data in Vision Zero Viewer is updated monthly. Vision Zero
