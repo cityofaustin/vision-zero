@@ -2,6 +2,9 @@ table:
   name: ems__incidents
   schema: public
 object_relationships:
+  - name: atd_apd_blueform
+    using:
+      foreign_key_constraint_on: atd_apd_blueform_case_id
   - name: crash
     using:
       foreign_key_constraint_on: crash_pk
@@ -22,6 +25,7 @@ select_permissions:
     permission:
       columns:
         - apd_incident_numbers
+        - atd_apd_blueform_case_id
         - crash_match_status
         - crash_pk
         - created_at
@@ -32,7 +36,9 @@ select_permissions:
         - incident_problem
         - incident_received_datetime
         - matched_crash_pks
+        - matched_non_cr3_case_ids
         - mvc_form_position_in_vehicle
+        - non_cr3_match_status
         - patient_injry_sev_id
         - pcr_patient_age
         - pcr_patient_gender
@@ -50,6 +56,7 @@ select_permissions:
     permission:
       columns:
         - apd_incident_numbers
+        - atd_apd_blueform_case_id
         - crash_match_status
         - crash_pk
         - created_at
@@ -60,7 +67,9 @@ select_permissions:
         - incident_problem
         - incident_received_datetime
         - matched_crash_pks
+        - matched_non_cr3_case_ids
         - mvc_form_position_in_vehicle
+        - non_cr3_match_status
         - patient_injry_sev_id
         - pcr_patient_age
         - pcr_patient_gender
@@ -78,6 +87,7 @@ select_permissions:
     permission:
       columns:
         - apd_incident_numbers
+        - atd_apd_blueform_case_id
         - crash_match_status
         - crash_pk
         - created_at
@@ -88,7 +98,9 @@ select_permissions:
         - incident_problem
         - incident_received_datetime
         - matched_crash_pks
+        - matched_non_cr3_case_ids
         - mvc_form_position_in_vehicle
+        - non_cr3_match_status
         - patient_injry_sev_id
         - pcr_patient_age
         - pcr_patient_gender
