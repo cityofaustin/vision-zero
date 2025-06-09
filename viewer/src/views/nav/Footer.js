@@ -93,7 +93,7 @@ const Footer = () => {
     },
     {
       text: "Disclaimer",
-      url: "https://austintexas.gov/page/city-austin-open-data-terms-use",
+      url: "https://data.austintexas.gov/stories/s/ranj-cccq",
     },
     { text: "Privacy", url: "https://www.austintexas.gov/page/privacy-policy" },
     {
