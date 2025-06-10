@@ -92,8 +92,8 @@ const Footer = () => {
       url: "https://github.com/cityofaustin/vision-zero/tree/main/viewer",
     },
     {
-      text: "Disclaimer",
-      url: "https://austintexas.gov/page/city-austin-open-data-terms-use",
+      text: "Terms of Use",
+      url: "https://data.austintexas.gov/stories/s/ranj-cccq",
     },
     { text: "Privacy", url: "https://www.austintexas.gov/page/privacy-policy" },
     {
