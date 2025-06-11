@@ -36,7 +36,7 @@ export const popoverConfig = {
           <div className="font-weight-bold">Demographics Data</div>
           <div className="mb-2">
             To compare crash demographics data with historical and estimated
-            demographics data for the City of Austin Full Purpose boundaries,
+            demographics data for the City of Austin Full Purpose jurisdiction,
             visit the US Census Bureau's latest{" "}
             <a
               href="https://data.census.gov/cedsci/table?g=1600000US4805000&tid=ACSDP5Y2018.DP05&t=Hispanic%20or%20Latino&layer=VT_2018_160_00_PY_D1&hidePreview=true&moe=false"
