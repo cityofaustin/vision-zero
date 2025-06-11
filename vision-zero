@@ -258,7 +258,7 @@ def dumpLocalDb():
         "--if-exists",
     ]
 
-    dump = open("database/dumps/visionzero_local_" + today + ".sql", "w")
+    dump = open("database/dumps/visionzero_" + today + ".sql", "w")
     subprocess.run(dump_runner_command + dump_command, stdout=dump)
     dump.close()
 
