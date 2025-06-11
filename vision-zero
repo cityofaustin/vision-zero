@@ -167,18 +167,6 @@ def replicateDb(args):
         "postgis",
     ]
     
-    populate_runner_command = docker_compose_invocation + [
-        "-f", "docker-compose.yml", 
-        "run",
-        "--rm",
-        "-e", "PGHOST=" + 'postgis',
-        "-e", "PGUSER=" + os.environ["POSTGRES_USER"],
-        "-e", "PGPASSWORD=" + os.environ["POSTGRES_PASSWORD"],
-        "-e", "PGDATABASE=postgres",
-        "postgis",
-    ]
-    # fmt: on
-
     if not (os.path.exists(snapshotFQP)):
         print("️🗄  Downloading remote database")
         if args.include_change_log_data:
@@ -187,9 +175,16 @@ def replicateDb(args):
             print("This can take up to 15 minutes.")
         print(" ".join(replicate_runner_command) + " " + " ".join(replicate_command))
         snapshot = open(snapshotFQP, "w")
-        result = subprocess.run(
-            replicate_runner_command + replicate_command, stdout=snapshot
-        )
+
+        try:
+            result = subprocess.run(
+                replicate_runner_command + replicate_command,
+                stdout=snapshot,
+            )
+        except Exception as e:
+            os.remove(snapshotFQP)  # Remove the incomplete file
+            raise e
+
         snapshot.close()
 
         if result.returncode != 0:
@@ -223,7 +218,7 @@ def replicateDb(args):
 
     print("️🏗️ Loading the database with snapshot")
     print(" ".join(postgres_db_runner_command) + " " + " ".join(populate_command))
-    result = subprocess.run(populate_runner_command + populate_command)
+    result = subprocess.run(postgres_db_runner_command + populate_command)
     if result.returncode != 0:
         print(
             f"❌ Failed to load database from snapshot: return code {result.returncode}"
@@ -301,7 +296,7 @@ def buildTools():
 
 def dbUp():
     print("🛢️  Starting database")
-    subprocess.run(
+    result = subprocess.run(
         docker_compose_invocation
         + [
             "-f",
@@ -311,6 +306,10 @@ def dbUp():
             "postgis",
         ]
     )
+    if result.returncode != 0:
+        print(f"❌ database startup failed with return code {result.returncode}")
+        print(f"Error output: {result.stderr}")
+        exit(1)
     subprocess.run(["docker", "ps"])
     time.sleep(5)
 
