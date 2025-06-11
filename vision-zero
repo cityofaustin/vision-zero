@@ -55,48 +55,48 @@ def checkDockerComposeAvailability():
 
 def doCommand(args):
     if args.command == "build":
-        buildTools(args)
+        buildTools()
     elif args.command == "local-stack-up":
-        dbUp(args)
-        graphqlEngineUp(args)
-        cr3UserApiUp(args)
+        dbUp()
+        graphqlEngineUp()
+        cr3UserApiUp()
     elif args.command == "local-stack-down":
-        cr3UserApiDown(args)
+        cr3UserApiDown()
         graphqlEngineDown(args)
         dbDown(args)
     elif args.command == "db-up":
-        dbUp(args)
+        dbUp()
     elif args.command == "db-down":
         dbDown(args)
     elif args.command == "graphql-engine-up":
-        dbUp(args)
-        graphqlEngineUp(args)
+        dbUp()
+        graphqlEngineUp()
     elif args.command == "graphql-engine-down":
         graphqlEngineDown(args)
     elif args.command == "api-up":
-        cr3UserApiUp(args)
+        cr3UserApiUp()
     elif args.command == "api-down":
-        cr3UserApiDown(args)
+        cr3UserApiDown()
     elif args.command == "hasura-console":
-        hasuraConsole(args)
+        hasuraConsole()
     elif args.command == "psql":
-        psql(args)
+        psql()
     elif args.command == "tools-shell":
-        dbUp(args)
-        toolsShell(args)
+        dbUp()
+        toolsShell()
     elif args.command == "stop":
-        stop(args)
+        stop()
     elif args.command == "replicate-db":
-        dbUp(args)
+        dbUp()
         replicateDb(args)
     elif args.command == "dump-local-db":
-        dumpLocalDb(args)
+        dumpLocalDb()
     elif args.command == "remove-snapshots":
-        removeSnapshots(args)
+        removeSnapshots()
 
 
 ## function to list the files in a directory and delete them
-def removeSnapshots(args):
+def removeSnapshots():
     print("🗑️  Removing snapshots")
     for f in os.listdir("database/snapshots/"):
         if not f.endswith(".sql"):
@@ -187,8 +187,18 @@ def replicateDb(args):
             print("This can take up to 15 minutes.")
         print(" ".join(replicate_runner_command) + " " + " ".join(replicate_command))
         snapshot = open(snapshotFQP, "w")
-        subprocess.run(replicate_runner_command + replicate_command, stdout=snapshot)
+        result = subprocess.run(
+            replicate_runner_command + replicate_command, stdout=snapshot
+        )
         snapshot.close()
+
+        if result.returncode != 0:
+            print(f"❌ pg_dump failed with return code {result.returncode}")
+            print(f"Error output: {result.stderr}")
+            os.remove(snapshotFQP)  # Remove the incomplete file
+            exit(1)
+        else:
+            print("✅ Database dump completed successfully")
 
     drop_database_command = [
         "psql",
@@ -213,12 +223,18 @@ def replicateDb(args):
 
     print("️🏗️ Loading the database with snapshot")
     print(" ".join(postgres_db_runner_command) + " " + " ".join(populate_command))
-    subprocess.run(populate_runner_command + populate_command)
+    result = subprocess.run(populate_runner_command + populate_command)
+    if result.returncode != 0:
+        print(
+            f"❌ Failed to load database from snapshot: return code {result.returncode}"
+        )
+        print(f"Error output: {result.stderr}")
+        exit(1)
 
-    graphqlEngineUp(args)
+    graphqlEngineUp()
 
 
-def dumpLocalDb(args):
+def dumpLocalDb():
     print("️Dumping local database")
     today = datetime.now().strftime("%Y-%m-%d-%H-%M:%S")
 
@@ -247,12 +263,12 @@ def dumpLocalDb(args):
         "--if-exists",
     ]
 
-    dump = open("database/dumps/visionzero_" + today + ".sql", "w")
+    dump = open("database/dumps/visionzero_local_" + today + ".sql", "w")
     subprocess.run(dump_runner_command + dump_command, stdout=dump)
     dump.close()
 
 
-def psql(args):
+def psql():
     # fmt: off
     db_tools_runner_command = docker_compose_invocation + [
         "-f", "docker-compose.yml", 
@@ -270,7 +286,7 @@ def psql(args):
     subprocess.run(db_tools_runner_command + ["psql"])
 
 
-def buildTools(args):
+def buildTools():
     print("🛠️  Rebuilding images with --no-cache -q")
     subprocess.run(
         docker_compose_invocation
@@ -283,7 +299,7 @@ def buildTools(args):
     )
 
 
-def dbUp(args):
+def dbUp():
     print("🛢️  Starting database")
     subprocess.run(
         docker_compose_invocation
@@ -315,7 +331,7 @@ def dbDown(args):
     time.sleep(5)
 
 
-def graphqlEngineUp(args):
+def graphqlEngineUp():
     print("🚀  Starting GraphQL Engine")
     subprocess.run(
         docker_compose_invocation
@@ -332,7 +348,7 @@ def graphqlEngineUp(args):
     print("You can run './vision-zero hasura-console' to open the console.")
 
 
-def cr3UserApiUp(args):
+def cr3UserApiUp():
     print("🚀  Starting Flask API")
     subprocess.run(
         docker_compose_invocation
@@ -348,7 +364,7 @@ def cr3UserApiUp(args):
     print("🚀  CR3 / User flask API started.")
 
 
-def cr3UserApiDown(args):
+def cr3UserApiDown():
     print("🛑 Stopping Flask API")
     subprocess.run(
         docker_compose_invocation
@@ -363,7 +379,7 @@ def cr3UserApiDown(args):
     print("🚀  CR3 / User flask API stopped.")
 
 
-def hasuraConsole(args):
+def hasuraConsole():
     print("🚀  Opening Hasura console")
     try:
         subprocess.call(
@@ -387,7 +403,7 @@ def graphqlEngineDown(args):
     subprocess.run(["docker", "ps"])
 
 
-def toolsShell(args):
+def toolsShell():
     print("🐚  Starting tools shell")
 
     # fmt: off
@@ -407,7 +423,7 @@ def toolsShell(args):
     subprocess.run(tool_runner_command + shell_command)
 
 
-def stop(args):
+def stop():
     print("🛑  Stopping containers")
     subprocess.run(
         docker_compose_invocation
