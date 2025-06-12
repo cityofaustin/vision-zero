@@ -16,7 +16,7 @@ check (
 );
 
 comment on column ems__incidents.non_cr3_match_status is 'The status of the non-CR3 crash record match';
-comment on column ems__incidents.matched_non_cr3_case_ids is 'The IDs of non-CR3 crases that were found to match this record. Set via trigger, always kept up to date regardless of EMS match status.';
+comment on column ems__incidents.matched_non_cr3_case_ids is 'The IDs of non-CR3 crashes that were found to match this record. Set via trigger, always kept up to date regardless of EMS match status.';
 
 create index ems__incidents_non_cr3_match_status_index on public.ems__incidents (
     non_cr3_match_status
@@ -88,7 +88,8 @@ BEGIN
             -- Record has been manually matched: only update the matched_non_cr3_case_ids column
             raise debug 'Updating `matched_non_cr3_case_ids` for manually matched EMS record';
             UPDATE ems__incidents 
-            SET matched_non_cr3_case_ids = NULLIF(matched_case_ids, '{}')
+            -- `matched_case_ids` will always contain at least `NEW.case_id`
+            SET matched_non_cr3_case_ids = matched_case_ids
             WHERE id = matching_ems.id;
         ELSE
           IF non_cr3_match_count = 0 THEN
@@ -180,7 +181,7 @@ BEGIN
                     WHERE id = ems_record.id;
                 ELSIF remaining_case_ids_count = 0 THEN
                     -- No other non-cr3s matched to this EMS record
-                    raise debug 'Updating EMS incident # %, ID % as `umatched`', ems_record.incident_number, ems_record.id;
+                    raise debug 'Updating EMS incident # %, ID % as `unmatched`', ems_record.incident_number, ems_record.id;
                     UPDATE ems__incidents 
                     SET atd_apd_blueform_case_id = NULL,
                         non_cr3_match_status = 'unmatched',
