@@ -127,6 +127,7 @@ def replicateDb(args):
         )
 
     snapshotFQP = "database/snapshots/" + snapshotFilename
+    snapshotFQP_error = snapshotFQP.replace(".sql", ".error")
 
     # fmt: off
     replicate_runner_command = docker_compose_invocation + [
@@ -182,7 +183,8 @@ def replicateDb(args):
                 stdout=snapshot,
             )
         except Exception as e:
-            os.remove(snapshotFQP)  # Remove the incomplete file
+            # rename the corrupted snapshot
+            os.rename(snapshotFQP, snapshotFQP_error)
             raise e
 
         snapshot.close()
@@ -190,7 +192,8 @@ def replicateDb(args):
         if result.returncode != 0:
             print(f"❌ pg_dump failed with return code {result.returncode}")
             print(f"Error output: {result.stderr}")
-            os.remove(snapshotFQP)  # Remove the incomplete file
+            # rename the corrupted snapshot
+            os.rename(snapshotFQP, snapshotFQP_error)
             exit(1)
         else:
             print("✅ Database dump completed successfully")
