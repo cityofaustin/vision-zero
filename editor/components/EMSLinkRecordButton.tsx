@@ -39,6 +39,7 @@ const EMSLinkRecordButton: React.FC<
         crash_pk: null,
         person_id: null,
         crash_match_status: "unmatched",
+        person_match_status: "unmatched"
       };
     } else if (record.matched_crash_pks.length === 1) {
       updates = {
