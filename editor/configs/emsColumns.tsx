@@ -38,6 +38,17 @@ export const ALL_EMS_COLUMNS = {
     valueFormatter: formatCrashMatchStatus,
     sortable: true,
   },
+  non_cr3_match_status: {
+    path: "non_cr3_match_status",
+    label: "Non-CR3 match status",
+    valueFormatter: formatCrashMatchStatus,
+    sortable: true,
+  },
+  atd_apd_blueform_case_id: {
+    path: "atd_apd_blueform_case_id",
+    label: "Non-CR3 Case ID",
+    sortable: true,
+  },
   crash_pk: {
     path: "crash_pk",
     label: "Crash ID",
@@ -171,4 +182,6 @@ export const emsListViewColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
   ALL_EMS_COLUMNS.apd_incident_numbers,
   ALL_EMS_COLUMNS.crash_match_status,
   ALL_EMS_COLUMNS.cris_crash_id,
+  ALL_EMS_COLUMNS.non_cr3_match_status,
+  ALL_EMS_COLUMNS.atd_apd_blueform_case_id,
 ];
