@@ -129,3 +129,38 @@ drop trigger if exists ems_person_match_trigger on ems__incidents;
 
 create trigger ems_person_match_trigger BEFORE UPDATE ON ems__incidents FOR EACH ROW WHEN 
     (old.crash_pk IS DISTINCT FROM new.crash_pk) EXECUTE FUNCTION ems_person_ems_match();
+
+--
+-- Update this function to ignore updats 
+--
+CREATE OR REPLACE FUNCTION public.ems_update_incident_crash_pk()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+    matching_person_record RECORD;
+BEGIN
+    IF NEW.person_id is null
+        THEN return null;
+    END IF;
+    -- Find matching person record
+    SELECT id, crash_pk INTO matching_person_record 
+    FROM people_list_view 
+    WHERE id = NEW.person_id;
+    
+    -- Update crash_pk of related EMS if not already matched to a person and match was not automatic
+    IF NEW.person_match_status = 'matched_by_manual_qa' THEN
+        UPDATE ems__incidents 
+        SET 
+            crash_pk = matching_person_record.crash_pk,
+            updated_by = NEW.updated_by,
+            crash_match_status = 'matched_by_manual_qa'
+        WHERE
+            id != NEW.id
+            AND incident_number = NEW.incident_number
+            AND crash_pk is distinct from matching_person_record.crash_pk
+            AND person_id IS NULL;
+    END IF;
+    RETURN null;
+END;
+$function$;
