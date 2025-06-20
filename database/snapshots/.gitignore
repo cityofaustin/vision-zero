@@ -1,2 +1,3 @@
 *.sql
 *.error
+*.in_progress

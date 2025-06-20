@@ -62,17 +62,17 @@ def doCommand(args):
         cr3UserApiUp()
     elif args.command == "local-stack-down":
         cr3UserApiDown()
-        graphqlEngineDown(args)
-        dbDown(args)
+        graphqlEngineDown()
+        dbDown()
     elif args.command == "db-up":
         dbUp()
     elif args.command == "db-down":
-        dbDown(args)
+        dbDown()
     elif args.command == "graphql-engine-up":
         dbUp()
         graphqlEngineUp()
     elif args.command == "graphql-engine-down":
-        graphqlEngineDown(args)
+        graphqlEngineDown()
     elif args.command == "api-up":
         cr3UserApiUp()
     elif args.command == "api-down":
@@ -107,7 +107,7 @@ def removeSnapshots():
 
 # def replicateDb(includeChangeLogData=False):
 def replicateDb(args):
-    graphqlEngineDown(args)
+    graphqlEngineDown()
 
     snapshotFilename = ""
     if args.filename:
@@ -126,8 +126,9 @@ def replicateDb(args):
             + ".sql"
         )
 
-    snapshotFQP = "database/snapshots/" + snapshotFilename
-    snapshotFQP_error = snapshotFQP.replace(".sql", ".error")
+    snapshotFQP_complete = "database/snapshots/" + snapshotFilename
+    snapshotFQP_in_progress = snapshotFQP_complete.replace(".sql", ".in_progress")
+    snapshotFQP_error = snapshotFQP_complete.replace(".sql", ".error")
 
     # fmt: off
     replicate_runner_command = docker_compose_invocation + [
@@ -168,14 +169,14 @@ def replicateDb(args):
         "postgis",
     ]
     
-    if not (os.path.exists(snapshotFQP)):
+    if not (os.path.exists(snapshotFQP_in_progress)):
         print("️🗄  Downloading remote database")
         if args.include_change_log_data:
             print("This will take a while, on the order of half an hour.")
         else:
             print("This can take up to 15 minutes.")
         print(" ".join(replicate_runner_command) + " " + " ".join(replicate_command))
-        snapshot = open(snapshotFQP, "w")
+        snapshot = open(snapshotFQP_in_progress, "w")
 
         try:
             result = subprocess.run(
@@ -184,18 +185,19 @@ def replicateDb(args):
             )
         except Exception as e:
             # rename the corrupted snapshot
-            os.rename(snapshotFQP, snapshotFQP_error)
+            os.rename(snapshotFQP_in_progress, snapshotFQP_error)
             raise e
-
-        snapshot.close()
 
         if result.returncode != 0:
             print(f"❌ pg_dump failed with return code {result.returncode}")
             print(f"Error output: {result.stderr}")
             # rename the corrupted snapshot
-            os.rename(snapshotFQP, snapshotFQP_error)
+            os.rename(snapshotFQP_in_progress, snapshotFQP_error)
+            snapshot.close()
             exit(1)
         else:
+            os.rename(snapshotFQP_in_progress, snapshotFQP_complete)
+            snapshot.close()
             print("✅ Database dump completed successfully")
 
     drop_database_command = [
@@ -317,8 +319,8 @@ def dbUp():
     time.sleep(5)
 
 
-def dbDown(args):
-    graphqlEngineDown(args)
+def dbDown():
+    graphqlEngineDown()
     print("🛢️  Stopping database")
     subprocess.run(
         docker_compose_invocation
@@ -391,7 +393,7 @@ def hasuraConsole():
         print("Exited Hasura console")
 
 
-def graphqlEngineDown(args):
+def graphqlEngineDown():
     print("🚀  Stopping GraphQL Engine")
     subprocess.run(
         docker_compose_invocation
