@@ -26,6 +26,7 @@ AS $function$
 DECLARE
     matching_person_record RECORD;
 BEGIN
+    raise debug '**function: ems_update_person_crash_id **';
     IF NEW.person_id is null THEN
         NEW.person_match_status = 'unmatched';  -- <- new line
         return NEW;
@@ -53,6 +54,7 @@ DECLARE
     other_matching_ems_id INTEGER;
     matching_person_ids INTEGER[];
 BEGIN
+    raise debug '**function: ems_person_ems_match **';
     IF NEW.person_match_status = 'matched_by_manual_qa' 
     or NEW.pcr_patient_age is NULL
     or NEW.pcr_patient_gender is NULL
@@ -131,7 +133,7 @@ create trigger ems_person_match_trigger BEFORE UPDATE ON ems__incidents FOR EACH
     (old.crash_pk IS DISTINCT FROM new.crash_pk) EXECUTE FUNCTION ems_person_ems_match();
 
 --
--- Update this function to ignore updats 
+-- Update this function to ignore updates 
 --
 CREATE OR REPLACE FUNCTION public.ems_update_incident_crash_pk()
  RETURNS trigger
@@ -140,6 +142,7 @@ AS $function$
 DECLARE
     matching_person_record RECORD;
 BEGIN
+    raise debug '**function: ems_update_incident_crash_pk **';
     IF NEW.person_id is null
         THEN return null;
     END IF;
@@ -150,6 +153,7 @@ BEGIN
     
     -- Update crash_pk of related EMS if not already matched to a person and match was not automatic
     IF NEW.person_match_status = 'matched_by_manual_qa' THEN
+        raise debug 'updating related EMS records to matched by manual/qa';
         UPDATE ems__incidents 
         SET 
             crash_pk = matching_person_record.crash_pk,
