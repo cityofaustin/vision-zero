@@ -10,6 +10,7 @@ export const GET_EMS_RECORDS = gql`
       crash_match_status
       non_cr3_match_status
       atd_apd_blueform_case_id
+      matched_non_cr3_case_ids
       crash_pk
       id
       incident_location_address
@@ -134,6 +135,16 @@ export const GET_MATCHING_PEOPLE = gql`
       ems_pcr {
         id
       }
+    }
+  }
+`;
+
+export const GET_NON_CR3_CRASHES = gql`
+  query EMSNonCR3Crashes($case_ids: [Int!]) {
+    atd_apd_blueform(where: { case_id: { _in: $case_ids } }) {
+      case_id
+      address
+      case_timestamp
     }
   }
 `;
