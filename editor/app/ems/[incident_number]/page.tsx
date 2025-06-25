@@ -255,6 +255,21 @@ export default function EMSDetailsPage({
           />
         </Col>
       </Row>
+      <Row>
+        <Col sm={12} className="mb-3">
+          <RelatedRecordTable<PeopleListRow, EMSLinkToPersonButtonProps>
+            records={matchingPeople ? matchingPeople : []}
+            isValidating={isValidating}
+            noRowsMessage="No crashes found"
+            header="Possible Non-CR3 matches"
+            columns={emsMatchingPeopleColumns}
+            mutation=""
+            onSaveCallback={onSaveCallback}
+            // rowActionComponent={EMSLinkToPersonButton}
+            // rowActionComponentAdditionalProps={linkToPersonButtonProps}
+          />
+        </Col>
+      </Row>
     </>
   );
 }
