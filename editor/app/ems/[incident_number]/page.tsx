@@ -10,6 +10,7 @@ import {
   GET_EMS_RECORDS,
   GET_MATCHING_PEOPLE,
   GET_UNMATCHED_EMS_CRASHES,
+  GET_NON_CR3_CRASHES,
   UPDATE_EMS_INCIDENT,
   UPDATE_EMS_INCIDENT_CRASH_AND_PERSON,
 } from "@/queries/ems";
@@ -22,10 +23,13 @@ import EMSLinkToPersonButton, {
   EMSLinkToPersonButtonProps,
 } from "@/components/EMSLinkToPersonButton";
 import { emsMatchingPeopleColumns } from "@/configs/emsMatchingPeopleColumns";
+import { emsNonCR3Columns } from "@/configs/nonCR3Columns";
 import { PeopleListRow } from "@/types/peopleList";
 import { FaTruckMedical } from "react-icons/fa6";
 import { parseISO, subHours, addHours } from "date-fns";
 import { Crash } from "@/types/crashes";
+
+console.log(emsNonCR3Columns);
 
 export default function EMSDetailsPage({
   params,
@@ -61,7 +65,6 @@ export default function EMSDetailsPage({
    * Use the first EMS record as the "incident"
    */
   const incident = ems_pcrs?.[0];
-
   /**
    * Hook which manages which related crash PKs we should
    * use to query people records
@@ -146,6 +149,24 @@ export default function EMSDetailsPage({
         keepPreviousData: false,
       },
     });
+
+  const nonCR3CaseIds = incident?.matched_non_cr3_case_ids;
+
+  const matchedNonCr3CaseId = incident?.atd_apd_blueform_case_id;
+
+  /**
+   * Get all matching Non-CR3 records
+   */
+  const { data: nonCR3Crashes, refetch: refetchNonCR3 } = useQuery({
+    query: matchedNonCr3CaseId || nonCR3CaseIds ? GET_NON_CR3_CRASHES : null,
+    variables: {
+      case_ids: matchedNonCr3CaseId ? matchedNonCr3CaseId : nonCR3CaseIds,
+    },
+    typename: "atd_apd_blueform",
+    options: {
+      keepPreviousData: false,
+    },
+  });
 
   const onSaveCallback = useCallback(async () => {
     await refetchEMS();
@@ -257,12 +278,12 @@ export default function EMSDetailsPage({
       </Row>
       <Row>
         <Col sm={12} className="mb-3">
-          <RelatedRecordTable<PeopleListRow, EMSLinkToPersonButtonProps>
-            records={matchingPeople ? matchingPeople : []}
+          <RelatedRecordTable
+            records={nonCR3Crashes ? nonCR3Crashes : []}
             isValidating={isValidating}
             noRowsMessage="No crashes found"
             header="Possible Non-CR3 matches"
-            columns={emsMatchingPeopleColumns}
+            columns={emsNonCR3Columns}
             mutation=""
             onSaveCallback={onSaveCallback}
             // rowActionComponent={EMSLinkToPersonButton}
