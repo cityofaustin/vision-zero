@@ -1,3 +1,6 @@
+import { ColDataCardDef } from "@/types/types";
+import { NonCR3Record } from "@/types/nonCr3";
+
 export const nonCR3Columns = {
   address: {
     path: "address",
@@ -14,7 +17,7 @@ export const nonCR3Columns = {
     label: "Case ID",
     sortable: true,
   },
-};
+} satisfies Record<string, ColDataCardDef<NonCR3Record>>;
 
 export const emsNonCR3Columns = [
   nonCR3Columns.address,
