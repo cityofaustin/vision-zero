@@ -1,16 +1,26 @@
 import Button from "react-bootstrap/Button";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import AlignedLabel from "@/components/AlignedLabel";
+import { RowActionComponentProps } from "@/components/RelatedRecordTable";
+import { NonCR3Record } from "@/types/nonCr3";
 
 const allowedLinkRecordRoles = ["vz-admin", "editor"];
 
 export interface EMSLinkNonCR3ButtonProps extends Record<string, unknown> {
-  onClick: (incidentNumber: string, nonCR3CaseId: number) => void;
-  incidentNumber: string | null;
+  onClick: (incidentNumber: string, newNonCR3CaseId: number) => void;
+  incidentNumber: string;
+  matchedNonCr3CaseId: number | null;
 }
 
-const EMSLinkNonCR3Button = ({ record, additionalProps }) => {
+const EMSLinkNonCR3Button: React.FC<
+  RowActionComponentProps<NonCR3Record, EMSLinkNonCR3ButtonProps>
+> = ({ record, additionalProps }) => {
   const nonCR3CaseId = record?.case_id;
+  const isIncidentAlreadyMatched = !!additionalProps?.matchedNonCr3CaseId;
+
+  if (isIncidentAlreadyMatched) {
+    return null;
+  }
 
   return (
     <PermissionsRequired allowedRoles={allowedLinkRecordRoles}>
@@ -18,19 +28,13 @@ const EMSLinkNonCR3Button = ({ record, additionalProps }) => {
         size="sm"
         variant="primary"
         // disabled={!isLinkingInProgress}
-        // onClick={() => {
-        //   if (additionalProps?.selectedEmsPcr) {
-        //     additionalProps?.onClick(
-        //       additionalProps.selectedEmsPcr.id,
-        //       record.id
-        //     );
-        //   }
-        // }}
         onClick={() => {
-          additionalProps?.onClick(
-            additionalProps.incidentNumber,
-            nonCR3CaseId
-          );
+          if (!!additionalProps) {
+            additionalProps.onClick(
+              additionalProps.incidentNumber,
+              nonCR3CaseId
+            );
+          }
         }}
       >
         <AlignedLabel>
