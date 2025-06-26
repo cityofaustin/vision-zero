@@ -11,8 +11,9 @@ import {
   GET_MATCHING_PEOPLE,
   GET_UNMATCHED_EMS_CRASHES,
   GET_NON_CR3_CRASHES,
-  UPDATE_EMS_INCIDENT,
-  UPDATE_EMS_INCIDENT_CRASH_AND_PERSON,
+  UPDATE_EMS_PCR,
+  UPDATE_EMS_PCR_CRASH_AND_PERSON,
+  UPDATE_EMS_INCIDENTS_NON_CR3_MATCH,
 } from "@/queries/ems";
 import { EMSPatientCareRecord } from "@/types/ems";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
@@ -22,6 +23,8 @@ import EMSLinkRecordButton, {
 import EMSLinkToPersonButton, {
   EMSLinkToPersonButtonProps,
 } from "@/components/EMSLinkToPersonButton";
+import { EMSLinkNonCR3ButtonProps } from "@/components/EMSLinkNonCR3Button";
+import EMSLinkNonCR3Button from "@/components/EMSLinkNonCR3Button";
 import { emsMatchingPeopleColumns } from "@/configs/emsMatchingPeopleColumns";
 import { emsNonCR3Columns } from "@/configs/nonCR3Columns";
 import { PeopleListRow } from "@/types/peopleList";
@@ -57,8 +60,10 @@ export default function EMSDetailsPage({
     typename: "ems__incidents",
   });
 
-  const { mutate: updateEMSIncident } = useMutation(
-    UPDATE_EMS_INCIDENT_CRASH_AND_PERSON
+  const { mutate: updateEmsPcr } = useMutation(UPDATE_EMS_PCR_CRASH_AND_PERSON);
+
+  const { mutate: updateNonCR3Match } = useMutation(
+    UPDATE_EMS_INCIDENTS_NON_CR3_MATCH
   );
 
   /**
@@ -191,7 +196,7 @@ export default function EMSDetailsPage({
   const linkToPersonButtonProps: EMSLinkToPersonButtonProps = useMemo(
     () => ({
       onClick: (emsId, personId) => {
-        updateEMSIncident({
+        updateEmsPcr({
           id: emsId,
           person_id: personId,
         })
@@ -203,7 +208,20 @@ export default function EMSDetailsPage({
       },
       selectedEmsPcr: selectedEmsPcr,
     }),
-    [updateEMSIncident, selectedEmsPcr, refetchEMS, refetchPeople]
+    [updateEmsPcr, selectedEmsPcr, refetchEMS, refetchPeople]
+  );
+
+  const linkNonCR3ToIncidentProps: EMSLinkNonCR3ButtonProps = useMemo(
+    () => ({
+      onClick: (incidentNumber, nonCR3CaseId) => {
+        updateNonCR3Match({
+          incident_number: incidentNumber,
+          atd_apd_blueform_case_id: nonCR3CaseId,
+        }).then(() => refetchEMS());
+      },
+      incidentNumber: incident_number,
+    }),
+    [updateNonCR3Match, incident_number, refetchEMS]
   );
 
   if (error) {
@@ -253,11 +271,11 @@ export default function EMSDetailsPage({
             noRowsMessage="No crashes found"
             header="EMS patient(s)"
             columns={emsDataCards.patient}
-            mutation={UPDATE_EMS_INCIDENT}
+            mutation={UPDATE_EMS_PCR}
             onSaveCallback={onSaveCallback}
             rowActionComponent={EMSLinkRecordButton}
             rowActionComponentAdditionalProps={linkRecordButtonProps}
-            rowActionMutation={UPDATE_EMS_INCIDENT}
+            rowActionMutation={UPDATE_EMS_PCR}
           />
         </Col>
       </Row>
@@ -286,8 +304,8 @@ export default function EMSDetailsPage({
             columns={emsNonCR3Columns}
             mutation=""
             onSaveCallback={onSaveCallback}
-            // rowActionComponent={EMSLinkToPersonButton}
-            // rowActionComponentAdditionalProps={linkToPersonButtonProps}
+            rowActionComponent={EMSLinkNonCR3Button}
+            rowActionComponentAdditionalProps={linkNonCR3ToIncidentProps}
           />
         </Col>
       </Row>
