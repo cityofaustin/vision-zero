@@ -31,6 +31,7 @@ import { PeopleListRow } from "@/types/peopleList";
 import { FaTruckMedical } from "react-icons/fa6";
 import { parseISO, subHours, addHours } from "date-fns";
 import { Crash } from "@/types/crashes";
+import { NonCR3Record } from "@/types/nonCr3";
 
 console.log(emsNonCR3Columns);
 
@@ -155,14 +156,16 @@ export default function EMSDetailsPage({
       },
     });
 
-  const nonCR3CaseIds = incident?.matched_non_cr3_case_ids;
+  const nonCR3CaseIds = incident ? incident.matched_non_cr3_case_ids : null;
 
-  const matchedNonCr3CaseId = incident?.atd_apd_blueform_case_id;
+  const matchedNonCr3CaseId = incident
+    ? incident.atd_apd_blueform_case_id
+    : null;
 
   /**
    * Get all matching Non-CR3 records
    */
-  const { data: nonCR3Crashes, refetch: refetchNonCR3 } = useQuery({
+  const { data: nonCR3Crashes } = useQuery<NonCR3Record>({
     query: matchedNonCr3CaseId || nonCR3CaseIds ? GET_NON_CR3_CRASHES : null,
     variables: {
       case_ids: matchedNonCr3CaseId ? matchedNonCr3CaseId : nonCR3CaseIds,
@@ -213,15 +216,16 @@ export default function EMSDetailsPage({
 
   const linkNonCR3ToIncidentProps: EMSLinkNonCR3ButtonProps = useMemo(
     () => ({
-      onClick: (incidentNumber, nonCR3CaseId) => {
+      onClick: (incidentNumber, newNonCR3CaseId) => {
         updateNonCR3Match({
           incident_number: incidentNumber,
-          atd_apd_blueform_case_id: nonCR3CaseId,
+          atd_apd_blueform_case_id: newNonCR3CaseId,
         }).then(() => refetchEMS());
       },
       incidentNumber: incident_number,
+      matchedNonCr3CaseId: matchedNonCr3CaseId,
     }),
-    [updateNonCR3Match, incident_number, refetchEMS]
+    [updateNonCR3Match, incident_number, refetchEMS, matchedNonCr3CaseId]
   );
 
   if (error) {
