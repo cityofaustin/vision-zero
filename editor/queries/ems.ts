@@ -8,6 +8,8 @@ export const GET_EMS_RECORDS = gql`
     ) {
       apd_incident_numbers
       crash_match_status
+      non_cr3_match_status
+      atd_apd_blueform_case_id
       crash_pk
       id
       incident_location_address
