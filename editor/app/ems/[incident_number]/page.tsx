@@ -33,8 +33,6 @@ import { parseISO, subHours, addHours } from "date-fns";
 import { Crash } from "@/types/crashes";
 import { NonCR3Record } from "@/types/nonCr3";
 
-console.log(emsNonCR3Columns);
-
 export default function EMSDetailsPage({
   params,
 }: {
@@ -156,8 +154,14 @@ export default function EMSDetailsPage({
       },
     });
 
-  const nonCR3CaseIds = incident ? incident.matched_non_cr3_case_ids : null;
+  /** Array of Non-CR3 case IDs that are possible matches for this incident */
+  const possibleNonCR3Matches = incident
+    ? incident.matched_non_cr3_case_ids
+    : null;
 
+  /** The single case ID matched to this incident if it doesn't have multiple
+   * matches or has been matched by review/QA
+   */
   const matchedNonCr3CaseId = incident
     ? incident.atd_apd_blueform_case_id
     : null;
@@ -166,14 +170,16 @@ export default function EMSDetailsPage({
    * Get all matching Non-CR3 records
    */
   const { data: nonCR3Crashes } = useQuery<NonCR3Record>({
-    query: matchedNonCr3CaseId || nonCR3CaseIds ? GET_NON_CR3_CRASHES : null,
+    query:
+      matchedNonCr3CaseId || possibleNonCR3Matches ? GET_NON_CR3_CRASHES : null,
     variables: {
-      case_ids: matchedNonCr3CaseId ? matchedNonCr3CaseId : nonCR3CaseIds,
+      // If there is already a single case ID that has been matched then query that,
+      // otherwise query the list of possible Non-CR3 matches
+      case_ids: matchedNonCr3CaseId
+        ? matchedNonCr3CaseId
+        : possibleNonCR3Matches,
     },
     typename: "atd_apd_blueform",
-    options: {
-      keepPreviousData: false,
-    },
   });
 
   const onSaveCallback = useCallback(async () => {
