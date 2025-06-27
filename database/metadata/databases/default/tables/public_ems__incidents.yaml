@@ -118,9 +118,11 @@ update_permissions:
   - role: editor
     permission:
       columns:
+        - atd_apd_blueform_case_id
         - crash_match_status
         - crash_pk
         - matched_crash_pks
+        - non_cr3_match_status
         - person_id
         - updated_by
       filter: {}
@@ -129,9 +131,11 @@ update_permissions:
   - role: vz-admin
     permission:
       columns:
+        - atd_apd_blueform_case_id
         - crash_match_status
         - crash_pk
         - matched_crash_pks
+        - non_cr3_match_status
         - person_id
         - updated_by
       filter: {}
