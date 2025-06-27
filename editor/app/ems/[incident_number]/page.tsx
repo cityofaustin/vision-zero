@@ -169,18 +169,21 @@ export default function EMSDetailsPage({
   /**
    * Get all matching Non-CR3 records
    */
-  const { data: nonCR3Crashes } = useQuery<NonCR3Record>({
-    query:
-      matchedNonCr3CaseId || possibleNonCR3Matches ? GET_NON_CR3_CRASHES : null,
-    variables: {
-      // If there is already a single case ID that has been matched then query that,
-      // otherwise query the list of possible Non-CR3 matches
-      case_ids: matchedNonCr3CaseId
-        ? matchedNonCr3CaseId
-        : possibleNonCR3Matches,
-    },
-    typename: "atd_apd_blueform",
-  });
+  const { data: nonCR3Crashes, isValidating: isValidatingNonCR3 } =
+    useQuery<NonCR3Record>({
+      query:
+        matchedNonCr3CaseId || possibleNonCR3Matches
+          ? GET_NON_CR3_CRASHES
+          : null,
+      variables: {
+        // If there is already a single case ID that has been matched then query that,
+        // otherwise query the list of possible Non-CR3 matches
+        case_ids: matchedNonCr3CaseId
+          ? matchedNonCr3CaseId
+          : possibleNonCR3Matches,
+      },
+      typename: "atd_apd_blueform",
+    });
 
   const onSaveCallback = useCallback(async () => {
     await refetchEMS();
@@ -308,7 +311,7 @@ export default function EMSDetailsPage({
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
             records={nonCR3Crashes ? nonCR3Crashes : []}
-            isValidating={isValidating}
+            isValidating={isValidatingNonCR3}
             noRowsMessage="No crashes found"
             header="Possible Non-CR3 matches"
             columns={emsNonCR3Columns}
