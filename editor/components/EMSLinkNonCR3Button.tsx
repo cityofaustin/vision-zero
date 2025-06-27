@@ -12,6 +12,7 @@ export interface EMSLinkNonCR3ButtonProps extends Record<string, unknown> {
   matchedNonCr3CaseId: number | null;
 }
 
+/** Button component for matching Non-CR3 record row to the incident */
 const EMSLinkNonCR3Button: React.FC<
   RowActionComponentProps<NonCR3Record, EMSLinkNonCR3ButtonProps>
 > = ({ record, additionalProps }) => {
@@ -27,7 +28,6 @@ const EMSLinkNonCR3Button: React.FC<
       <Button
         size="sm"
         variant="primary"
-        // disabled={!isLinkingInProgress}
         onClick={() => {
           if (!!additionalProps) {
             additionalProps.onClick(
