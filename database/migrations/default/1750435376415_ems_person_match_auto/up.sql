@@ -6,15 +6,21 @@ alter table ems__incidents
     check (
         person_match_status in (
             'unmatched',
+            'unmatched_by_manual_qa',
             'matched_by_automation',
             'matched_by_manual_qa',
             'multiple_matches_by_automation'
         )
     ),
-    add column matched_person_ids integer [];
+    add column matched_person_ids integer [],
+    add column _match_event_name text,
+     check (
+        _match_event_name is null
+    );
 
 comment on column ems__incidents.person_match_status is 'The status of the CR3 person record match';
 comment on column ems__incidents.matched_person_ids is 'The IDs of the CR3 person records that were found to match this record';
+comment on column ems__incidents._match_event_name is 'The name of the matching event...';
 
 --
 -- Add person_match_status to this trigger
@@ -26,8 +32,17 @@ AS $function$
 DECLARE
     matching_person_record RECORD;
 BEGIN
+    --
+    -- This function should only be executed when an EMS record's person_id changes
+    -- it is confusing that this business logic lives in the trigger declaration
+    -- move it here for clarity?
+    --
+    --
+    -- YES combine these triggers
+    --
     raise debug '**function: ems_update_person_crash_id **';
     IF NEW.person_id is null THEN
+        raise debug 'setting EMS record ID % person_match_status to unmatched because person_id is null', NEW.id;
         NEW.person_match_status = 'unmatched';  -- <- new line
         return NEW;
     END IF;
@@ -36,6 +51,7 @@ BEGIN
     FROM people_list_view 
     WHERE id = NEW.person_id;
 
+    raise debug 'setting EMS record ID % crash_match_status and person_match_status to matched_by_manual_qa', NEW.id;
     NEW.crash_pk = matching_person_record.crash_pk;
     NEW.crash_match_status = 'matched_by_manual_qa';
     NEW.person_match_status = 'matched_by_manual_qa';  -- <- new line
@@ -60,11 +76,14 @@ BEGIN
     or NEW.pcr_patient_gender is NULL
     or NEW.pcr_patient_race is NULL
     THEN
+        raise debug 'Doing nothing for EMS ID %', NEW.id;
         -- do nothing
         return NEW;
     END IF;
 
     IF NEW.crash_pk is NULL THEN
+        new.matched_person_ids = NULL;
+        raise debug 'Setting EMS ID % person_match_status to unmatched and to null', NEW.id;
         new.person_match_status = 'unmatched';
         new.matched_person_ids = NULL;
         return NEW;
@@ -111,14 +130,17 @@ BEGIN
 
     IF array_length(matching_person_ids, 1) IS NULL THEN
         -- no match
+        raise debug 'No person match found for EMS ID %', NEW.id;
         NEW.person_match_status = 'unmatched';
         NEW.matched_person_ids = NULL;
         NEW.person_id = NULL;
     ELSIF array_length(matching_person_ids, 1) = 1 THEN
+        raise debug 'One person match found for EMS ID %', NEW.id;
         NEW.matched_person_ids = matching_person_ids;
         NEW.person_id = matching_person_ids[1];
         NEW.person_match_status = 'matched_by_automation';
     ELSE
+        raise debug 'Multiple person matches found for EMS ID %', NEW.id;
         NEW.matched_person_ids = matching_person_ids;
         NEW.person_match_status = 'multiple_matches_by_automation';
         NEW.person_id = NULL;
@@ -144,7 +166,9 @@ DECLARE
 BEGIN
     raise debug '**function: ems_update_incident_crash_pk **';
     IF NEW.person_id is null
-        THEN return null;
+        THEN
+        raise debug 'person_id is null. aborting for EMS ID %', NEW.id;
+        return null;
     END IF;
     -- Find matching person record
     SELECT id, crash_pk INTO matching_person_record 
@@ -153,7 +177,7 @@ BEGIN
     
     -- Update crash_pk of related EMS if not already matched to a person and match was not automatic
     IF NEW.person_match_status = 'matched_by_manual_qa' THEN
-        raise debug 'updating related EMS records to matched by manual/qa';
+        raise debug 'updating crash_pk and crash_match_status of related EMS records to matched by manual/qa for incident # %', NEW.incident_number;
         UPDATE ems__incidents 
         SET 
             crash_pk = matching_person_record.crash_pk,
