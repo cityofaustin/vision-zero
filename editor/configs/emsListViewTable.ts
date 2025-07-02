@@ -328,13 +328,13 @@ export const emsListViewQueryConfig: QueryConfig = {
   searchFilter: {
     id: "search",
     value: "",
-    column: "incident_location_address",
+    column: "incident_number",
     operator: "_ilike",
     wildcard: true,
   },
   searchFields: [
-    { label: "Incident address", value: "incident_location_address" },
     { label: "Incident number", value: "incident_number" },
+    { label: "Incident address", value: "incident_location_address" },
     { label: "APD Case IDs", value: "unparsed_apd_incident_numbers" },
   ],
   dateFilter: {
