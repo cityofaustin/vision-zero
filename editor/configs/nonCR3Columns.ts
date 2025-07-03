@@ -1,5 +1,6 @@
 import { ColDataCardDef } from "@/types/types";
 import { NonCR3Record } from "@/types/nonCr3";
+import { formatIsoDateTime } from "@/utils/formatters";
 
 export const nonCR3Columns = {
   address: {
@@ -11,6 +12,7 @@ export const nonCR3Columns = {
     path: "case_timestamp",
     label: "Crash date",
     sortable: true,
+    valueFormatter: formatIsoDateTime,
   },
   case_id: {
     path: "case_id",
