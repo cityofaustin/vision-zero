@@ -169,7 +169,7 @@ def replicateDb(args):
         "postgis",
     ]
     
-    if not (os.path.exists(snapshotFQP_in_progress)):
+    if not (os.path.exists(snapshotFQP_complete)):
         print("️🗄  Downloading remote database")
         if args.include_change_log_data:
             print("This will take a while, on the order of half an hour.")
