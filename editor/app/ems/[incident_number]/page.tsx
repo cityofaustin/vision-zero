@@ -312,8 +312,8 @@ export default function EMSDetailsPage({
           <RelatedRecordTable
             records={nonCR3Crashes ? nonCR3Crashes : []}
             isValidating={isValidatingNonCR3}
-            noRowsMessage="No crashes found"
-            header="Possible Non-CR3 matches"
+            noRowsMessage="No non-CR3 crashes found"
+            header="Possible non-CR3 matches"
             columns={emsNonCR3Columns}
             mutation=""
             onSaveCallback={onSaveCallback}
