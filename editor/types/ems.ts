@@ -6,6 +6,9 @@ export type EMSPatientCareRecord = {
   apd_incident_numbers: number[] | null;
   crash: Crash | null;
   crash_match_status: string;
+  non_cr3_match_status: string;
+  atd_apd_blueform_case_id: number | null;
+  matched_non_cr3_case_ids: number[] | null;
   crash_pk: number | null;
   id: number;
   incident_location_address: string | null;

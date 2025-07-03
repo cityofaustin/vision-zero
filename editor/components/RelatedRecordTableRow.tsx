@@ -38,11 +38,11 @@ interface RelatedRecordTableRowProps<
   /**
    * If the SWR refetcher is (re)validating
    */
-  isValidating: boolean;
+  isValidating?: boolean;
   /**
    * Callback function to be executed after a row edit is saved
    */
-  onSaveCallback: () => Promise<void>;
+  onSaveCallback?: () => Promise<void>;
   /**
    * Optional react component to be rendered in the rightmost column
    * of every row
@@ -115,7 +115,9 @@ export default function RelatedRecordTableRow<
     };
 
     await mutate(variables);
-    await onSaveCallback();
+    if (onSaveCallback) {
+      await onSaveCallback();
+    }
     setEditColumn(null);
   };
 

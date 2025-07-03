@@ -18,16 +18,16 @@ import { hasRole } from "@/utils/auth";
 export interface HeaderActionComponentProps<T extends Record<string, unknown>> {
   record: T;
   mutation: string;
-  onSaveCallback: () => Promise<void>;
+  onSaveCallback?: () => Promise<void>;
 }
 
 interface DataCardProps<T extends Record<string, unknown>> {
   record: T;
   columns: ColDataCardDef<T>[];
   mutation: string;
-  isValidating: boolean;
+  isValidating?: boolean;
   title: string;
-  onSaveCallback: () => Promise<void>;
+  onSaveCallback?: () => Promise<void>;
   headerActionComponent?: React.ComponentType<HeaderActionComponentProps<T>>;
 }
 
@@ -81,7 +81,9 @@ export default function DataCard<T extends Record<string, unknown>>({
         [saveColumnName]: value,
       },
     });
-    await onSaveCallback();
+    if (onSaveCallback) {
+      await onSaveCallback();
+    }
     setEditColumn(null);
   };
 
