@@ -27,7 +27,7 @@ interface RelatedRecordTableProps<
   /**
    * If the SWR refetcher is (re)validating
    */
-  isValidating: boolean;
+  isValidating?: boolean;
   /**
    * Optional message to be rendered when the table has no rows
    */
@@ -49,7 +49,7 @@ interface RelatedRecordTableProps<
   /**
    * Callback function to be executed after a row edit is saved
    */
-  onSaveCallback: () => Promise<void>;
+  onSaveCallback?: () => Promise<void>;
 }
 
 export interface RowActionComponentProps<
@@ -67,7 +67,7 @@ export interface RowActionComponentProps<
   /**
    * The callback function provided to the parent RelatedRecordTale component
    */
-  onSaveCallback: () => Promise<void>;
+  onSaveCallback?: () => Promise<void>;
   /**
    * Optional additional props passed to the component
    */
