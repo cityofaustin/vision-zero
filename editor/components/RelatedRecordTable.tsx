@@ -105,7 +105,7 @@ export default function RelatedRecordTable<
   rowActionMutation,
   isValidating,
   noRowsMessage,
-  header,
+  headerTitle,
   onSaveCallback,
   rowActionComponent,
   rowActionComponentAdditionalProps,
