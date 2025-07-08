@@ -1,7 +1,10 @@
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import RelatedRecordTableRow from "@/components/RelatedRecordTableRow";
+import TableSettingsMenu from "@/components/TableSettingsMenu";
 import { ColDataCardDef } from "@/types/types";
+import { useState, useMemo } from "react";
+import { ColumnVisibilitySetting } from "@/types/types";
 
 interface RelatedRecordTableProps<
   T extends Record<string, unknown>,
@@ -37,6 +40,17 @@ interface RelatedRecordTableProps<
    * provided, it will be rendered as a <Card.Title>
    */
   header: React.ReactNode;
+
+  /**
+   * Optional component to be rendered alongside the tite in the card header
+   */
+  headerComponent?: React.ReactNode;
+
+  /**
+   * Enable column visibility picker
+   */
+  shouldShowColumnVisibilityPicker?: boolean;
+
   /**
    * Optional react component to be rendered in the rightmost
    * column of every row
@@ -96,21 +110,65 @@ export default function RelatedRecordTable<
   onSaveCallback,
   rowActionComponent,
   rowActionComponentAdditionalProps,
+  headerComponent,
+  shouldShowColumnVisibilityPicker,
 }: RelatedRecordTableProps<T, P>) {
+  /**
+   * Initialize column visibility from provided columns
+   */
+  const [columnVisibilitySettings, setColumnVisibilitySettings] = useState<
+    ColumnVisibilitySetting[]
+  >(
+    columns
+      .filter((col) => !col.exportOnly)
+      .map((col) => ({
+        path: String(col.path),
+        isVisible: !col.defaultHidden,
+        label: col.label,
+      }))
+  );
+
+  /**
+   * Construct the table's visibile columns
+   */
+  const visibleColumns = useMemo(
+    () =>
+      columns.filter((col) => {
+        const colFromVisibilitySettings = columnVisibilitySettings.find(
+          (visibleColumn) => visibleColumn.path === col.path
+        );
+        /**
+         * if a matching column is found in the visibility settings, use it
+         * otherwise the column is visible unless it's exportOnly or defaultHidden
+         */
+        return colFromVisibilitySettings
+          ? colFromVisibilitySettings.isVisible
+          : !col.exportOnly && !col.defaultHidden;
+      }),
+    [columns, columnVisibilitySettings]
+  );
+
   return (
     <Card>
       <Card.Header>
-        {typeof header === "string" ? (
+        <div className="d-flex justify-content-between">
           <Card.Title>{header}</Card.Title>
-        ) : (
-          header
-        )}
+          <div className="d-flex justify-content-end gap-2">
+            {headerComponent && headerComponent}
+            {shouldShowColumnVisibilityPicker && (
+              <TableSettingsMenu
+                columnVisibilitySettings={columnVisibilitySettings}
+                setColumnVisibilitySettings={setColumnVisibilitySettings}
+              ></TableSettingsMenu>
+            )}
+          </div>
+        </div>
       </Card.Header>
       <Card.Body>
         <Table hover responsive>
           <thead>
             <tr>
-              {columns.map((col) => (
+              {visibleColumns.map((col) => (
                 <th key={String(col.path)} style={{ textWrap: "nowrap" }}>
                   {col.label}
                 </th>
@@ -133,7 +191,7 @@ export default function RelatedRecordTable<
               records.map((record, i) => (
                 <RelatedRecordTableRow<T, P>
                   key={i}
-                  columns={columns}
+                  columns={visibleColumns}
                   isValidating={isValidating}
                   onSaveCallback={onSaveCallback}
                   record={record}
