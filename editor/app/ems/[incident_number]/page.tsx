@@ -237,6 +237,7 @@ export default function EMSDetailsPage({
             rowActionComponent={EMSLinkRecordButton}
             rowActionComponentAdditionalProps={linkRecordButtonProps}
             rowActionMutation={UPDATE_EMS_INCIDENT}
+            shouldShowColumnVisibilityPicker={true}
           />
         </Col>
       </Row>
@@ -252,6 +253,7 @@ export default function EMSDetailsPage({
             onSaveCallback={onSaveCallback}
             rowActionComponent={EMSLinkToPersonButton}
             rowActionComponentAdditionalProps={linkToPersonButtonProps}
+            shouldShowColumnVisibilityPicker={true}
           />
         </Col>
       </Row>
