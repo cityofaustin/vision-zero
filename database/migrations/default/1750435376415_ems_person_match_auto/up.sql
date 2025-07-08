@@ -1,4 +1,3 @@
--- todo: update matching trigger
 
 --
 -- add person_match_status column
@@ -22,7 +21,7 @@ check (
 
 comment on column ems__incidents.person_match_status is 'The status of the CR3 person record match';
 comment on column ems__incidents.matched_person_ids is 'The IDs of the CR3 person records that were found to match this record';
-comment on column ems__incidents._match_event_name is 'The name of the matching event...';
+comment on column ems__incidents._match_event_name is 'Used to dispatch crash matching events. Once dispatched, this value is always set to null via trigger';
 
 --
 -- Add person_match_status to this trigger
@@ -39,19 +38,18 @@ BEGIN
     raise debug '**function: ems_update_handle_person_match for EMS ID: % **, event: %', NEW.id, NEW._match_event_name;
     
     --
-    -- Only continue if crash_pk or person_id has changed
+    -- Only continue if a _match_event_name is provided
     --
      IF NEW._match_event_name is null then
         return new;
     end if;
 
     --
-    -- Expecting `match_person_by_manual_qa` to come from VZE when a person match
-    -- is selected through the UI
+    -- Expecting `match_person_by_manual_qa` when a person match is selected through the VZE UI
     --
     IF NEW._match_event_name = 'match_person_by_manual_qa' and NEW.person_id is not null then
         -- 
-        -- Make sure crash_pk aligns with provided person_id
+        -- Keep the record's crash_pk in sync with the provided person_id
         --
         SELECT id, crash_pk INTO matching_person_record 
         FROM people_list_view 
@@ -63,13 +61,15 @@ BEGIN
             NEW.crash_match_status = 'matched_by_manual_qa';
             NEW.person_match_status = 'matched_by_manual_qa';
         end if;
+        -- clear the _match_event_name
         NEW._match_event_name = null;
+        -- todo: continue on to detect crash pk change so that related records are updated?
         return new;
     end if;
 
     IF NEW._match_event_name = 'reset_crash_match' then
         --
-        --  No matched crash IDs
+        --  If there are no matched crash IDs
         --
         IF array_length(NEW.matched_crash_pks, 1) IS NULL THEN
             -- reset to unmatched
@@ -82,21 +82,16 @@ BEGIN
             NEW._match_event_name = null;
             return NEW;
         --
-        --  One matching crash ID
+        --  If there is one matching crash ID
         --
         ELSIF array_length(NEW.matched_crash_pks, 1) = 1 THEN
             raise debug 'Reset EMS ID % crash_match_status to matched_by_automation', NEW.id;
             NEW.crash_pk = NEW.matched_crash_pks[1];
             NEW.crash_match_status = 'matched_by_automation';
             --
-            -- todo reset person match status as well?
-            -- Let person matching block handle person fields. todo: test
+            -- 
+            -- commented out to let person matching block handle person fields. todo: test
             --
-
-            
-
-
-
             -- IF array_length(NEW.matched_person_ids, 1) IS NULL THEN
             --     -- no match
             --     raise debug 'Reset person match status to unmatched for EMS ID %', NEW.id;
@@ -132,10 +127,11 @@ BEGIN
     --     return new;
     -- END IF;
 
-
+    --
+    -- Begin automated person-level matching
+    --
     IF NEW._match_event_name in (
         'match_crash_by_automation',
-        'match_crash_by_manual_qa',
         'sync_crash_pk_on_person_match',
         'reset_crash_match'
     )
@@ -144,7 +140,7 @@ BEGIN
         -- reset _match_event_name in outermost block to avoid repetition
         NEW._match_event_name = null;
 
-        raise debug 'EMS record ID % matched to crash %', NEW.id, NEW.crash_pk;
+        raise debug 'Doing person matching for EMS record ID % matched to crash %', NEW.id, NEW.crash_pk;
 
         -- todo: check if person_match status is matched_by_manual_qa before we continue?
         if NEW.person_match_status = 'matched_by_manual_qa' 
@@ -153,12 +149,9 @@ BEGIN
             or NEW.pcr_patient_race is NULL
             THEN
                 -- ignore this update / nothing to do
-                raise debug 'Doing nothing for EMS ID %', NEW.id;
+                raise debug 'Skipping person matching for EMS ID %', NEW.id;
                 return new;
         ELSE
-            --
-            --  Begin automated person matching
-            --
             --
             -- Check to see if there are other EMS patients with the same demographics
             --
@@ -182,7 +175,7 @@ BEGIN
             ELSE
                 --
                 --  At this point, we have an EMS record:
-                -- whose crash_pk has changed and is not nul
+                -- whose crash_pk has changed and is not null
                 -- person_match_status is not matched_by_manual_qa
                 -- is a unique incident # + demographics 
                 --
@@ -243,7 +236,8 @@ drop function if exists ems_update_person_crash_id;
 
 
 --
--- This function runs **after** updates to the EMS record
+-- This function runs **after** updates to the EMS record and should be triggered when
+-- NEW.crash_pk is distinct from OLD.crash_pk and person_id is not null
 --
 create or replace function public.ems_update_incident_crash_pk()
 returns trigger
@@ -253,7 +247,7 @@ BEGIN
     raise debug '**function: ems_update_incident_crash_pk **';
     IF NEW.person_id is null
         THEN
-        raise debug 'person_id is null. aborting for EMS ID %', NEW.id;
+        raise debug 'person_id is null - nothing todo for EMS ID %', NEW.id;
         return null;
     END IF;
     -- Update crash_pk of related EMS if not already matched to a person
@@ -274,15 +268,13 @@ END;
 $function$;
 
 
-
-
 --
 -- add person match and match event to the matching trigger
 --
-CREATE OR REPLACE FUNCTION public.update_crash_ems_match()
-RETURNS trigger
-LANGUAGE plpgsql
-AS $function$
+create or replace function public.update_crash_ems_match()
+returns trigger
+language plpgsql
+as $function$
 DECLARE
     matching_ems RECORD;
     ems_record RECORD;
@@ -332,19 +324,21 @@ BEGIN
             UPDATE ems__incidents 
             SET matched_crash_pks = matched_crash_ids
             WHERE id = matching_ems.id;
-        -- If the record has not been manually matched
+            -- todo: we need handler matched_crash_ids updates for manual qa records to update matched person_ids
+            -- see below handler of this
         ELSE
+        -- If the record has not been manually matched
           IF match_count = 0 THEN
               UPDATE ems__incidents 
               SET crash_pk = NULL,
                   matched_crash_pks = NULL,
                   _match_event_name = 'reset_crash_match'
-                  --todo: obvi test this
               WHERE id = matching_ems.id;
           ELSIF match_count = 1 THEN
               -- this EMS record is only matched to one crash - we can assign the crash_pk and matched_crash_pks
               UPDATE ems__incidents 
               SET crash_pk = NEW.id,
+                  -- todo: feels wrong to set crash_match_status here - do this with event handler?
                   crash_match_status = 'matched_by_automation',
                   matched_crash_pks = matched_crash_ids,
                   _match_event_name = 'match_crash_by_automation'
@@ -419,10 +413,15 @@ BEGIN
                         SET
                             matched_crash_pks = NULL,
                             matched_person_ids = NULL
-                            -- todo: ????? how to retrigger persion matching if crash changes to matched_by_automatiON?
                         WHERE id = ems_record.id;
                     ELSE
-                        -- todo
+                        -- todo: need to handle this event in the above trigger!!
+                        UPDATE ems__incidents
+                        SET
+                            matched_crash_pks = updated_matched_crash_ids,
+                            matched_person_ids = NULL
+                            _match_event_name = 'refresh_matched_person_ids'
+                        WHERE id = ems_record.id;
                     END IF;
                 ELSIF remaining_crash_ids_count = 0 THEN
                     -- No other crashes matched to this EMS record
