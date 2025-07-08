@@ -188,6 +188,7 @@ export default function CrashDetailsPage({
             columns={unitRelatedRecordCols}
             mutation={UPDATE_UNIT}
             onSaveCallback={onSaveCallback}
+            shouldShowColumnVisibilityPicker={true}
           />
         </Col>
       </Row>
@@ -201,6 +202,7 @@ export default function CrashDetailsPage({
             columns={peopleRelatedRecordCols}
             mutation={UPDATE_PERSON}
             onSaveCallback={onSaveCallback}
+            shouldShowColumnVisibilityPicker={true}
           />
         </Col>
       </Row>
