@@ -57,7 +57,7 @@ export default function NotesCard<T extends Record<string, unknown>>({
         rowActionMutation={updateMutation}
         noRowsMessage="No notes found"
         isValidating={false}
-        header="Notes"
+        headerTitle="Notes"
         headerComponent={<AddNoteButton onClick={handleOpenModal} />}
         onSaveCallback={onSaveCallback}
         rowActionComponent={DeleteNoteButton}

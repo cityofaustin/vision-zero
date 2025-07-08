@@ -36,10 +36,9 @@ interface RelatedRecordTableProps<
    */
   noRowsMessage?: string;
   /**
-   * The card header string or component to be rendered in the table's card header. If a string is
-   * provided, it will be rendered as a <Card.Title>
+   * The card header string to be rendered as a <Card.Title>
    */
-  header: React.ReactNode;
+  headerTitle: React.ReactNode;
 
   /**
    * Optional component to be rendered alongside the tite in the card header
@@ -152,7 +151,7 @@ export default function RelatedRecordTable<
     <Card>
       <Card.Header>
         <div className="d-flex justify-content-between">
-          <Card.Title>{header}</Card.Title>
+          <Card.Title>{headerTitle}</Card.Title>
           <div className="d-flex justify-content-end gap-2">
             {headerComponent && headerComponent}
             {shouldShowColumnVisibilityPicker && (
