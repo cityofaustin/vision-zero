@@ -36,7 +36,7 @@ interface RelatedRecordTableProps<
    */
   noRowsMessage?: string;
   /**
-   * The card header string to be rendered as a <Card.Title>
+   * The card header to be rendered as a <Card.Title>
    */
   headerTitle: React.ReactNode;
 
