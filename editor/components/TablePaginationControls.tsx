@@ -22,6 +22,9 @@ interface PaginationControlProps {
   isLoading: boolean;
   onClickDownload: () => void;
   exportable: boolean;
+  isColVisibilityLocalStorageLoaded: boolean;
+  setIsColVisibilityLocalStorageLoaded: Dispatch<SetStateAction<boolean>>;
+  localStorageKey: string;
 }
 
 /**
@@ -37,6 +40,9 @@ export default function TablePaginationControls({
   isLoading,
   onClickDownload,
   exportable,
+  localStorageKey,
+  isColVisibilityLocalStorageLoaded,
+  setIsColVisibilityLocalStorageLoaded,
 }: PaginationControlProps) {
   const currentPageNum = queryConfig.offset / queryConfig.limit + 1;
 
@@ -118,6 +124,11 @@ export default function TablePaginationControls({
       <TableSettingsMenu
         columnVisibilitySettings={columnVisibilitySettings}
         setColumnVisibilitySettings={setColumnVisibilitySettings}
+        localStorageKey={localStorageKey}
+        isColVisibilityLocalStorageLoaded={isColVisibilityLocalStorageLoaded}
+        setIsColVisibilityLocalStorageLoaded={
+          setIsColVisibilityLocalStorageLoaded
+        }
       />
     </ButtonToolbar>
   );
