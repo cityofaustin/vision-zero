@@ -1,15 +1,49 @@
-import { Dispatch, SetStateAction, useCallback } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useMemo,
+  useEffect,
+} from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import Form from "react-bootstrap/Form";
 import { ColumnVisibilitySetting } from "@/types/types";
 import { FaGear } from "react-icons/fa6";
+import { ColDataCardDef } from "@/types/types";
 
 interface TableSettingsMenuProps {
   columnVisibilitySettings: ColumnVisibilitySetting[];
   setColumnVisibilitySettings: Dispatch<
     SetStateAction<ColumnVisibilitySetting[]>
   >;
+  isColVisibilityLocalStorageLoaded: boolean;
+  setIsColVisibilityLocalStorageLoaded: Dispatch<SetStateAction<boolean>>;
+  localStorageKey: string;
 }
+
+/**
+ * Construct the table's visible columns
+ */
+export const useVisibleColumns = <T extends Record<string, unknown>>(
+  columns: ColDataCardDef<T>[],
+  columnVisibilitySettings: ColumnVisibilitySetting[]
+) =>
+  useMemo(
+    () =>
+      columns.filter((col) => {
+        const colFromVisibilitySettings = columnVisibilitySettings.find(
+          (visibleColumn) => visibleColumn.path === col.path
+        );
+        /**
+         * if a matching column is found in the visibility settings, use it
+         * otherwise the column is visible unless it's exportOnly or defaultHidden
+         */
+        return colFromVisibilitySettings
+          ? colFromVisibilitySettings.isVisible
+          : !col.exportOnly && !col.defaultHidden;
+      }),
+    [columns, columnVisibilitySettings]
+  );
 
 /**
  * Table component that controls column visibility
@@ -17,6 +51,9 @@ interface TableSettingsMenuProps {
 export default function TableSettingsMenu({
   columnVisibilitySettings,
   setColumnVisibilitySettings,
+  isColVisibilityLocalStorageLoaded,
+  setIsColVisibilityLocalStorageLoaded,
+  localStorageKey,
 }: TableSettingsMenuProps) {
   const handleUpdateColVisibility = useCallback(
     (columns: ColumnVisibilitySetting[], path: string) => {
@@ -36,6 +73,81 @@ export default function TableSettingsMenu({
     },
     [setColumnVisibilitySettings]
   );
+
+  /**
+   * Load column visibility settings from localstorage
+   */
+  useEffect(() => {
+    if (isColVisibilityLocalStorageLoaded) {
+      return;
+    }
+
+    /**
+     * Try to load column visibility
+     */
+    const columnLocalStorageKey = localStorageKey + "_columnVisibility";
+    const columnVisibilityFromStorageString =
+      localStorage.getItem(columnLocalStorageKey) || "";
+    let columnVisibilityFromStorage: ColumnVisibilitySetting[] | undefined;
+
+    try {
+      columnVisibilityFromStorage = JSON.parse(
+        columnVisibilityFromStorageString
+      );
+    } catch {
+      console.error(
+        "Unable to parse column visibility from local storage. Using default visibility instead"
+      );
+      setIsColVisibilityLocalStorageLoaded(true);
+      return;
+    }
+
+    if (columnVisibilityFromStorage) {
+      /**
+       * Update the default visibility from what was found in local storage. This
+       * ensures that stale col visibility data from storage is brought into sync
+       * with the current version of the table config
+       */
+      const updatedColVisibilitySettings = columnVisibilitySettings.map(
+        (col) => {
+          const savedCol = columnVisibilityFromStorage.find(
+            (savedCol) => savedCol.path === col.path
+          );
+          if (savedCol) {
+            // use visibility from saved column
+            return { ...col, isVisible: savedCol.isVisible };
+          } else {
+            return { ...col };
+          }
+        }
+      );
+      setColumnVisibilitySettings(updatedColVisibilitySettings);
+      setIsColVisibilityLocalStorageLoaded(true);
+    }
+  }, [
+    localStorageKey,
+    columnVisibilitySettings,
+    setColumnVisibilitySettings,
+    isColVisibilityLocalStorageLoaded,
+    setIsColVisibilityLocalStorageLoaded,
+  ]);
+
+  /**
+   * Keep changes to col visibility in sync with localstorage
+   */
+  useEffect(() => {
+    if (isColVisibilityLocalStorageLoaded) {
+      const columnVisLocalStorageKey = localStorageKey + "_columnVisibility";
+      localStorage.setItem(
+        columnVisLocalStorageKey,
+        JSON.stringify(columnVisibilitySettings)
+      );
+    }
+  }, [
+    isColVisibilityLocalStorageLoaded,
+    localStorageKey,
+    columnVisibilitySettings,
+  ]);
 
   return (
     <Dropdown>
