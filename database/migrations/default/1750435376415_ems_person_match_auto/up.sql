@@ -114,7 +114,7 @@ BEGIN
             ERRCODE = '23514';
     END IF;
     --
-    --  Expecting `unmatch_by_manual_qa` when this status is selected through the VZE UI
+    --  `unmatch_by_manual_qa` event is via VZE UI action
     --
     IF NEW._match_event_name = 'unmatch_by_manual_qa' then
         NEW.crash_match_status = 'unmatched_by_manual_qa'; 
@@ -126,7 +126,7 @@ BEGIN
         return NEW;
     END IF;
     --
-    -- Expecting `match_person_by_manual_qa` when a person match is selected through the VZE UI
+    -- `match_person_by_manual_qa` is sent when a person match is selected through the VZE UI
     --
     IF NEW._match_event_name = 'match_person_by_manual_qa' and NEW.person_id is not null then
         -- 
@@ -146,7 +146,9 @@ BEGIN
         NEW._match_event_name = null;
         return new;
     END IF;
-
+    --
+    -- The update_matched_crash_ids event is set via the EMS-crash matching trigger
+    --
     IF NEW._match_event_name = 'update_matched_crash_ids' then
         IF NEW.crash_match_status = 'matched_by_manual_qa'
         OR NEW.person_match_status = 'matched_by_manual_qa'then
@@ -164,7 +166,7 @@ BEGIN
         END IF;
     END IF;
     --
-    -- Match status can be reset via the VZE UI or via previous step in this function
+    -- reset_crash_match can be sent from the VZE UI or via previous step in this function
     --
     IF NEW._match_event_name = 'reset_crash_match' then
         --
