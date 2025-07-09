@@ -61,6 +61,7 @@ export default function NotesCard<T extends Record<string, unknown>>({
         headerComponent={<AddNoteButton onClick={handleOpenModal} />}
         onSaveCallback={onSaveCallback}
         rowActionComponent={DeleteNoteButton}
+        localStorageKey=""
       />
 
       <NotesModal
