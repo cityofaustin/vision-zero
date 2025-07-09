@@ -3,8 +3,9 @@ import Table from "react-bootstrap/Table";
 import RelatedRecordTableRow from "@/components/RelatedRecordTableRow";
 import TableSettingsMenu from "@/components/TableSettingsMenu";
 import { ColDataCardDef } from "@/types/types";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { ColumnVisibilitySetting } from "@/types/types";
+import { useVisibleColumns } from "@/components/TableSettingsMenu";
 
 interface RelatedRecordTableProps<
   T extends Record<string, unknown>,
@@ -63,6 +64,9 @@ interface RelatedRecordTableProps<
    * Callback function to be executed after a row edit is saved
    */
   onSaveCallback: () => Promise<void>;
+
+  /** Use an empty string if table does not have column visibility settings */
+  localStorageKey: string;
 }
 
 export interface RowActionComponentProps<
@@ -111,7 +115,13 @@ export default function RelatedRecordTable<
   rowActionComponentAdditionalProps,
   headerComponent,
   shouldShowColumnVisibilityPicker,
+  localStorageKey,
 }: RelatedRecordTableProps<T, P>) {
+  const [
+    isColVisibilityLocalStorageLoaded,
+    setIsColVisibilityLocalStorageLoaded,
+  ] = useState(false);
+
   /**
    * Initialize column visibility from provided columns
    */
@@ -127,25 +137,8 @@ export default function RelatedRecordTable<
       }))
   );
 
-  /**
-   * Construct the table's visibile columns
-   */
-  const visibleColumns = useMemo(
-    () =>
-      columns.filter((col) => {
-        const colFromVisibilitySettings = columnVisibilitySettings.find(
-          (visibleColumn) => visibleColumn.path === col.path
-        );
-        /**
-         * if a matching column is found in the visibility settings, use it
-         * otherwise the column is visible unless it's exportOnly or defaultHidden
-         */
-        return colFromVisibilitySettings
-          ? colFromVisibilitySettings.isVisible
-          : !col.exportOnly && !col.defaultHidden;
-      }),
-    [columns, columnVisibilitySettings]
-  );
+  /** Columns that should be visible based on user column visibility settings */
+  const visibleColumns = useVisibleColumns(columns, columnVisibilitySettings);
 
   return (
     <Card>
@@ -158,6 +151,13 @@ export default function RelatedRecordTable<
               <TableSettingsMenu
                 columnVisibilitySettings={columnVisibilitySettings}
                 setColumnVisibilitySettings={setColumnVisibilitySettings}
+                localStorageKey={localStorageKey}
+                isColVisibilityLocalStorageLoaded={
+                  isColVisibilityLocalStorageLoaded
+                }
+                setIsColVisibilityLocalStorageLoaded={
+                  setIsColVisibilityLocalStorageLoaded
+                }
               ></TableSettingsMenu>
             )}
           </div>
