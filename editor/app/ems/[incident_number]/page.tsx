@@ -229,7 +229,7 @@ export default function EMSDetailsPage({
           <RelatedRecordTable<EMSPatientCareRecord, EMSLinkRecordButtonProps>
             records={ems_pcrs}
             isValidating={isValidating}
-            noRowsMessage="No crashes found"
+            noRowsMessage="No patients found"
             headerTitle="EMS patient(s)"
             columns={emsDataCards.patient}
             mutation={UPDATE_EMS_INCIDENT}
@@ -237,6 +237,7 @@ export default function EMSDetailsPage({
             rowActionComponent={EMSLinkRecordButton}
             rowActionComponentAdditionalProps={linkRecordButtonProps}
             rowActionMutation={UPDATE_EMS_INCIDENT}
+            localStorageKey=""
           />
         </Col>
       </Row>
@@ -253,6 +254,7 @@ export default function EMSDetailsPage({
             rowActionComponent={EMSLinkToPersonButton}
             rowActionComponentAdditionalProps={linkToPersonButtonProps}
             shouldShowColumnVisibilityPicker={true}
+            localStorageKey="emsPossiblePeople"
           />
         </Col>
       </Row>

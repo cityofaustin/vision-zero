@@ -189,6 +189,7 @@ export default function CrashDetailsPage({
             mutation={UPDATE_UNIT}
             onSaveCallback={onSaveCallback}
             shouldShowColumnVisibilityPicker={true}
+            localStorageKey="crashPageUnits"
           />
         </Col>
       </Row>
@@ -203,6 +204,7 @@ export default function CrashDetailsPage({
             mutation={UPDATE_PERSON}
             onSaveCallback={onSaveCallback}
             shouldShowColumnVisibilityPicker={true}
+            localStorageKey="crashPagePeople"
           />
         </Col>
       </Row>
@@ -217,6 +219,7 @@ export default function CrashDetailsPage({
             mutation=""
             onSaveCallback={onSaveCallback}
             shouldShowColumnVisibilityPicker={true}
+            localStorageKey="crashPageEmsPatientCare"
           />
         </Col>
       </Row>
@@ -230,6 +233,7 @@ export default function CrashDetailsPage({
             columns={chargeRelatedRecordCols}
             mutation={""}
             onSaveCallback={onSaveCallback}
+            localStorageKey=""
           />
         </Col>
       </Row>
