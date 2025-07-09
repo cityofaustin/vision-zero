@@ -216,6 +216,7 @@ export default function CrashDetailsPage({
             columns={emsRelatedRecordCols}
             mutation=""
             onSaveCallback={onSaveCallback}
+            shouldShowColumnVisibilityPicker={true}
           />
         </Col>
       </Row>
