@@ -115,7 +115,8 @@ BEGIN
             ERRCODE = '23514';
     END IF;
     --
-    --  `unmatch_crash_by_manual_qa` event is via VZE UI action
+    -- `unmatch_crash_by_manual_qa` event is set from the VZE using the
+    -- "Match not found" dropdown menu option
     --
     IF NEW._match_event_name = 'unmatch_crash_by_manual_qa' then
         NEW.crash_match_status = 'unmatched_by_manual_qa'; 
@@ -127,7 +128,7 @@ BEGIN
         return NEW;
     END IF;
     --
-    -- `unmatch_person_by_manual_qa` event is via VZE UI when
+    -- `unmatch_person_by_manual_qa` event is set from the VZE when
     -- the EMS record's person ID input is cleared
     --
     IF NEW._match_event_name = 'unmatch_person_by_manual_qa' then
@@ -309,7 +310,7 @@ END;
 $function$;
 
 --
--- add match events the ems-crash matching trigger
+-- Update the ems-crash matching trigger to use _match_event_name
 --
 CREATE
 OR REPLACE FUNCTION public.update_crash_ems_match() RETURNS trigger LANGUAGE plpgsql AS $function$
