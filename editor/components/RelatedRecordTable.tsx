@@ -42,9 +42,10 @@ interface RelatedRecordTableProps<
   header: React.ReactNode;
 
   /**
-   * Optional component to be rendered alongside the title in the card header
+   * Optional button component to be rendered in the rightmost of the card header,
+   * left of the column visibility picker if there is one
    */
-  additionalHeaderComponent?: React.ReactNode;
+  headerButton?: React.ReactNode;
 
   /**
    * Enable column visibility picker
@@ -114,7 +115,7 @@ export default function RelatedRecordTable<
   onSaveCallback,
   rowActionComponent,
   rowActionComponentAdditionalProps,
-  additionalHeaderComponent,
+  headerButton,
   shouldShowColumnVisibilityPicker,
   localStorageKey,
 }: RelatedRecordTableProps<T, P>) {
@@ -147,7 +148,7 @@ export default function RelatedRecordTable<
         <div className="d-flex justify-content-between">
           <Card.Title>{header}</Card.Title>
           <div className="d-flex justify-content-end gap-2">
-            {additionalHeaderComponent && additionalHeaderComponent}
+            {headerButton && headerButton}
             {shouldShowColumnVisibilityPicker && (
               <TableSettingsMenu
                 columnVisibilitySettings={columnVisibilitySettings}

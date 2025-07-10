@@ -58,7 +58,7 @@ export default function NotesCard<T extends Record<string, unknown>>({
         noRowsMessage="No notes found"
         isValidating={false}
         header="Notes"
-        additionalHeaderComponent={<AddNoteButton onClick={handleOpenModal} />}
+        headerButton={<AddNoteButton onClick={handleOpenModal} />}
         onSaveCallback={onSaveCallback}
         rowActionComponent={DeleteNoteButton}
         localStorageKey=""
