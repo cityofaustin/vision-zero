@@ -7,8 +7,8 @@ import {
 } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import Form from "react-bootstrap/Form";
-import { ColumnVisibilitySetting } from "@/types/types";
 import { FaGear } from "react-icons/fa6";
+import { ColumnVisibilitySetting } from "@/types/types";
 import { ColDataCardDef } from "@/types/types";
 
 interface TableSettingsMenuProps {

@@ -1,11 +1,11 @@
+import { useState } from "react";
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import RelatedRecordTableRow from "@/components/RelatedRecordTableRow";
 import TableSettingsMenu from "@/components/TableSettingsMenu";
-import { ColDataCardDef } from "@/types/types";
-import { useState } from "react";
-import { ColumnVisibilitySetting } from "@/types/types";
 import { useVisibleColumns } from "@/components/TableSettingsMenu";
+import { ColDataCardDef } from "@/types/types";
+import { ColumnVisibilitySetting } from "@/types/types";
 
 interface RelatedRecordTableProps<
   T extends Record<string, unknown>,

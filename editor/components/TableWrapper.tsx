@@ -1,26 +1,27 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
-import isEqual from "lodash/isEqual";
-import cloneDeep from "lodash/cloneDeep";
-import { useQuery } from "@/utils/graphql";
 import Table from "@/components/Table";
-import TableSearch, { SearchSettings } from "@/components/TableSearch";
-import TableDateSelector from "@/components/TableDateSelector";
-import { makeDateFilterFromMode } from "@/utils/dates";
-import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
-import { useQueryBuilder, useExportQuery } from "@/utils/queryBuilder";
-import { QueryConfig, Filter } from "@/types/queryBuilder";
-import { ColDataCardDef, ColumnVisibilitySetting } from "@/types/types";
 import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
-import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFilterToggle";
+import TableAdvancedSearchFilterToggle, {
+  useActiveSwitchFilterCount,
+} from "@/components/TableAdvancedSearchFilterToggle";
+import TableDateSelector from "@/components/TableDateSelector";
 import TableExportModal from "@/components/TableExportModal";
 import TablePaginationControls from "@/components/TablePaginationControls";
-import { useActiveSwitchFilterCount } from "@/components/TableAdvancedSearchFilterToggle";
 import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
-import { QueryConfigSchema } from "@/schema/queryBuilder";
+import TableSearch, { SearchSettings } from "@/components/TableSearch";
+import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
 import { useVisibleColumns } from "@/components/TableSettingsMenu";
+import { QueryConfigSchema } from "@/schema/queryBuilder";
+import { Filter, QueryConfig } from "@/types/queryBuilder";
+import { ColDataCardDef, ColumnVisibilitySetting } from "@/types/types";
+import { makeDateFilterFromMode } from "@/utils/dates";
+import { useQuery } from "@/utils/graphql";
+import { useExportQuery, useQueryBuilder } from "@/utils/queryBuilder";
+import cloneDeep from "lodash/cloneDeep";
+import isEqual from "lodash/isEqual";
 
 interface TableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
