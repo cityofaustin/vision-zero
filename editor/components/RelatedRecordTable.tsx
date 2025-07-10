@@ -21,6 +21,16 @@ interface RelatedRecordTableProps<
    */
   mutation: string;
   /**
+   * Function to generate the complete mutation variables payload
+   * If not provided, uses default behavior
+   */
+  getMutationVariables?: (
+    record: T,
+    column: ColDataCardDef<T>,
+    value: unknown,
+    defaultVariables: { id: number; updates: Record<string, unknown> }
+  ) => Record<string, unknown>;
+  /**
    * Graphql mutation that will be passed to rowActionComponent, if present
    */
   rowActionMutation?: string;
@@ -89,6 +99,7 @@ export default function RelatedRecordTable<
   records,
   columns,
   mutation,
+  getMutationVariables,
   rowActionMutation,
   isValidating,
   noRowsMessage,
@@ -138,6 +149,7 @@ export default function RelatedRecordTable<
                   onSaveCallback={onSaveCallback}
                   record={record}
                   mutation={mutation}
+                  getMutationVariables={getMutationVariables}
                   rowActionMutation={rowActionMutation}
                   rowActionComponent={rowActionComponent}
                   rowActionComponentAdditionalProps={
