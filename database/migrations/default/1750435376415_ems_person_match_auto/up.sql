@@ -432,3 +432,6 @@ $function$;
 -- delete this trigger which is now redundant
 DROP TRIGGER IF EXISTS ems_update_person_crash_id_trigger ON ems__incidents;
 DROP FUNCTION IF EXISTS ems_update_person_crash_id;
+
+-- finally, update the `person_match_status` of existing EMS records that are already matched to a person 
+update ems__incidents set person_match_status = 'matched_by_manual_qa' where person_id is not null;
