@@ -42,7 +42,7 @@ interface RelatedRecordTableProps<
   header: React.ReactNode;
 
   /**
-   * Optional component to be rendered alongside the tite in the card header
+   * Optional component to be rendered alongside the title in the card header
    */
   headerComponent?: React.ReactNode;
 
@@ -65,7 +65,8 @@ interface RelatedRecordTableProps<
    */
   onSaveCallback: () => Promise<void>;
 
-  /** Use an empty string if table does not have column visibility settings */
+  /** The key to use when saving and loading table data to local storage.
+   * Use an empty string if table does not have column visibility settings */
   localStorageKey: string;
 }
 
