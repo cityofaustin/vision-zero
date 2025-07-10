@@ -66,7 +66,7 @@ const EMSLinkRecordButton: React.FC<
                   await updateEMSRecord({
                     id: record.id,
                     updates: {
-                      _match_event_name: "unmatch_by_manual_qa",
+                      _match_event_name: "unmatch_crash_by_manual_qa",
                       crash_pk: null,
                       person_id: null,
                     },

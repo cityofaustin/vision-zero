@@ -105,7 +105,8 @@ BEGIN
         'match_person_by_manual_qa',
         'reset_crash_match',
         'sync_crash_pk_on_person_match',
-        'unmatch_by_manual_qa',
+        'unmatch_crash_by_manual_qa',
+        'unmatch_person_by_manual_qa',
         'update_matched_crash_ids'
     ) then
         RAISE EXCEPTION 'Invalid _match_event_name: `%`', NEW._match_event_name
@@ -114,13 +115,23 @@ BEGIN
             ERRCODE = '23514';
     END IF;
     --
-    --  `unmatch_by_manual_qa` event is via VZE UI action
+    --  `unmatch_crash_by_manual_qa` event is via VZE UI action
     --
-    IF NEW._match_event_name = 'unmatch_by_manual_qa' then
+    IF NEW._match_event_name = 'unmatch_crash_by_manual_qa' then
         NEW.crash_match_status = 'unmatched_by_manual_qa'; 
         NEW.crash_pk = NULL;
         NEW.person_match_status = 'unmatched_by_manual_qa';
         NEW.matched_person_ids = NULL;
+        NEW.person_id = NULL;
+        NEW._match_event_name = null;
+        return NEW;
+    END IF;
+    --
+    -- `unmatch_person_by_manual_qa` event is via VZE UI when
+    -- the EMS record's person ID input is cleared
+    --
+    IF NEW._match_event_name = 'unmatch_person_by_manual_qa' then
+        NEW.person_match_status = 'unmatched_by_manual_qa';
         NEW.person_id = NULL;
         NEW._match_event_name = null;
         return NEW;

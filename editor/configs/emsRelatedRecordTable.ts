@@ -21,15 +21,20 @@ export const emsRelatedRecordCols = [
  */
 export const getMutationVariables = (
   _record: EMSPatientCareRecord,
-  _column: ColDataCardDef<EMSPatientCareRecord>,
-  _value: unknown,
+  column: ColDataCardDef<EMSPatientCareRecord>,
+  value: unknown,
   defaultVariables: { id: number; updates: Record<string, unknown> }
 ): Record<string, unknown> => {
+  if (column.path !== "person_id") {
+    return defaultVariables;
+  }
   return {
     id: defaultVariables.id,
     updates: {
       ...defaultVariables.updates,
-      _match_event_name: "match_person_by_manual_qa",
+      _match_event_name: value
+        ? "match_person_by_manual_qa"
+        : "unmatch_person_by_manual_qa",
     },
   };
 };
