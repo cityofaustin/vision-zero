@@ -86,7 +86,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 --
--- Add person_match_status to this trigger
+-- New trigger that handles matching using an event-driven approach
 --
 CREATE
 OR REPLACE FUNCTION public.ems_update_handle_record_match_event() RETURNS trigger LANGUAGE plpgsql AS $function$
@@ -257,7 +257,6 @@ BEGIN
 END;
 $function$;
 
-DROP TRIGGER IF EXISTS ems_update_handle_match_trigger ON ems__incidents;
 DROP TRIGGER IF EXISTS ems_update_handle_record_match_event_trigger ON ems__incidents;
 
 CREATE TRIGGER ems_update_handle_record_match_event_trigger BEFORE
