@@ -125,11 +125,8 @@ update_permissions:
     permission:
       columns:
         - _match_event_name
-        - crash_match_status
         - crash_pk
-        - matched_crash_pks
         - person_id
-        - person_match_status
         - updated_by
       filter: {}
       check: null
@@ -138,11 +135,8 @@ update_permissions:
     permission:
       columns:
         - _match_event_name
-        - crash_match_status
         - crash_pk
-        - matched_crash_pks
         - person_id
-        - person_match_status
         - updated_by
       filter: {}
       check: null
