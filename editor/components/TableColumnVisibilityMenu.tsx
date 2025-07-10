@@ -11,7 +11,7 @@ import { FaGear } from "react-icons/fa6";
 import { ColumnVisibilitySetting } from "@/types/types";
 import { ColDataCardDef } from "@/types/types";
 
-interface TableSettingsMenuProps {
+interface TableColumnVisibilityMenuProps {
   /**
    *  Array of columns and their visibility settings
    */
@@ -63,13 +63,13 @@ export const useVisibleColumns = <T extends Record<string, unknown>>(
 /**
  * Table component that controls column visibility
  */
-export default function TableSettingsMenu({
+export default function TableColumnVisibilityMenu({
   columnVisibilitySettings,
   setColumnVisibilitySettings,
   isColVisibilityLocalStorageLoaded,
   setIsColVisibilityLocalStorageLoaded,
   localStorageKey,
-}: TableSettingsMenuProps) {
+}: TableColumnVisibilityMenuProps) {
   const handleUpdateColVisibility = useCallback(
     (columns: ColumnVisibilitySetting[], path: string) => {
       const updatedColVisibilitySettings = columns.map((col) => {

@@ -2,8 +2,8 @@ import { useState } from "react";
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import RelatedRecordTableRow from "@/components/RelatedRecordTableRow";
-import TableSettingsMenu from "@/components/TableSettingsMenu";
-import { useVisibleColumns } from "@/components/TableSettingsMenu";
+import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
+import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
 import { ColDataCardDef } from "@/types/types";
 import { ColumnVisibilitySetting } from "@/types/types";
 
@@ -150,7 +150,7 @@ export default function RelatedRecordTable<
           <div className="d-flex justify-content-end gap-2">
             {headerButton && headerButton}
             {shouldShowColumnVisibilityPicker && (
-              <TableSettingsMenu
+              <TableColumnVisibilityMenu
                 columnVisibilitySettings={columnVisibilitySettings}
                 setColumnVisibilitySettings={setColumnVisibilitySettings}
                 localStorageKey={localStorageKey}
@@ -160,7 +160,7 @@ export default function RelatedRecordTable<
                 setIsColVisibilityLocalStorageLoaded={
                   setIsColVisibilityLocalStorageLoaded
                 }
-              ></TableSettingsMenu>
+              ></TableColumnVisibilityMenu>
             )}
           </div>
         </div>

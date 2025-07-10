@@ -13,7 +13,7 @@ import TablePaginationControls from "@/components/TablePaginationControls";
 import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
 import TableSearch, { SearchSettings } from "@/components/TableSearch";
 import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
-import { useVisibleColumns } from "@/components/TableSettingsMenu";
+import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
 import { QueryConfigSchema } from "@/schema/queryBuilder";
 import { Filter, QueryConfig } from "@/types/queryBuilder";
 import { ColDataCardDef, ColumnVisibilitySetting } from "@/types/types";

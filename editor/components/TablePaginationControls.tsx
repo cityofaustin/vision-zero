@@ -5,7 +5,7 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import { FaAngleLeft, FaAngleRight, FaDownload } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
-import TableSettingsMenu from "@/components/TableSettingsMenu";
+import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
 import { QueryConfig } from "@/types/queryBuilder";
 import { ColumnVisibilitySetting } from "@/types/types";
 import "react-datepicker/dist/react-datepicker.css";
@@ -157,7 +157,7 @@ export default function TablePaginationControls({
           <FaAngleRight />
         </Button>
       </ButtonGroup>
-      <TableSettingsMenu
+      <TableColumnVisibilityMenu
         columnVisibilitySettings={columnVisibilitySettings}
         setColumnVisibilitySettings={setColumnVisibilitySettings}
         localStorageKey={localStorageKey}
