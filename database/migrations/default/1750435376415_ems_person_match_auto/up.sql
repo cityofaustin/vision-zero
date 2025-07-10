@@ -275,10 +275,6 @@ CREATE TRIGGER ems_update_handle_record_match_event_trigger BEFORE
 UPDATE ON ems__incidents FOR EACH ROW
 EXECUTE FUNCTION ems_update_handle_record_match_event();
 
--- delete trigger which is now redundant
-DROP TRIGGER IF EXISTS ems_update_person_crash_id_trigger ON ems__incidents;
-DROP FUNCTION IF EXISTS ems_update_person_crash_id;
-
 --
 -- This function runs **after** updates to the EMS record and should be triggered when
 -- NEW.crash_pk is distinct from OLD.crash_pk and person_id is not null
@@ -432,3 +428,7 @@ BEGIN
     RETURN NEW;
 END;
 $function$;
+
+-- delete this trigger which is now redundant
+DROP TRIGGER IF EXISTS ems_update_person_crash_id_trigger ON ems__incidents;
+DROP FUNCTION IF EXISTS ems_update_person_crash_id;
