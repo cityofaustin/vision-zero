@@ -37,7 +37,8 @@ interface TableColumnVisibilityMenuProps {
 }
 
 /**
- * Construct the table's visible columns
+ * Custom hook that is used in tables with column visibility settings
+ * and constructs the table's visible columns
  */
 export const useVisibleColumns = <T extends Record<string, unknown>>(
   columns: ColDataCardDef<T>[],
