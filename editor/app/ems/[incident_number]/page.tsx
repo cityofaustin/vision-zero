@@ -230,7 +230,7 @@ export default function EMSDetailsPage({
             records={ems_pcrs}
             isValidating={isValidating}
             noRowsMessage="No patients found"
-            headerTitle="EMS patient(s)"
+            header="EMS patient(s)"
             columns={emsDataCards.patient}
             mutation={UPDATE_EMS_INCIDENT}
             onSaveCallback={onSaveCallback}
@@ -247,7 +247,7 @@ export default function EMSDetailsPage({
             records={matchingPeople ? matchingPeople : []}
             isValidating={isValidating}
             noRowsMessage="No people found"
-            headerTitle="Possible people matches"
+            header="Possible people matches"
             columns={emsMatchingPeopleColumns}
             mutation=""
             onSaveCallback={onSaveCallback}

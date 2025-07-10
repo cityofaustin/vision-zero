@@ -184,7 +184,7 @@ export default function CrashDetailsPage({
             records={crash.units || []}
             isValidating={isValidating}
             noRowsMessage="No unit records found"
-            headerTitle="Units"
+            header="Units"
             columns={unitRelatedRecordCols}
             mutation={UPDATE_UNIT}
             onSaveCallback={onSaveCallback}
@@ -199,7 +199,7 @@ export default function CrashDetailsPage({
             records={crash.people_list_view || []}
             isValidating={isValidating}
             noRowsMessage="No people records found"
-            headerTitle="People"
+            header="People"
             columns={peopleRelatedRecordCols}
             mutation={UPDATE_PERSON}
             onSaveCallback={onSaveCallback}
@@ -213,7 +213,7 @@ export default function CrashDetailsPage({
           <RelatedRecordTable
             records={crash.ems__incidents || []}
             isValidating={isValidating}
-            headerTitle={<EMSCardHeader />}
+            header={<EMSCardHeader />}
             noRowsMessage="No EMS records found"
             columns={emsRelatedRecordCols}
             mutation=""
@@ -229,7 +229,7 @@ export default function CrashDetailsPage({
             records={crash.charges_cris || []}
             isValidating={isValidating}
             noRowsMessage="No charge records found"
-            headerTitle="Charges"
+            header="Charges"
             columns={chargeRelatedRecordCols}
             mutation={""}
             onSaveCallback={onSaveCallback}
