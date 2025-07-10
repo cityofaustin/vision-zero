@@ -30,7 +30,7 @@ interface PaginationControlProps {
    */
   setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
   /**
-   * The number of records displayed on the peach
+   * The number of records displayed on the page
    */
   recordCount: number;
   /**
@@ -86,8 +86,6 @@ export default function TablePaginationControls({
     recordCount === 0 || queryConfig.offset === 0 || isLoading;
   const pageRightButtonDisabled =
     totalRecordCount <= queryConfig.limit || isLoading;
-
-  console.log(recordCount);
 
   return (
     <ButtonToolbar>
