@@ -12,12 +12,27 @@ import { FaGear } from "react-icons/fa6";
 import { ColDataCardDef } from "@/types/types";
 
 interface TableSettingsMenuProps {
+  /**
+   *  Array of columns and their visibility settings
+   */
   columnVisibilitySettings: ColumnVisibilitySetting[];
+  /**
+   * Sets the column visibility settings
+   */
   setColumnVisibilitySettings: Dispatch<
     SetStateAction<ColumnVisibilitySetting[]>
   >;
+  /**
+   * Has the local storage item for column visibility been loaded
+   */
   isColVisibilityLocalStorageLoaded: boolean;
+  /**
+   * Set whether the column visibility local storage item has loaded
+   */
   setIsColVisibilityLocalStorageLoaded: Dispatch<SetStateAction<boolean>>;
+  /**
+   * The key to use when saving and loading table data to local storage
+   */
   localStorageKey: string;
 }
 
