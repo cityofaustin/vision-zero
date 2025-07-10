@@ -48,7 +48,7 @@ interface RelatedRecordTableProps<
   headerButton?: React.ReactNode;
 
   /**
-   * Enable column visibility picker
+   * Show a column visibility picker
    */
   shouldShowColumnVisibilityPicker?: boolean;
 
