@@ -144,25 +144,27 @@ export default function RelatedRecordTable<
 
   return (
     <Card>
-      <Card.Header>
-        <div className="d-flex justify-content-between">
+      <Card.Header className="d-flex justify-content-between align-items-center">
+        {typeof header === "string" ? (
           <Card.Title>{header}</Card.Title>
-          <div className="d-flex justify-content-end gap-2">
-            {headerButton && headerButton}
-            {shouldShowColumnVisibilityPicker && (
-              <TableColumnVisibilityMenu
-                columnVisibilitySettings={columnVisibilitySettings}
-                setColumnVisibilitySettings={setColumnVisibilitySettings}
-                localStorageKey={localStorageKey}
-                isColVisibilityLocalStorageLoaded={
-                  isColVisibilityLocalStorageLoaded
-                }
-                setIsColVisibilityLocalStorageLoaded={
-                  setIsColVisibilityLocalStorageLoaded
-                }
-              ></TableColumnVisibilityMenu>
-            )}
-          </div>
+        ) : (
+          <div>{header}</div>
+        )}
+        <div className="d-flex gap-2">
+          {headerButton && headerButton}
+          {shouldShowColumnVisibilityPicker && (
+            <TableColumnVisibilityMenu
+              columnVisibilitySettings={columnVisibilitySettings}
+              setColumnVisibilitySettings={setColumnVisibilitySettings}
+              localStorageKey={localStorageKey}
+              isColVisibilityLocalStorageLoaded={
+                isColVisibilityLocalStorageLoaded
+              }
+              setIsColVisibilityLocalStorageLoaded={
+                setIsColVisibilityLocalStorageLoaded
+              }
+            ></TableColumnVisibilityMenu>
+          )}
         </div>
       </Card.Header>
       <Card.Body>
