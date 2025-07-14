@@ -233,7 +233,6 @@ export default function CrashDetailsPage({
             columns={chargeRelatedRecordCols}
             mutation={""}
             onSaveCallback={onSaveCallback}
-            localStorageKey=""
           />
         </Col>
       </Row>
