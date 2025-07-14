@@ -16,7 +16,7 @@ import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
 import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
 import { QueryConfigSchema } from "@/schema/queryBuilder";
 import { Filter, QueryConfig } from "@/types/queryBuilder";
-import { ColDataCardDef, ColumnVisibilitySetting } from "@/types/types";
+import { ColDataCardDef } from "@/types/types";
 import { makeDateFilterFromMode } from "@/utils/dates";
 import { useQuery } from "@/utils/graphql";
 import { useExportQuery, useQueryBuilder } from "@/utils/queryBuilder";
@@ -68,20 +68,6 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   ] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
-  /**
-   * Initialize column visibility from provided columns
-   */
-  const [columnVisibilitySettings, setColumnVisibilitySettings] = useState<
-    ColumnVisibilitySetting[]
-  >(
-    columns
-      .filter((col) => !col.exportOnly)
-      .map((col) => ({
-        path: String(col.path),
-        isVisible: !col.defaultHidden,
-        label: col.label,
-      }))
-  );
   const [searchSettings, setSearchSettings] = useState<SearchSettings>({
     searchString: String(initialQueryConfig.searchFilter.value),
     searchColumn: initialQueryConfig.searchFilter.column,
@@ -90,8 +76,13 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     ...initialQueryConfig,
   });
 
-  /** Columns that should be visible based on user column visibility settings */
-  const visibleColumns = useVisibleColumns(columns, columnVisibilitySettings);
+  /** Use custom hook to get array of visible columns, column visibility settings,
+   * and state setter function */
+  const {
+    visibleColumns,
+    columnVisibilitySettings,
+    setColumnVisibilitySettings,
+  } = useVisibleColumns(columns);
 
   const query = useQueryBuilder(
     queryConfig,

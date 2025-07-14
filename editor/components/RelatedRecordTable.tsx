@@ -5,7 +5,6 @@ import RelatedRecordTableRow from "@/components/RelatedRecordTableRow";
 import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
 import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
 import { ColDataCardDef } from "@/types/types";
-import { ColumnVisibilitySetting } from "@/types/types";
 
 interface RelatedRecordTableProps<
   T extends Record<string, unknown>,
@@ -124,23 +123,13 @@ export default function RelatedRecordTable<
     setIsColVisibilityLocalStorageLoaded,
   ] = useState(false);
 
-  /**
-   * Initialize column visibility from provided columns
-   */
-  const [columnVisibilitySettings, setColumnVisibilitySettings] = useState<
-    ColumnVisibilitySetting[]
-  >(
-    columns
-      .filter((col) => !col.exportOnly)
-      .map((col) => ({
-        path: String(col.path),
-        isVisible: !col.defaultHidden,
-        label: col.label,
-      }))
-  );
-
-  /** Columns that should be visible based on user column visibility settings */
-  const visibleColumns = useVisibleColumns(columns, columnVisibilitySettings);
+  /** Use custom hook to get array of visible columns, column visibility settings,
+   * and state setter function */
+  const {
+    visibleColumns,
+    columnVisibilitySettings,
+    setColumnVisibilitySettings,
+  } = useVisibleColumns(columns);
 
   return (
     <Card>

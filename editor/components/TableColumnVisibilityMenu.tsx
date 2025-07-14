@@ -4,6 +4,7 @@ import {
   useCallback,
   useMemo,
   useEffect,
+  useState,
 } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import Form from "react-bootstrap/Form";
@@ -37,14 +38,28 @@ interface TableColumnVisibilityMenuProps {
 }
 
 /**
- * Custom hook that is used in tables with column visibility settings
- * and constructs the table's visible columns
+ * Custom hook that is used in tables with column visibility settings.
+ * It initializes the state for column visibility settings and returns it along with
+ * the state setter and an array of visible columns
  */
 export const useVisibleColumns = <T extends Record<string, unknown>>(
-  columns: ColDataCardDef<T>[],
-  columnVisibilitySettings: ColumnVisibilitySetting[]
-) =>
-  useMemo(
+  columns: ColDataCardDef<T>[]
+) => {
+  /**
+   * Initialize column visibility from provided columns
+   */
+  const [columnVisibilitySettings, setColumnVisibilitySettings] = useState<
+    ColumnVisibilitySetting[]
+  >(
+    columns
+      .filter((col) => !col.exportOnly)
+      .map((col) => ({
+        path: String(col.path),
+        isVisible: !col.defaultHidden,
+        label: col.label,
+      }))
+  );
+  const visibleColumns = useMemo(
     () =>
       columns.filter((col) => {
         const colFromVisibilitySettings = columnVisibilitySettings.find(
@@ -60,6 +75,15 @@ export const useVisibleColumns = <T extends Record<string, unknown>>(
       }),
     [columns, columnVisibilitySettings]
   );
+  return {
+    /** Columns that should be visible based on user column visibility settings */
+    visibleColumns,
+    /** State of column visibility settings */
+    columnVisibilitySettings,
+    /** Sets state of column visibility settings */
+    setColumnVisibilitySettings,
+  };
+};
 
 /**
  * Table component that controls column visibility
