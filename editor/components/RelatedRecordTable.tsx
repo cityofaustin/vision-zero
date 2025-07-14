@@ -133,7 +133,7 @@ export default function RelatedRecordTable<
 
   return (
     <Card>
-      <Card.Header className="d-flex justify-content-between align-items-center">
+      <Card.Header className="d-flex justify-content-between">
         {typeof header === "string" ? (
           <Card.Title>{header}</Card.Title>
         ) : (
