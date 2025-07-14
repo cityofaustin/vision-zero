@@ -66,9 +66,9 @@ interface RelatedRecordTableProps<
    */
   onSaveCallback: () => Promise<void>;
 
-  /** The key to use when saving and loading table data to local storage.
-   * Use an empty string if table does not have column visibility settings */
-  localStorageKey: string;
+  /** The key to use when saving and loading table column visibility data to local storage.
+   * Optional because not all tables have col visibility settings enabled */
+  localStorageKey?: string;
 }
 
 export interface RowActionComponentProps<

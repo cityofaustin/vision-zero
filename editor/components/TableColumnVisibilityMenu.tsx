@@ -31,9 +31,9 @@ interface TableColumnVisibilityMenuProps {
    */
   setIsColVisibilityLocalStorageLoaded: Dispatch<SetStateAction<boolean>>;
   /**
-   * The key to use when saving and loading table data to local storage
+   * The key to use when saving and loading table column visibility data to local storage.
    */
-  localStorageKey: string;
+  localStorageKey?: string;
 }
 
 /**
@@ -96,6 +96,13 @@ export default function TableColumnVisibilityMenu({
   useEffect(() => {
     if (isColVisibilityLocalStorageLoaded) {
       return;
+    }
+
+    // Throw an error if localStorageKey was not provided
+    if (!localStorageKey) {
+      throw new Error(
+        "localStorageKey is required to load column visibility settings"
+      );
     }
 
     /**
