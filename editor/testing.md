@@ -61,6 +61,7 @@ The below features should be tested with each role. Features with role-based acc
 - Crash map: crash map displays crash location with nearmap aerials
 - Crash map: edit crash location by dragging map
 - Crash map: edit crash location by keying in lat/lon
+- Observe in change log that council district, jurisdiction, APD sector, engineer area update when crash location is edited to a distant position
 - Crash map: in edit mode, use the address search to find a location within Austin metro area
 - Crash map: verify **Location ID** updates when crash is moved to another intersection
 - Crash map: validation restricts keying in lat/lon with alpha characters
@@ -90,14 +91,17 @@ The below features should be tested with each role. Features with role-based acc
 - Crash data card: nullify a value (e.g. street name) by clearing its input and saving it
 - [role: editor, admin] Crash data card - **Swap addresses** button is visibile in **Primary address** card header can be used to swap primary and secondary addresses
 - Related records - **Units**
+  - Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted
   - Verify unit **Contributing factors** are listed and prefixed with either **Primary** or **Possible**
   - Edit unit **Year**, **Body style**, **Type**, and **Movement**
   - Edit unit: cannot save a **Year** value less than 1900 or after the current year + 1
 - Related records - **People**
+  - Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted
   - Edit person **Name** and person **Type**
   - Edit person **Zipcode** and verify only pattern xxxxx or xxxxx-xxxx is valid
   - Edit person **Injury severity** and verify the crash injury widget (top of page to the right of crash address) updates accordingly
 - Related records - **EMS Patient Care**
+  - Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted
   - Verify records are populated (use EMS list view to find a crash with EMS records)
   - Verify records which were "automatically matched" are unmatched (disappear from table) when crash is moved +1200 meters
 - Record history: changes to crash, units, people are being tracked.
@@ -158,6 +162,9 @@ refresh materialized view location_crashes_view;
 - The **Select person** button is displayed for each EMS patient row
 - Click **Select person** to enable the **Select match** button to appear next to any unlinked person records in the **Associated people records** table
 - Click the **Person ID** column for any **EMS Patients** row to manually edit a person ID value
+- - Click the **Person ID** column submit an invalid person ID value and verify an error message is displayed
+- Use the falafel menu to **Reset** an incident matched to a person ID
+- Use the falafel menu to modify an incident to be **Match not found**
 
 #### These steps test the DB trigger that matches EMS records to crashes
 
