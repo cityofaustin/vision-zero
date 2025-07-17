@@ -91,10 +91,12 @@ The below features should be tested with each role. Features with role-based acc
 - Crash data card: nullify a value (e.g. street name) by clearing its input and saving it
 - [role: editor, admin] Crash data card - **Swap addresses** button is visibile in **Primary address** card header can be used to swap primary and secondary addresses
 - Related records - **Units**
+  - Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted
   - Verify unit **Contributing factors** are listed and prefixed with either **Primary** or **Possible**
   - Edit unit **Year**, **Body style**, **Type**, and **Movement**
   - Edit unit: cannot save a **Year** value less than 1900 or after the current year + 1
 - Related records - **People**
+  - Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted
   - Edit person **Name** and person **Type**
   - Edit person **Zipcode** and verify only pattern xxxxx or xxxxx-xxxx is valid
   - Edit person **Injury severity** and verify the crash injury widget (top of page to the right of crash address) updates accordingly
