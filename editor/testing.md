@@ -101,6 +101,7 @@ The below features should be tested with each role. Features with role-based acc
   - Edit person **Zipcode** and verify only pattern xxxxx or xxxxx-xxxx is valid
   - Edit person **Injury severity** and verify the crash injury widget (top of page to the right of crash address) updates accordingly
 - Related records - **EMS Patient Care**
+  - Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted
   - Verify records are populated (use EMS list view to find a crash with EMS records)
   - Verify records which were "automatically matched" are unmatched (disappear from table) when crash is moved +1200 meters
 - Record history: changes to crash, units, people are being tracked.
