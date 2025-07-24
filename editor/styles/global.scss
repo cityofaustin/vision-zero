@@ -69,6 +69,7 @@ $dark: $night;
   }
 }
 
+
 [data-bs-theme="light"] .date-preset-button {
   background-color: $light !important;
   border-color: $light !important;
@@ -80,6 +81,35 @@ $dark: $night;
   &.active {
     background-color: $secondary !important;
     border-color: $secondary !important;
+  }
+}
+
+[data-bs-theme="light"] .edit-address-button {
+  background-color: $white !important;
+  border-color: $white !important;
+  color: #000;
+
+  &:hover // &:focus,
+
+    {
+    background-color: $light !important;
+    border-color: $light !important;
+    color: #000;
+  }
+}
+
+[data-bs-theme="dark"] .edit-address-button {
+  color: $white;
+  // bs border-color
+  border-color: #212529 !important;
+  // bs tertiary background
+  background-color: #212529;
+
+  &:hover // &:focus,
+
+    {
+    background-color: rgb(42.5, 47.5, 52.5) !important;
+    border-color: rgb(42.5, 47.5, 52.5) !important;
   }
 }
 
