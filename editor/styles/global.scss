@@ -89,25 +89,19 @@ $dark: $night;
   border-color: $white !important;
   color: #000;
 
-  &:hover // &:focus,
-
-    {
+  &:hover {
     background-color: $light !important;
     border-color: $light !important;
-    color: #000;
+    color: #000 !important;
   }
 }
 
 [data-bs-theme="dark"] .edit-address-button {
-  color: $white;
-  // bs border-color
+  background-color: #212529 !important;
   border-color: #212529 !important;
-  // bs tertiary background
-  background-color: #212529;
+  color: $white;
 
-  &:hover // &:focus,
-
-    {
+  &:hover {
     background-color: rgb(42.5, 47.5, 52.5) !important;
     border-color: rgb(42.5, 47.5, 52.5) !important;
   }
