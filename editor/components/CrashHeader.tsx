@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { Crash } from "@/types/crashes";
 import CrashInjuryIndicators from "@/components/CrashInjuryIndicators";
 import { formatAddresses } from "@/utils/formatters";
 import { FaPenToSquare } from "react-icons/fa6";
+import EditCrashAddressModal from "@/components/EditCrashAddressModal";
 
 interface CrashHeaderProps {
   crash: Crash;
@@ -12,9 +14,15 @@ interface CrashHeaderProps {
  * Crash details page header
  */
 export default function CrashHeader({ crash }: CrashHeaderProps) {
+  const [showEditAddressModal, setShowEditAddressModal] = useState(false);
+  const onCloseModal = () => setShowEditAddressModal(false);
+
   return (
     <div className="d-flex justify-content-between mb-3">
-      <Button className="d-flex align-items-baseline edit-address-button">
+      <Button
+        onClick={() => setShowEditAddressModal(true)}
+        className="d-flex align-items-baseline edit-address-button"
+      >
         <span className="fs-3 fw-bold text-uppercase me-2">
           {formatAddresses(crash)}
         </span>
@@ -23,6 +31,10 @@ export default function CrashHeader({ crash }: CrashHeaderProps) {
       {crash.crash_injury_metrics_view && (
         <CrashInjuryIndicators injuries={crash.crash_injury_metrics_view} />
       )}
+      <EditCrashAddressModal
+        show={showEditAddressModal}
+        onClose={onCloseModal}
+      ></EditCrashAddressModal>
     </div>
   );
 }
