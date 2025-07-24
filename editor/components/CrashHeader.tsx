@@ -1,6 +1,8 @@
+import { Button } from "react-bootstrap";
 import { Crash } from "@/types/crashes";
 import CrashInjuryIndicators from "@/components/CrashInjuryIndicators";
 import { formatAddresses } from "@/utils/formatters";
+import { FaPenToSquare } from "react-icons/fa6";
 
 interface CrashHeaderProps {
   crash: Crash;
@@ -12,9 +14,12 @@ interface CrashHeaderProps {
 export default function CrashHeader({ crash }: CrashHeaderProps) {
   return (
     <div className="d-flex justify-content-between mb-3">
-      <span className="fs-3 fw-bold text-uppercase">
-        {formatAddresses(crash)}
-      </span>
+      <Button className="d-flex align-items-baseline edit-address-button">
+        <span className="fs-3 fw-bold text-uppercase me-2">
+          {formatAddresses(crash)}
+        </span>
+        <FaPenToSquare className="text-muted" />
+      </Button>
       {crash.crash_injury_metrics_view && (
         <CrashInjuryIndicators injuries={crash.crash_injury_metrics_view} />
       )}
