@@ -8,14 +8,19 @@ import EditCrashAddressModal from "@/components/EditCrashAddressModal";
 
 interface CrashHeaderProps {
   crash: Crash;
+  refetch: () => Promise<unknown>;
 }
 
 /**
  * Crash details page header
  */
-export default function CrashHeader({ crash }: CrashHeaderProps) {
+export default function CrashHeader({ crash, refetch }: CrashHeaderProps) {
   const [showEditAddressModal, setShowEditAddressModal] = useState(false);
-  const onCloseModal = () => setShowEditAddressModal(false);
+
+  const onSaveCallback = () => {
+    setShowEditAddressModal(false);
+    refetch();
+  };
 
   return (
     <div className="d-flex justify-content-between mb-3">
@@ -32,8 +37,11 @@ export default function CrashHeader({ crash }: CrashHeaderProps) {
         <CrashInjuryIndicators injuries={crash.crash_injury_metrics_view} />
       )}
       <EditCrashAddressModal
+        crashId={crash.id}
         show={showEditAddressModal}
-        onClose={onCloseModal}
+        setShowEditAddressModal={setShowEditAddressModal}
+        onSaveCallback={onSaveCallback}
+        crash={crash}
       ></EditCrashAddressModal>
     </div>
   );
