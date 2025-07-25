@@ -29,8 +29,8 @@ export const crashDataCards = {
     crashesColumns.rpt_street_name,
     crashesColumns.rpt_street_sfx,
     crashesColumns.rpt_street_desc,
-    crashesColumns.road_part,
-    crashesColumns.rwy_sys,
+    crashesColumns.rpt_road_part_id,
+    crashesColumns.rpt_rdwy_sys_id,
     crashesColumns.rpt_hwy_num,
   ],
   address_secondary: [
@@ -39,8 +39,8 @@ export const crashDataCards = {
     crashesColumns.rpt_sec_street_name,
     crashesColumns.rpt_sec_street_sfx,
     crashesColumns.rpt_sec_street_desc,
-    crashesColumns.road_part_sec,
-    crashesColumns.rwy_sys_sec,
+    crashesColumns.rpt_sec_road_part_id,
+    crashesColumns.rpt_sec_rdwy_sys_id,
     crashesColumns.rpt_sec_hwy_num,
   ],
 };

@@ -93,7 +93,7 @@ export default function CrashDetailsPage({
 
   return (
     <>
-      <CrashHeader crash={crash} />
+      <CrashHeader crash={crash} refetch={refetch} />
       {
         // show alert if crash on private drive or outside of Austin full purpose
         (crash.private_dr_fl || !crash.in_austin_full_purpose) && (
