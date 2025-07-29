@@ -86,7 +86,7 @@ const Summary = () => {
                     initiatives, visit Austin Transportation's Vision Zero
                     Program{" "}
                     <a
-                      href="https://austintexas.gov/page/programs-and-initiatives"
+                      href="https://www.austintexas.gov/department/vision-zero"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

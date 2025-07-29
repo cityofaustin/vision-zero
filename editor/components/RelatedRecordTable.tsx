@@ -1,6 +1,9 @@
+import { useState } from "react";
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import RelatedRecordTableRow from "@/components/RelatedRecordTableRow";
+import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
+import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
 import { ColDataCardDef } from "@/types/types";
 
 interface RelatedRecordTableProps<
@@ -43,10 +46,21 @@ interface RelatedRecordTableProps<
    */
   noRowsMessage?: string;
   /**
-   * The card header string or component to be rendered in the table's card header. If a string is
-   * provided, it will be rendered as a <Card.Title>
+   * The card header to be rendered as a <Card.Title>
    */
   header: React.ReactNode;
+
+  /**
+   * Optional button component to be rendered in the rightmost of the card header,
+   * left of the column visibility picker if there is one
+   */
+  headerButton?: React.ReactNode;
+
+  /**
+   * Show a column visibility picker
+   */
+  shouldShowColumnVisibilityPicker?: boolean;
+
   /**
    * Optional react component to be rendered in the rightmost
    * column of every row
@@ -60,6 +74,10 @@ interface RelatedRecordTableProps<
    * Callback function to be executed after a row edit is saved
    */
   onSaveCallback: () => Promise<void>;
+
+  /** The key to use when saving and loading table column visibility data to local storage.
+   * Optional because not all tables have col visibility settings enabled */
+  localStorageKey?: string;
 }
 
 export interface RowActionComponentProps<
@@ -107,21 +125,53 @@ export default function RelatedRecordTable<
   onSaveCallback,
   rowActionComponent,
   rowActionComponentAdditionalProps,
+  headerButton,
+  shouldShowColumnVisibilityPicker,
+  localStorageKey,
 }: RelatedRecordTableProps<T, P>) {
+  const [
+    isColVisibilityLocalStorageLoaded,
+    setIsColVisibilityLocalStorageLoaded,
+  ] = useState(false);
+
+  /** Use custom hook to get array of visible columns, column visibility settings,
+   * and state setter function */
+  const {
+    visibleColumns,
+    columnVisibilitySettings,
+    setColumnVisibilitySettings,
+  } = useVisibleColumns(columns);
+
   return (
     <Card>
-      <Card.Header>
+      <Card.Header className="d-flex justify-content-between">
         {typeof header === "string" ? (
           <Card.Title>{header}</Card.Title>
         ) : (
-          header
+          <div>{header}</div>
         )}
+        <div className="d-flex gap-2">
+          {headerButton && headerButton}
+          {shouldShowColumnVisibilityPicker && (
+            <TableColumnVisibilityMenu
+              columnVisibilitySettings={columnVisibilitySettings}
+              setColumnVisibilitySettings={setColumnVisibilitySettings}
+              localStorageKey={localStorageKey}
+              isColVisibilityLocalStorageLoaded={
+                isColVisibilityLocalStorageLoaded
+              }
+              setIsColVisibilityLocalStorageLoaded={
+                setIsColVisibilityLocalStorageLoaded
+              }
+            ></TableColumnVisibilityMenu>
+          )}
+        </div>
       </Card.Header>
       <Card.Body>
         <Table hover responsive>
           <thead>
             <tr>
-              {columns.map((col) => (
+              {visibleColumns.map((col) => (
                 <th key={String(col.path)} style={{ textWrap: "nowrap" }}>
                   {col.label}
                 </th>
@@ -144,7 +194,7 @@ export default function RelatedRecordTable<
               records.map((record, i) => (
                 <RelatedRecordTableRow<T, P>
                   key={i}
-                  columns={columns}
+                  columns={visibleColumns}
                   isValidating={isValidating}
                   onSaveCallback={onSaveCallback}
                   record={record}
