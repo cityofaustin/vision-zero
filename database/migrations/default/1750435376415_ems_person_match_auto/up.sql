@@ -170,7 +170,8 @@ BEGIN
     END IF;
     --
     -- The handle_matched_crash_pks_updated event is set via the EMS-crash matching trigger when
-    -- the matched_crash_ids array is modified.
+    -- the matched_crash_ids array is modified. It enables to conditionally decide if we want 
+    -- to `reset_crash_match`—which we want to do if the crash was not matched by manual Q/A
     --
     IF NEW._match_event_name = 'handle_matched_crash_pks_updated' then
         IF NEW.crash_match_status = 'matched_by_manual_qa'
