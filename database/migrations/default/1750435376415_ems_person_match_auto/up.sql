@@ -17,13 +17,12 @@ ADD COLUMN _match_event_name text
 CHECK (_match_event_name IS NULL),
 -- add constraint to ensure that crash_pk is never null if person_id is not null
 ADD CONSTRAINT check_person_id_crash_pk_dependency CHECK (
-    person_id IS NULL
-    OR crash_pk IS NOT NULL
+    (person_id IS NULL) OR (person_id IS NOT NULL AND crash_pk IS NOT NULL)
 );
 
 COMMENT ON COLUMN ems__incidents.person_match_status IS 'The status of the CR3 person record match';
 
-COMMENT ON COLUMN ems__incidents.matched_person_ids IS 'The IDs of the CR3 person records that were found to match this record';
+COMMENT ON COLUMN ems__incidents.matched_person_ids IS 'The IDs of the CR3 person records that were found to match this record. Set via trigger when `crash_pk` is not null.';
 
 COMMENT ON COLUMN ems__incidents._match_event_name IS 'Used to dispatch crash matching events. Once dispatched, this value is always set to null via trigger';
 
@@ -77,7 +76,18 @@ BEGIN
         p.crash_pk = ems_record.crash_pk
         and p.prsn_age = ems_record.pcr_patient_age
         AND gndr_lkp.label ilike ems_record.pcr_patient_gender
-        AND ems_record.pcr_patient_race ilike CONCAT('%', ethncty_lkp.label, '%')
+        --
+        -- ethnicity can be matched with a case-insensitive wildcard
+        -- except for `American Indian or Alaska Native` which maps
+        -- to the CRIS label `AMER. INDIAN/ALASKAN NATIVE`
+        --
+        AND (
+            ems_record.pcr_patient_race ilike CONCAT('%', ethncty_lkp.label, '%')
+            OR (
+                ethncty_lkp.label ilike '%indian%' 
+                AND ems_record.pcr_patient_race ilike '%indian%'
+            )
+        )
         into matching_person_ids;
 
     raise debug 'Found % matching people records', array_length(matching_person_ids, 1);
@@ -107,7 +117,7 @@ BEGIN
         'sync_crash_pk_on_person_match',
         'unmatch_crash_by_manual_qa',
         'unmatch_person_by_manual_qa',
-        'update_matched_crash_ids'
+        'handle_matched_crash_pks_updated'
     ) then
         RAISE EXCEPTION 'Invalid _match_event_name: `%`', NEW._match_event_name
         USING HINT = 'Check this function definition for allowed _match_event_name values',
@@ -138,7 +148,7 @@ BEGIN
         return NEW;
     END IF;
     --
-    -- `match_person_by_manual_qa` is sent when a person match is selected through the VZE UI
+    -- `match_person_by_manual_qa` is set when a person match is selected through the VZE UI
     --
     IF NEW._match_event_name = 'match_person_by_manual_qa' and NEW.person_id is not null then
         -- 
@@ -159,26 +169,32 @@ BEGIN
         return new;
     END IF;
     --
-    -- The update_matched_crash_ids event is set via the EMS-crash matching trigger
+    -- The handle_matched_crash_pks_updated event is set via the EMS-crash matching trigger when
+    -- the matched_crash_ids array is modified.
     --
-    IF NEW._match_event_name = 'update_matched_crash_ids' then
+    IF NEW._match_event_name = 'handle_matched_crash_pks_updated' then
         IF NEW.crash_match_status = 'matched_by_manual_qa'
         OR NEW.person_match_status = 'matched_by_manual_qa'then
             -- nothing at all todo here
             -- person match is not affected by this change
             -- because crash_pk is not changing
-            raise debug 'update_matched_crash_ids: nothing to do to EMS ID % because crash/person have been matched manually', NEW.id;
+            raise debug 'handle_matched_crash_pks_updated: nothing to do to EMS ID % because crash/person have been matched manually', NEW.id;
             NEW._match_event_name = NULL;
             return NEW;
         ELSE
             -- if crash/person have not been matched manually, we can handle the updated
             -- matched_crash_ids array as if we are resetting the match
-            raise debug 'update_matched_crash_ids: change event name to `reset_crash_match` fo EMS ID %', NEW.id;
+            raise debug 'handle_matched_crash_pks_updated: change event name to `reset_crash_match` for EMS ID %', NEW.id;
             NEW._match_event_name = 'reset_crash_match';
         END IF;
     END IF;
     --
-    -- reset_crash_match can be sent from the VZE UI or via previous step in this function
+    -- reset_crash_match can be sent from the VZE UI (by clicking the Reset button), or
+    -- via previous step in this function, when we handle the `handle_matched_crash_pks_updated`
+    -- event for a crash which was not matched by manual review/qa
+    --
+    -- it serves the purpose of restoring/refreshing an EMS record to the crash and person
+    -- match states based on whatever IDs are present in the `matched_crash_pks` column.
     --
     IF NEW._match_event_name = 'reset_crash_match' then
         --
@@ -306,7 +322,14 @@ END;
 $function$;
 
 --
--- Update the ems-crash matching trigger to use _match_event_name
+-- Function which handles an insert or update to a crash record by checking
+-- for EMS records which match the crash time and location. 
+--
+-- The function has the sole responsibility of managing a crash's `matched_crash_pks` column.
+-- 
+-- When this function is complete, it assigns a `handle_matched_crash_pks_updated` event to the
+-- crash, thereby handing it off to our event handler function to update crash and person
+-- match statuses.
 --
 CREATE
 OR REPLACE FUNCTION public.update_crash_ems_match() RETURNS trigger LANGUAGE plpgsql AS $function$
@@ -357,7 +380,7 @@ BEGIN
           UPDATE ems__incidents 
             SET 
                 matched_crash_pks = matched_crash_ids,
-                _match_event_name = 'update_matched_crash_ids'
+                _match_event_name = 'handle_matched_crash_pks_updated'
             WHERE id = matching_ems.id;
     END LOOP;
 
@@ -413,13 +436,13 @@ BEGIN
                     UPDATE ems__incidents
                     SET
                         matched_crash_pks = NULL,
-                        _match_event_name = 'update_matched_crash_ids'
+                        _match_event_name = 'handle_matched_crash_pks_updated'
                     WHERE id = ems_record.id;
                 ELSE
                     UPDATE ems__incidents
                     SET
                         matched_crash_pks = updated_matched_crash_ids,
-                        _match_event_name = 'update_matched_crash_ids'
+                        _match_event_name = 'handle_matched_crash_pks_updated'
                     WHERE id = ems_record.id;
                 END IF;
             END LOOP;
@@ -434,4 +457,5 @@ DROP TRIGGER IF EXISTS ems_update_person_crash_id_trigger ON ems__incidents;
 DROP FUNCTION IF EXISTS ems_update_person_crash_id;
 
 -- finally, update the `person_match_status` of existing EMS records that are already matched to a person 
-update ems__incidents set person_match_status = 'matched_by_manual_qa' where person_id is not null;
+UPDATE ems__incidents SET person_match_status = 'matched_by_manual_qa'
+WHERE person_id IS NOT NULL;
