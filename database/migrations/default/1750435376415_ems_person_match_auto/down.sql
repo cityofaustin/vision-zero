@@ -223,6 +223,6 @@ DROP FUNCTION if exists public.ems_update_handle_record_match_event;
 
 ALTER TABLE ems__incidents DROP COLUMN person_match_status,
 DROP COLUMN matched_person_ids,
-DROP COLUMN _match_event_name
+DROP COLUMN _match_event_name,
 drop constraint check_person_id_crash_pk_dependency;
 
