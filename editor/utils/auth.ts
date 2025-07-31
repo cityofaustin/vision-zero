@@ -1,8 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { usePathname } from "next/navigation";
+import { useCallback } from "react";
 import { useAuth0, User } from "@auth0/auth0-react";
-
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 /**
  * Add our claims to the Auth0 ID token—these are
@@ -83,8 +80,9 @@ export const useGetToken = (): (() => Promise<string | undefined>) => {
     } catch (err) {
       console.error("Error getting access token:", err);
     }
+    // we can ignore getAccessTokenSilently in our dep array - 
+    // Auth0 didn't bother to memoize it for us and `isAuthenticated`
+    // has us covered.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // we can ignore getAccessTokenSilently - Auth0 didn't bother
-    // to memoize it for us and `isAuthenticated` has us covered
   }, [isAuthenticated]);
 };
