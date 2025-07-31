@@ -51,7 +51,9 @@ const fetcher = <T>([query, variables, token, hasuraRoleName]: [
 
 interface UseQueryProps {
   /**
-   * The graphql query
+   * The graphql query. If `null`, the query will not be executed. This
+   * feature can be used to accomplish conditional rendering. See the
+   * SWR docs: https://swr.vercel.app/docs/conditional-fetching#conditional
    */
   query: RequestDocument | null;
   /**
@@ -90,7 +92,13 @@ interface UseQueryResponse<T> {
  * Hook which wraps `useSWR` and provides auth
  *
  * This hook is limited to querying just one type per query as
- * will be defined by the typename
+ * will be defined by the typename.
+ * 
+ * The query fetch action can be delayed/disabled by passing `null` 
+ * in the query argument. This feature can be used to accomplish conditional
+ * rendering. See the SWR docs: 
+ * https://swr.vercel.app/docs/conditional-fetching#conditional
+ * 
  */
 export const useQuery = <T extends Record<string, unknown>>({
   query,
