@@ -491,7 +491,7 @@ $function$;
 
 DROP TRIGGER IF EXISTS people_dispatch_ems_match_trigger ON people;
 CREATE TRIGGER people_dispatch_ems_match_trigger AFTER
-UPDATE ON people FOR EACH ROW
+INSERT OR UPDATE ON people FOR EACH ROW
 EXECUTE FUNCTION people_dispatch_ems_match();
 
 -- delete this trigger/function which is now redundant
