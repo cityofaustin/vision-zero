@@ -100,7 +100,7 @@ export default function UserDetails({
       window.alert(`Failed to delete user: An unknown error has occured`);
     }
     setIsDeleting(false);
-  }, [router, userId]);
+  }, [router, userId, getToken]);
 
   if (user && "error" in user) {
     // 404
