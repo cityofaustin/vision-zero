@@ -3,13 +3,13 @@ import Button from "react-bootstrap/Button";
 import { FaFilePdf } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
 import { Crash } from "@/types/crashes";
-import { useToken } from "@/utils/auth";
+import { useGetToken } from "@/utils/auth";
 
 /**
  * Card component that renders the crash narrative and a download CR3 button
  */
 export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
-  const token = useToken();
+  const getToken = useGetToken();
 
   const isCr3Stored = crash.cr3_stored_fl;
 
@@ -18,6 +18,7 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
     const requestUrl = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/cr3/download/${crash.record_locator}`;
 
     try {
+      const token = await getToken();
       const response = await fetch(requestUrl, {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -6,7 +6,7 @@ import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { User, UserAPIError } from "@/types/users";
-import { useToken } from "@/utils/auth";
+import { useGetToken } from "@/utils/auth";
 
 interface UserModalProps {
   /**
@@ -52,7 +52,7 @@ export default function UserModal({
 }: UserModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const token = useToken();
+  const getToken = useGetToken();
   const {
     register,
     handleSubmit,
@@ -76,6 +76,7 @@ export default function UserModal({
 
     const method = user ? "PUT" : "POST";
     try {
+      const token = await getToken();
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${token}`,

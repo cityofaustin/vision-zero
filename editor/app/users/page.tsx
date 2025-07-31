@@ -12,15 +12,13 @@ import PermissionsRequired from "@/components/PermissionsRequired";
 import UserModal from "@/components/UserModal";
 import { useUsersInfinite } from "@/utils/users";
 import { User } from "@/types/users";
-import { useToken, formatRoleName } from "@/utils/auth";
+import { formatRoleName } from "@/utils/auth";
 
 const allowedCreateUserRoles = ["vz-admin"];
 
 export default function Users() {
-  const token = useToken();
   const router = useRouter();
-  const { users, isLoading, isValidating, error, mutate } =
-    useUsersInfinite(token);
+  const { users, isLoading, isValidating, error, mutate } = useUsersInfinite();
   const [showNewUserModal, setShowNewUserModal] = useState(false);
   const [copyUserEmailsClicked, setCopyUserEmailsClicked] = useState(false);
   const onCloseModal = () => setShowNewUserModal(false);

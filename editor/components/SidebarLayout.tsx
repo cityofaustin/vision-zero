@@ -61,6 +61,9 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
     return null;
   }
 
+  /**
+   * Render the login page if needed
+   */
   if (!isAuthenticated || !user) {
     return (
       <div
@@ -81,6 +84,9 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
     );
   }
 
+  /**
+   * Render the app
+   */
   return (
     <div
       className="d-flex flex-column overflow-hidden"

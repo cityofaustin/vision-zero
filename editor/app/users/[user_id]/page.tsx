@@ -11,7 +11,7 @@ import { FaUserEdit, FaUserAltSlash } from "react-icons/fa";
 import AlignedLabel from "@/components/AlignedLabel";
 import UserModal from "@/components/UserModal";
 import PermissionsRequired from "@/components/PermissionsRequired";
-import { useToken, formatRoleName } from "@/utils/auth";
+import { formatRoleName, useGetToken } from "@/utils/auth";
 import { useUser } from "@/utils/users";
 import { User } from "@/types/users";
 import { formatDateTimeWithDay } from "@/utils/formatters";
@@ -56,10 +56,10 @@ export default function UserDetails({
 }: {
   params: { user_id: string };
 }) {
+  const getToken = useGetToken();
   const router = useRouter();
-  const token = useToken();
   const userId = params.user_id;
-  const { data: user, mutate } = useUser(userId, token);
+  const { data: user, mutate } = useUser(userId);
   const [showEditUserModal, setShowEditUserModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const onCloseModal = () => setShowEditUserModal(false);
@@ -76,6 +76,7 @@ export default function UserDetails({
       process.env.NEXT_PUBLIC_CR3_API_DOMAIN
     }/user/delete_user/${encodeURIComponent(userId)}`;
     const method = "DELETE";
+    const token = await getToken();
     try {
       const response = await fetch(url, {
         headers: {
@@ -99,7 +100,7 @@ export default function UserDetails({
       window.alert(`Failed to delete user: An unknown error has occured`);
     }
     setIsDeleting(false);
-  }, [router, token, userId]);
+  }, [router, userId, getToken]);
 
   if (user && "error" in user) {
     // 404
