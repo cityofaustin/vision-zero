@@ -12,6 +12,7 @@ import {
   UPDATE_EMS_INCIDENT,
   UPDATE_EMS_INCIDENT_CRASH_AND_PERSON,
 } from "@/queries/ems";
+import { UPDATE_PERSON } from "@/queries/person";
 import { EMSPatientCareRecord } from "@/types/ems";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
 import EMSLinkRecordButton, {
@@ -250,7 +251,7 @@ export default function EMSDetailsPage({
             noRowsMessage="No people found"
             header="Possible people matches"
             columns={emsMatchingPeopleColumns}
-            mutation=""
+            mutation={UPDATE_PERSON}
             onSaveCallback={onSaveCallback}
             rowActionComponent={EMSLinkToPersonButton}
             rowActionComponentAdditionalProps={linkToPersonButtonProps}
