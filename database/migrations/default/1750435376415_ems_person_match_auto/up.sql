@@ -152,6 +152,8 @@ BEGIN
     -- `match_person_by_manual_qa` is set when a person match is selected through the VZE UI
     --
     IF NEW._match_event_name = 'match_person_by_manual_qa' and NEW.person_id is not null then
+        NEW.person_match_status = 'matched_by_manual_qa';
+
         -- 
         -- Keep the record's crash_pk in sync with the provided person_id -
         -- we must grab the new person record's crash_pk from their unit record
@@ -165,7 +167,7 @@ BEGIN
             raise debug 'updating EMS record ID % crash_pk to % to match updated person_id', NEW.id, matching_person_record_crash_pk;
             NEW.crash_pk = matching_person_record_crash_pk;
             NEW.crash_match_status = 'matched_by_manual_qa';
-            NEW.person_match_status = 'matched_by_manual_qa';
+
         END IF;
         -- clear the _match_event_name
         NEW._match_event_name = null;
@@ -227,6 +229,9 @@ BEGIN
             raise debug 'Reset EMS ID % crash_match_status to matched_by_automation', NEW.id;
             NEW.crash_pk = NEW.matched_crash_pks[1];
             NEW.crash_match_status = 'matched_by_automation';
+            NEW.person_id = NULL;
+            NEW.person_match_status = 'unmatched';
+            NEW.matched_person_ids = NULL;
             -- don't return here so that we proceed to person matching
         ELSE
             raise debug 'Reset EMS ID % to multiple_matches_by_automation', NEW.id;
