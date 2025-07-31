@@ -226,3 +226,5 @@ DROP COLUMN matched_person_ids,
 DROP COLUMN _match_event_name,
 drop constraint check_person_id_crash_pk_dependency;
 
+DROP TRIGGER IF EXISTS people_dispatch_ems_match_trigger ON people;
+DROP FUNCTION if EXISTS people_dispatch_ems_match();

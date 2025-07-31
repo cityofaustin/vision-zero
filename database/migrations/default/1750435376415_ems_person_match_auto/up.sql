@@ -102,7 +102,7 @@ CREATE
 OR REPLACE FUNCTION public.ems_update_handle_record_match_event() RETURNS trigger LANGUAGE plpgsql AS $function$
 DECLARE
     matching_person_ids INTEGER[];
-    matching_person_record RECORD;
+    matching_person_record_crash_pk INTEGER;
 BEGIN
     raise debug '**function: ems_update_handle_record_match_event for EMS ID: % **, event: %', NEW.id, NEW._match_event_name;
     --
@@ -117,7 +117,8 @@ BEGIN
         'sync_crash_pk_on_person_match',
         'unmatch_crash_by_manual_qa',
         'unmatch_person_by_manual_qa',
-        'handle_matched_crash_pks_updated'
+        'handle_matched_crash_pks_updated',
+        'handle_person_record_created_or_updated'
     ) then
         RAISE EXCEPTION 'Invalid _match_event_name: `%`', NEW._match_event_name
         USING HINT = 'Check this function definition for allowed _match_event_name values',
@@ -152,15 +153,16 @@ BEGIN
     --
     IF NEW._match_event_name = 'match_person_by_manual_qa' and NEW.person_id is not null then
         -- 
-        -- Keep the record's crash_pk in sync with the provided person_id
+        -- Keep the record's crash_pk in sync with the provided person_id -
+        -- we must grab the new person record's crash_pk from their unit record
         --
-        SELECT id, crash_pk INTO matching_person_record 
-        FROM people_list_view 
-        WHERE id = NEW.person_id;
+        SELECT crash_pk INTO matching_person_record_crash_pk
+        FROM units 
+        WHERE id = NEW.unit_id;
 
-        IF matching_person_record.crash_pk IS DISTINCT FROM NEW.crash_pk then
-            raise debug 'updating EMS record ID % crash_pk to % to match updated person_id', NEW.id, matching_person_record.crash_pk;
-            NEW.crash_pk = matching_person_record.crash_pk;
+        IF matching_person_record_crash_pk IS DISTINCT FROM NEW.crash_pk then
+            raise debug 'updating EMS record ID % crash_pk to % to match updated person_id', NEW.id, matching_person_record_crash_pk;
+            NEW.crash_pk = matching_person_record_crash_pk;
             NEW.crash_match_status = 'matched_by_manual_qa';
             NEW.person_match_status = 'matched_by_manual_qa';
         END IF;
@@ -243,7 +245,8 @@ BEGIN
     IF NEW._match_event_name in (
         'match_crash_by_automation',
         'sync_crash_pk_on_person_match',
-        'reset_crash_match'
+        'reset_crash_match',
+        'handle_person_record_created_or_updated'
     )
         AND new.crash_pk IS NOT NULL THEN
         --
@@ -328,8 +331,11 @@ BEGIN
 END;
 $function$;
 
+
 --
--- Function which handles an insert or update to a crash record by checking
+-- Update this function to use the new event _match_event_name functionality
+--
+-- This function handles an insert or update to a crash record by checking
 -- for EMS records which match the crash time and location. 
 --
 -- The function has the sole responsibility of managing a crash's `matched_crash_pks` column.
@@ -459,7 +465,37 @@ BEGIN
 END;
 $function$;
 
--- delete this trigger which is now redundant
+
+
+--
+-- This is a new function which handles when a person record is inserted or updated
+--
+CREATE
+OR REPLACE FUNCTION public.people_dispatch_ems_match() RETURNS trigger LANGUAGE plpgsql AS $function$
+DECLARE
+    person_crash_pk integer;
+BEGIN
+    raise debug '**function: people_dispatch_ems_match **';
+    
+    SELECT units.crash_pk INTO person_crash_pk FROM units where units.id = NEW.unit_id;
+    
+    raise debug 'Dispatching update event to EMS records matched to crash_pk %', person_crash_pk;
+
+    UPDATE ems__incidents 
+    SET 
+        _match_event_name = 'handle_person_record_created_or_updated'
+    WHERE
+       ems__incidents.crash_pk = person_crash_pk;
+    RETURN null;
+END;
+$function$;
+
+DROP TRIGGER IF EXISTS people_dispatch_ems_match_trigger ON people;
+CREATE TRIGGER people_dispatch_ems_match_trigger AFTER
+UPDATE ON people FOR EACH ROW
+EXECUTE FUNCTION people_dispatch_ems_match();
+
+-- delete this trigger/function which is now redundant
 DROP TRIGGER IF EXISTS ems_update_person_crash_id_trigger ON ems__incidents;
 DROP FUNCTION IF EXISTS ems_update_person_crash_id;
 
