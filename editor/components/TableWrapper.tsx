@@ -1,25 +1,27 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
-import isEqual from "lodash/isEqual";
-import cloneDeep from "lodash/cloneDeep";
-import { useQuery } from "@/utils/graphql";
 import Table from "@/components/Table";
-import TableSearch, { SearchSettings } from "@/components/TableSearch";
-import TableDateSelector from "@/components/TableDateSelector";
-import { makeDateFilterFromMode } from "@/utils/dates";
-import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
-import { useQueryBuilder, useExportQuery } from "@/utils/queryBuilder";
-import { QueryConfig, Filter } from "@/types/queryBuilder";
-import { ColDataCardDef, ColumnVisibilitySetting } from "@/types/types";
 import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
-import TableAdvancedSearchFilterToggle from "@/components/TableAdvancedSearchFilterToggle";
+import TableAdvancedSearchFilterToggle, {
+  useActiveSwitchFilterCount,
+} from "@/components/TableAdvancedSearchFilterToggle";
+import TableDateSelector from "@/components/TableDateSelector";
 import TableExportModal from "@/components/TableExportModal";
 import TablePaginationControls from "@/components/TablePaginationControls";
-import { useActiveSwitchFilterCount } from "@/components/TableAdvancedSearchFilterToggle";
 import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
+import TableSearch, { SearchSettings } from "@/components/TableSearch";
+import TableSearchFieldSelector from "@/components/TableSearchFieldSelector";
+import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
 import { QueryConfigSchema } from "@/schema/queryBuilder";
+import { Filter, QueryConfig } from "@/types/queryBuilder";
+import { ColDataCardDef } from "@/types/types";
+import { makeDateFilterFromMode } from "@/utils/dates";
+import { useQuery } from "@/utils/graphql";
+import { useExportQuery, useQueryBuilder } from "@/utils/queryBuilder";
+import cloneDeep from "lodash/cloneDeep";
+import isEqual from "lodash/isEqual";
 
 interface TableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
@@ -66,20 +68,6 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   ] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
-  /**
-   * Initialize column visibility from provided columns
-   */
-  const [columnVisibilitySettings, setColumnVisibilitySettings] = useState<
-    ColumnVisibilitySetting[]
-  >(
-    columns
-      .filter((col) => !col.exportOnly)
-      .map((col) => ({
-        path: String(col.path),
-        isVisible: !col.defaultHidden,
-        label: col.label,
-      }))
-  );
   const [searchSettings, setSearchSettings] = useState<SearchSettings>({
     searchString: String(initialQueryConfig.searchFilter.value),
     searchColumn: initialQueryConfig.searchFilter.column,
@@ -88,25 +76,13 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     ...initialQueryConfig,
   });
 
-  /**
-   * Construct the table's visibile columns
-   */
-  const visibleColumns = useMemo(
-    () =>
-      columns.filter((col) => {
-        const colFromVisibilitySettings = columnVisibilitySettings.find(
-          (visibleColumn) => visibleColumn.path === col.path
-        );
-        /**
-         * if a matching column is found in the visibility settings, use it
-         * otherwise the column is visible unless it's exportOnly or defaultHidden
-         */
-        return colFromVisibilitySettings
-          ? colFromVisibilitySettings.isVisible
-          : !col.exportOnly && !col.defaultHidden;
-      }),
-    [columns, columnVisibilitySettings]
-  );
+  /** Use custom hook to get array of visible columns, column visibility settings,
+   * and state setter function */
+  const {
+    visibleColumns,
+    columnVisibilitySettings,
+    setColumnVisibilitySettings,
+  } = useVisibleColumns(columns);
 
   const query = useQueryBuilder(
     queryConfig,
@@ -190,62 +166,6 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   }, [localStorageKey]);
 
   /**
-   * Load column visibility settings from localstorage
-   */
-  useEffect(() => {
-    if (isColVisibilityLocalStorageLoaded) {
-      return;
-    }
-    /**
-     * Try to load column visibility
-     */
-    const columnLocalStorageKey = localStorageKey + "_columnVisibility";
-    const columnVisibilityFromStorageString =
-      localStorage.getItem(columnLocalStorageKey) || "";
-    let columnVisibilityFromStorage: ColumnVisibilitySetting[] | undefined;
-
-    try {
-      columnVisibilityFromStorage = JSON.parse(
-        columnVisibilityFromStorageString
-      );
-    } catch {
-      console.error(
-        "Unable to parse column visibility from local storage. Using default visibility instead"
-      );
-      setIsColVisibilityLocalStorageLoaded(true);
-      return;
-    }
-
-    if (columnVisibilityFromStorage) {
-      /**
-       * Update the default visibility from what was found in local storage. This
-       * ensures that stale col visibility data from storage is brought into sync
-       * with the current version of the table config
-       */
-      const updatedColVisibilitySettings = columnVisibilitySettings.map(
-        (col) => {
-          const savedCol = columnVisibilityFromStorage.find(
-            (savedCol) => savedCol.path === col.path
-          );
-          if (savedCol) {
-            // use visibility from saved column
-            return { ...col, isVisible: savedCol.isVisible };
-          } else {
-            return { ...col };
-          }
-        }
-      );
-      setColumnVisibilitySettings(updatedColVisibilitySettings);
-      setIsColVisibilityLocalStorageLoaded(true);
-    }
-  }, [
-    localStorageKey,
-    columns,
-    columnVisibilitySettings,
-    isColVisibilityLocalStorageLoaded,
-  ]);
-
-  /**
    * Keep changes to query config in sync with localstorage
    */
   useEffect(() => {
@@ -253,23 +173,6 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       localStorage.setItem(localStorageKey, JSON.stringify(queryConfig));
     }
   }, [isQueryConfigLocalStorageLoaded, queryConfig, localStorageKey]);
-
-  /**
-   * Keep changes to col visibility in sync with localstorage
-   */
-  useEffect(() => {
-    if (isColVisibilityLocalStorageLoaded) {
-      const columnVisLocalStorageKey = localStorageKey + "_columnVisibility";
-      localStorage.setItem(
-        columnVisLocalStorageKey,
-        JSON.stringify(columnVisibilitySettings)
-      );
-    }
-  }, [
-    isColVisibilityLocalStorageLoaded,
-    localStorageKey,
-    columnVisibilitySettings,
-  ]);
 
   /**
    * Keep the search settings string in sync with queryConfig changes
@@ -382,6 +285,13 @@ export default function TableWrapper<T extends Record<string, unknown>>({
               totalRecordCount={aggregateData?.aggregate?.count || 0}
               onClickDownload={() => setShowExportModal(true)}
               exportable={Boolean(queryConfig.exportable)}
+              localStorageKey={localStorageKey}
+              isColVisibilityLocalStorageLoaded={
+                isColVisibilityLocalStorageLoaded
+              }
+              setIsColVisibilityLocalStorageLoaded={
+                setIsColVisibilityLocalStorageLoaded
+              }
             />
           </Col>
         </Row>
