@@ -98,6 +98,11 @@ export default function TableDateSelector({
           <DatePicker
             toggleCalendarOnIconClick
             className="form-control"
+            // setting multiple date formats allows the datepicker
+            // to properly parse yyyy-MM-dd when keyed/pasted into the picker
+            // this feature is not documented but the type def and code
+            // clearly support it
+            dateFormat={["MM/dd/yyyy", "yyyy-MM-dd"]}
             onChange={(date) => {
               if (date) {
                 // set the hours to the beginning of the date selected
@@ -118,6 +123,7 @@ export default function TableDateSelector({
           <DatePicker
             toggleCalendarOnIconClick
             className="form-control"
+            dateFormat={["MM/dd/yyyy", "yyyy-MM-dd"]}
             onChange={(date) => {
               if (date) {
                 // set the hours to the end of the date selected
