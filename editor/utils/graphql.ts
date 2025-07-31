@@ -7,7 +7,7 @@ import {
   RequestDocument,
   Variables,
 } from "graphql-request";
-import { getRolesArray, getHasuraRoleName, useToken } from "./auth";
+import { getRolesArray, getHasuraRoleName, useGetToken } from "./auth";
 import { MutationVariables } from "@/types/types";
 import { HasuraAggregateData, HasuraGraphQLResponse } from "@/types/graphql";
 import { Relationship } from "@/types/relationships";
@@ -100,20 +100,20 @@ export const useQuery = <T extends Record<string, unknown>>({
   hasAggregates,
 }: UseQueryProps): UseQueryResponse<T> => {
   const { user } = useAuth0();
-  const token = useToken();
+  const getToken = useGetToken();
 
   const fetchWithAuth = async ([query, variables]: [
     RequestDocument,
     Variables,
   ]): Promise<HasuraGraphQLResponse<T, typeof typename>> => {
     const hasuraRoleName = getHasuraRoleName(getRolesArray(user));
+    const token = await getToken();
     return fetcher([query, variables, token || "", hasuraRoleName]);
   };
 
-  // todo: document falsey query handling
   const { data, error, isLoading, mutate, isValidating } = useSWR<
     HasuraGraphQLResponse<T, typeof typename>
-  >(token && query ? [query, variables] : null, fetchWithAuth, {
+  >(query ? [query, variables] : null, fetchWithAuth, {
     ...DEFAULT_SWR_OPTIONS,
     ...(options || {}),
   });
@@ -138,9 +138,9 @@ interface MutationOptions {
  */
 export const useMutation = (mutation: RequestDocument) => {
   const { user } = useAuth0();
-  const token = useToken();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const getToken = useGetToken();
 
   const mutate = useCallback(
     async <T>(variables?: MutationVariables, options?: MutationOptions) => {
@@ -158,6 +158,7 @@ export const useMutation = (mutation: RequestDocument) => {
       }
       try {
         const hasuraRole = getHasuraRoleName(getRolesArray(user));
+        const token = await getToken();
         const client = new GraphQLClient(ENDPOINT, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -174,7 +175,7 @@ export const useMutation = (mutation: RequestDocument) => {
         setLoading(false);
       }
     },
-    [token, mutation, user]
+    [mutation, user, getToken]
   );
 
   return { mutate, loading, error };
