@@ -156,9 +156,10 @@ BEGIN
         -- Keep the record's crash_pk in sync with the provided person_id -
         -- we must grab the new person record's crash_pk from their unit record
         --
-        SELECT crash_pk INTO matching_person_record_crash_pk
-        FROM units 
-        WHERE id = NEW.unit_id;
+        SELECT units.crash_pk INTO matching_person_record_crash_pk
+        FROM people
+        LEFT JOIN units on units.id = people.unit_id
+        WHERE people.id = NEW.person_id;
 
         IF matching_person_record_crash_pk IS DISTINCT FROM NEW.crash_pk then
             raise debug 'updating EMS record ID % crash_pk to % to match updated person_id', NEW.id, matching_person_record_crash_pk;
