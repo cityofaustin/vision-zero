@@ -466,9 +466,8 @@ END;
 $function$;
 
 
-
 --
--- This is a new function which handles when a person record is inserted or updated
+-- This is a new function that triggers EMS re-matching when a person record is inserted or updated
 --
 CREATE
 OR REPLACE FUNCTION public.people_dispatch_ems_match() RETURNS trigger LANGUAGE plpgsql AS $function$
