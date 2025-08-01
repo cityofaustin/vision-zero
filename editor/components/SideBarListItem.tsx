@@ -23,7 +23,7 @@ export default function SideBarListItem({
   return (
     <ListGroup.Item
       className={`mx-0 bg-dark fs-5 my-1 ${
-        isCurrentPage ? "text-white" : "text-secondary"
+        isCurrentPage ? "text-white fw-bold" : "text-secondary"
       }`}
       style={{ cursor: "pointer", whiteSpace: "nowrap", border: "none" }}
       action
@@ -34,7 +34,7 @@ export default function SideBarListItem({
         <span className={isCollapsed ? "" : "me-3"}>
           <Icon />
         </span>
-        {!isCollapsed && <span>{label}</span>}
+        {!isCollapsed && <span className="fs-6">{label}</span>}
       </>
     </ListGroup.Item>
   );
