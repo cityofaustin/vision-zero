@@ -80,33 +80,24 @@ export default function TablePaginationControls({
   isColVisibilityLocalStorageLoaded,
   setIsColVisibilityLocalStorageLoaded,
 }: PaginationControlProps) {
-  const currentPageNum = queryConfig.offset / queryConfig.limit + 1;
-
   const pageLeftButtonDisabled =
     recordCount === 0 || queryConfig.offset === 0 || isLoading;
-  const pageRightButtonDisabled =
-    totalRecordCount <= queryConfig.limit || isLoading;
 
+  const pageRightButtonDisabled =
+    totalRecordCount <= queryConfig.offset + queryConfig.limit || isLoading;
+
+  const currentPageRowRange = [
+    queryConfig.offset + 1,
+    Math.min(totalRecordCount, queryConfig.offset + queryConfig.limit),
+  ];
+
+  console.log("queryConfig", currentPageRowRange);
   return (
     <ButtonToolbar>
       <div className="text-nowrap text-secondary d-flex align-items-center me-2">
         {totalRecordCount > 0 && (
           <>
-            <span className="me-2">{`${totalRecordCount.toLocaleString()} record${
-              totalRecordCount === 1 ? "" : "s"
-            }`}</span>
-            {exportable && (
-              <Button
-                variant="outline-primary"
-                className="border-0"
-                onClick={onClickDownload}
-              >
-                <AlignedLabel>
-                  <FaDownload className="me-2" />
-                  <span>Download</span>
-                </AlignedLabel>
-              </Button>
-            )}
+            <span>{`Showing ${currentPageRowRange[0].toLocaleString()}-${currentPageRowRange[1].toLocaleString()} of ${totalRecordCount.toLocaleString()} results`}</span>
           </>
         )}
         {totalRecordCount <= 0 && <span>No results</span>}
@@ -133,12 +124,6 @@ export default function TablePaginationControls({
         >
           <FaAngleLeft />
         </Button>
-        <span
-          aria-label="Current page number"
-          className="my-auto text-center text-secondary mx-2 text-nowrap border-0"
-        >
-          {`Page ${currentPageNum}`}
-        </span>
         <Button
           variant={
             pageRightButtonDisabled ? "outline-secondary" : "outline-primary"
@@ -157,6 +142,18 @@ export default function TablePaginationControls({
           <FaAngleRight />
         </Button>
       </ButtonGroup>
+      {exportable && (
+        <Button
+          variant="outline-primary"
+          className="border-0 me-2"
+          onClick={onClickDownload}
+        >
+          <AlignedLabel>
+            <FaDownload className="me-2" />
+            <span>Download</span>
+          </AlignedLabel>
+        </Button>
+      )}
       <TableColumnVisibilityMenu
         columnVisibilitySettings={columnVisibilitySettings}
         setColumnVisibilitySettings={setColumnVisibilitySettings}
