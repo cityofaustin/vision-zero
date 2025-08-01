@@ -91,7 +91,6 @@ export default function TablePaginationControls({
     Math.min(totalRecordCount, queryConfig.offset + queryConfig.limit),
   ];
 
-  console.log("queryConfig", currentPageRowRange);
   return (
     <ButtonToolbar>
       <div className="text-nowrap text-secondary d-flex align-items-center me-2">
