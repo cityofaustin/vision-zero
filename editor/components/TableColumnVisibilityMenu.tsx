@@ -8,6 +8,8 @@ import {
 } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import Form from "react-bootstrap/Form";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 import { FaGear } from "react-icons/fa6";
 import { ColumnVisibilitySetting } from "@/types/types";
 import { ColDataCardDef } from "@/types/types";
@@ -205,13 +207,18 @@ export default function TableColumnVisibilityMenu({
 
   return (
     <Dropdown>
-      <Dropdown.Toggle
-        variant="outline-primary"
-        className="border-0 hide-toggle"
-        id="column-visibility-picker"
+      <OverlayTrigger
+        placement="top"
+        overlay={<Tooltip id="table-settings">Settings</Tooltip>}
       >
-        <FaGear />
-      </Dropdown.Toggle>
+        <Dropdown.Toggle
+          variant="outline-primary"
+          className="border-0 hide-toggle"
+          id="column-visibility-picker"
+        >
+          <FaGear />
+        </Dropdown.Toggle>
+      </OverlayTrigger>
 
       <Dropdown.Menu style={{ maxHeight: "50vh", overflowY: "auto" }}>
         {columnVisibilitySettings.map((col) => {

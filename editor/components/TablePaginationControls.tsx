@@ -3,6 +3,8 @@ import { produce } from "immer";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 import { FaAngleLeft, FaAngleRight, FaDownload } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
 import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
@@ -102,57 +104,75 @@ export default function TablePaginationControls({
         {totalRecordCount <= 0 && <span>No results</span>}
       </div>
       <ButtonGroup className="me-2" aria-label="Table pagniation controls">
-        <Button
-          variant={
-            pageLeftButtonDisabled ? "outline-secondary" : "outline-primary"
-          }
-          className="border-0"
-          disabled={pageLeftButtonDisabled}
-          onClick={() => {
-            const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
-              newQueryConfig.offset =
-                newQueryConfig.offset - newQueryConfig.limit;
-              if (newQueryConfig.offset < 0) {
-                // shouldn't be possible, but ok
-                newQueryConfig.offset = 0;
-              }
-              return newQueryConfig;
-            });
-            setQueryConfig(newQueryConfig);
-          }}
+        <OverlayTrigger
+          placement="top"
+          overlay={<Tooltip id="page-left-tooltip">Prev page</Tooltip>}
         >
-          <FaAngleLeft />
-        </Button>
-        <Button
-          variant={
-            pageRightButtonDisabled ? "outline-secondary" : "outline-primary"
-          }
-          className="border-0"
-          disabled={pageRightButtonDisabled}
-          onClick={() => {
-            const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
-              newQueryConfig.offset =
-                newQueryConfig.offset + newQueryConfig.limit;
-              return newQueryConfig;
-            });
-            setQueryConfig(newQueryConfig);
-          }}
+          <Button
+            variant={
+              pageLeftButtonDisabled ? "outline-secondary" : "outline-primary"
+            }
+            className="border-0"
+            disabled={pageLeftButtonDisabled}
+            onClick={() => {
+              const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
+                newQueryConfig.offset =
+                  newQueryConfig.offset - newQueryConfig.limit;
+                if (newQueryConfig.offset < 0) {
+                  // shouldn't be possible, but ok
+                  newQueryConfig.offset = 0;
+                }
+                return newQueryConfig;
+              });
+              setQueryConfig(newQueryConfig);
+            }}
+          >
+            <FaAngleLeft />
+          </Button>
+        </OverlayTrigger>
+        <OverlayTrigger
+          placement="top"
+          overlay={<Tooltip id="page-right-tooltip">Next page</Tooltip>}
         >
-          <FaAngleRight />
-        </Button>
+          <Button
+            variant={
+              pageRightButtonDisabled ? "outline-secondary" : "outline-primary"
+            }
+            className="border-0"
+            disabled={pageRightButtonDisabled}
+            onClick={() => {
+              const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
+                newQueryConfig.offset =
+                  newQueryConfig.offset + newQueryConfig.limit;
+                return newQueryConfig;
+              });
+              setQueryConfig(newQueryConfig);
+            }}
+          >
+            <FaAngleRight />
+          </Button>
+        </OverlayTrigger>
       </ButtonGroup>
+
       {exportable && (
-        <Button
-          variant="outline-primary"
-          className="border-0 me-2"
-          onClick={onClickDownload}
+        <OverlayTrigger
+          placement="top"
+          //   delay={{ show: 250, hide: 400 }}
+          overlay={<Tooltip id="download-tooltip">Download</Tooltip>}
         >
-          <AlignedLabel>
-            <FaDownload className="me-2" />
-            <span>Download</span>
-          </AlignedLabel>
-        </Button>
+          <Button
+            variant="outline-primary"
+            className="border-0 me-2"
+            onClick={onClickDownload}
+            title="Download results"
+          >
+            <AlignedLabel>
+              <FaDownload />
+            </AlignedLabel>
+          </Button>
+        </OverlayTrigger>
       )}
+
       <TableColumnVisibilityMenu
         columnVisibilitySettings={columnVisibilitySettings}
         setColumnVisibilitySettings={setColumnVisibilitySettings}
