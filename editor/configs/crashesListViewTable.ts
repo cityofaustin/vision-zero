@@ -267,7 +267,7 @@ export const crashesListViewQueryConfig: QueryConfig = {
   exportable: true,
   exportFilename: "crashes",
   tableName: "crashes_list_view",
-  limit: DEFAULT_QUERY_LIMIT,
+  limit: 1000,
   offset: 0,
   sortColName: "crash_timestamp",
   sortAsc: false,
@@ -292,4 +292,18 @@ export const crashesListViewQueryConfig: QueryConfig = {
     }),
   },
   filterCards: crashesListViewfilterCards,
+  mapConfig: {
+    isActive: false,
+    layerProps: {
+      id: "points-layer",
+      type: "circle",
+      paint: {
+        "circle-radius": 6,
+        "circle-color": "#007cbf",
+        "circle-stroke-width": 1,
+        "circle-stroke-color": "#ffffff",
+      },
+    },
+    geojsonTransformerName: "latLon",
+  },
 };

@@ -40,7 +40,7 @@ interface TableColumnVisibilityMenuProps {
 /**
  * Custom hook that is used in tables with column visibility settings.
  * It initializes the state for column visibility settings and returns it along with
- * the state setter and an array of visible columns
+ * the state setter and an array of visible columns.
  */
 export const useVisibleColumns = <T extends Record<string, unknown>>(
   columns: ColDataCardDef<T>[]
@@ -59,6 +59,10 @@ export const useVisibleColumns = <T extends Record<string, unknown>>(
         label: col.label,
       }))
   );
+  /**
+   * Array of all columns which should be currently
+   * be visible in the UI
+   */
   const visibleColumns = useMemo(
     () =>
       columns.filter((col) => {
@@ -69,12 +73,15 @@ export const useVisibleColumns = <T extends Record<string, unknown>>(
          * if a matching column is found in the visibility settings, use it
          * otherwise the column is visible unless it's exportOnly or defaultHidden
          */
-        return colFromVisibilitySettings
-          ? colFromVisibilitySettings.isVisible
-          : !col.exportOnly && !col.defaultHidden;
+        if (colFromVisibilitySettings) {
+          return colFromVisibilitySettings.isVisible;
+        } else {
+          return !col.exportOnly && !col.defaultHidden;
+        }
       }),
     [columns, columnVisibilitySettings]
   );
+
   return {
     /** Columns that should be visible based on user column visibility settings */
     visibleColumns,

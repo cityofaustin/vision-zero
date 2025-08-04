@@ -17,6 +17,7 @@
     "@date-fns/tz": "^1.2.0",
     "@mapbox/mapbox-gl-geocoder": "^5.1.0",
     "@turf/center": "^7.2.0",
+    "@types/geojson": "^7946.0.16",
     "@types/lodash": "^4.17.20",
     "@types/mapbox__mapbox-gl-geocoder": "^5.0.0",
     "@types/mapbox-gl": "^3.4.1",
