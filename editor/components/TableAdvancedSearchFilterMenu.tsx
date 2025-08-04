@@ -18,7 +18,7 @@ const flipSwitchFilter = (
   queryConfig: QueryConfig,
   filterCardId: string,
   switchFilterId: string
-) => {
+): QueryConfig => {
   // find this card
   const filterCardGroup: FilterGroup | undefined = queryConfig.filterCards.find(
     (filterGroup) => filterGroup.id === filterCardId
@@ -50,51 +50,56 @@ export default function TableAdvancedSearchFilterMenu({
   setQueryConfig,
 }: TableSearchProps) {
   return (
-    <Row className="p-2">
+    <>
       {queryConfig.filterCards.map((filterCard) => {
         return (
-          <Col key={filterCard.id} xs={12} md={3}>
-            <Card className="h-100">
-              <Card.Header className="fw-bold">{filterCard.label}</Card.Header>
-              <Card.Body>
-                <Form>
-                  {filterCard.filterGroups?.map((switchFilterGroup) => {
-                    const isChecked = switchFilterGroup.inverted
-                      ? !switchFilterGroup.enabled
-                      : !!switchFilterGroup.enabled;
+          <Row className="p-2">
+            <Col key={filterCard.id}>
+              <Card className="h-100">
+                <Card.Header className="fw-bold">
+                  {filterCard.label}
+                </Card.Header>
+                <Card.Body>
+                  <Form>
+                    {filterCard.filterGroups?.map((switchFilterGroup) => {
+                      const isChecked = switchFilterGroup.inverted
+                        ? !switchFilterGroup.enabled
+                        : !!switchFilterGroup.enabled;
 
-                    return (
-                      <Form.Check
-                        key={switchFilterGroup.id}
-                        type="switch"
-                        id={switchFilterGroup.id}
-                        label={switchFilterGroup.label}
-                        checked={isChecked}
-                        onChange={() => {
-                          const newQueryConfig = produce(
-                            queryConfig,
-                            (newQueryConfig) => {
-                              // reset offset/pagination
-                              newQueryConfig.offset = 0;
-                              // enable or remove filters
-                              return flipSwitchFilter(
-                                newQueryConfig,
-                                filterCard.id,
-                                switchFilterGroup.id
-                              );
-                            }
-                          );
-                          setQueryConfig(newQueryConfig);
-                        }}
-                      />
-                    );
-                  })}
-                </Form>
-              </Card.Body>
-            </Card>
-          </Col>
+                      return (
+                        <Form.Check
+                          key={switchFilterGroup.id}
+                          type="switch"
+                          id={switchFilterGroup.id}
+                          label={switchFilterGroup.label}
+                          checked={isChecked}
+                          onChange={() => {
+                            const newQueryConfig = produce(
+                              queryConfig,
+                              (newQueryConfig: QueryConfig) => {
+                                // reset offset/pagination
+                                newQueryConfig.offset = 0;
+                                // enable or remove filters
+                                flipSwitchFilter(
+                                  newQueryConfig,
+                                  filterCard.id,
+                                  switchFilterGroup.id
+                                );
+                                return newQueryConfig;
+                              }
+                            );
+                            setQueryConfig(newQueryConfig);
+                          }}
+                        />
+                      );
+                    })}
+                  </Form>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
         );
       })}
-    </Row>
+    </>
   );
 }
