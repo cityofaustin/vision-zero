@@ -292,7 +292,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
             />
           </Col>
           {queryConfig.mapConfig && (
-            <Col className="px-0 mt-2" xs="auto">
+            <Col className="px-0 mt-2 me-2" xs="auto">
               <TableMapToggle
                 queryConfig={queryConfig}
                 setQueryConfig={setQueryConfig}

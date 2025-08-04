@@ -43,7 +43,7 @@ export default function TableAdvancedSearchFilterToggle({
 }: TableAdvancedSearchFilterToggleProps) {
   return (
     <Dropdown>
-      <Dropdown.Toggle className="hide-toggle me-2">
+      <Dropdown.Toggle className="hide-toggle me-2" variant="outline-primary">
         <AlignedLabel>
           <FaSliders />
           <span className="mx-2">Filters</span>
@@ -52,7 +52,14 @@ export default function TableAdvancedSearchFilterToggle({
           )}
         </AlignedLabel>
       </Dropdown.Toggle>
-      <Dropdown.Menu style={{width: "350px", height: "500px", overflowY: "scroll", overflowX: "hidden"}}>
+      <Dropdown.Menu
+        style={{
+          width: "350px",
+          height: "500px",
+          overflowY: "scroll",
+          overflowX: "hidden",
+        }}
+      >
         <TableAdvancedSearchFilterMenu
           queryConfig={queryConfig}
           setQueryConfig={setQueryConfig}
