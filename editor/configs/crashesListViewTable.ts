@@ -1,6 +1,7 @@
 import { getYearsAgoDate, makeDateFilters } from "@/utils/dates";
 import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
-import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
+// todo: enable different page size based on list vs map view
+// import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
 const crashesListViewfilterCards: FilterGroup[] = [
   {

@@ -3,7 +3,6 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "@/components/Table";
-import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
 import TableAdvancedSearchFilterToggle, {
   useActiveSwitchFilterCount,
 } from "@/components/TableAdvancedSearchFilterToggle";
@@ -103,7 +102,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           return false;
         }
       }),
-    [columns, columnVisibilitySettings]
+    [columns, visibleColumns]
   );
 
   const query = useQueryBuilder(
@@ -334,20 +333,6 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           </Col>
         </Row>
       </form>
-      {/* <Row
-        className={
-          isFilterOpen
-            ? "special-filter special-filter-open"
-            : " special-filter"
-        }
-      >
-        <Col>
-          <TableAdvancedSearchFilterMenu
-            queryConfig={queryConfig}
-            setQueryConfig={setQueryConfig}
-          />
-        </Col>
-      </Row> */}
       {/* The actual table itself */}
       {!queryConfig.mapConfig ||
         (!queryConfig.mapConfig.isActive && (

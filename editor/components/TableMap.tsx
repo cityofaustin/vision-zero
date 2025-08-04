@@ -1,4 +1,4 @@
-import { useCallback, MutableRefObject, useMemo } from "react";
+import { useCallback, MutableRefObject } from "react";
 import MapGL, {
   FullscreenControl,
   NavigationControl,
@@ -8,12 +8,7 @@ import MapGL, {
   Layer,
 } from "react-map-gl";
 import MapGeocoderControl from "@/components/MapGeocoderControl";
-import {
-  DEFAULT_MAP_PAN_ZOOM,
-  DEFAULT_MAP_PARAMS,
-  MAP_MAX_BOUNDS,
-} from "@/configs/map";
-import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
+import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { FeatureCollection } from "geojson";
 import { TableMapConfig } from "@/types/tableMapConfig";
@@ -28,7 +23,7 @@ export interface LatLonString {
   longitude: string;
 }
 
-interface TableMapProps<T extends Record<string, unknown>> {
+interface TableMapProps {
   /**
    * Ref object which will hold the mapbox instance
    */
@@ -43,14 +38,10 @@ interface TableMapProps<T extends Record<string, unknown>> {
 /**
  * Map component which renders an editable point marker
  */
-export const TableMap = <T extends Record<string, unknown>>({
-  mapRef,
-  geojson,
-  mapConfig,
-}: TableMapProps<T>) => {
+export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
   const onDragEnd = useCallback((e: ViewStateChangeEvent) => {
-    // todo: set a value to refetch data
-    console.log("drag end");
+    // todo: something?
+    console.log("drag end", e);
   }, []);
 
   return (

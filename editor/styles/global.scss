@@ -134,17 +134,6 @@ $dark: $night;
   margin-top: 0.2rem;
 }
 
-.special-filter {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height 0.2s ease-out;
-}
-
-.special-filter-open {
-  /* Adjust to be just above content height */
-  max-height: 25rem;
-}
-
 .card-header {
   padding: 1rem;
   border: none !important;
@@ -187,6 +176,5 @@ to make sure it renders on top is a common fix */
 .dropdown-toggle.hide-toggle::after {
   content: none !important;
 }
-
 
 @import "bootstrap/scss/bootstrap.scss";

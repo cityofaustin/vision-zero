@@ -1,14 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import Button from "react-bootstrap/Button";
-import {
-  FaSliders,
-  FaMapLocationDot,
-  FaMapLocation,
-  FaMapPin,
-  FaTable,
-  FaList,
-  FaTableCells,
-} from "react-icons/fa6";
+import { FaMapPin, FaTableCells } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/types/queryBuilder";
 import { ButtonGroup } from "react-bootstrap";

@@ -53,8 +53,8 @@ export default function TableAdvancedSearchFilterMenu({
     <>
       {queryConfig.filterCards.map((filterCard) => {
         return (
-          <Row className="p-2">
-            <Col key={filterCard.id}>
+          <Row className="p-2" key={filterCard.id}>
+            <Col>
               <Card className="h-100">
                 <Card.Header className="fw-bold">
                   {filterCard.label}
