@@ -283,7 +283,6 @@ export default function TableWrapper<T extends Record<string, unknown>>({
                 setQueryConfig={setQueryConfig}
               />
             )}
-
             <TableSearch
               queryConfig={queryConfig}
               setQueryConfig={setQueryConfig}
@@ -334,19 +333,18 @@ export default function TableWrapper<T extends Record<string, unknown>>({
         </Row>
       </form>
       {/* The actual table itself */}
-      {!queryConfig.mapConfig ||
-        (!queryConfig.mapConfig.isActive && (
-          <Row>
-            <Col>
-              <Table<T>
-                rows={rows}
-                columns={visibleColumns}
-                queryConfig={queryConfig}
-                setQueryConfig={setQueryConfig}
-              />
-            </Col>
-          </Row>
-        ))}
+      {(!queryConfig.mapConfig || !queryConfig.mapConfig.isActive) && (
+        <Row>
+          <Col>
+            <Table<T>
+              rows={rows}
+              columns={visibleColumns}
+              queryConfig={queryConfig}
+              setQueryConfig={setQueryConfig}
+            />
+          </Col>
+        </Row>
+      )}
       <Row>
         <Col style={{ height: "500px" }}>
           {queryConfig.mapConfig && queryConfig.mapConfig.isActive && (
