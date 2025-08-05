@@ -22,8 +22,8 @@ export default function SideBarListItem({
 }: SideBarListItemProps) {
   return (
     <ListGroup.Item
-      className={`mx-0 bg-dark fs-5 my-1 ${
-        isCurrentPage ? "text-white fw-bold" : "text-secondary"
+      className={`sidebar-list-item fs-5 py-2 ps-4 ${
+        isCurrentPage ? "sidebar-list-item-current text-black fw-bold" : "text-secondary"
       }`}
       style={{ cursor: "pointer", whiteSpace: "nowrap", border: "none" }}
       action
@@ -31,10 +31,10 @@ export default function SideBarListItem({
       href={href}
     >
       <>
-        <span className={isCollapsed ? "" : "me-3"}>
+        <span>
           <Icon />
         </span>
-        {!isCollapsed && <span className="fs-6">{label}</span>}
+        {!isCollapsed && <span className="ms-3 fs-6">{label}</span>}
       </>
     </ListGroup.Item>
   );

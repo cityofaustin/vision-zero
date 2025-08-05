@@ -2,9 +2,7 @@
 import { ReactNode, useState, useCallback, useEffect } from "react";
 import { usePathname, useSelectedLayoutSegments } from "next/navigation";
 import { useAuth0 } from "@auth0/auth0-react";
-import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
-import { FaAngleRight } from "react-icons/fa6";
 import AppNavBar from "@/components/AppNavBar";
 import SideBarListItem from "@/components/SideBarListItem";
 import LoginContainer from "@/components/LoginContainer";
@@ -17,32 +15,38 @@ import EnvironmentBanner from "@/components/EnvironmentBanner";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-const localStorageKey = "sidebarCollapsed";
-
 /**
  * The app sidebar component
  */
 export default function SidebarLayout({ children }: { children: ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
   const { loginWithRedirect, logout, isAuthenticated, isLoading, user } =
     useAuth0();
   const pathName = usePathname();
   const segments = useSelectedLayoutSegments();
 
-  const toggleSidebar = useCallback(
-    () =>
-      setIsCollapsed((prevState) => {
-        localStorage.setItem(localStorageKey, String(!prevState));
-        return !prevState;
-      }),
-    []
-  );
+  const handleMouseEnter = useCallback(() => {
+    if (isCollapsed) {
+      const timeout = setTimeout(() => {
+        setIsCollapsed(false);
+      }, 250);
+      setHoverTimeout(timeout);
+    }
+  }, [isCollapsed]);
 
-  /** Check local storage for initial sidebar state and dark mode */
+  const handleMouseLeave = useCallback(() => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+      setHoverTimeout(null);
+    }
+    if (!isCollapsed) {
+      setIsCollapsed(true);
+    }
+  }, [hoverTimeout, isCollapsed]);
+
+  /** Check dark mode */
   useEffect(() => {
-    const collapsedFromStorage =
-      localStorage.getItem(localStorageKey) === "true";
-    setIsCollapsed(collapsedFromStorage);
     const isDarkMode = localStorage.getItem(darkModelocalStorageKey) === "dark";
 
     document.documentElement.setAttribute(
@@ -50,6 +54,15 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
       isDarkMode ? "dark" : "light"
     );
   }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeout) {
+        clearTimeout(hoverTimeout);
+      }
+    };
+  }, [hoverTimeout]);
 
   if (isLoading) {
     /**
@@ -87,26 +100,23 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
       style={{ height: "100vh" }}
     >
       <EnvironmentBanner />
-      <div className="d-flex flex-grow-1 overflow-hidden">
+      <AppNavBar user={user} logout={logout} />
+      <div className="d-flex flex-grow-1 overflow-hidden position-relative">
         {/* Sidebar */}
         <div
-          className={`bg-dark app-sidebar d-flex flex-column app-sidebar-${
+          className={`app-sidebar d-flex flex-column position-absolute h-100 app-sidebar-${
             isCollapsed ? "collapsed" : "expanded"
           }`}
+          style={{
+            zIndex: 1050,
+            left: 0,
+            top: 0,
+          }}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          <div className="p-2">
-            <Button
-              onClick={toggleSidebar}
-              variant="dark"
-              className="w-100 text-secondary"
-            >
-              <FaAngleRight
-                className={`sidebar-toggle-${isCollapsed ? "closed" : "open"}`}
-              />
-            </Button>
-          </div>
           <div className="flex-grow-1 overflow-y-auto">
-            <ListGroup variant="flush" className="px-2">
+            <ListGroup variant="flush" className="pt-3">
               {routes.map((route) => (
                 <PermissionsRequired
                   allowedRoles={route.allowedRoles}
@@ -124,12 +134,15 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
             </ListGroup>
           </div>
         </div>
+
         {/* Main content */}
         <div
           className="flex-grow-1 d-flex flex-column w-100"
-          style={{ minWidth: 0 }}
+          style={{
+            minWidth: 0,
+            marginLeft: "4.6rem",
+          }}
         >
-          <AppNavBar user={user} logout={logout} />
           <main className="flex-grow-1 d-flex flex-column overflow-y-auto">
             <AppBreadCrumb />
             <div className="flex-grow-1 px-3 pb-3">{children}</div>
