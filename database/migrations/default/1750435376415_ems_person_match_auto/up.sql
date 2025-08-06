@@ -282,10 +282,26 @@ BEGIN
                 return NEW;
             ELSIF array_length(matching_person_ids, 1) = 1 THEN
                 raise debug 'One person match found for EMS ID %', NEW.id;
-                NEW.matched_person_ids = matching_person_ids;
-                NEW.person_id = matching_person_ids[1];
-                NEW.person_match_status = 'matched_by_automation';
-                return NEW;
+                --
+                -- Before we can assign the person_id, we must make sure that no other
+                -- EMS records are matched to this person ID. This is an edge case that 
+                -- can happen when one or more EMS records with different
+                -- **incident numbers** (`incident_number`) are matched to the same
+                -- crash. This is an edge case that occurs in < .5% of records
+                --
+                IF NOT EXISTS (
+                    SELECT 1 FROM ems__incidents 
+                    WHERE person_id = matching_person_ids[1] 
+                    AND id != NEW.id
+                ) THEN
+                    NEW.matched_person_ids = matching_person_ids;
+                    NEW.person_id = matching_person_ids[1];
+                    NEW.person_match_status = 'matched_by_automation';
+                    return NEW;
+                ELSE
+                    raise debug 'Skipping person_id assignment because person_id is matched to another EMS record';
+                    return NEW;
+                END IF;
             ELSE
                 raise debug 'Multiple person matches found for EMS ID %', NEW.id;
                 NEW.matched_person_ids = matching_person_ids;
