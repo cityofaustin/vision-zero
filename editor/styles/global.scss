@@ -21,6 +21,8 @@ $danger: $rojo;
 $light: $anti-flash-white;
 $dark: $night;
 
+$sidebarWidth: 4.6rem;
+
 // https://isotropic.co/tool/hex-color-to-css-filter/
 .app-brand-img {
   filter: sepia(10%) contrast(130%);
@@ -41,11 +43,9 @@ $dark: $night;
   background-color: $light !important;
 }
 
-
 [data-bs-theme="dark"] .app-sidebar {
- border-right: 1px solid #495057;
+  border-right: 1px solid #495057;
 }
-
 
 [data-bs-theme="light"] .crash-injury-indicator {
   background-color: $light !important;
@@ -94,23 +94,23 @@ $dark: $night;
   }
 }
 
-// .app-navbar {
-//     padding-left: 4.6rem !important;
-// }
+// Custom tooltip styles prevent the y-scrollbar from briefly flashing
+// and causing a layout shift
+.tooltip {
+  position: fixed !important; /* Override Bootstrap's absolute positioning */
+  z-index: 9999;
+  pointer-events: none;
+}
 
 .app-sidebar {
+  z-index: 1050;
+  left: 0;
+  top: 0;
   transition:
     width 0.2s ease-out,
     box-shadow 0.3s ease-out;
   overflow-x: hidden;
   box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-
-  // Hide text content during transition
-  .list-group-item-action {
-    transition: padding 0.3s ease-out;
-    overflow: hidden;
-    white-space: nowrap;
-  }
 }
 
 .app-sidebar-expanded {
@@ -119,7 +119,12 @@ $dark: $night;
 }
 
 .app-sidebar-collapsed {
-  width: 4.6rem !important;
+  width: $sidebarWidth !important;
+}
+
+.main-content-pane {
+  min-width: 0;
+  margin-left: $sidebarWidth;
 }
 
 [data-bs-theme="light"] .sidebar-list-item {

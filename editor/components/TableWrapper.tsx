@@ -345,13 +345,13 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           </Col>
         </Row>
       )}
-      <Row>
-        <Col style={{ height: "500px" }}>
-          {queryConfig.mapConfig && queryConfig.mapConfig.isActive && (
+      {queryConfig.mapConfig && queryConfig.mapConfig.isActive && (
+        <Row>
+          <Col style={{ height: "500px" }}>
             <TableMapWrapper mapConfig={queryConfig.mapConfig} data={rows} />
-          )}
-        </Col>
-      </Row>
+          </Col>
+        </Row>
+      )}
       {queryConfig.exportable && (
         <TableExportModal<T>
           exportFilename={queryConfig.exportFilename}

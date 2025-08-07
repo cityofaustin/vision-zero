@@ -107,11 +107,6 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
           className={`app-sidebar d-flex flex-column position-absolute h-100 app-sidebar-${
             isCollapsed ? "collapsed" : "expanded"
           }`}
-          style={{
-            zIndex: 1050,
-            left: 0,
-            top: 0,
-          }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
@@ -136,13 +131,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
         </div>
 
         {/* Main content */}
-        <div
-          className="flex-grow-1 d-flex flex-column w-100"
-          style={{
-            minWidth: 0,
-            marginLeft: "4.6rem",
-          }}
-        >
+        <div className="main-content-pane flex-grow-1 d-flex flex-column w-100">
           <main className="flex-grow-1 d-flex flex-column overflow-y-auto">
             <AppBreadCrumb />
             <div className="flex-grow-1 px-3 pb-3">{children}</div>

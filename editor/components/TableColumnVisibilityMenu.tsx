@@ -209,6 +209,7 @@ export default function TableColumnVisibilityMenu({
     <Dropdown>
       <OverlayTrigger
         placement="top"
+        container={document.body}
         overlay={<Tooltip id="table-settings">Settings</Tooltip>}
       >
         <Dropdown.Toggle
