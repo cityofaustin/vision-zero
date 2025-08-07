@@ -311,7 +311,12 @@ BEGIN
             END IF;
         END IF;
     END IF;
-    -- todo: do we need this line?
+    -- 
+    -- Finally, we set NEW._match_event_name = null as a failsafe to make sure
+    -- that this function never returns before nullifying _match_event_name.
+    -- If _match_event_name is not nullified before this function returns we 
+    -- will fail a check constraint on this column
+    --
     NEW._match_event_name = null;
     return NEW;
 END;
