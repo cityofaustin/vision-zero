@@ -43,7 +43,8 @@ export default function CrashSwapAddressButton({
 
     // Set the new swapped values in the form state
     Object.entries(swappedValues).forEach(([key, value]) => {
-      setValue(key as keyof AddressFormInputs, value);
+      // Setting shouldDirty on setValue allows us to enable the save button when addresses are swapped
+      setValue(key as keyof AddressFormInputs, value, { shouldDirty: true });
     });
   };
 
