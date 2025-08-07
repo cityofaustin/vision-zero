@@ -130,6 +130,7 @@ export default function EditCrashAddressModal({
    * Submits mutation to database on save button click
    */
   const onSave: SubmitHandler<AddressFormInputs> = async (data) => {
+    reset(data);
     await mutate({
       id: crashId,
       updates: data,
