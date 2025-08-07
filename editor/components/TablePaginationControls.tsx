@@ -8,7 +8,6 @@ import AlignedLabel from "./AlignedLabel";
 import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
 import { QueryConfig } from "@/types/queryBuilder";
 import { ColumnVisibilitySetting } from "@/types/types";
-import "react-datepicker/dist/react-datepicker.css";
 
 interface PaginationControlProps {
   /**
