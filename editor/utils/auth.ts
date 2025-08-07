@@ -1,8 +1,5 @@
-import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { useCallback } from "react";
 import { useAuth0, User } from "@auth0/auth0-react";
-
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 /**
  * Add our claims to the Auth0 ID token—these are
@@ -59,33 +56,33 @@ export const formatRoleName = (role: string): string => {
 };
 
 /**
- * Hook which retrieves the user's access token and redirects to the
- * login page if the user's refresh token has expired
+ * Hook that returns a memoized function to get the Auth0 access token.
+ * Returns undefined if user is not authenticated or if token retrieval fails.
+ *
+ * @example
+ * const getToken = useGetToken();
+ * const fetchWithToken = async () => {
+ *  const token = await getToken();
+ *  if (token) {
+ *     fetch('/api/data', { headers: { Authorization: `Bearer ${token}` } });
+ *   }
+ * };
  */
-export const useToken = (): string | null => {
-  const pathName = usePathname();
-  const { getAccessTokenSilently, loginWithRedirect, isAuthenticated } =
-    useAuth0();
-  const [token, setToken] = useState<string | null>(null);
-  useEffect(() => {
-    const getToken = async () => {
-      if (!isAuthenticated) {
-        return;
-      }
-      try {
-        const accessToken = await getAccessTokenSilently();
-        setToken(accessToken);
-      } catch (err) {
-        console.error("Error getting access token:", err);
-        await loginWithRedirect({
-          appState: {
-            returnTo: BASE_PATH + pathName,
-          },
-        });
-      }
-    };
-    getToken();
-  }, [getAccessTokenSilently, isAuthenticated, loginWithRedirect, pathName]);
-
-  return token;
+export const useGetToken = (): (() => Promise<string | undefined>) => {
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  return useCallback(async (): Promise<string | undefined> => {
+    if (!isAuthenticated) {
+      return;
+    }
+    try {
+      const accessToken = await getAccessTokenSilently();
+      return accessToken;
+    } catch (err) {
+      console.error("Error getting access token:", err);
+    }
+    // we can ignore getAccessTokenSilently in our dep array - 
+    // Auth0 didn't bother to memoize it for us and `isAuthenticated`
+    // has us covered.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
 };

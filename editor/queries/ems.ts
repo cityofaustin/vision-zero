@@ -8,6 +8,8 @@ export const GET_EMS_RECORDS = gql`
     ) {
       apd_incident_numbers
       crash_match_status
+      non_cr3_match_status
+      atd_apd_blueform_case_id
       crash_pk
       id
       incident_location_address
@@ -142,7 +144,7 @@ export const UPDATE_EMS_INCIDENT_CRASH_AND_PERSON = gql`
       where: { id: { _eq: $id } }
       _set: {
         person_id: $person_id
-        crash_match_status: "matched_by_manual_qa"
+        _match_event_name: "match_person_by_manual_qa"
       }
     ) {
       affected_rows

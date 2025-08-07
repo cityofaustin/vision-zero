@@ -37,6 +37,7 @@ select_permissions:
         - incident_received_datetime
         - matched_crash_pks
         - matched_non_cr3_case_ids
+        - matched_person_ids
         - mvc_form_position_in_vehicle
         - non_cr3_match_status
         - patient_injry_sev_id
@@ -45,6 +46,7 @@ select_permissions:
         - pcr_patient_race
         - pcr_transport_destination
         - person_id
+        - person_match_status
         - travel_mode
         - unparsed_apd_incident_numbers
         - updated_at
@@ -68,6 +70,7 @@ select_permissions:
         - incident_received_datetime
         - matched_crash_pks
         - matched_non_cr3_case_ids
+        - matched_person_ids
         - mvc_form_position_in_vehicle
         - non_cr3_match_status
         - patient_injry_sev_id
@@ -76,6 +79,7 @@ select_permissions:
         - pcr_patient_race
         - pcr_transport_destination
         - person_id
+        - person_match_status
         - travel_mode
         - unparsed_apd_incident_numbers
         - updated_at
@@ -99,6 +103,7 @@ select_permissions:
         - incident_received_datetime
         - matched_crash_pks
         - matched_non_cr3_case_ids
+        - matched_person_ids
         - mvc_form_position_in_vehicle
         - non_cr3_match_status
         - patient_injry_sev_id
@@ -107,6 +112,7 @@ select_permissions:
         - pcr_patient_race
         - pcr_transport_destination
         - person_id
+        - person_match_status
         - travel_mode
         - unparsed_apd_incident_numbers
         - updated_at
@@ -118,9 +124,8 @@ update_permissions:
   - role: editor
     permission:
       columns:
-        - crash_match_status
+        - _match_event_name
         - crash_pk
-        - matched_crash_pks
         - person_id
         - updated_by
       filter: {}
@@ -129,9 +134,8 @@ update_permissions:
   - role: vz-admin
     permission:
       columns:
-        - crash_match_status
+        - _match_event_name
         - crash_pk
-        - matched_crash_pks
         - person_id
         - updated_by
       filter: {}
