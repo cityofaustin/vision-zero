@@ -1,7 +1,7 @@
 import Button from "react-bootstrap/Button";
-import AlignedLabel from "@/components/AlignedLabel";
 import { FaArrowRightArrowLeft } from "react-icons/fa6";
 import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
+import AlignedLabel from "@/components/AlignedLabel";
 import { AddressFormInputs } from "@/components/EditCrashAddressModal";
 
 /**
