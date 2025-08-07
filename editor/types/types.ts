@@ -39,6 +39,11 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    */
   exportOnly?: boolean;
   /**
+   * Always include this column graphql queries, regardless of if it is
+   * hidden or exportOnly
+   */
+  fetchAlways?: boolean;
+  /**
    * Determines the UI component that will be used to edit the column
    */
   inputType?: InputType;

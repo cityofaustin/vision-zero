@@ -110,19 +110,21 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     exportOnly: true,
   },
   {
-    path: "latitude",
-    label: "latitude",
-    exportOnly: true,
-  },
-  {
     path: "light_cond_id",
     label: "light_cond_id",
     exportOnly: true,
   },
   {
+    path: "latitude",
+    label: "latitude",
+    exportOnly: true,
+    fetchAlways: true,
+  },
+  {
     path: "longitude",
     label: "longitude",
     exportOnly: true,
+    fetchAlways: true,
   },
   {
     path: "non_injry_count",

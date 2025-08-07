@@ -1,3 +1,5 @@
+import { TableMapConfig } from "@/types/tableMapConfig";
+
 /**
  * The types we currently support as filter values
  *
@@ -107,8 +109,7 @@ export interface SearchFilterField {
 export type DateFilterMode = "ytd" | "all" | "5y" | "1y" | "custom";
 
 /**
- * Configuration object for the graphql
- * query builder
+ * Configuration object for the graphql query builder
  */
 export interface QueryConfig {
   /**
@@ -169,6 +170,10 @@ export interface QueryConfig {
    * the file extension
    */
   exportFilename?: string;
+  /**
+   * Optional map configuration. Enables the map view/toggle when present
+   */
+  mapConfig?: TableMapConfig;
 }
 
 /**
