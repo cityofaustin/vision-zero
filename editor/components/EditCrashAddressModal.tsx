@@ -9,6 +9,7 @@ import { crashDataCards } from "@/configs/crashDataCard";
 import { useLookupQuery, useQuery } from "@/utils/graphql";
 import { Crash } from "@/types/crashes";
 import { useMemo, Dispatch, SetStateAction } from "react";
+import CrashSwapAddressButton from "@/components/CrashSwapAddressButton";
 
 // import Button from "react-bootstrap/Button";
 
@@ -152,7 +153,8 @@ export default function EditCrashAddressModal({
       size="lg"
     >
       <Modal.Header>
-        <Modal.Title>Edit crash address</Modal.Title>
+        <Modal.Title className="me-2">Edit crash address</Modal.Title>
+        <CrashSwapAddressButton />
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit(onSubmit)} id="addressForm">
