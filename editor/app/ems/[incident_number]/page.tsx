@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import DataCard from "@/components/DataCard";
-import { emsDataCards } from "@/configs/emsDataCards";
 import { useMutation, useQuery } from "@/utils/graphql";
 import {
   GET_EMS_RECORDS,
@@ -13,6 +12,7 @@ import {
   UPDATE_EMS_INCIDENT,
   UPDATE_EMS_INCIDENT_CRASH_AND_PERSON,
 } from "@/queries/ems";
+import { UPDATE_PERSON } from "@/queries/person";
 import { EMSPatientCareRecord } from "@/types/ems";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
 import EMSLinkRecordButton, {
@@ -21,7 +21,9 @@ import EMSLinkRecordButton, {
 import EMSLinkToPersonButton, {
   EMSLinkToPersonButtonProps,
 } from "@/components/EMSLinkToPersonButton";
+import { emsDataCards } from "@/configs/emsDataCards";
 import { emsMatchingPeopleColumns } from "@/configs/emsMatchingPeopleColumns";
+import { getMutationVariables } from "@/configs/emsRelatedRecordTable";
 import { PeopleListRow } from "@/types/peopleList";
 import { FaTruckMedical } from "react-icons/fa6";
 import { parseISO, subHours, addHours } from "date-fns";
@@ -229,10 +231,11 @@ export default function EMSDetailsPage({
           <RelatedRecordTable<EMSPatientCareRecord, EMSLinkRecordButtonProps>
             records={ems_pcrs}
             isValidating={isValidating}
-            noRowsMessage="No crashes found"
+            noRowsMessage="No patients found"
             header="EMS patient(s)"
             columns={emsDataCards.patient}
             mutation={UPDATE_EMS_INCIDENT}
+            getMutationVariables={getMutationVariables}
             onSaveCallback={onSaveCallback}
             rowActionComponent={EMSLinkRecordButton}
             rowActionComponentAdditionalProps={linkRecordButtonProps}
@@ -248,10 +251,12 @@ export default function EMSDetailsPage({
             noRowsMessage="No people found"
             header="Possible people matches"
             columns={emsMatchingPeopleColumns}
-            mutation=""
+            mutation={UPDATE_PERSON}
             onSaveCallback={onSaveCallback}
             rowActionComponent={EMSLinkToPersonButton}
             rowActionComponentAdditionalProps={linkToPersonButtonProps}
+            shouldShowColumnVisibilityPicker={true}
+            localStorageKey="emsPossiblePeople"
           />
         </Col>
       </Row>

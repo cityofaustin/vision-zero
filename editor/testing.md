@@ -61,6 +61,7 @@ The below features should be tested with each role. Features with role-based acc
 - Crash map: crash map displays crash location with nearmap aerials
 - Crash map: edit crash location by dragging map
 - Crash map: edit crash location by keying in lat/lon
+- Observe in change log that council district, jurisdiction, APD sector, engineer area update when crash location is edited to a distant position
 - Crash map: in edit mode, use the address search to find a location within Austin metro area
 - Crash map: verify **Location ID** updates when crash is moved to another intersection
 - Crash map: validation restricts keying in lat/lon with alpha characters
@@ -158,6 +159,9 @@ refresh materialized view location_crashes_view;
 - The **Select person** button is displayed for each EMS patient row
 - Click **Select person** to enable the **Select match** button to appear next to any unlinked person records in the **Associated people records** table
 - Click the **Person ID** column for any **EMS Patients** row to manually edit a person ID value
+- - Click the **Person ID** column submit an invalid person ID value and verify an error message is displayed
+- Use the falafel menu to **Reset** an incident matched to a person ID
+- Use the falafel menu to modify an incident to be **Match not found**
 
 #### These steps test the DB trigger that matches EMS records to crashes
 

@@ -7,7 +7,6 @@ import { ColDataCardDef } from "@/types/types";
 import AlignedLabel from "@/components/AlignedLabel";
 import DeleteNoteButton from "@/components/DeleteNoteButton";
 import PermissionsRequired from "@/components/PermissionsRequired";
-import { Card } from "react-bootstrap";
 
 const allowedNoteRoles = ["vz-admin", "editor"];
 
@@ -58,12 +57,8 @@ export default function NotesCard<T extends Record<string, unknown>>({
         rowActionMutation={updateMutation}
         noRowsMessage="No notes found"
         isValidating={false}
-        header={
-          <div className="d-flex justify-content-between">
-            <Card.Title>Notes</Card.Title>
-            <AddNoteButton onClick={handleOpenModal} />
-          </div>
-        }
+        header="Notes"
+        headerButton={<AddNoteButton onClick={handleOpenModal} />}
         onSaveCallback={onSaveCallback}
         rowActionComponent={DeleteNoteButton}
       />
