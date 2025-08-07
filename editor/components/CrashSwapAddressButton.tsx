@@ -19,27 +19,26 @@ export default function CrashSwapAddressButton({
     // Get the current values in the form state
     const currentValues = getValues();
 
-    // Creates a new object that will hold the swapped values
-    const swappedValues: Partial<AddressFormInputs> = {};
-
     // Swap the primary and secondary values
-    swappedValues.rpt_block_num = currentValues.rpt_sec_block_num;
-    swappedValues.rpt_street_pfx = currentValues.rpt_sec_street_pfx;
-    swappedValues.rpt_street_name = currentValues.rpt_sec_street_name;
-    swappedValues.rpt_street_sfx = currentValues.rpt_sec_street_sfx;
-    swappedValues.rpt_street_desc = currentValues.rpt_sec_street_desc;
-    swappedValues.rpt_road_part_id = currentValues.rpt_sec_road_part_id;
-    swappedValues.rpt_rdwy_sys_id = currentValues.rpt_sec_rdwy_sys_id;
-    swappedValues.rpt_hwy_num = currentValues.rpt_sec_hwy_num;
+    const swappedValues = {
+      rpt_block_num: currentValues.rpt_sec_block_num,
+      rpt_street_pfx: currentValues.rpt_sec_street_pfx,
+      rpt_street_name: currentValues.rpt_sec_street_name,
+      rpt_street_sfx: currentValues.rpt_sec_street_sfx,
+      rpt_street_desc: currentValues.rpt_sec_street_desc,
+      rpt_road_part_id: currentValues.rpt_sec_road_part_id,
+      rpt_rdwy_sys_id: currentValues.rpt_sec_rdwy_sys_id,
+      rpt_hwy_num: currentValues.rpt_sec_hwy_num,
 
-    swappedValues.rpt_sec_block_num = currentValues.rpt_block_num;
-    swappedValues.rpt_sec_street_pfx = currentValues.rpt_street_pfx;
-    swappedValues.rpt_sec_street_name = currentValues.rpt_street_name;
-    swappedValues.rpt_sec_street_sfx = currentValues.rpt_street_sfx;
-    swappedValues.rpt_sec_street_desc = currentValues.rpt_street_desc;
-    swappedValues.rpt_sec_road_part_id = currentValues.rpt_road_part_id;
-    swappedValues.rpt_sec_rdwy_sys_id = currentValues.rpt_rdwy_sys_id;
-    swappedValues.rpt_sec_hwy_num = currentValues.rpt_hwy_num;
+      rpt_sec_block_num: currentValues.rpt_block_num,
+      rpt_sec_street_pfx: currentValues.rpt_street_pfx,
+      rpt_sec_street_name: currentValues.rpt_street_name,
+      rpt_sec_street_sfx: currentValues.rpt_street_sfx,
+      rpt_sec_street_desc: currentValues.rpt_street_desc,
+      rpt_sec_road_part_id: currentValues.rpt_road_part_id,
+      rpt_sec_rdwy_sys_id: currentValues.rpt_rdwy_sys_id,
+      rpt_sec_hwy_num: currentValues.rpt_hwy_num,
+    };
 
     // Set the new swapped values in the form state
     Object.entries(swappedValues).forEach(([key, value]) => {
