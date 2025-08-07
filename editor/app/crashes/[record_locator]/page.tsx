@@ -11,7 +11,6 @@ import CrashLocationBanner from "@/components/CrashLocationBanner";
 import CrashMapCard from "@/components/CrashMapCard";
 import CrashNarrativeCard from "@/components/CrashNarrativeCard";
 import CrashRecommendationCard from "@/components/CrashRecommendationCard";
-import CrashSwapAddressButton from "@/components/CrashSwapAddressButton";
 import DataCard from "@/components/DataCard";
 import NotesCard from "@/components/NotesCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
@@ -150,29 +149,6 @@ export default function CrashDetailsPage({
             isValidating={isValidating}
             title="Other"
             columns={crashDataCards.other}
-            mutation={UPDATE_CRASH}
-            onSaveCallback={onSaveCallback}
-          />
-        </Col>
-      </Row>
-      <Row id="address">
-        <Col sm={12} md={6} lg={4} className="mb-3">
-          <DataCard<Crash>
-            record={crash}
-            isValidating={isValidating}
-            title="Primary address"
-            columns={crashDataCards.address}
-            mutation={UPDATE_CRASH}
-            onSaveCallback={onSaveCallback}
-            headerActionComponent={CrashSwapAddressButton}
-          />
-        </Col>
-        <Col sm={12} md={6} lg={4} className="mb-3">
-          <DataCard<Crash>
-            record={crash}
-            isValidating={isValidating}
-            title="Secondary address"
-            columns={crashDataCards.address_secondary}
             mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
           />
