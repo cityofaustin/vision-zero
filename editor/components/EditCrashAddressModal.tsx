@@ -92,10 +92,16 @@ export default function EditCrashAddressModal({
     );
   }, [crash]);
 
-  const { register, handleSubmit, reset, getValues, setValue } =
-    useForm<AddressFormInputs>({
-      defaultValues: defaultValues,
-    });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    getValues,
+    setValue,
+    formState: { isDirty },
+  } = useForm<AddressFormInputs>({
+    defaultValues: defaultValues,
+  });
 
   const { mutate } = useMutation(UPDATE_CRASH);
 
@@ -219,7 +225,12 @@ export default function EditCrashAddressModal({
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" type="submit" form="addressForm">
+        <Button
+          variant="primary"
+          type="submit"
+          form="addressForm"
+          disabled={!isDirty}
+        >
           <span>Save</span>
         </Button>
         <Button
