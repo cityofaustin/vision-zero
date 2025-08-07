@@ -9,8 +9,9 @@ import geopandas as gpd
 from queries import query_vz, query_moped, truncate_query, publishing_query
 from utils import get_logger
 
-# Buffer distance (feet) for the spatial join
-BUFFER_DISTANCE = 40
+# Buffer distances (feet) for the spatial joins
+BUFFER_DISTANCE_POINTS = 150
+BUFFER_DISTANCE_LINES = 75
 
 HASURA_ADMIN_SECRET = {
     "moped": os.getenv("MOPED_HASURA_ADMIN_SECRET"),
@@ -60,6 +61,15 @@ def chunk_list(lst, n):
         yield lst[i : i + n]
 
 
+def buffer_geometries(row):
+    """Applied to each moped component. Points are buffered to a distance of BUFFER_DISTANCE_POINTS and Lines to
+    BUFFER_DISTANCE_LINES"""
+    if row.geometry.geom_type == "Point" or row.geometry.geom_type == "MultiPoint":
+        return row.geometry.buffer(BUFFER_DISTANCE_POINTS)
+    else:
+        return row.geometry.buffer(BUFFER_DISTANCE_LINES)
+
+
 def main():
     # Retrieve all crashes and moped project components
     components = make_hasura_request(
@@ -83,8 +93,10 @@ def main():
     crashes = crashes.to_crs(epsg=2277)
 
     # Spatial join
-    logger.info(f"Buffering project geometries to a distance of {BUFFER_DISTANCE} feet")
-    components["geometry"] = components.geometry.buffer(BUFFER_DISTANCE)
+    logger.info(
+        f"Buffering point geometries to a distance of {BUFFER_DISTANCE_POINTS} feet and lines to a distance of {BUFFER_DISTANCE_LINES}"
+    )
+    components["geometry"] = components.apply(buffer_geometries, axis=1)
     components.set_index("project_component_id", inplace=True)
     crashes.set_index("id", inplace=True)
     logger.info(f"Joining crashes spatially to project geometry")
