@@ -28,6 +28,9 @@ interface EditCrashAddressModalProps {
    * escape key is pressed
    */
   setShowEditAddressModal: Dispatch<SetStateAction<boolean>>;
+  /**
+   * The crash ID
+   */
   crashId: number;
   /**
    *  Callback fired after the user form is successfully submitted
@@ -37,6 +40,9 @@ interface EditCrashAddressModalProps {
    * If the modal should be visible or hidden
    */
   show: boolean;
+  /**
+   * The crash record
+   */
   crash: Crash;
 }
 
