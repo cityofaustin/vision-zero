@@ -218,7 +218,7 @@ export const crashesColumns = {
   },
   rpt_sec_street_desc: {
     path: "rpt_sec_street_desc",
-    label: "Street description",
+    label: "Description",
     editable: true,
     inputType: "text",
   },
@@ -242,7 +242,7 @@ export const crashesColumns = {
   },
   rpt_street_desc: {
     path: "rpt_street_desc",
-    label: "Street description",
+    label: "Description",
     editable: true,
     inputType: "text",
   },
