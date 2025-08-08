@@ -13,7 +13,6 @@ import {
   GET_NON_CR3_CRASHES,
   UPDATE_EMS_PCR,
   UPDATE_EMS_PCR_CRASH_AND_PERSON,
-  UPDATE_EMS_INCIDENTS_NON_CR3_MATCH,
 } from "@/queries/ems";
 import { UPDATE_PERSON } from "@/queries/person";
 import { EMSPatientCareRecord } from "@/types/ems";
@@ -24,8 +23,6 @@ import EMSLinkRecordButton, {
 import EMSLinkToPersonButton, {
   EMSLinkToPersonButtonProps,
 } from "@/components/EMSLinkToPersonButton";
-import { EMSLinkNonCR3ButtonProps } from "@/components/EMSLinkNonCR3Button";
-import EMSLinkNonCR3Button from "@/components/EMSLinkNonCR3Button";
 import { emsMatchingPeopleColumns } from "@/configs/emsMatchingPeopleColumns";
 import { emsNonCR3Columns } from "@/configs/nonCR3Columns";
 import { PeopleListRow } from "@/types/peopleList";
@@ -61,10 +58,6 @@ export default function EMSDetailsPage({
   });
 
   const { mutate: updateEmsPcr } = useMutation(UPDATE_EMS_PCR_CRASH_AND_PERSON);
-
-  const { mutate: updateNonCR3Match } = useMutation(
-    UPDATE_EMS_INCIDENTS_NON_CR3_MATCH
-  );
 
   /**
    * Use the first EMS record as the "incident"
@@ -221,20 +214,6 @@ export default function EMSDetailsPage({
     [updateEmsPcr, selectedEmsPcr, refetchEMS, refetchPeople]
   );
 
-  const linkNonCR3ToIncidentProps: EMSLinkNonCR3ButtonProps = useMemo(
-    () => ({
-      onClick: (incidentNumber, newNonCR3CaseId) => {
-        updateNonCR3Match({
-          incident_number: incidentNumber,
-          atd_apd_blueform_case_id: newNonCR3CaseId,
-        }).then(() => refetchEMS());
-      },
-      incidentNumber: incident_number,
-      matchedNonCr3CaseId: matchedNonCr3CaseId,
-    }),
-    [updateNonCR3Match, incident_number, refetchEMS, matchedNonCr3CaseId]
-  );
-
   if (error) {
     console.error(error);
   }
@@ -311,8 +290,6 @@ export default function EMSDetailsPage({
             header="Possible non-CR3 matches"
             columns={emsNonCR3Columns}
             mutation=""
-            rowActionComponent={EMSLinkNonCR3Button}
-            rowActionComponentAdditionalProps={linkNonCR3ToIncidentProps}
           />
         </Col>
       </Row>

@@ -163,23 +163,6 @@ export const UPDATE_EMS_PCR_CRASH_AND_PERSON = gql`
   }
 `;
 
-export const UPDATE_EMS_INCIDENTS_NON_CR3_MATCH = gql`
-  mutation UpdateEMSIncidentNonCR3(
-    $incident_number: String!
-    $atd_apd_blueform_case_id: Int!
-  ) {
-    update_ems__incidents(
-      where: { incident_number: { _eq: $incident_number } }
-      _set: {
-        atd_apd_blueform_case_id: $atd_apd_blueform_case_id
-        non_cr3_match_status: "matched_by_manual_qa"
-      }
-    ) {
-      affected_rows
-    }
-  }
-`;
-
 export const UPDATE_EMS_PCR = gql`
   mutation UpdateEMSPCR($id: Int!, $updates: ems__incidents_set_input) {
     update_ems__incidents(where: { id: { _eq: $id } }, _set: $updates) {
