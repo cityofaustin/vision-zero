@@ -244,7 +244,7 @@ const emsListViewFilterCards: FilterGroup[] = [
     groupOperator: "_or",
     filterGroups: [
       {
-        id: "unmatched",
+        id: "noncr3_unmatched",
         label: "Unmatched",
         groupOperator: "_and",
         enabled: false,
@@ -258,13 +258,13 @@ const emsListViewFilterCards: FilterGroup[] = [
         ],
       },
       {
-        id: "matched_by_automation",
+        id: "noncr3_matched_by_automation",
         label: "Matched automatically",
         groupOperator: "_and",
         enabled: false,
         filters: [
           {
-            id: "matched_by_automation",
+            id: "Matched",
             column: "non_cr3_match_status",
             operator: "_eq",
             value: "matched_by_automation",
@@ -272,7 +272,7 @@ const emsListViewFilterCards: FilterGroup[] = [
         ],
       },
       {
-        id: "multiple_matches_by_automation",
+        id: "noncr3_multiple_matches_by_automation",
         label: "Multiple matches",
         groupOperator: "_and",
         enabled: false,
@@ -282,34 +282,6 @@ const emsListViewFilterCards: FilterGroup[] = [
             column: "non_cr3_match_status",
             operator: "_eq",
             value: "multiple_matches_by_automation",
-          },
-        ],
-      },
-      {
-        id: "matched_by_manual_qa",
-        label: "Matched by review/QA",
-        groupOperator: "_and",
-        enabled: false,
-        filters: [
-          {
-            id: "matched_by_manual_qa",
-            column: "non_cr3_match_status",
-            operator: "_eq",
-            value: "matched_by_manual_qa",
-          },
-        ],
-      },
-      {
-        id: "unmatched_by_manual_qa",
-        label: "Unmatched by review/QA",
-        groupOperator: "_and",
-        enabled: false,
-        filters: [
-          {
-            id: "unmatched_by_manual_qa",
-            column: "non_cr3_match_status",
-            operator: "_eq",
-            value: "unmatched_by_manual_qa",
           },
         ],
       },
