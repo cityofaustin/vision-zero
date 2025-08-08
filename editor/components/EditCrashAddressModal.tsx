@@ -7,20 +7,8 @@ import CrashSwapAddressButton from "@/components/CrashSwapAddressButton";
 import { crashesColumns } from "@/configs/crashesColumns";
 import { UPDATE_CRASH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
-import { LookupTableOption, Relationship } from "@/types/relationships";
-import { useLookupQuery, useMutation, useQuery } from "@/utils/graphql";
-
-interface FormColumnProps {
-  /**
-   * The props from col are pulled from the crashesColumns config
-   */
-  col: {
-    path: keyof AddressFormInputs; // Ensures the path matches one of the AddressInputs keys
-    label: string;
-    inputType: "text" | "number" | "select";
-    relationship?: Relationship<Record<string, unknown>>; // Optional since it's conditionally used
-  };
-}
+import { useMutation } from "@/utils/graphql";
+import AddressFormField from "@/components/AddressFormField";
 
 interface EditCrashAddressModalProps {
   /**
@@ -64,6 +52,27 @@ export type AddressFormInputs = {
   rpt_sec_rdwy_sys_id: number | null;
   rpt_sec_hwy_num: string | null;
 };
+
+const primaryColumns = [
+  crashesColumns.rpt_block_num,
+  crashesColumns.rpt_street_pfx,
+  crashesColumns.rpt_street_name,
+  crashesColumns.rpt_street_sfx,
+  crashesColumns.rpt_hwy_num,
+  crashesColumns.rpt_street_desc,
+  crashesColumns.rpt_road_part_id,
+  crashesColumns.rpt_rdwy_sys_id,
+];
+const secondaryColumns = [
+  crashesColumns.rpt_sec_block_num,
+  crashesColumns.rpt_sec_street_pfx,
+  crashesColumns.rpt_sec_street_name,
+  crashesColumns.rpt_sec_street_sfx,
+  crashesColumns.rpt_sec_hwy_num,
+  crashesColumns.rpt_sec_street_desc,
+  crashesColumns.rpt_sec_road_part_id,
+  crashesColumns.rpt_sec_rdwy_sys_id,
+];
 
 /**
  * Modal form component used for editing the crash address fields
@@ -111,27 +120,6 @@ export default function EditCrashAddressModal({
 
   const { mutate } = useMutation(UPDATE_CRASH);
 
-  const primaryColumns = [
-    crashesColumns.rpt_block_num,
-    crashesColumns.rpt_street_pfx,
-    crashesColumns.rpt_street_name,
-    crashesColumns.rpt_street_sfx,
-    crashesColumns.rpt_street_desc,
-    crashesColumns.rpt_road_part_id,
-    crashesColumns.rpt_rdwy_sys_id,
-    crashesColumns.rpt_hwy_num,
-  ];
-  const secondaryColumns = [
-    crashesColumns.rpt_sec_block_num,
-    crashesColumns.rpt_sec_street_pfx,
-    crashesColumns.rpt_sec_street_name,
-    crashesColumns.rpt_sec_street_sfx,
-    crashesColumns.rpt_sec_street_desc,
-    crashesColumns.rpt_sec_road_part_id,
-    crashesColumns.rpt_sec_rdwy_sys_id,
-    crashesColumns.rpt_sec_hwy_num,
-  ];
-
   /**
    * Submits mutation to database on save button click
    */
@@ -145,51 +133,6 @@ export default function EditCrashAddressModal({
     onSaveCallback();
   };
 
-  /**
-   * Component that renders the form field based on the input type
-   * of the column, such as text or select
-   */
-  const FormField = ({ col }: FormColumnProps) => {
-    const [query, typename] = useLookupQuery(
-      col?.relationship ? col.relationship : undefined
-    );
-
-    const { data: selectOptions, error: selectOptionsError } =
-      useQuery<LookupTableOption>({
-        query,
-        // we don't need to refetch lookup table options
-        options: { revalidateIfStale: false },
-        typename,
-      });
-    const inputType = col.inputType;
-    return (
-      <div className="mb-2">
-        {(inputType === "text" || inputType === "number") && (
-          <Form.Control
-            {...register(col.path)}
-            size="sm"
-            type="text"
-            inputMode={inputType === "number" ? "numeric" : undefined}
-          />
-        )}
-        {inputType === "select" && (selectOptions || !!selectOptionsError) && (
-          <Form.Select
-            {...register(col.path)}
-            size="sm"
-            disabled={!selectOptions}
-          >
-            <option value="">Select...</option>
-            {selectOptions?.map((option) => (
-              <option key={option.id} value={String(option.id)}>
-                {option.label}
-              </option>
-            ))}
-          </Form.Select>
-        )}
-      </div>
-    );
-  };
-
   return (
     <Modal
       show={show}
@@ -199,8 +142,8 @@ export default function EditCrashAddressModal({
       }}
       size="lg"
     >
-      <Modal.Header>
-        <Modal.Title className="me-2">Edit crash address</Modal.Title>
+      <Modal.Header className="d-flex justify-content-between">
+        <Modal.Title>Edit crash address</Modal.Title>
         <CrashSwapAddressButton getValues={getValues} setValue={setValue} />
       </Modal.Header>
       <Modal.Body>
@@ -212,7 +155,7 @@ export default function EditCrashAddressModal({
                 return (
                   <Form.Group className="mb-3" key={String(col.path)}>
                     <Form.Label>{col.label}</Form.Label>
-                    <FormField col={col}></FormField>
+                    <AddressFormField col={col} register={register} />
                   </Form.Group>
                 );
               })}
@@ -223,7 +166,7 @@ export default function EditCrashAddressModal({
                 return (
                   <Form.Group className="mb-3" key={String(col.path)}>
                     <Form.Label>{col.label}</Form.Label>
-                    <FormField col={col}></FormField>
+                    <AddressFormField col={col} register={register} />
                   </Form.Group>
                 );
               })}
