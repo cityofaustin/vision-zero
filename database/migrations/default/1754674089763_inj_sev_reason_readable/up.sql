@@ -45,31 +45,31 @@ BEGIN
         NEW.patient_injry_sev_reason = 'The patient acuity level was yellow and the patient was transported or had care transferred to another entity';
     when (right(NEW.pcr_transport_priority, 1) = '3') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'The transport priority was listed as ''%''', NEW.pcr_transport_priority;
+        NEW.patient_injry_sev_reason = 'The transport priority was listed as "' || NEW.pcr_transport_priority || '"';
     when (lower(NEW.pcr_transport_priority) like 'charlie%') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'The transport priority was listed as ''%''', NEW.pcr_transport_priority;
+        NEW.patient_injry_sev_reason = 'The transport priority was listed as "' || NEW.pcr_transport_priority || '"';
     when (lower(NEW.pcr_transport_priority) like 'delta%') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'The transport priority was listed as ''%''', NEW.pcr_transport_priority;
+        NEW.patient_injry_sev_reason = 'The transport priority was listed as "' || NEW.pcr_transport_priority || '"';
     when (lower(NEW.pcr_transport_priority) like 'echo%') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'The transport priority was listed as ''%''', NEW.pcr_transport_priority;
+        NEW.patient_injry_sev_reason = 'The transport priority was listed as "' || NEW.pcr_transport_priority || '"';
     when (lower(NEW.pcr_provider_impression_primary) like 'fracture%') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'The provider listed the impression: ''%''', NEW.pcr_provider_impression_primary;
+        NEW.patient_injry_sev_reason = 'The provider listed the impression: "' || NEW.pcr_provider_impression_primary || '"';
     when (lower(NEW.pcr_provider_impression_secondary) like 'fracture%') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'The provider listed the impression: ''%''', NEW.pcr_provider_impression_secondary;
+        NEW.patient_injry_sev_reason = 'The provider listed the impression: "' || NEW.pcr_provider_impression_secondary || '"';
     when (lower(NEW.pcr_patient_acuity_level_reason) = 'evidence of major trauma/hemorrhage') then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'lower(pcr_patient_acuity_level_reason) = ''evidence of major trauma/hemorrhage''';
+        NEW.patient_injry_sev_reason = 'The acuity level reason is "evidence of major trauma/hemorrhage"';
     when (lower(NEW.pcr_provider_impression_primary) in ('burn', 'cardiac - cardiac arrest', 'cardiac - cardiac arrest - traumatic', 'syncope', 'unconsciousness')) then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'The provider listed the impression: ''%''', NEW.pcr_provider_impression_primary;
+        NEW.patient_injry_sev_reason = 'The provider listed the impression: "' || NEW.pcr_provider_impression_primary || '"';
     when (lower(NEW.pcr_provider_impression_secondary) in ('burn', 'cardiac - cardiac arrest', 'cardiac - cardiac arrest - traumatic', 'syncope', 'unconsciousness')) then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'The provider listed the impression: ''%''', NEW.pcr_provider_impression_secondary;
+        NEW.patient_injry_sev_reason = 'The provider listed the impression: "' || NEW.pcr_provider_impression_secondary || '"';
     --
     -- minor injuries
     --
@@ -78,10 +78,10 @@ BEGIN
         NEW.patient_injry_sev_reason = 'The patient was flagged as injured';
     when (lower(NEW.pcr_provider_impression_primary) like 'injury%') then
         NEW.patient_injry_sev_id = 2;
-        NEW.patient_injry_sev_reason = 'The provider listed the impression: ''%''', NEW.pcr_provider_impression_primary;
+        NEW.patient_injry_sev_reason = 'The provider listed the impression: "' || NEW.pcr_provider_impression_primary || '"';
     when (lower(NEW.pcr_provider_impression_secondary) like 'injury%') then
         NEW.patient_injry_sev_id = 2;
-        NEW.patient_injry_sev_reason = 'The provider listed the impression: ''%''', NEW.pcr_provider_impression_secondary;
+        NEW.patient_injry_sev_reason = 'The provider listed the impression: "' || NEW.pcr_provider_impression_secondary || '"';
     when (lower(NEW.pcr_outcome) in ('transported', 'care transferred')) then
         NEW.patient_injry_sev_id = 2;
         NEW.patient_injry_sev_reason = 'The patient was transported to a hospital or their care was transferred to another entity';
@@ -90,10 +90,10 @@ BEGIN
     --
     when (NEW.pcr_provider_impression_primary is not NULL and lower(NEW.pcr_provider_impression_primary) not in ('exam - adult - no finding', 'exam - child - no finding', 'exam - general', 'no complaints')) then
         NEW.patient_injry_sev_id = 3;
-        NEW.patient_injry_sev_reason = 'The provider listed the impression: ''%''', NEW.pcr_provider_impression_primary;
+        NEW.patient_injry_sev_reason = 'The provider listed the impression: "' || NEW.pcr_provider_impression_primary || '"';
     when (NEW.pcr_provider_impression_secondary is not NULL and lower(NEW.pcr_provider_impression_secondary) not in ('exam - adult - no finding', 'exam - child - no finding', 'exam - general', 'no complaints')) then
         NEW.patient_injry_sev_id = 3;
-        NEW.patient_injry_sev_reason = 'The provider listed the impression: ''%''', NEW.pcr_provider_impression_secondary;
+        NEW.patient_injry_sev_reason = 'The provider listed the impression: "' || NEW.pcr_provider_impression_secondary || '"';
     --
     -- not injured
     --
