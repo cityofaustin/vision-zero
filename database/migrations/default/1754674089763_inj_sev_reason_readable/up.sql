@@ -27,7 +27,7 @@ BEGIN
         NEW.patient_injry_sev_reason = 'Reported as "dead without resuscitation efforts"';
     when (lower(NEW.mvc_form_collision_indicators) LIKE 'death%') then
         NEW.patient_injry_sev_id = 4;
-        NEW.patient_injry_sev_reason = 'The collision indictors includes the word "death"';
+        NEW.patient_injry_sev_reason = 'The collision indicators include the word "death"';
     --
     -- serious injuries
     --
