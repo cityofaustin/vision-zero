@@ -20,7 +20,7 @@ export default function CrashSwapAddressButton({
     const currentValues = getValues();
 
     // Swap the primary and secondary values
-    const swappedValues = {
+    const swappedValues: AddressFormInputs = {
       rpt_block_num: currentValues.rpt_sec_block_num,
       rpt_street_pfx: currentValues.rpt_sec_street_pfx,
       rpt_street_name: currentValues.rpt_sec_street_name,
