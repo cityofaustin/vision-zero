@@ -30,7 +30,16 @@ interface RelatedRecordTableRowProps<
    * Graphql mutation that will be exectuted when a row is edited
    */
   mutation: string;
-
+  /**
+   * Function to generate the complete mutation variables payload
+   * If not provided, uses default behavior
+   */
+  getMutationVariables?: (
+    record: T,
+    column: ColDataCardDef<T>,
+    value: unknown,
+    defaultVariables: { id: number; updates: Record<string, unknown> }
+  ) => Record<string, unknown>;
   /**
    * Graphql mutation that will be exectuted in the rowActionComponent
    */
@@ -68,6 +77,7 @@ export default function RelatedRecordTableRow<
   record,
   columns,
   mutation,
+  getMutationVariables,
   rowActionMutation,
   isValidating,
   onSaveCallback,
@@ -107,12 +117,16 @@ export default function RelatedRecordTableRow<
       ? editColumn.relationship?.foreignKey
       : editColumn.path;
 
-    const variables = {
+    const defaultVariables = {
       id: recordId,
       updates: {
         [saveColumnName]: value,
       },
     };
+
+    const variables = getMutationVariables
+      ? getMutationVariables(record, editColumn, value, defaultVariables)
+      : defaultVariables;
 
     await mutate(variables);
     if (onSaveCallback) {

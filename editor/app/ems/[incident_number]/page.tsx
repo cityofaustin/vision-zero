@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import DataCard from "@/components/DataCard";
-import { emsDataCards } from "@/configs/emsDataCards";
 import { useMutation, useQuery } from "@/utils/graphql";
 import {
   GET_EMS_RECORDS,
@@ -25,6 +24,7 @@ import EMSLinkToPersonButton, {
 } from "@/components/EMSLinkToPersonButton";
 import { emsMatchingPeopleColumns } from "@/configs/emsMatchingPeopleColumns";
 import { emsNonCR3Columns } from "@/configs/nonCR3Columns";
+import { emsDataCards } from "@/configs/emsDataCards";
 import { PeopleListRow } from "@/types/peopleList";
 import { FaTruckMedical } from "react-icons/fa6";
 import { parseISO, subHours, addHours } from "date-fns";
@@ -256,7 +256,7 @@ export default function EMSDetailsPage({
           <RelatedRecordTable<EMSPatientCareRecord, EMSLinkRecordButtonProps>
             records={ems_pcrs}
             isValidating={isValidating}
-            noRowsMessage="No crashes found"
+            noRowsMessage="No patients found"
             header="EMS patient(s)"
             columns={emsDataCards.patient}
             mutation={UPDATE_EMS_PCR}
@@ -279,6 +279,8 @@ export default function EMSDetailsPage({
             onSaveCallback={onSaveCallback}
             rowActionComponent={EMSLinkToPersonButton}
             rowActionComponentAdditionalProps={linkToPersonButtonProps}
+            shouldShowColumnVisibilityPicker={true}
+            localStorageKey="emsPossiblePeople"
           />
         </Col>
       </Row>
@@ -290,6 +292,7 @@ export default function EMSDetailsPage({
             header="Possible non-CR3 matches"
             columns={emsNonCR3Columns}
             mutation=""
+            onSaveCallback={onSaveCallback}
           />
         </Col>
       </Row>

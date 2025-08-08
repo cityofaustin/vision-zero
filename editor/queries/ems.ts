@@ -155,7 +155,7 @@ export const UPDATE_EMS_PCR_CRASH_AND_PERSON = gql`
       where: { id: { _eq: $id } }
       _set: {
         person_id: $person_id
-        crash_match_status: "matched_by_manual_qa"
+        _match_event_name: "match_person_by_manual_qa"
       }
     ) {
       affected_rows
