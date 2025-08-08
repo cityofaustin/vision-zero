@@ -29,7 +29,6 @@ import EMSLinkNonCR3Button from "@/components/EMSLinkNonCR3Button";
 import { emsMatchingPeopleColumns } from "@/configs/emsMatchingPeopleColumns";
 import { emsNonCR3Columns } from "@/configs/nonCR3Columns";
 import { emsDataCards } from "@/configs/emsDataCards";
-import { getMutationVariables } from "@/configs/emsRelatedRecordTable";
 import { PeopleListRow } from "@/types/peopleList";
 import { FaTruckMedical } from "react-icons/fa6";
 import { parseISO, subHours, addHours } from "date-fns";

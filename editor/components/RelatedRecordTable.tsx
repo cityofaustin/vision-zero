@@ -73,7 +73,7 @@ interface RelatedRecordTableProps<
   /**
    * Callback function to be executed after a row edit is saved
    */
-  onSaveCallback: () => Promise<void>;
+  onSaveCallback?: () => Promise<void>;
   /** The key to use when saving and loading table column visibility data to local storage.
    * Optional because not all tables have col visibility settings enabled */
   localStorageKey?: string;
