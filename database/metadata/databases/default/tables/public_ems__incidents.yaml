@@ -41,6 +41,7 @@ select_permissions:
         - mvc_form_position_in_vehicle
         - non_cr3_match_status
         - patient_injry_sev_id
+        - patient_injry_sev_reason
         - pcr_patient_age
         - pcr_patient_gender
         - pcr_patient_race
@@ -74,6 +75,7 @@ select_permissions:
         - mvc_form_position_in_vehicle
         - non_cr3_match_status
         - patient_injry_sev_id
+        - patient_injry_sev_reason
         - pcr_patient_age
         - pcr_patient_gender
         - pcr_patient_race
@@ -107,6 +109,7 @@ select_permissions:
         - mvc_form_position_in_vehicle
         - non_cr3_match_status
         - patient_injry_sev_id
+        - patient_injry_sev_reason
         - pcr_patient_age
         - pcr_patient_gender
         - pcr_patient_race

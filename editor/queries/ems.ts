@@ -23,6 +23,7 @@ export const GET_EMS_RECORDS = gql`
         id
         label
       }
+      patient_injry_sev_reason
       pcr_patient_age
       pcr_patient_gender
       pcr_patient_race

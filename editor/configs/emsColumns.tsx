@@ -167,6 +167,11 @@ export const ALL_EMS_COLUMNS = {
     style: { whiteSpace: "nowrap" },
     sortable: true,
   },
+  patient_injry_sev_reason: {
+    path: "patient_injry_sev_reason",
+    label: "Injury severity reason",
+    defaultHidden: true,
+  },
   travel_mode: { path: "travel_mode", label: "Travel mode", sortable: true },
 } satisfies Record<string, ColDataCardDef<EMSPatientCareRecord>>;
 
