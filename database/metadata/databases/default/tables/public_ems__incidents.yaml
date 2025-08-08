@@ -124,8 +124,12 @@ update_permissions:
   - role: editor
     permission:
       columns:
-        - _match_event_name
+        - atd_apd_blueform_case_id
+        - crash_match_status
         - crash_pk
+        - matched_crash_pks
+        - non_cr3_match_status
+        - _match_event_name
         - person_id
         - updated_by
       filter: {}
@@ -134,8 +138,12 @@ update_permissions:
   - role: vz-admin
     permission:
       columns:
-        - _match_event_name
+        - atd_apd_blueform_case_id
+        - crash_match_status
         - crash_pk
+        - matched_crash_pks
+        - non_cr3_match_status
+        - _match_event_name
         - person_id
         - updated_by
       filter: {}
