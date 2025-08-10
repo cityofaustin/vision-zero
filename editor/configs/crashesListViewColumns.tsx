@@ -23,6 +23,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     path: "crash_timestamp",
     label: "Date",
     sortable: true,
+    style: { minWidth: "8rem" },
     valueFormatter: formatDate,
   },
   {
