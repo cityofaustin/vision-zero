@@ -95,46 +95,46 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div
-      className="d-flex flex-column overflow-hidden"
-      style={{ height: "100vh" }}
-    >
-      <EnvironmentBanner />
+    // Full-height outer div stacks children vertically
+    <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
       <AppNavBar user={user} logout={logout} />
-      <div className="d-flex flex-grow-1 overflow-hidden position-relative">
-        {/* Sidebar */}
-        <div
-          className={`app-sidebar d-flex flex-column position-absolute h-100 app-sidebar-${
-            isCollapsed ? "collapsed" : "expanded"
-          }`}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <div className="flex-grow-1 overflow-y-auto">
-            <ListGroup variant="flush" className="pt-3">
-              {routes.map((route) => (
-                <PermissionsRequired
-                  allowedRoles={route.allowedRoles}
-                  key={route.path}
-                >
-                  <SideBarListItem
-                    isCollapsed={isCollapsed}
-                    isCurrentPage={segments.includes(route.path)}
-                    Icon={route.icon}
-                    label={route.label}
-                    href={`/${route.path}`}
-                  />
-                </PermissionsRequired>
-              ))}
-            </ListGroup>
-          </div>
+      {/* Sidebar */}
+      <div
+        className={`app-sidebar d-flex flex-column h-100 app-sidebar-${
+          isCollapsed ? "collapsed" : "expanded"
+        }`}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className="flex-grow-1 overflow-y-auto">
+          <ListGroup variant="flush">
+            {routes.map((route) => (
+              <PermissionsRequired
+                allowedRoles={route.allowedRoles}
+                key={route.path}
+              >
+                <SideBarListItem
+                  isCollapsed={isCollapsed}
+                  isCurrentPage={segments.includes(route.path)}
+                  Icon={route.icon}
+                  label={route.label}
+                  href={`/${route.path}`}
+                />
+              </PermissionsRequired>
+            ))}
+          </ListGroup>
         </div>
-
-        {/* Main content */}
-        <div className="main-content-pane flex-grow-1 d-flex flex-column w-100">
-          <main className="flex-grow-1 d-flex flex-column overflow-y-auto">
+      </div>
+      {/* Main content - essentialy a boostrap "row" — horizontal */}
+      <div className="main-content-pane d-flex flex-grow-1">
+        <div className="flex-grow-1 d-flex flex-column w-100 ">
+          {/* <EnvironmentBanner /> */}
+          {/* vertical container */}
+          <main className="flex-grow-1 d-flex flex-column">
             <AppBreadCrumb />
-            <div className="flex-grow-1 px-3 pb-3">{children}</div>
+            <div className="d-flex flex-grow-1 flex-column p-3">
+              {children}
+            </div>
             <AppFooter />
           </main>
         </div>

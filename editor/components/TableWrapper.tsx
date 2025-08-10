@@ -346,11 +346,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
         </Row>
       )}
       {queryConfig.mapConfig && queryConfig.mapConfig.isActive && (
-        <Row>
-          <Col style={{ height: "500px" }}>
-            <TableMapWrapper mapConfig={queryConfig.mapConfig} data={rows} />
-          </Col>
-        </Row>
+        <TableMapWrapper mapConfig={queryConfig.mapConfig} data={rows} />
       )}
       {queryConfig.exportable && (
         <TableExportModal<T>

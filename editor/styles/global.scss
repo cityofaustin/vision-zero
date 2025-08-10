@@ -33,6 +33,12 @@ $sidebarWidth: 4.6rem;
   filter: invert(100%);
 }
 
+.app-navbar {
+  position: fixed !important;
+  z-index: 1050;
+  top: 0;
+}
+
 [data-bs-theme="dark"] .app-navbar,
 .app-sidebar,
 .crash-injury-indicator {
@@ -103,9 +109,12 @@ $sidebarWidth: 4.6rem;
 }
 
 .app-sidebar {
-  z-index: 1050;
+  position: fixed !important;
+  margin-top: 3.9rem;
+  z-index: 1040;
   left: 0;
   top: 0;
+  height: 100%;
   transition:
     width 0.2s ease-out,
     box-shadow 0.3s ease-out;
@@ -123,7 +132,7 @@ $sidebarWidth: 4.6rem;
 }
 
 .main-content-pane {
-  min-width: 0;
+  margin-top: 3.9rem;
   margin-left: $sidebarWidth;
 }
 
@@ -160,13 +169,6 @@ $sidebarWidth: 4.6rem;
   to {
     opacity: 1;
   }
-}
-
-// Ensure sidebar is above other content
-.app-sidebar {
-  position: absolute;
-  z-index: 1050;
-  height: 100%;
 }
 
 // Add transition for main content margin
