@@ -136,11 +136,15 @@ $sidebarWidth: 4.6rem;
   margin-left: $sidebarWidth;
 }
 
-[data-bs-theme="light"] .sidebar-list-item {
+[data-bs-theme="light"] .sidebar-list-item,
+[data-bs-theme="light"] .sidebar-list-item:active,
+[data-bs-theme="light"] .sidebar-list-item:focus {
   background-color: $light;
 }
 
-[data-bs-theme="dark"] .sidebar-list-item {
+[data-bs-theme="dark"] .sidebar-list-item,
+[data-bs-theme="dark"] .sidebar-list-item:active,
+[data-bs-theme="dark"] .sidebar-list-item:focus {
   background-color: #212529;
 }
 
