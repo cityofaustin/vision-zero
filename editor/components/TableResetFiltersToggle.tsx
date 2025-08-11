@@ -25,7 +25,10 @@ export default function TableResetFiltersToggle({
       variant="outline-secondary"
       onClick={() => {
         if (isMapActive && initialQueryConfig.mapConfig) {
-          // prefer map toggle state
+          /**
+           * Preserve the map toggle state (active/inactive) when
+           * resetting the filters
+           */
           const draftQueryConfig = produce(
             initialQueryConfig,
             (draftQueryConfig) => {
