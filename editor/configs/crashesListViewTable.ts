@@ -275,14 +275,14 @@ export const crashesListViewQueryConfig: QueryConfig = {
   searchFilter: {
     id: "search",
     value: "",
-    column: "record_locator",
+    column: "address_primary",
     operator: "_ilike",
     wildcard: true,
   },
   searchFields: [
+    { label: "Address", value: "address_primary" },
     { label: "Crash ID", value: "record_locator" },
     { label: "Case ID", value: "case_id" },
-    { label: "Address", value: "address_primary" },
   ],
   dateFilter: {
     mode: "1y",
@@ -299,9 +299,19 @@ export const crashesListViewQueryConfig: QueryConfig = {
       id: "points-layer",
       type: "circle",
       paint: {
-        "circle-radius": 6,
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          // zoom is 5 (or less)
+          5,
+          2,
+          // zoom is 20 (or greater)
+          20,
+          8,
+        ],
         "circle-color": "#007cbf",
-        "circle-stroke-width": 1,
+        "circle-stroke-width": 0.5,
         "circle-stroke-color": "#ffffff",
       },
     },
