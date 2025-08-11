@@ -55,6 +55,7 @@ export default function TableAdvancedSearchFilterToggle({
       <Dropdown.Menu
         style={{
           width: "350px",
+          // todo: set this based on window size
           maxHeight: "550px",
           overflowY: "scroll",
           overflowX: "hidden",
