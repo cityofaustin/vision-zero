@@ -13,16 +13,16 @@ export const geoJsonTransformers = {
       };
     }
     const features = data
-      .filter((crash) => crash.latitude && crash.longitude) // Filter out items without coordinates
-      .map((crash, index) => ({
+      .filter((row) => row.latitude && row.longitude) // Filter out items without coordinates
+      .map((row, index) => ({
         type: "Feature" as const,
         id: index,
         geometry: {
           type: "Point" as const,
-          coordinates: [Number(crash.longitude), Number(crash.latitude)],
+          coordinates: [Number(row.longitude), Number(row.latitude)],
         },
         properties: {
-          ...crash, // Include all original data as properties
+          ...row, // Include all original data as properties
         },
       }));
     return {
