@@ -1,4 +1,4 @@
-import { MutableRefObject, useMemo, useEffect, useState } from "react";
+import { MutableRefObject, useEffect, useState } from "react";
 import MapGL, {
   FullscreenControl,
   NavigationControl,
@@ -6,14 +6,11 @@ import MapGL, {
   Source,
   Layer,
 } from "react-map-gl";
-import Button from "react-bootstrap/Button";
-import { FaHome } from "react-icons/fa";
-import AlignedLabel from "@/components/AlignedLabel";
-import { bbox } from "@turf/bbox";
+import MapFitBoundsControl from "@/components/MapFitBoundsControl";
+import { useCurrentBounds } from "@/utils/map";
 import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import { FeatureCollection } from "geojson";
 import { TableMapConfig } from "@/types/tableMapConfig";
-import { LngLatBoundsLike } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 export interface LatLon {
@@ -28,70 +25,21 @@ export interface LatLonString {
 
 interface TableMapProps {
   /**
-   * Ref object which will hold the mapbox instance
+   * Ref object which holds the mapbox instance
    */
   mapRef: MutableRefObject<MapRef | null>;
   /**
    * The data that will be rendered as map features
    */
   geojson: FeatureCollection;
+  /**
+   * Map configuration object
+   */
   mapConfig: TableMapConfig;
 }
 
 /**
- * Custom control that fits map to current bounds
- */
-function HomeControl({
-  mapRef,
-  bounds,
-}: {
-  mapRef: MutableRefObject<MapRef | null>;
-  bounds: LngLatBoundsLike | undefined;
-}) {
-  return (
-    <Button
-      size="lg"
-      className="m-2 px-2 rounded"
-      variant="primary"
-      style={{
-        position: "absolute",
-        cursor: "pointer",
-      }}
-      onClick={() => {
-        if (bounds) {
-          mapRef?.current?.fitBounds(bounds, { padding: 10 });
-        }
-      }}
-    >
-      <AlignedLabel>
-        <FaHome className="fs-4" />
-      </AlignedLabel>
-    </Button>
-  );
-}
-
-/**
- * Hook which computes the bounding box of the provided geojson
- *
- * Returns undefined if the geojson has no features
- */
-const useCurrentBounds = (
-  geojson: FeatureCollection
-): LngLatBoundsLike | undefined =>
-  useMemo(() => {
-    if (!geojson.features.length) {
-      return undefined;
-    }
-    const bounds = bbox(geojson);
-
-    return [
-      [bounds[0], bounds[1]],
-      [bounds[2], bounds[3]],
-    ];
-  }, [geojson]);
-
-/**
- * Map component which renders an editable point marker
+ * Map which can be configured to render in the Table component
  */
 export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
   const geojsonBounds = useCurrentBounds(geojson);
@@ -142,7 +90,7 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       <Source id="custom-source" type="geojson" data={geojson}>
         <Layer id="custom-layer" type="circle" {...mapConfig?.layerProps} />
       </Source>
-      <HomeControl mapRef={mapRef} bounds={geojsonBounds} />
+      <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
     </MapGL>
   );
 };
