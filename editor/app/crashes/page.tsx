@@ -1,6 +1,5 @@
 "use client";
 import { useState, useCallback } from "react";
-import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import AlignedLabel from "@/components/AlignedLabel";
 import CreateCrashRecordModal from "@/components/CreateCrashRecordModal";

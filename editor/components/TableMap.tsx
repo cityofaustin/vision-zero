@@ -119,10 +119,10 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
    */
   useEffect(() => {
     if (geojsonBounds) {
-      // update map bounds fit geojson bounds
       mapRef?.current?.fitBounds(geojsonBounds, { padding: 10 });
     }
-  }, [geojsonBounds]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [geojsonBounds]); // mapRef is stable (ref object)
 
   return (
     <MapGL
