@@ -13,6 +13,7 @@ import {
   FaToolbox,
   FaUserLarge,
 } from "react-icons/fa6";
+import EnvironmentBadge from "@/components/EnvironmentBadge";
 import NavBarSearch from "@/components/NavBarSearch";
 import AlignedLabel from "@/components/AlignedLabel";
 import DropdownAnchorToggle from "@/components/DropdownAnchorToggle";
@@ -43,6 +44,7 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
               className="app-brand-img"
             />
           </Navbar.Brand>
+          <EnvironmentBadge />
         </Col>
         <Col className="d-flex justify-content-end align-items-center">
           <NavBarSearch />
