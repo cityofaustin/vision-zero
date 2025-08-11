@@ -251,4 +251,16 @@ to make sure it renders on top is a common fix */
   content: none !important;
 }
 
+/* Button that looks similar to a mapbox control */
+.button-map-control {
+  background-color: #fff !important;
+  color: #000 !important;
+  border: none !important;
+}
+
+.button-map-control:hover,
+.button-map-control:active {
+  background-color: $light !important;
+}
+
 @import "bootstrap/scss/bootstrap.scss";

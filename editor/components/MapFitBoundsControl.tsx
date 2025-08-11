@@ -19,7 +19,7 @@ export default function MapFitBoundsControl({
   return (
     <Button
       size="lg"
-      className="m-2 px-2 rounded"
+      className="button-map-control m-2 px-2 rounded"
       variant="primary"
       style={{
         position: "absolute",
