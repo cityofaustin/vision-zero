@@ -52,6 +52,8 @@ export interface TableMapConfig {
   /**
    * Optional limit to the number of features to query and render
    * This will override the `limit` set in the QueryConfig
+   * 
+   * todo: implement this ;)
    */
   featureLimit?: number;
 }
