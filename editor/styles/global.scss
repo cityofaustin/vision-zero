@@ -21,6 +21,8 @@ $danger: $rojo;
 $light: $anti-flash-white;
 $dark: $night;
 
+$sidebarWidth: 4.6rem;
+
 // https://isotropic.co/tool/hex-color-to-css-filter/
 .app-brand-img {
   filter: sepia(10%) contrast(130%);
@@ -31,9 +33,24 @@ $dark: $night;
   filter: invert(100%);
 }
 
+.app-navbar {
+  position: fixed !important;
+  z-index: 1050;
+  top: 0;
+}
+
 [data-bs-theme="dark"] .app-navbar,
+.app-sidebar,
 .crash-injury-indicator {
   background-color: #212529 !important;
+}
+
+[data-bs-theme="light"] .app-sidebar {
+  background-color: $light !important;
+}
+
+[data-bs-theme="dark"] .app-sidebar {
+  border-right: 1px solid #495057;
 }
 
 [data-bs-theme="light"] .crash-injury-indicator {
@@ -83,17 +100,84 @@ $dark: $night;
   }
 }
 
+// Custom tooltip styles prevent the y-scrollbar from briefly flashing
+// and causing a layout shift
+.tooltip {
+  position: fixed !important; /* Override Bootstrap's absolute positioning */
+  z-index: 9999;
+  pointer-events: none;
+}
+
 .app-sidebar {
-  transition: width 0.2s ease-out;
+  position: fixed !important;
+  margin-top: 3.9rem;
+  z-index: 1040;
+  left: 0;
+  top: 0;
+  height: 100%;
+  transition:
+    width 0.2s ease-out,
+    box-shadow 0.3s ease-out;
   overflow-x: hidden;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 }
 
 .app-sidebar-expanded {
-  width: 19rem !important;
+  width: 15.5rem !important;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
 }
 
 .app-sidebar-collapsed {
-  width: 4.6rem !important;
+  width: $sidebarWidth !important;
+}
+
+.main-content-pane {
+  margin-top: 3.9rem;
+  margin-left: $sidebarWidth;
+}
+
+[data-bs-theme="light"] .sidebar-list-item,
+[data-bs-theme="light"] .sidebar-list-item:active,
+[data-bs-theme="light"] .sidebar-list-item:focus {
+  background-color: $light;
+}
+
+[data-bs-theme="dark"] .sidebar-list-item,
+[data-bs-theme="dark"] .sidebar-list-item:active,
+[data-bs-theme="dark"] .sidebar-list-item:focus {
+  background-color: #212529;
+}
+
+[data-bs-theme="light"] .sidebar-list-item-current {
+  //   color: $light !important;
+  background-color: #fff !important;
+}
+
+[data-bs-theme="dark"] .sidebar-list-item-current {
+  color: #fff !important;
+  background-color: #495057 !important;
+}
+
+[data-bs-theme="light"] .sidebar-list-item:hover {
+  color: #000 !important;
+}
+
+[data-bs-theme="dark"] .sidebar-list-item:hover {
+  color: #fff !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Add transition for main content margin
+.flex-grow-1 {
+  transition: margin-left 0.3s ease-out;
 }
 
 .mapboxgl-map {
@@ -120,29 +204,8 @@ $dark: $night;
   color: $white;
 }
 
-.sidebar-toggle-open {
-  transform: rotate(180deg);
-  transition: transform 0.2s ease-out; // Optional: Smooth transition
-}
-
-.sidebar-toggle-closed {
-  transform: rotate(360deg);
-  transition: transform 0.2s ease-out; // Optional: Smooth transition
-}
-
 .react-datepicker__calendar-icon {
   margin-top: 0.2rem;
-}
-
-.special-filter {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height 0.2s ease-out;
-}
-
-.special-filter-open {
-  /* Adjust to be just above content height */
-  max-height: 25rem;
 }
 
 .card-header {
@@ -187,6 +250,5 @@ to make sure it renders on top is a common fix */
 .dropdown-toggle.hide-toggle::after {
   content: none !important;
 }
-
 
 @import "bootstrap/scss/bootstrap.scss";
