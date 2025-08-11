@@ -11,7 +11,6 @@ import PermissionsRequired from "@/components/PermissionsRequired";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import AppFooter from "@/components/AppFooter";
 import { darkModelocalStorageKey } from "@/components/DarkModeToggle";
-import EnvironmentBanner from "@/components/EnvironmentBanner";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -80,7 +79,6 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
         className="d-flex flex-column"
         style={{ height: "100vh", overflow: "hidden" }}
       >
-        <EnvironmentBanner />
         <LoginContainer
           onLogin={() =>
             loginWithRedirect({
@@ -128,11 +126,10 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
       {/* Main content - essentialy a boostrap "row" — horizontal */}
       <div className="main-content-pane d-flex flex-grow-1">
         <div className="flex-grow-1 d-flex flex-column w-100 ">
-          {/* <EnvironmentBanner /> */}
           {/* vertical container */}
           <main className="flex-grow-1 d-flex flex-column">
-            <AppBreadCrumb />
             <div className="d-flex flex-grow-1 flex-column p-3">
+              <AppBreadCrumb />
               {children}
             </div>
             <AppFooter />
