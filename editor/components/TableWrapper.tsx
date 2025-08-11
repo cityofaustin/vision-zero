@@ -228,7 +228,10 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       queryConfigMutable.dateFilter = undefined;
       initialQueryConfigMutable.dateFilter = undefined;
     }
-    /** Ignore map toggle state by setting the same value in both configs */
+    /**
+     * Ignore map toggle state by setting the same value in both configs
+     *  - we don't want the filters dirty when switching between map/list mode
+     */
     if (queryConfigMutable.mapConfig && initialQueryConfigMutable.mapConfig) {
       queryConfigMutable.mapConfig.isActive = true;
       initialQueryConfigMutable.mapConfig.isActive = true;
