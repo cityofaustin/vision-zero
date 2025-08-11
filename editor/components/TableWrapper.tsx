@@ -8,6 +8,8 @@ import TableAdvancedSearchFilterToggle, {
 } from "@/components/TableAdvancedSearchFilterToggle";
 import TableDateSelector from "@/components/TableDateSelector";
 import TableExportModal from "@/components/TableExportModal";
+import TableMapToggle from "@/components/TableMapToggle";
+import TableMapWrapper from "@/components/TableMapWrapper";
 import TablePaginationControls from "@/components/TablePaginationControls";
 import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
 import TableSearch, { SearchSettings } from "@/components/TableSearch";
@@ -226,6 +228,11 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       queryConfigMutable.dateFilter = undefined;
       initialQueryConfigMutable.dateFilter = undefined;
     }
+    /** Ignore map toggle state by setting the same value in both configs */
+    if (queryConfigMutable.mapConfig && initialQueryConfigMutable.mapConfig) {
+      queryConfigMutable.mapConfig.isActive = true;
+      initialQueryConfigMutable.mapConfig.isActive = true;
+    }
     setAreFiltersDirty(!isEqual(queryConfigMutable, initialQueryConfigMutable));
   }, [queryConfig, initialQueryConfig]);
 
@@ -283,10 +290,18 @@ export default function TableWrapper<T extends Record<string, unknown>>({
               setSearchSettings={setSearchSettings}
             />
           </Col>
+          {queryConfig.mapConfig && (
+            <Col className="px-0 mt-2 me-2" xs="auto">
+              <TableMapToggle
+                queryConfig={queryConfig}
+                setQueryConfig={setQueryConfig}
+              />
+            </Col>
+          )}
           {areFiltersDirty && (
             <Col className="px-0 mt-2" xs="auto">
               <TableResetFiltersToggle
-                isMapActive={false}
+                isMapActive={queryConfig?.mapConfig?.isActive || false}
                 initialQueryConfig={initialQueryConfig}
                 setQueryConfig={setQueryConfig}
               />
@@ -318,16 +333,21 @@ export default function TableWrapper<T extends Record<string, unknown>>({
         </Row>
       </form>
       {/* The actual table itself */}
-      <Row>
-        <Col>
-          <Table<T>
-            rows={rows}
-            columns={visibleColumns}
-            queryConfig={queryConfig}
-            setQueryConfig={setQueryConfig}
-          />
-        </Col>
-      </Row>
+      {(!queryConfig.mapConfig || !queryConfig.mapConfig.isActive) && (
+        <Row>
+          <Col>
+            <Table<T>
+              rows={rows}
+              columns={visibleColumns}
+              queryConfig={queryConfig}
+              setQueryConfig={setQueryConfig}
+            />
+          </Col>
+        </Row>
+      )}
+      {queryConfig.mapConfig && queryConfig.mapConfig.isActive && (
+        <TableMapWrapper mapConfig={queryConfig.mapConfig} data={rows} />
+      )}
       {queryConfig.exportable && (
         <TableExportModal<T>
           exportFilename={queryConfig.exportFilename}

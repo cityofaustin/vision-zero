@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button";
 import { FaXmark } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/types/queryBuilder";
+import { produce } from "immer";
 
 interface Props {
   isMapActive: boolean;
@@ -15,6 +16,7 @@ interface Props {
  * setting the queryConfig to its initial value
  */
 export default function TableResetFiltersToggle({
+  isMapActive,
   initialQueryConfig,
   setQueryConfig,
 }: Props) {
@@ -22,7 +24,21 @@ export default function TableResetFiltersToggle({
     <Button
       variant="outline-secondary"
       onClick={() => {
-        setQueryConfig(initialQueryConfig);
+        if (isMapActive && initialQueryConfig.mapConfig) {
+          // prefer map toggle state
+          const draftQueryConfig = produce(
+            initialQueryConfig,
+            (draftQueryConfig) => {
+              if (draftQueryConfig.mapConfig) {
+                draftQueryConfig.mapConfig.isActive = isMapActive;
+              }
+              return draftQueryConfig;
+            }
+          );
+          setQueryConfig(draftQueryConfig);
+        } else {
+          setQueryConfig(initialQueryConfig);
+        }
       }}
     >
       <AlignedLabel>
