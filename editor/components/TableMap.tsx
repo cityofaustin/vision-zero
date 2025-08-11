@@ -1,12 +1,10 @@
-import { useCallback, MutableRefObject, useMemo, useEffect } from "react";
+import { MutableRefObject, useMemo, useEffect, useState } from "react";
 import MapGL, {
   FullscreenControl,
   NavigationControl,
-  ViewStateChangeEvent,
   MapRef,
   Source,
   Layer,
-  LayerProps,
 } from "react-map-gl";
 import Button from "react-bootstrap/Button";
 import { FaHome } from "react-icons/fa";
@@ -15,10 +13,8 @@ import { bbox } from "@turf/bbox";
 import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import { FeatureCollection } from "geojson";
 import { TableMapConfig } from "@/types/tableMapConfig";
-
-import "mapbox-gl/dist/mapbox-gl.css";
 import { LngLatBoundsLike } from "mapbox-gl";
-import { FaExpand } from "react-icons/fa6";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 export interface LatLon {
   latitude: number;
@@ -99,11 +95,13 @@ const useCurrentBounds = (
  */
 export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
   const geojsonBounds = useCurrentBounds(geojson);
-
   /**
-   * Initialize map based on initial geojson bounds
+   * Initialize map based on initial geojson bounds. Bounds may be
+   * undefined if the page was loaded with the map active (because
+   * geojson data must be fetched), or the the map may initialize
+   * with geojson if the map has been toggled from the list view
    */
-  const initialViewState = useMemo(() => {
+  const [initialViewState] = useState(() => {
     if (geojsonBounds) {
       return { bounds: geojsonBounds };
     }
@@ -113,8 +111,12 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       longitude: DEFAULT_MAP_PAN_ZOOM.longitude,
       zoom: 9,
     };
-  }, []);
+  });
 
+  /**
+   * After initialization, this hook updates the map extent
+   * when data changes
+   */
   useEffect(() => {
     if (geojsonBounds) {
       // update map bounds fit geojson bounds
