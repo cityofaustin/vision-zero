@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useMemo } from "react";
 import Badge from "react-bootstrap/Badge";
-import Button from "react-bootstrap/Button";
+import Dropdown from "react-bootstrap/Dropdown";
+import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
 import { FaSliders } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/types/queryBuilder";
@@ -26,33 +27,45 @@ export const useActiveSwitchFilterCount = (queryConfig: QueryConfig): number =>
     return activeFilterCount;
   }, [queryConfig]);
 
+export interface TableAdvancedSearchFilterToggleProps {
+  queryConfig: QueryConfig;
+  setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
+  activeFilterCount: number;
+}
+
 /**
  * Table component that controls advanced search filters
  */
 export default function TableAdvancedSearchFilterToggle({
-  setIsFilterOpen,
+  queryConfig,
+  setQueryConfig,
   activeFilterCount,
-}: {
-  setIsFilterOpen: Dispatch<SetStateAction<boolean>>;
-  activeFilterCount: number;
-}) {
+}: TableAdvancedSearchFilterToggleProps) {
   return (
-    <Button
-      className="me-2"
-      variant="outline-primary"
-      onClick={() =>
-        setIsFilterOpen((prevState) => {
-          return !prevState;
-        })
-      }
-    >
-      <AlignedLabel>
-        <FaSliders />
-        <span className="mx-2">Filters</span>
-        {activeFilterCount > 0 && (
-          <Badge bg="primary">{activeFilterCount}</Badge>
-        )}
-      </AlignedLabel>
-    </Button>
+    <Dropdown>
+      <Dropdown.Toggle className="hide-toggle me-2" variant="outline-primary">
+        <AlignedLabel>
+          <FaSliders />
+          <span className="mx-2">Filters</span>
+          {activeFilterCount > 0 && (
+            <Badge bg="primary">{activeFilterCount}</Badge>
+          )}
+        </AlignedLabel>
+      </Dropdown.Toggle>
+      <Dropdown.Menu
+        style={{
+          width: "350px",
+          // todo: set this based on window size
+          maxHeight: "550px",
+          overflowY: "scroll",
+          overflowX: "hidden",
+        }}
+      >
+        <TableAdvancedSearchFilterMenu
+          queryConfig={queryConfig}
+          setQueryConfig={setQueryConfig}
+        />
+      </Dropdown.Menu>
+    </Dropdown>
   );
 }

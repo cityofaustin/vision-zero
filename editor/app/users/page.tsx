@@ -3,7 +3,6 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
 import { FaUserPlus, FaCopy, FaCheck } from "react-icons/fa6";
@@ -58,9 +57,12 @@ export default function Users() {
 
   return (
     <>
-      <Card className="mt-3">
-        <Card.Header className="fs-3 fw-bold">Users</Card.Header>
-        <Card.Body>
+      <div className="h-100 d-flex flex-column">
+        <div>
+          <span className="fs-3 fw-bold">Users</span>
+        </div>
+
+        <div>
           <div className="mb-3 d-flex align-items-center">
             {!isLoading && (
               <>
@@ -155,8 +157,8 @@ export default function Users() {
               })}
             </tbody>
           </Table>
-        </Card.Body>
-      </Card>
+        </div>
+      </div>
       <UserModal
         onClose={onCloseModal}
         show={showNewUserModal}

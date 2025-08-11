@@ -5,7 +5,8 @@ import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/types/queryBuilder";
 
 interface Props {
-  queryConfig: QueryConfig;
+  isMapActive: boolean;
+  initialQueryConfig: QueryConfig;
   setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
 }
 
@@ -14,13 +15,15 @@ interface Props {
  * setting the queryConfig to its initial value
  */
 export default function TableResetFiltersToggle({
-  queryConfig,
+  initialQueryConfig,
   setQueryConfig,
 }: Props) {
   return (
     <Button
       variant="outline-secondary"
-      onClick={() => setQueryConfig(queryConfig)}
+      onClick={() => {
+        setQueryConfig(initialQueryConfig);
+      }}
     >
       <AlignedLabel>
         <FaXmark className="me-2" />

@@ -54,7 +54,7 @@ export default function AppBreadCrumb() {
   }
 
   return (
-    <div className="px-3 py-2">
+    <div className="pb-2">
       <Col>
         {isDetailsPage &&
           crumbs?.map((crumb, i) => {

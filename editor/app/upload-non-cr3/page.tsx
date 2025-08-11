@@ -3,7 +3,6 @@ import { useState, useCallback } from "react";
 import Link from "next/link";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
@@ -95,164 +94,149 @@ export default function UploadNonCr3() {
   };
 
   return (
-    <>
-      <Card className="mt-3">
-        <Card.Header className="fs-3 fw-bold">
-          Upload Non-CR3 records
-        </Card.Header>
-        <Card.Body>
-          {!data && (
-            <Row>
-              <Col xs={12} md={6} lg={3}>
-                <Form onSubmit={(e) => e.preventDefault()}>
-                  <Form.Control
-                    type="file"
-                    name="file"
-                    accept=".csv"
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setSuccess(false);
-                      if (validationErrors) {
-                        setValidationErrors(null);
-                      }
-                      if (e.target?.files && e.target?.files.length > 0) {
-                        setParsing(true);
-                        onSelectFile(e.target?.files[0]);
-                        // reset file input
-                        e.target.value = "";
-                      } else {
-                        setParsing(false);
-                      }
-                    }}
-                  />
-                </Form>
-              </Col>
-              <Col className="my-auto">
-                <Link
-                  href="/files/non_cr3_template.csv"
-                  download="non_cr3_template.csv"
-                  className="text-decoration-none ms-3 text-nowrap d-flex align-items-center"
-                >
-                  <FaFileCsv className="me-1" />
-                  Download CSV template
-                </Link>
-              </Col>
-            </Row>
-          )}
-          {data &&
-            !validationErrors &&
-            !uploadError &&
-            !success &&
-            !isMutating && (
-              <>
-                <Row>
-                  <Col>
-                    <Alert variant="info">
-                      <AlignedLabel>
-                        <FaCircleInfo className="me-2" />
-                        {`${data.length.toLocaleString()} records will be imported`}
-                      </AlignedLabel>
-                    </Alert>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <Button
-                      role="submit"
-                      disabled={!data.length || isMutating}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onUpload();
-                      }}
-                    >
-                      Continue
-                    </Button>
-                  </Col>
-                </Row>
-              </>
-            )}
-          <Row className="mt-3">
+    <div className="h-100 d-flex flex-column">
+      <div className="fs-3 fw-bold">Upload Non-CR3 records</div>
+
+      {!data && (
+        <Row>
+          <Col xs={12} md={6} lg={3}>
+            <Form onSubmit={(e) => e.preventDefault()}>
+              <Form.Control
+                type="file"
+                name="file"
+                accept=".csv"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setSuccess(false);
+                  if (validationErrors) {
+                    setValidationErrors(null);
+                  }
+                  if (e.target?.files && e.target?.files.length > 0) {
+                    setParsing(true);
+                    onSelectFile(e.target?.files[0]);
+                    // reset file input
+                    e.target.value = "";
+                  } else {
+                    setParsing(false);
+                  }
+                }}
+              />
+            </Form>
+          </Col>
+          <Col className="my-auto">
+            <Link
+              href="/files/non_cr3_template.csv"
+              download="non_cr3_template.csv"
+              className="text-decoration-none ms-3 text-nowrap d-flex align-items-center"
+            >
+              <FaFileCsv className="me-1" />
+              Download CSV template
+            </Link>
+          </Col>
+        </Row>
+      )}
+      {data && !validationErrors && !uploadError && !success && !isMutating && (
+        <>
+          <Row>
             <Col>
-              {parsing && (
+              <Alert variant="info">
                 <AlignedLabel>
-                  <Spinner variant="primary" className="me-2" />
-                  <span>Processing...</span>
+                  <FaCircleInfo className="me-2" />
+                  {`${data.length.toLocaleString()} records will be imported`}
                 </AlignedLabel>
-              )}
-              {!validationErrors && isMutating && (
-                <AlignedLabel>
-                  <Spinner variant="primary" className="me-2" />
-                  <span>Uploading records...</span>
-                </AlignedLabel>
-              )}
-              {success && (
-                <Alert variant="success">
-                  <AlignedLabel>
-                    <FaCircleCheck className="me-2" />
-                    <span>Records successfully imported</span>
-                  </AlignedLabel>
-                </Alert>
-              )}
-              {validationErrors && (
-                <Alert
-                  variant="danger"
-                  className="d-flex justify-content-between"
-                >
-                  <AlignedLabel>
-                    <FaTriangleExclamation className="me-2" />
-                    <span>
-                      Your file is invalid — please correct the below errors and
-                      try again
-                    </span>
-                  </AlignedLabel>
-                </Alert>
-              )}
-              {uploadError && (
-                <Alert
-                  variant="danger"
-                  className="d-flex justify-content-between"
-                >
-                  <AlignedLabel>
-                    <FaTriangleExclamation className="me-2" />
-                    <span>
-                      There was an error uploading your file - please try again.
-                    </span>
-                  </AlignedLabel>
-                </Alert>
-              )}
-              {validationErrors && (
-                <Table responsive hover>
-                  <thead>
-                    <tr>
-                      <th>Row #</th>
-                      <th>Field</th>
-                      <th>Error</th>
-                    </tr>
-                  </thead>
-                  <tbody className="font-monospace">
-                    {validationErrors
-                      .slice(0, MAX_ERRORS_TO_DISPLAY)
-                      .map(({ fieldName, rowNumber, message }, i) => (
-                        <tr key={i}>
-                          {/* if dupes are detected, rowNumber will be NaN and  the fieldname will be the string literal `"undefined"` */}
-                          <td>{isNaN(rowNumber) ? "" : rowNumber + 1}</td>
-                          <td>{fieldName === "undefined" ? "" : fieldName}</td>
-                          <td>{message}</td>
-                        </tr>
-                      ))}
-                    {validationErrors.length > MAX_ERRORS_TO_DISPLAY && (
-                      <tr>
-                        <td colSpan={3} className="text-center">{`${
-                          validationErrors.length - MAX_ERRORS_TO_DISPLAY
-                        } more errors not shown`}</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </Table>
-              )}
+              </Alert>
             </Col>
           </Row>
-        </Card.Body>
-      </Card>
-    </>
+          <Row>
+            <Col>
+              <Button
+                role="submit"
+                disabled={!data.length || isMutating}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onUpload();
+                }}
+              >
+                Continue
+              </Button>
+            </Col>
+          </Row>
+        </>
+      )}
+      <Row className="mt-3">
+        <Col>
+          {parsing && (
+            <AlignedLabel>
+              <Spinner variant="primary" className="me-2" />
+              <span>Processing...</span>
+            </AlignedLabel>
+          )}
+          {!validationErrors && isMutating && (
+            <AlignedLabel>
+              <Spinner variant="primary" className="me-2" />
+              <span>Uploading records...</span>
+            </AlignedLabel>
+          )}
+          {success && (
+            <Alert variant="success">
+              <AlignedLabel>
+                <FaCircleCheck className="me-2" />
+                <span>Records successfully imported</span>
+              </AlignedLabel>
+            </Alert>
+          )}
+          {validationErrors && (
+            <Alert variant="danger" className="d-flex justify-content-between">
+              <AlignedLabel>
+                <FaTriangleExclamation className="me-2" />
+                <span>
+                  Your file is invalid — please correct the below errors and try
+                  again
+                </span>
+              </AlignedLabel>
+            </Alert>
+          )}
+          {uploadError && (
+            <Alert variant="danger" className="d-flex justify-content-between">
+              <AlignedLabel>
+                <FaTriangleExclamation className="me-2" />
+                <span>
+                  There was an error uploading your file - please try again.
+                </span>
+              </AlignedLabel>
+            </Alert>
+          )}
+          {validationErrors && (
+            <Table responsive hover>
+              <thead>
+                <tr>
+                  <th>Row #</th>
+                  <th>Field</th>
+                  <th>Error</th>
+                </tr>
+              </thead>
+              <tbody className="font-monospace">
+                {validationErrors
+                  .slice(0, MAX_ERRORS_TO_DISPLAY)
+                  .map(({ fieldName, rowNumber, message }, i) => (
+                    <tr key={i}>
+                      {/* if dupes are detected, rowNumber will be NaN and  the fieldname will be the string literal `"undefined"` */}
+                      <td>{isNaN(rowNumber) ? "" : rowNumber + 1}</td>
+                      <td>{fieldName === "undefined" ? "" : fieldName}</td>
+                      <td>{message}</td>
+                    </tr>
+                  ))}
+                {validationErrors.length > MAX_ERRORS_TO_DISPLAY && (
+                  <tr>
+                    <td colSpan={3} className="text-center">{`${
+                      validationErrors.length - MAX_ERRORS_TO_DISPLAY
+                    } more errors not shown`}</td>
+                  </tr>
+                )}
+              </tbody>
+            </Table>
+          )}
+        </Col>
+      </Row>
+    </div>
   );
 }

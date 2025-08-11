@@ -107,8 +107,7 @@ export interface SearchFilterField {
 export type DateFilterMode = "ytd" | "all" | "5y" | "1y" | "custom";
 
 /**
- * Configuration object for the graphql
- * query builder
+ * Configuration object for the graphql query builder
  */
 export interface QueryConfig {
   /**
