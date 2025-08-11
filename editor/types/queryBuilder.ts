@@ -1,5 +1,3 @@
-import { TableMapConfig } from "@/types/tableMapConfig";
-
 /**
  * The types we currently support as filter values
  *
@@ -170,10 +168,6 @@ export interface QueryConfig {
    * the file extension
    */
   exportFilename?: string;
-  /**
-   * Optional map configuration. Enables the map view/toggle when present
-   */
-  mapConfig?: TableMapConfig;
 }
 
 /**
