@@ -28,6 +28,7 @@ import { PeopleListRow } from "@/types/peopleList";
 import { FaTruckMedical } from "react-icons/fa6";
 import { parseISO, subHours, addHours } from "date-fns";
 import { Crash } from "@/types/crashes";
+import CrashMapCard from "@/components/CrashMapCard";
 
 export default function EMSDetailsPage({
   params,
@@ -227,6 +228,19 @@ export default function EMSDetailsPage({
             onSaveCallback={onSaveCallback}
           />
         </Col>
+        <Col sm={12} md={6} lg={8} className="mb-3">
+          <CrashMapCard
+            savedLatitude={incident.latitude}
+            savedLongitude={incident.longitude}
+            // crashId={crash.id}
+            // onSaveCallback={onSaveCallback}
+            // mutation={UPDATE_CRASH}
+            locationId={incident.location_id}
+            // isManualGeocode={crash.crashes_list_view.is_manual_geocode}
+          />
+        </Col>
+      </Row>
+      <Row>
         <Col sm={12} className="mb-3">
           <RelatedRecordTable<EMSPatientCareRecord, EMSLinkRecordButtonProps>
             records={ems_pcrs}
