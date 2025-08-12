@@ -240,6 +240,8 @@ export default function EMSDetailsPage({
             rowActionComponent={EMSLinkRecordButton}
             rowActionComponentAdditionalProps={linkRecordButtonProps}
             rowActionMutation={UPDATE_EMS_INCIDENT}
+            shouldShowColumnVisibilityPicker={true}
+            localStorageKey="emsIncidentDetailsPatients"
           />
         </Col>
       </Row>

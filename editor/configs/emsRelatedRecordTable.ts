@@ -6,6 +6,7 @@ export const emsRelatedRecordCols = [
   ALL_EMS_COLUMNS.unit_nbr,
   ALL_EMS_COLUMNS.prsn_nbr,
   ALL_EMS_COLUMNS.patient_injry_sev,
+  ALL_EMS_COLUMNS.patient_injry_sev_reason,
   ALL_EMS_COLUMNS.pcr_patient_age,
   ALL_EMS_COLUMNS.pcr_patient_race,
   ALL_EMS_COLUMNS.pcr_patient_gender,

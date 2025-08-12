@@ -9,6 +9,7 @@ export const emsDataCards = {
   ],
   patient: [
     columns.patient_injry_sev,
+    columns.patient_injry_sev_reason,
     columns.pcr_patient_age,
     columns.pcr_patient_race,
     columns.pcr_patient_gender,
