@@ -32,7 +32,7 @@ export default function DeleteNoteButton<T extends Record<string, unknown>>({
               },
             };
             await mutate(variables);
-            await onSaveCallback();
+            if (onSaveCallback) await onSaveCallback();
           }
         }}
       >
