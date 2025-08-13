@@ -69,8 +69,7 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
     if (geojsonBounds) {
       mapRef?.current?.fitBounds(geojsonBounds, { padding: 10 });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [geojsonBounds]); // mapRef is stable (ref object)
+  }, [geojsonBounds, mapRef]);
 
   return (
     <MapGL

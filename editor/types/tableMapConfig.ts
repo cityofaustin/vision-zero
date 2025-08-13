@@ -38,7 +38,7 @@ export const geoJsonTransformers = {
  */
 export interface TableMapConfig {
   /**
-   * If the is toggled on and should be rendered
+   * If the map is toggled on and should be rendered
    */
   isActive: boolean;
   /**
