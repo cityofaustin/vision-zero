@@ -37,6 +37,10 @@ interface TableColumnVisibilityMenuProps {
    * The key to use when saving and loading table column visibility data to local storage.
    */
   localStorageKey?: string;
+  /**
+   * Optionally disable the dropdown menu button
+   */
+  disabled?: boolean;
 }
 
 /**
@@ -103,6 +107,7 @@ export default function TableColumnVisibilityMenu({
   isColVisibilityLocalStorageLoaded,
   setIsColVisibilityLocalStorageLoaded,
   localStorageKey,
+  disabled,
 }: TableColumnVisibilityMenuProps) {
   const handleUpdateColVisibility = useCallback(
     (columns: ColumnVisibilitySetting[], path: string) => {
@@ -216,6 +221,7 @@ export default function TableColumnVisibilityMenu({
           variant="outline-primary"
           className="border-0 hide-toggle"
           id="column-visibility-picker"
+          disabled={!!disabled}
         >
           <FaGear />
         </Dropdown.Toggle>

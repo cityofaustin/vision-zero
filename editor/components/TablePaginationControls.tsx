@@ -180,6 +180,8 @@ export default function TablePaginationControls({
         setIsColVisibilityLocalStorageLoaded={
           setIsColVisibilityLocalStorageLoaded
         }
+        // Disable col vis dropdown when map is active
+        disabled={queryConfig.mapConfig?.isActive}
       />
     </ButtonToolbar>
   );
