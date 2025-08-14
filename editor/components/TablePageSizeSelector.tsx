@@ -58,7 +58,7 @@ export default function TablePageSizeSelector({
             }}
           >
             {ALLOWED_QUERY_PAGE_SIZES.map((value) => (
-              <option value={value}>{value.toLocaleString()}</option>
+              <option key={value} value={value}>{value.toLocaleString()}</option>
             ))}
           </Form.Select>
         </Form.Group>

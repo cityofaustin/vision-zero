@@ -1,5 +1,5 @@
 export const DEFAULT_QUERY_LIMIT = 50;
-export const MAX_RECORD_EXPORT_LIMIT = 1_000_000;
+export const MAX_RECORD_EXPORT_LIMIT = 1_000_000 as const;
 
 export const COLORS = {
   primary: "#1176d0",
