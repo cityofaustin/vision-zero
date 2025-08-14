@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import Spinner from "react-bootstrap/Spinner";
 import Table from "@/components/Table";
 import TableAdvancedSearchFilterToggle, {
   useActiveSwitchFilterCount,
@@ -310,10 +309,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
               />
             </Col>
           )}
-          <Col className="d-flex justify-content-end align-items-center mt-2">
-            {isLoading && <Spinner variant="primary" />}
-          </Col>
-          <Col className="d-flex justify-content-end mt-2" xs="auto">
+          <Col className="d-flex justify-content-end mt-2">
             <TablePaginationControls
               columnVisibilitySettings={columnVisibilitySettings}
               setColumnVisibilitySettings={setColumnVisibilitySettings}
