@@ -1,7 +1,7 @@
 import { MutableRefObject } from "react";
 import Button from "react-bootstrap/Button";
 import AlignedLabel from "@/components/AlignedLabel";
-import { FaHome } from "react-icons/fa";
+import { MdFilterCenterFocus } from "react-icons/md";
 import { MapRef } from "react-map-gl";
 import { LngLatBoundsLike } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -17,23 +17,21 @@ export default function MapFitBoundsControl({
   bounds: LngLatBoundsLike | undefined;
 }) {
   return (
-    <Button
-      size="lg"
-      className="button-map-control m-2 px-2 rounded"
-      variant="primary"
-      style={{
-        position: "absolute",
-        cursor: "pointer",
-      }}
-      onClick={() => {
-        if (bounds) {
-          mapRef?.current?.fitBounds(bounds, { padding: 10 });
-        }
-      }}
-    >
-      <AlignedLabel>
-        <FaHome className="fs-4" />
-      </AlignedLabel>
-    </Button>
+    <div className="map-custom-ctrl-container-top-right">
+      <Button
+        size="lg"
+        className="map-custom-ctrl-btn"
+        variant="primary"
+        onClick={() => {
+          if (bounds) {
+            mapRef?.current?.fitBounds(bounds, { padding: 10 });
+          }
+        }}
+      >
+        <AlignedLabel>
+          <MdFilterCenterFocus />
+        </AlignedLabel>
+      </Button>
+    </div>
   );
 }

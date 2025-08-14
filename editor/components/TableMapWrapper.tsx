@@ -34,7 +34,7 @@ export default function TableMapWrapper<T extends Record<string, unknown>>({
   }, [data, mapConfig.geojsonTransformerName]);
 
   return (
-    <div className="h-100" ref={mapContainerRef}>
+    <div className="table-map-container" ref={mapContainerRef}>
       <TableMap mapRef={mapRef} geojson={geojson} mapConfig={mapConfig} />
     </div>
   );

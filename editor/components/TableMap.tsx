@@ -83,7 +83,6 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
     >
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
-
       {/* custom point source and layer from data */}
       {/* Point source and layer from data */}
       <Source id="custom-source" type="geojson" data={geojson}>
