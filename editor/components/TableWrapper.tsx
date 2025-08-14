@@ -310,10 +310,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
               />
             </Col>
           )}
-          <Col className="d-flex justify-content-end align-items-center mt-2">
-            {isLoading && <Spinner variant="primary" />}
-          </Col>
-          <Col className="d-flex justify-content-end mt-2" xs="auto">
+          <Col className="d-flex justify-content-end mt-2">
             <TablePaginationControls
               columnVisibilitySettings={columnVisibilitySettings}
               setColumnVisibilitySettings={setColumnVisibilitySettings}
