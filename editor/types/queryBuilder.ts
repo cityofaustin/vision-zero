@@ -1,4 +1,5 @@
 import { TableMapConfig } from "@/types/tableMapConfig";
+import { ALLOWED_QUERY_PAGE_SIZES, AllowedPageSize } from "@/utils/constants";
 
 /**
  * The types we currently support as filter values
@@ -119,7 +120,7 @@ export interface QueryConfig {
   /**
    * The record limit
    */
-  limit: number;
+  limit: AllowedPageSize;
   /**
    * The query offset (for pagination)
    */
