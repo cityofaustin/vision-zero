@@ -132,6 +132,8 @@ export default function CrashDetailsPage({
             columns={crashDataCards.summary}
             mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
+            shouldShowColumnVisibilityPicker={true}
+            localStorageKey="crashPageSummary"
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
@@ -142,6 +144,8 @@ export default function CrashDetailsPage({
             columns={crashDataCards.flags}
             mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
+            shouldShowColumnVisibilityPicker={true}
+            localStorageKey="crashPageFlags"
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
@@ -152,6 +156,8 @@ export default function CrashDetailsPage({
             columns={crashDataCards.other}
             mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
+            shouldShowColumnVisibilityPicker={true}
+            localStorageKey="crashPageOther"
           />
         </Col>
       </Row>
