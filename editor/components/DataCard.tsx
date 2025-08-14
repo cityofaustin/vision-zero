@@ -53,7 +53,7 @@ interface DataCardProps<T extends Record<string, unknown>> {
    */
   headerActionComponent?: React.ComponentType<HeaderActionComponentProps<T>>;
   /**
-   * Show a column visibility picker
+   * Whether to show a column visibility picker
    */
   shouldShowColumnVisibilityPicker?: boolean;
   /** The key to use when saving and loading table column visibility data to local storage.
