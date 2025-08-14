@@ -200,7 +200,7 @@ export default function TableColumnVisibilityMenu({
     <Dropdown>
       <Dropdown.Toggle
         variant="outline-primary"
-        className="border-0 hide-toggle"
+        className="border-0 hide-toggle pb-2"
         id="column-visibility-picker"
       >
         <FaGear />
