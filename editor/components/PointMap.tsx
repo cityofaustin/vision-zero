@@ -47,7 +47,7 @@ export const LatLonSchema = z.object({
 
 export type CoordinateValidationError = ZodFormattedError<LatLon>;
 
-interface CrashMapProps {
+interface PointMapProps {
   /**
    * Ref object which will hold the mapbox instance
    */
@@ -63,25 +63,25 @@ interface CrashMapProps {
   /**
    * If the map is in edit mode
    */
-  isEditing: boolean;
+  isEditing?: boolean;
   /**
    * The lat/lon coordinates that are saved while editing
    */
-  mapLatLon: LatLon;
-  setMapLatLon: Dispatch<SetStateAction<LatLon>>;
+  mapLatLon?: LatLon;
+  setMapLatLon?: Dispatch<SetStateAction<LatLon>>;
 }
 
 /**
- * Map component which renders an editable point marker
+ * Map component which renders a point marker, may be editable
  */
-export const CrashMap = ({
+export const PointMap = ({
   mapRef,
   savedLatitude,
   savedLongitude,
   isEditing,
   mapLatLon,
   setMapLatLon,
-}: CrashMapProps) => {
+}: PointMapProps) => {
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
       // truncate values to our preferred precision
@@ -89,16 +89,18 @@ export const CrashMap = ({
       const longitude = +e.viewState.longitude.toFixed(
         MAP_COORDINATE_PRECISION
       );
-      setMapLatLon({
-        latitude,
-        longitude,
-      });
+      if (setMapLatLon) {
+        setMapLatLon({
+          latitude,
+          longitude,
+        });
+      }
     },
     [setMapLatLon]
   );
 
   useEffect(() => {
-    if (!isEditing) {
+    if (!isEditing && setMapLatLon) {
       // initialize edit coordiantes and reset them after saving
       setMapLatLon({
         latitude: savedLatitude || DEFAULT_MAP_PAN_ZOOM.latitude,
@@ -131,7 +133,7 @@ export const CrashMap = ({
           color={COLORS.primary}
         ></Marker>
       )}
-      {isEditing && (
+      {isEditing && mapLatLon && (
         <Marker
           latitude={mapLatLon.latitude}
           longitude={mapLatLon.longitude}
@@ -140,7 +142,7 @@ export const CrashMap = ({
       )}
       {/* add nearmap raster source and style */}
       <MapAerialSourceAndLayer />
-      {isEditing && (
+      {isEditing && setMapLatLon && (
         <MapGeocoderControl
           position="top-left"
           onResult={(latLon: LatLon) => setMapLatLon(latLon)}

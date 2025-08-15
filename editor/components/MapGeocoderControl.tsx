@@ -1,7 +1,7 @@
 import { useControl, ControlPosition } from "react-map-gl";
 import MapboxGeocoder, { GeocoderOptions } from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import { LatLon } from "@/components/CrashMap";
+import { LatLon } from "@/components/PointMap";
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 

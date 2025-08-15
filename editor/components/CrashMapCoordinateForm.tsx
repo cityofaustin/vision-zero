@@ -4,7 +4,7 @@ import {
   LatLonString,
   LatLon,
   CoordinateValidationError,
-} from "@/components/CrashMap";
+} from "@/components/PointMap";
 
 interface CrashMapCoordinateFormProps {
   mapLatLon: LatLon;
