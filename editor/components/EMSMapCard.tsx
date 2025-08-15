@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import Card from "react-bootstrap/Card";
 import { MapRef } from "react-map-gl";
-import { PointMap } from "@/components/CrashMap";
+import { PointMap } from "@/components/PointMap";
 import { useResizeObserver } from "@/utils/map";
 
 interface EMSMapCardProps {
@@ -28,7 +28,7 @@ export default function EMSMapCard({
   return (
     <Card className="h-100">
       <Card.Body className="p-1 crash-header-card-body" ref={mapContainerRef}>
-        <CrashMap
+        <PointMap
           savedLatitude={savedLatitude}
           savedLongitude={savedLongitude}
           mapRef={mapRef}

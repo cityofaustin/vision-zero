@@ -10,7 +10,7 @@ import {
   LatLonSchema,
   LatLon,
   CoordinateValidationError,
-} from "@/components/CrashMap";
+} from "@/components/PointMap";
 import { useMutation } from "@/utils/graphql";
 import { useResizeObserver } from "@/utils/map";
 import { DEFAULT_MAP_PAN_ZOOM } from "@/configs/map";

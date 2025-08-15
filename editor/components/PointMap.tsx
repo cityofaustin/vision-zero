@@ -47,7 +47,7 @@ export const LatLonSchema = z.object({
 
 export type CoordinateValidationError = ZodFormattedError<LatLon>;
 
-interface CrashMapProps {
+interface PointMapProps {
   /**
    * Ref object which will hold the mapbox instance
    */
@@ -72,16 +72,16 @@ interface CrashMapProps {
 }
 
 /**
- * Map component which renders an editable point marker
+ * Map component which renders a point marker, may be editable
  */
-export const CrashMap = ({
+export const PointMap = ({
   mapRef,
   savedLatitude,
   savedLongitude,
   isEditing,
   mapLatLon,
   setMapLatLon,
-}: CrashMapProps) => {
+}: PointMapProps) => {
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
       // truncate values to our preferred precision
