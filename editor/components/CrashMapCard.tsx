@@ -5,7 +5,7 @@ import Card from "react-bootstrap/Card";
 import { MapRef } from "react-map-gl";
 import CrashMapCoordinateForm from "@/components/CrashMapCoordinateForm";
 import {
-  CrashMap,
+  PointMap,
   LatLonString,
   LatLonSchema,
   LatLon,
@@ -90,7 +90,7 @@ export default function CrashMapCard({
         </div>
       </Card.Header>
       <Card.Body className="p-1 crash-header-card-body" ref={mapContainerRef}>
-        <CrashMap
+        <PointMap
           savedLatitude={savedLatitude}
           savedLongitude={savedLongitude}
           isEditing={isEditing}
