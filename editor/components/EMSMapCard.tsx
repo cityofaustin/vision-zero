@@ -1,9 +1,8 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import Card from "react-bootstrap/Card";
 import { MapRef } from "react-map-gl";
-import { CrashMap, LatLon } from "@/components/CrashMap";
+import { PointMap } from "@/components/CrashMap";
 import { useResizeObserver } from "@/utils/map";
-import { DEFAULT_MAP_PAN_ZOOM } from "@/configs/map";
 
 interface EMSMapCardProps {
   savedLatitude: number | null;
