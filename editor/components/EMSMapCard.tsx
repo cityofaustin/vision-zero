@@ -26,20 +26,12 @@ export default function EMSMapCard({
     mapRef.current?.resize();
   });
 
-  const [mapLatLon, setMapLatLon] = useState<LatLon>({
-    latitude: DEFAULT_MAP_PAN_ZOOM.latitude,
-    longitude: DEFAULT_MAP_PAN_ZOOM.longitude,
-  });
-
   return (
     <Card className="h-100">
       <Card.Body className="p-1 crash-header-card-body" ref={mapContainerRef}>
         <CrashMap
           savedLatitude={savedLatitude}
           savedLongitude={savedLongitude}
-          isEditing={false}
-          mapLatLon={mapLatLon}
-          setMapLatLon={setMapLatLon}
           mapRef={mapRef}
         />
       </Card.Body>

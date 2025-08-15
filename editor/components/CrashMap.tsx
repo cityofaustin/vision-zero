@@ -63,12 +63,12 @@ interface CrashMapProps {
   /**
    * If the map is in edit mode
    */
-  isEditing: boolean;
+  isEditing?: boolean;
   /**
    * The lat/lon coordinates that are saved while editing
    */
-  mapLatLon: LatLon;
-  setMapLatLon: Dispatch<SetStateAction<LatLon>>;
+  mapLatLon?: LatLon;
+  setMapLatLon?: Dispatch<SetStateAction<LatLon>>;
 }
 
 /**
@@ -89,16 +89,18 @@ export const CrashMap = ({
       const longitude = +e.viewState.longitude.toFixed(
         MAP_COORDINATE_PRECISION
       );
-      setMapLatLon({
-        latitude,
-        longitude,
-      });
+      if (setMapLatLon) {
+        setMapLatLon({
+          latitude,
+          longitude,
+        });
+      }
     },
     [setMapLatLon]
   );
 
   useEffect(() => {
-    if (!isEditing) {
+    if (!isEditing && setMapLatLon) {
       // initialize edit coordiantes and reset them after saving
       setMapLatLon({
         latitude: savedLatitude || DEFAULT_MAP_PAN_ZOOM.latitude,
@@ -131,7 +133,7 @@ export const CrashMap = ({
           color={COLORS.primary}
         ></Marker>
       )}
-      {isEditing && (
+      {isEditing && mapLatLon && (
         <Marker
           latitude={mapLatLon.latitude}
           longitude={mapLatLon.longitude}
@@ -140,7 +142,7 @@ export const CrashMap = ({
       )}
       {/* add nearmap raster source and style */}
       <MapAerialSourceAndLayer />
-      {isEditing && (
+      {isEditing && setMapLatLon && (
         <MapGeocoderControl
           position="top-left"
           onResult={(latLon: LatLon) => setMapLatLon(latLon)}
