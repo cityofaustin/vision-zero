@@ -8,6 +8,8 @@ export const emsDataCards = {
     columns.apd_incident_numbers,
   ],
   patient: [
+    columns.crash_match_status,
+    columns.person_match_status,
     columns.patient_injry_sev,
     columns.pcr_patient_age,
     columns.pcr_patient_race,
@@ -16,7 +18,6 @@ export const emsDataCards = {
     columns.mvc_form_position_in_vehicle,
     columns.pcr_transport_destination,
     columns.id,
-    columns.crash_match_status,
     columns.cris_crash_id,
     columns.person_id,
   ],

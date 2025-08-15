@@ -4,6 +4,13 @@ import { EMSPatientCareRecord } from "@/types/ems";
 import { formatDate, formatIsoDateTime } from "@/utils/formatters";
 import Link from "next/link";
 import { ClientError } from "graphql-request";
+import {
+  FaCircleCheck,
+  FaTriangleExclamation,
+  FaCircleQuestion,
+} from "react-icons/fa6";
+import { GrMultiple } from "react-icons/gr";
+import AlignedLabel from "@/components/AlignedLabel";
 
 const formatCrashMatchStatus = (value: unknown) => {
   if (!value || typeof value !== "string") {
@@ -13,13 +20,55 @@ const formatCrashMatchStatus = (value: unknown) => {
     case "unmatched":
       return "Unmatched";
     case "multiple_matches_by_automation":
-      return "Multiple";
+      return "Multiple matches";
     case "matched_by_automation":
       return "Matched automatically";
     case "matched_by_manual_qa":
       return "Matched by review/QA";
     case "unmatched_by_manual_qa":
       return "Unmatched by review/QA";
+    default:
+      return "";
+  }
+};
+
+const formatMatchStatusFancy = (value: unknown) => {
+  switch (value) {
+    case "unmatched":
+      return (
+        <AlignedLabel>
+          <FaTriangleExclamation className="text-secondary me-2" />
+          <span>Unmatched</span>
+        </AlignedLabel>
+      );
+    case "multiple_matches_by_automation":
+      return (
+        <AlignedLabel>
+          <FaCircleQuestion className="text-secondary me-2" />
+          <span>Multiple</span>
+        </AlignedLabel>
+      );
+    case "matched_by_automation":
+      return (
+        <AlignedLabel>
+          <FaCircleCheck className="text-success me-2" />
+          <span>Matched automatically</span>
+        </AlignedLabel>
+      );
+    case "matched_by_manual_qa":
+      return (
+        <AlignedLabel>
+          <FaCircleCheck className="text-success me-2" />
+          <span>Matched by manual Q/A</span>
+        </AlignedLabel>
+      );
+    case "unmatched_by_manual_qa":
+      return (
+        <AlignedLabel>
+          <FaTriangleExclamation className="text-secondary me-2" />
+          <span>Unmatched by review/QA</span>
+        </AlignedLabel>
+      );
     default:
       return "";
   }
@@ -35,7 +84,13 @@ export const ALL_EMS_COLUMNS = {
   crash_match_status: {
     path: "crash_match_status",
     label: "Crash match status",
-    valueFormatter: formatCrashMatchStatus,
+    valueRenderer: (value) => formatMatchStatusFancy(value.crash_match_status),
+    sortable: true,
+  },
+  person_match_status: {
+    path: "person_match_status",
+    label: "Person match status",
+    valueRenderer: (value) => formatMatchStatusFancy(value.person_match_status),
     sortable: true,
   },
   non_cr3_match_status: {
@@ -181,6 +236,7 @@ export const emsListViewColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
   ALL_EMS_COLUMNS.mvc_form_position_in_vehicle,
   ALL_EMS_COLUMNS.apd_incident_numbers,
   ALL_EMS_COLUMNS.crash_match_status,
+  ALL_EMS_COLUMNS.person_match_status,
   ALL_EMS_COLUMNS.cris_crash_id,
   ALL_EMS_COLUMNS.non_cr3_match_status,
   ALL_EMS_COLUMNS.atd_apd_blueform_case_id,
