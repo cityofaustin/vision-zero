@@ -11,6 +11,7 @@ import Form from "react-bootstrap/Form";
 import { FaGear } from "react-icons/fa6";
 import { ColumnVisibilitySetting } from "@/types/types";
 import { ColDataCardDef } from "@/types/types";
+import AlignedLabel from "@/components/AlignedLabel";
 
 interface TableColumnVisibilityMenuProps {
   /**
@@ -203,7 +204,9 @@ export default function TableColumnVisibilityMenu({
         className="border-0 hide-toggle"
         id="column-visibility-picker"
       >
-        <FaGear />
+        <AlignedLabel>
+          <FaGear />
+        </AlignedLabel>
       </Dropdown.Toggle>
 
       <Dropdown.Menu style={{ maxHeight: "50vh", overflowY: "auto" }}>
