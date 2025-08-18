@@ -11,6 +11,7 @@ export const emsDataCards = {
     columns.crash_match_status,
     columns.person_match_status,
     columns.patient_injry_sev,
+    columns.patient_injry_sev_reason,
     columns.pcr_patient_age,
     columns.pcr_patient_race,
     columns.pcr_patient_gender,
@@ -20,5 +21,7 @@ export const emsDataCards = {
     columns.id,
     columns.cris_crash_id,
     columns.person_id,
+    columns.non_cr3_match_status,
+    columns.atd_apd_blueform_case_id,
   ],
 };

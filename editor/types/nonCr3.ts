@@ -66,7 +66,8 @@ export const NonCr3UploadSchema = z.object({
     }),
   longitude: z.preprocess(
     (val) => (val ? Number(val) : null),
-    z.number({
+    z
+      .number({
         invalid_type_error: "Longitude is required and must be a number",
       })
       .min(ATX_BBOX.longitude.min, {
@@ -78,7 +79,8 @@ export const NonCr3UploadSchema = z.object({
   ),
   latitude: z.preprocess(
     (val) => (val ? Number(val) : null),
-    z.number({
+    z
+      .number({
         invalid_type_error: "Latitude is required and must be a number",
       })
       .min(ATX_BBOX.latitude.min, {
@@ -124,4 +126,10 @@ export type NonCr3ValidationError = {
   rowNumber: number;
   fieldName: string;
   message: string;
+};
+
+export type NonCR3Record = {
+  case_id: number;
+  address: string | null;
+  case_timestamp: string | null;
 };
