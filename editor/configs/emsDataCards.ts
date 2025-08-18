@@ -20,5 +20,7 @@ export const emsDataCards = {
     columns.crash_match_status,
     columns.cris_crash_id,
     columns.person_id,
+    columns.non_cr3_match_status,
+    columns.atd_apd_blueform_case_id,
   ],
 };
