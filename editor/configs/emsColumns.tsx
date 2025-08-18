@@ -12,26 +12,6 @@ import {
 import AlignedLabel from "@/components/AlignedLabel";
 
 const formatCrashMatchStatus = (value: unknown) => {
-  if (!value || typeof value !== "string") {
-    return "";
-  }
-  switch (value) {
-    case "unmatched":
-      return "Unmatched";
-    case "multiple_matches_by_automation":
-      return "Multiple matches";
-    case "matched_by_automation":
-      return "Matched automatically";
-    case "matched_by_manual_qa":
-      return "Matched by review/QA";
-    case "unmatched_by_manual_qa":
-      return "Unmatched by review/QA";
-    default:
-      return "";
-  }
-};
-
-const formatMatchStatusFancy = (value: unknown) => {
   switch (value) {
     case "unmatched":
       return (
@@ -83,19 +63,20 @@ export const ALL_EMS_COLUMNS = {
   crash_match_status: {
     path: "crash_match_status",
     label: "Crash match status",
-    valueRenderer: (value) => formatMatchStatusFancy(value.crash_match_status),
+    valueRenderer: (value) => formatCrashMatchStatus(value.crash_match_status),
     sortable: true,
   },
   person_match_status: {
     path: "person_match_status",
     label: "Person match status",
-    valueRenderer: (value) => formatMatchStatusFancy(value.person_match_status),
+    valueRenderer: (value) => formatCrashMatchStatus(value.person_match_status),
     sortable: true,
   },
   non_cr3_match_status: {
     path: "non_cr3_match_status",
     label: "Non-CR3 match status",
-    valueFormatter: formatCrashMatchStatus,
+    valueRenderer: (value) =>
+      formatCrashMatchStatus(value.non_cr3_match_status),
     sortable: true,
   },
   atd_apd_blueform_case_id: {
