@@ -9,7 +9,6 @@ import {
   FaTriangleExclamation,
   FaCircleQuestion,
 } from "react-icons/fa6";
-import { GrMultiple } from "react-icons/gr";
 import AlignedLabel from "@/components/AlignedLabel";
 
 const formatCrashMatchStatus = (value: unknown) => {
