@@ -49,7 +49,7 @@ export default function CrashSwapAddressButton<
               id: record.id,
               updates: { ...mutationVariables },
             });
-            await onSaveCallback();
+            if (onSaveCallback) await onSaveCallback();
           }
         }}
       >
