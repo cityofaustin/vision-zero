@@ -265,7 +265,7 @@ export default function EMSDetailsPage({
             rowActionComponentAdditionalProps={linkRecordButtonProps}
             rowActionMutation={UPDATE_EMS_PCR}
             shouldShowColumnVisibilityPicker={true}
-            localStorageKey="emsIncidentDetailsEmsPatients"
+            localStorageKey="emsIncidentDetailsPatients"
           />
         </Col>
       </Row>
