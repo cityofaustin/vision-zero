@@ -59,10 +59,12 @@ export type Crash = {
   rpt_sec_street_name: string | null;
   rpt_sec_street_pfx: string | null;
   rpt_sec_street_sfx: string | null;
+  rpt_sec_hwy_sfx: string | null;
   rpt_street_desc: string | null;
   rpt_street_name: string | null;
   rpt_street_pfx: string | null;
   rpt_street_sfx: string | null;
+  rpt_hwy_sfx: string | null;
   rr_relat_fl: boolean | null;
   schl_bus_fl: boolean | null;
   toll_road_fl: boolean | null;

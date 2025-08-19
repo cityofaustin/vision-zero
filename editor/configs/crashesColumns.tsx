@@ -178,6 +178,12 @@ export const crashesColumns = {
       foreignKey: "rpt_road_part_id",
     },
   },
+  rpt_hwy_sfx: {
+    path: "rpt_hwy_sfx",
+    label: "Highway suffix",
+    editable: true,
+    inputType: "text",
+  },
   rpt_sec_block_num: {
     path: "rpt_sec_block_num",
     label: "Street number",
@@ -237,6 +243,12 @@ export const crashesColumns = {
   rpt_sec_street_sfx: {
     path: "rpt_sec_street_sfx",
     label: "Street suffix",
+    editable: true,
+    inputType: "text",
+  },
+  rpt_sec_hwy_sfx: {
+    path: "rpt_sec_hwy_sfx",
+    label: "Highway suffix",
     editable: true,
     inputType: "text",
   },

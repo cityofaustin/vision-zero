@@ -29,6 +29,7 @@ export default function CrashSwapAddressButton({
       rpt_road_part_id: currentValues.rpt_sec_road_part_id,
       rpt_rdwy_sys_id: currentValues.rpt_sec_rdwy_sys_id,
       rpt_hwy_num: currentValues.rpt_sec_hwy_num,
+      rpt_hwy_sfx: currentValues.rpt_sec_hwy_sfx,
 
       rpt_sec_block_num: currentValues.rpt_block_num,
       rpt_sec_street_pfx: currentValues.rpt_street_pfx,
@@ -38,6 +39,7 @@ export default function CrashSwapAddressButton({
       rpt_sec_road_part_id: currentValues.rpt_road_part_id,
       rpt_sec_rdwy_sys_id: currentValues.rpt_rdwy_sys_id,
       rpt_sec_hwy_num: currentValues.rpt_hwy_num,
+      rpt_sec_hwy_sfx: currentValues.rpt_hwy_sfx,
     };
 
     // Set the new swapped values in the form state

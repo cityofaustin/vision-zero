@@ -43,6 +43,7 @@ export type AddressFormInputs = {
   rpt_road_part_id: number | null;
   rpt_rdwy_sys_id: number | null;
   rpt_hwy_num: string | null;
+  rpt_hwy_sfx: string | null;
   rpt_sec_block_num: string | null;
   rpt_sec_street_pfx: string | null;
   rpt_sec_street_name: string | null;
@@ -51,6 +52,7 @@ export type AddressFormInputs = {
   rpt_sec_road_part_id: number | null;
   rpt_sec_rdwy_sys_id: number | null;
   rpt_sec_hwy_num: string | null;
+  rpt_sec_hwy_sfx: string | null;
 };
 
 const primaryColumns = [
@@ -59,6 +61,7 @@ const primaryColumns = [
   crashesColumns.rpt_street_name,
   crashesColumns.rpt_street_sfx,
   crashesColumns.rpt_hwy_num,
+  crashesColumns.rpt_hwy_sfx,
   crashesColumns.rpt_street_desc,
   crashesColumns.rpt_road_part_id,
   crashesColumns.rpt_rdwy_sys_id,
@@ -69,6 +72,7 @@ const secondaryColumns = [
   crashesColumns.rpt_sec_street_name,
   crashesColumns.rpt_sec_street_sfx,
   crashesColumns.rpt_sec_hwy_num,
+  crashesColumns.rpt_sec_hwy_sfx,
   crashesColumns.rpt_sec_street_desc,
   crashesColumns.rpt_sec_road_part_id,
   crashesColumns.rpt_sec_rdwy_sys_id,
@@ -95,6 +99,7 @@ export default function EditCrashAddressModal({
         rpt_road_part_id: crash.rpt_road_part_id,
         rpt_rdwy_sys_id: crash.rpt_rdwy_sys_id,
         rpt_hwy_num: crash.rpt_hwy_num,
+        rpt_hwy_sfx: crash.rpt_hwy_sfx,
         rpt_sec_block_num: crash.rpt_sec_block_num,
         rpt_sec_street_pfx: crash.rpt_sec_street_pfx,
         rpt_sec_street_name: crash.rpt_sec_street_name,
@@ -103,6 +108,7 @@ export default function EditCrashAddressModal({
         rpt_sec_road_part_id: crash.rpt_sec_road_part_id,
         rpt_sec_rdwy_sys_id: crash.rpt_sec_rdwy_sys_id,
         rpt_sec_hwy_num: crash.rpt_sec_hwy_num,
+        rpt_sec_hwy_sfx: crash.rpt_sec_hwy_sfx,
       }
     );
   }, [crash]);
