@@ -20,7 +20,7 @@ import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
 export interface HeaderActionComponentProps<T extends Record<string, unknown>> {
   record: T;
   mutation: string;
-  onSaveCallback: () => Promise<void>;
+  onSaveCallback?: () => Promise<void>;
 }
 
 interface DataCardProps<T extends Record<string, unknown>> {
@@ -39,7 +39,7 @@ interface DataCardProps<T extends Record<string, unknown>> {
   /**
    * If the SWR refetcher is (re)validating
    */
-  isValidating: boolean;
+  isValidating?: boolean;
   /**
    * Title to be used in the card header
    */
@@ -47,7 +47,7 @@ interface DataCardProps<T extends Record<string, unknown>> {
   /**
    * Callback function to be executed after a row is edited
    */
-  onSaveCallback: () => Promise<void>;
+  onSaveCallback?: () => Promise<void>;
   /**
    * Optional component that will render in the card header
    */
@@ -118,7 +118,9 @@ export default function DataCard<T extends Record<string, unknown>>({
         [saveColumnName]: value,
       },
     });
-    await onSaveCallback();
+    if (onSaveCallback) {
+      await onSaveCallback();
+    }
     setEditColumn(null);
   };
 
