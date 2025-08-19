@@ -8,6 +8,9 @@ export const GET_EMS_RECORDS = gql`
     ) {
       apd_incident_numbers
       crash_match_status
+      non_cr3_match_status
+      atd_apd_blueform_case_id
+      matched_non_cr3_case_ids
       crash_pk
       id
       incident_location_address
@@ -136,13 +139,23 @@ export const GET_MATCHING_PEOPLE = gql`
   }
 `;
 
-export const UPDATE_EMS_INCIDENT_CRASH_AND_PERSON = gql`
+export const GET_NON_CR3_CRASHES = gql`
+  query EMSNonCR3Crashes($case_ids: [Int!]) {
+    atd_apd_blueform(where: { case_id: { _in: $case_ids } }) {
+      case_id
+      address
+      case_timestamp
+    }
+  }
+`;
+
+export const UPDATE_EMS_PCR_CRASH_AND_PERSON = gql`
   mutation UpdateEMSPersonCrashStatus($id: Int!, $person_id: Int!) {
     update_ems__incidents(
       where: { id: { _eq: $id } }
       _set: {
         person_id: $person_id
-        crash_match_status: "matched_by_manual_qa"
+        _match_event_name: "match_person_by_manual_qa"
       }
     ) {
       affected_rows
@@ -150,8 +163,8 @@ export const UPDATE_EMS_INCIDENT_CRASH_AND_PERSON = gql`
   }
 `;
 
-export const UPDATE_EMS_INCIDENT = gql`
-  mutation UpdateEMSIncident($id: Int!, $updates: ems__incidents_set_input) {
+export const UPDATE_EMS_PCR = gql`
+  mutation UpdateEMSPCR($id: Int!, $updates: ems__incidents_set_input) {
     update_ems__incidents(where: { id: { _eq: $id } }, _set: $updates) {
       affected_rows
       returning {

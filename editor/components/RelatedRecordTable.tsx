@@ -24,13 +24,23 @@ interface RelatedRecordTableProps<
    */
   mutation: string;
   /**
+   * Function to generate the complete mutation variables payload
+   * If not provided, uses default behavior
+   */
+  getMutationVariables?: (
+    record: T,
+    column: ColDataCardDef<T>,
+    value: unknown,
+    defaultVariables: { id: number; updates: Record<string, unknown> }
+  ) => Record<string, unknown>;
+  /**
    * Graphql mutation that will be passed to rowActionComponent, if present
    */
   rowActionMutation?: string;
   /**
    * If the SWR refetcher is (re)validating
    */
-  isValidating: boolean;
+  isValidating?: boolean;
   /**
    * Optional message to be rendered when the table has no rows
    */
@@ -63,8 +73,7 @@ interface RelatedRecordTableProps<
   /**
    * Callback function to be executed after a row edit is saved
    */
-  onSaveCallback: () => Promise<void>;
-
+  onSaveCallback?: () => Promise<void>;
   /** The key to use when saving and loading table column visibility data to local storage.
    * Optional because not all tables have col visibility settings enabled */
   localStorageKey?: string;
@@ -85,7 +94,7 @@ export interface RowActionComponentProps<
   /**
    * The callback function provided to the parent RelatedRecordTale component
    */
-  onSaveCallback: () => Promise<void>;
+  onSaveCallback?: () => Promise<void>;
   /**
    * Optional additional props passed to the component
    */
@@ -107,6 +116,7 @@ export default function RelatedRecordTable<
   records,
   columns,
   mutation,
+  getMutationVariables,
   rowActionMutation,
   isValidating,
   noRowsMessage,
@@ -188,6 +198,7 @@ export default function RelatedRecordTable<
                   onSaveCallback={onSaveCallback}
                   record={record}
                   mutation={mutation}
+                  getMutationVariables={getMutationVariables}
                   rowActionMutation={rowActionMutation}
                   rowActionComponent={rowActionComponent}
                   rowActionComponentAdditionalProps={
