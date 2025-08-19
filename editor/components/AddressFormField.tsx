@@ -24,7 +24,7 @@ interface AddressFormFieldProps {
 }
 
 /**
- * Component for the address modal that that renders a reach hook form field based on the input type
+ * Component for the address modal that that renders a react hook form field based on the input type
  * of the column, such as text or select
  */
 export default function AddressFormField({
