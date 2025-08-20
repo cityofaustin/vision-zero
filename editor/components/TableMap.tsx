@@ -77,7 +77,6 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       initialViewState={initialViewState}
       {...DEFAULT_MAP_PARAMS}
       cooperativeGestures={true}
-      // Resize the map canvas when parent row expands to fit crash
       onLoad={(e) => e.target.resize()}
       maxZoom={21}
     >
