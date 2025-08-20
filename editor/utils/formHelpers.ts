@@ -185,6 +185,7 @@ export const commonValidations = {
     // Allow empty string for nullable fields
     if (!value) return true;
     return /^\d+$/.test(value) || "This field must be a number";
+    return true;
   },
   isNullableInteger: (value: string) => {
     // Allow empty string for nullable fields

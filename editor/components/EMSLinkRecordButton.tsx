@@ -71,7 +71,7 @@ const EMSLinkRecordButton: React.FC<
                       person_id: null,
                     },
                   });
-                  if (onSaveCallback) await onSaveCallback();
+                  await onSaveCallback();
                 }}
               >
                 Match not found
@@ -84,7 +84,7 @@ const EMSLinkRecordButton: React.FC<
                       _match_event_name: "reset_crash_match",
                     },
                   });
-                  if (onSaveCallback) await onSaveCallback();
+                  await onSaveCallback();
                 }}
               >
                 Reset

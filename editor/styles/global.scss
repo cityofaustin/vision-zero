@@ -9,9 +9,6 @@ $anti-flash-white: #f4f5f6;
 $sea-green: #09814a;
 $rojo: #dd0426;
 $jonquil: #ffd22f;
-$dark-grey: rgb(42.5, 47.5, 52.5);
-$night-mode-background: #212529;
-
 
 /* override bootstrap with our palette */
 $white: #ffffff;
@@ -45,7 +42,7 @@ $sidebarWidth: 4.6rem;
 [data-bs-theme="dark"] .app-navbar,
 .app-sidebar,
 .crash-injury-indicator {
-  background-color: $night-mode-background !important;
+  background-color: #212529 !important;
 }
 
 [data-bs-theme="light"] .app-sidebar {
@@ -78,7 +75,7 @@ $sidebarWidth: 4.6rem;
   // bs border-color
   border-color: #495057 !important;
   // bs tertiary background
-  background-color: $dark-grey;
+  background-color: rgb(42.5, 47.5, 52.5);
 
   &:hover,
   &:active,
@@ -88,12 +85,11 @@ $sidebarWidth: 4.6rem;
     border-color: $secondary !important;
   }
 }
-
 
 [data-bs-theme="light"] .date-preset-button {
   background-color: $light !important;
   border-color: $light !important;
-  color: #000 !important;
+  color: #000;
 
   &:hover,
   &:active,
@@ -104,36 +100,12 @@ $sidebarWidth: 4.6rem;
   }
 }
 
-<<<<<<< HEAD
 // Custom tooltip styles prevent the y-scrollbar from briefly flashing
 // and causing a layout shift
 .tooltip {
   position: fixed !important; /* Override Bootstrap's absolute positioning */
   z-index: 9999;
   pointer-events: none;
-=======
-[data-bs-theme="light"] .edit-address-button {
-  background-color: $white !important;
-  border-color: $white !important;
-  color: #000 !important;
-
-  &:hover {
-    background-color: $light !important;
-    border-color: $light !important;
-    color: #000 !important;
-  }
-}
-
-[data-bs-theme="dark"] .edit-address-button {
-  background-color: $night-mode-background !important;
-  border-color: $night-mode-background !important;
-  color: $white;
-
-  &:hover {
-    background-color: $dark-grey !important;
-    border-color: $dark-grey !important;
-  }
->>>>>>> main
 }
 
 .app-sidebar {
@@ -277,11 +249,6 @@ to make sure it renders on top is a common fix */
 /* Hide down arrow from dropdown toggle button */
 .dropdown-toggle.hide-toggle::after {
   content: none !important;
-}
-
-/* Fixes the height and aspect ratio of toggle butons */
-.hide-toggle {
-  aspect-ratio: 1 !important;
 }
 
 /* wrapper for custom mapbox control */

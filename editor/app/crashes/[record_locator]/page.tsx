@@ -11,6 +11,7 @@ import CrashLocationBanner from "@/components/CrashLocationBanner";
 import CrashMapCard from "@/components/CrashMapCard";
 import CrashNarrativeCard from "@/components/CrashNarrativeCard";
 import CrashRecommendationCard from "@/components/CrashRecommendationCard";
+import CrashSwapAddressButton from "@/components/CrashSwapAddressButton";
 import DataCard from "@/components/DataCard";
 import NotesCard from "@/components/NotesCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
@@ -92,7 +93,7 @@ export default function CrashDetailsPage({
 
   return (
     <>
-      <CrashHeader crash={crash} refetch={refetch} />
+      <CrashHeader crash={crash} />
       {
         // show alert if crash on private drive or outside of Austin full purpose
         (crash.private_dr_fl || !crash.in_austin_full_purpose) && (
@@ -141,8 +142,6 @@ export default function CrashDetailsPage({
             columns={crashDataCards.flags}
             mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
-            shouldShowColumnVisibilityPicker={true}
-            localStorageKey="crashPageFlags"
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
@@ -153,8 +152,29 @@ export default function CrashDetailsPage({
             columns={crashDataCards.other}
             mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
-            shouldShowColumnVisibilityPicker={true}
-            localStorageKey="crashPageOther"
+          />
+        </Col>
+      </Row>
+      <Row id="address">
+        <Col sm={12} md={6} lg={4} className="mb-3">
+          <DataCard<Crash>
+            record={crash}
+            isValidating={isValidating}
+            title="Primary address"
+            columns={crashDataCards.address}
+            mutation={UPDATE_CRASH}
+            onSaveCallback={onSaveCallback}
+            headerActionComponent={CrashSwapAddressButton}
+          />
+        </Col>
+        <Col sm={12} md={6} lg={4} className="mb-3">
+          <DataCard<Crash>
+            record={crash}
+            isValidating={isValidating}
+            title="Secondary address"
+            columns={crashDataCards.address_secondary}
+            mutation={UPDATE_CRASH}
+            onSaveCallback={onSaveCallback}
           />
         </Col>
       </Row>

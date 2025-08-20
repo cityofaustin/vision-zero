@@ -152,8 +152,8 @@ export const crashesColumns = {
     editable: true,
     inputType: "text",
   },
-  rpt_rdwy_sys_id: {
-    path: "rpt_rdwy_sys_id",
+  rwy_sys: {
+    path: "rwy_sys.label",
     label: "Roadway system",
     editable: true,
     inputType: "select",
@@ -165,8 +165,8 @@ export const crashesColumns = {
       foreignKey: "rpt_rdwy_sys_id",
     },
   },
-  rpt_road_part_id: {
-    path: "rpt_road_part_id",
+  road_part: {
+    path: "road_part.label",
     label: "Roadway part",
     editable: true,
     inputType: "select",
@@ -177,12 +177,6 @@ export const crashesColumns = {
       labelColumnName: "label",
       foreignKey: "rpt_road_part_id",
     },
-  },
-  rpt_hwy_sfx: {
-    path: "rpt_hwy_sfx",
-    label: "Highway suffix",
-    editable: true,
-    inputType: "text",
   },
   rpt_sec_block_num: {
     path: "rpt_sec_block_num",
@@ -196,8 +190,8 @@ export const crashesColumns = {
     editable: true,
     inputType: "text",
   },
-  rpt_sec_rdwy_sys_id: {
-    path: "rpt_sec_rdwy_sys_id",
+  rwy_sys_sec: {
+    path: "rwy_sys_sec.label",
     label: "Roadway system",
     editable: true,
     inputType: "select",
@@ -209,8 +203,8 @@ export const crashesColumns = {
       foreignKey: "rpt_sec_rdwy_sys_id",
     },
   },
-  rpt_sec_road_part_id: {
-    path: "rpt_sec_road_part_id",
+  road_part_sec: {
+    path: "road_part_sec.label",
     label: "Roadway part",
     editable: true,
     inputType: "select",
@@ -224,7 +218,7 @@ export const crashesColumns = {
   },
   rpt_sec_street_desc: {
     path: "rpt_sec_street_desc",
-    label: "Description",
+    label: "Street description",
     editable: true,
     inputType: "text",
   },
@@ -246,15 +240,9 @@ export const crashesColumns = {
     editable: true,
     inputType: "text",
   },
-  rpt_sec_hwy_sfx: {
-    path: "rpt_sec_hwy_sfx",
-    label: "Highway suffix",
-    editable: true,
-    inputType: "text",
-  },
   rpt_street_desc: {
     path: "rpt_street_desc",
-    label: "Description",
+    label: "Street description",
     editable: true,
     inputType: "text",
   },

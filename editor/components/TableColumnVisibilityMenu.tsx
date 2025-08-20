@@ -13,7 +13,6 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { FaGear } from "react-icons/fa6";
 import { ColumnVisibilitySetting } from "@/types/types";
 import { ColDataCardDef } from "@/types/types";
-import AlignedLabel from "@/components/AlignedLabel";
 
 interface TableColumnVisibilityMenuProps {
   /**
@@ -224,11 +223,10 @@ export default function TableColumnVisibilityMenu({
           id="column-visibility-picker"
           disabled={!!disabled}
         >
-          <AlignedLabel>
-            <FaGear />
-          </AlignedLabel>
+          <FaGear />
         </Dropdown.Toggle>
       </OverlayTrigger>
+
       <Dropdown.Menu style={{ maxHeight: "50vh", overflowY: "auto" }}>
         {columnVisibilitySettings.map((col) => {
           return (

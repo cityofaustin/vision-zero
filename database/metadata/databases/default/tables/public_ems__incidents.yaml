@@ -41,7 +41,6 @@ select_permissions:
         - mvc_form_position_in_vehicle
         - non_cr3_match_status
         - patient_injry_sev_id
-        - patient_injry_sev_reason
         - pcr_patient_age
         - pcr_patient_gender
         - pcr_patient_race
@@ -75,7 +74,6 @@ select_permissions:
         - mvc_form_position_in_vehicle
         - non_cr3_match_status
         - patient_injry_sev_id
-        - patient_injry_sev_reason
         - pcr_patient_age
         - pcr_patient_gender
         - pcr_patient_race
@@ -109,7 +107,6 @@ select_permissions:
         - mvc_form_position_in_vehicle
         - non_cr3_match_status
         - patient_injry_sev_id
-        - patient_injry_sev_reason
         - pcr_patient_age
         - pcr_patient_gender
         - pcr_patient_race
@@ -127,12 +124,8 @@ update_permissions:
   - role: editor
     permission:
       columns:
-        - atd_apd_blueform_case_id
-        - crash_match_status
-        - crash_pk
-        - matched_crash_pks
-        - non_cr3_match_status
         - _match_event_name
+        - crash_pk
         - person_id
         - updated_by
       filter: {}
@@ -141,12 +134,8 @@ update_permissions:
   - role: vz-admin
     permission:
       columns:
-        - atd_apd_blueform_case_id
-        - crash_match_status
-        - crash_pk
-        - matched_crash_pks
-        - non_cr3_match_status
         - _match_event_name
+        - crash_pk
         - person_id
         - updated_by
       filter: {}
