@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useState, useCallback } from "react";
+import { MutableRefObject, useEffect, useState } from "react";
 import MapGL, {
   FullscreenControl,
   NavigationControl,
@@ -13,6 +13,8 @@ import { FeatureCollection } from "geojson";
 import { TableMapConfig } from "@/types/tableMapConfig";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { GeoJSONFeature } from "mapbox-gl";
+import PopupWrapper from "@/components/PopupWrapper";
+import TableMapPopupContent from "@/components/TableMapPopupContent";
 
 export interface LatLon {
   latitude: number;
@@ -73,9 +75,9 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
   }, [geojsonBounds, mapRef]);
 
   // todo, check if this is the right type to use
-  const [selectedFeature, setSelectedFeature] = useState<GeoJSONFeature|null>(null);
-
-  console.log(selectedFeature)
+  const [selectedFeature, setSelectedFeature] = useState<GeoJSONFeature | null>(
+    null
+  );
 
   return (
     <MapGL
@@ -103,6 +105,14 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
         <Layer type="circle" {...mapConfig?.layerProps} />
       </Source>
       <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
+      {selectedFeature && (
+        <PopupWrapper
+          longitude={selectedFeature?.properties?.longitude}
+          latitude={selectedFeature?.properties?.latitude}
+          featureProperties={selectedFeature.properties}
+          PopupContent={TableMapPopupContent}
+        />
+      )}
     </MapGL>
   );
 };
