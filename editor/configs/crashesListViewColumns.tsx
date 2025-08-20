@@ -36,6 +36,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     path: "crash_date_ct",
     label: "crash_date_ct",
     exportOnly: true,
+    fetchAlways: true,
   },
   {
     path: "crash_time_ct",
@@ -46,6 +47,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     path: "address_primary",
     label: "Address",
     sortable: true,
+    fetchAlways: true,
   },
   {
     path: "council_district",
