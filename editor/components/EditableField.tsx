@@ -9,7 +9,7 @@ interface EditableFieldProps {
   /** The initial value to populate the input */
   initialValue: string;
   /** If the input is in the process of mutating via API call */
-  isMutating: boolean;
+  isMutating?: boolean;
   /** Controls the type of input to be rendered */
   inputType?: InputType;
   /** Array of lookup table options that will populate a <select> input */

@@ -14,21 +14,51 @@ import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
 import { useAuth0 } from "@auth0/auth0-react";
 import { hasRole } from "@/utils/auth";
+import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
+import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
 
 export interface HeaderActionComponentProps<T extends Record<string, unknown>> {
   record: T;
   mutation: string;
-  onSaveCallback: () => Promise<void>;
+  onSaveCallback?: () => Promise<void>;
 }
 
 interface DataCardProps<T extends Record<string, unknown>> {
+  /**
+   * The record that contains the data to be displayed
+   */
   record: T;
+  /**
+   * The tables column definitions
+   */
   columns: ColDataCardDef<T>[];
+  /**
+   * Graphql mutation that will be executed when a row is edited
+   */
   mutation: string;
-  isValidating: boolean;
+  /**
+   * If the SWR refetcher is (re)validating
+   */
+  isValidating?: boolean;
+  /**
+   * Title to be used in the card header
+   */
   title: string;
-  onSaveCallback: () => Promise<void>;
+  /**
+   * Callback function to be executed after a row is edited
+   */
+  onSaveCallback?: () => Promise<void>;
+  /**
+   * Optional component that will render in the card header
+   */
   headerActionComponent?: React.ComponentType<HeaderActionComponentProps<T>>;
+  /**
+   * Whether to show a column visibility picker
+   */
+  shouldShowColumnVisibilityPicker?: boolean;
+  /** The key to use when saving and loading table column visibility data to local storage.
+   * Optional because not all tables have col visibility settings enabled */
+  localStorageKey?: string;
 }
 
 /**
@@ -42,7 +72,14 @@ export default function DataCard<T extends Record<string, unknown>>({
   title,
   onSaveCallback,
   headerActionComponent: HeaderActionComponent,
+  shouldShowColumnVisibilityPicker,
+  localStorageKey,
 }: DataCardProps<T>) {
+  const [
+    isColVisibilityLocalStorageLoaded,
+    setIsColVisibilityLocalStorageLoaded,
+  ] = useState(false);
+
   const [editColumn, setEditColumn] = useState<ColDataCardDef<T> | null>(null);
   const { mutate, loading: isMutating } = useMutation(mutation);
   const [query, typename] = useLookupQuery(
@@ -81,11 +118,21 @@ export default function DataCard<T extends Record<string, unknown>>({
         [saveColumnName]: value,
       },
     });
-    await onSaveCallback();
+    if (onSaveCallback) {
+      await onSaveCallback();
+    }
     setEditColumn(null);
   };
 
   const onCancel = () => setEditColumn(null);
+
+  /** Use custom hook to get array of visible columns, column visibility settings,
+   * and state setter function */
+  const {
+    visibleColumns,
+    columnVisibilitySettings,
+    setColumnVisibilitySettings,
+  } = useVisibleColumns(columns);
 
   return (
     <Card>
@@ -98,11 +145,24 @@ export default function DataCard<T extends Record<string, unknown>>({
             onSaveCallback={onSaveCallback}
           />
         )}
+        {shouldShowColumnVisibilityPicker && (
+          <TableColumnVisibilityMenu
+            columnVisibilitySettings={columnVisibilitySettings}
+            setColumnVisibilitySettings={setColumnVisibilitySettings}
+            localStorageKey={localStorageKey}
+            isColVisibilityLocalStorageLoaded={
+              isColVisibilityLocalStorageLoaded
+            }
+            setIsColVisibilityLocalStorageLoaded={
+              setIsColVisibilityLocalStorageLoaded
+            }
+          ></TableColumnVisibilityMenu>
+        )}
       </Card.Header>
       <Card.Body>
         <Table responsive hover>
           <tbody>
-            {columns.map((col) => {
+            {visibleColumns.map((col) => {
               const isEditingThisColumn = col.path === editColumn?.path;
               return (
                 <tr
