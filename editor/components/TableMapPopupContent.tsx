@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { formatDate } from "@/utils/formatters";
 
 interface TableMapPopupContent {
   properties: any;
@@ -20,7 +21,9 @@ export default function TableMapPopupContent({
       </div>
       <div className="d-flex justify-content-between">
         <span className="fw-bold">Date</span>
-        <span className="text-muted">{properties.crash_timestamp}</span>
+        <span className="text-muted">
+          {formatDate(properties.crash_timestamp)}
+        </span>
       </div>
     </div>
   );

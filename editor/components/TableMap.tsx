@@ -111,6 +111,7 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
           latitude={selectedFeature?.properties?.latitude}
           featureProperties={selectedFeature.properties}
           PopupContent={TableMapPopupContent}
+          onClose={() => setSelectedFeature(null)}
         />
       )}
     </MapGL>
