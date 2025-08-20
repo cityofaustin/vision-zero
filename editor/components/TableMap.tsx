@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useState } from "react";
+import { MutableRefObject, useEffect, useState, useCallback } from "react";
 import MapGL, {
   FullscreenControl,
   NavigationControl,
@@ -12,7 +12,7 @@ import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import { FeatureCollection } from "geojson";
 import { TableMapConfig } from "@/types/tableMapConfig";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { GeoJSONFeature } from "mapbox-gl";
+import { GeoJSONFeature, MapMouseEvent } from "mapbox-gl";
 import PopupWrapper from "@/components/PopupWrapper";
 import TableMapPopupContent from "@/components/TableMapPopupContent";
 
@@ -78,6 +78,15 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
   const [selectedFeature, setSelectedFeature] = useState<GeoJSONFeature | null>(
     null
   );
+  const [cursor, setCursor] = useState("grab");
+
+  const onMouseEnter = useCallback((e: MapMouseEvent) => {
+    setCursor("pointer");
+  }, []);
+
+  const onMouseLeave = useCallback(() => {
+    setCursor("grab");
+  }, []);
 
   return (
     <MapGL
@@ -85,6 +94,9 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       initialViewState={initialViewState}
       {...DEFAULT_MAP_PARAMS}
       cooperativeGestures={true}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      cursor={cursor}
       // Resize the map canvas when parent row expands to fit crash
       onLoad={(e) => e.target.resize()}
       maxZoom={21}
