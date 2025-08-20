@@ -1,5 +1,5 @@
 export const DEFAULT_QUERY_LIMIT = 50;
-export const MAX_RECORD_EXPORT_LIMIT = 1_000_000 as const;
+export const MAX_RECORD_EXPORT_LIMIT = 1_000_000;
 export type ExportPageSize = typeof MAX_RECORD_EXPORT_LIMIT;
 
 export const COLORS = {
@@ -8,5 +8,5 @@ export const COLORS = {
   warning: "#ffd22f",
 };
 
-export const ALLOWED_QUERY_PAGE_SIZES = [50, 250, 1000, 5000] as const;
+export const ALLOWED_QUERY_PAGE_SIZES = [10, 50, 250, 1000] as const;
 export type AllowedPageSize = (typeof ALLOWED_QUERY_PAGE_SIZES)[number];
