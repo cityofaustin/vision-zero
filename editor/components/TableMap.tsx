@@ -97,7 +97,6 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       cursor={cursor}
-      // Resize the map canvas when parent row expands to fit crash
       onLoad={(e) => e.target.resize()}
       maxZoom={21}
       interactiveLayerIds={["points-layer"]} // layer id defined in mapConfig
