@@ -18,7 +18,7 @@ interface TablePageSizeSelectorProps {
 }
 
 /**
- * Table component that controls column visibility
+ * Table component that controls the the query limit, aka the page size
  */
 export default function TablePageSizeSelector({
   queryConfig,
