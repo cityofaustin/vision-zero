@@ -40,7 +40,7 @@ interface RelatedRecordTableProps<
   /**
    * If the SWR refetcher is (re)validating
    */
-  isValidating: boolean;
+  isValidating?: boolean;
   /**
    * Optional message to be rendered when the table has no rows
    */
@@ -57,7 +57,7 @@ interface RelatedRecordTableProps<
   headerButton?: React.ReactNode;
 
   /**
-   * Show a column visibility picker
+   * Whether to show a column visibility picker
    */
   shouldShowColumnVisibilityPicker?: boolean;
 
@@ -73,8 +73,7 @@ interface RelatedRecordTableProps<
   /**
    * Callback function to be executed after a row edit is saved
    */
-  onSaveCallback: () => Promise<void>;
-
+  onSaveCallback?: () => Promise<void>;
   /** The key to use when saving and loading table column visibility data to local storage.
    * Optional because not all tables have col visibility settings enabled */
   localStorageKey?: string;
@@ -89,13 +88,13 @@ export interface RowActionComponentProps<
    */
   record: T;
   /**
-   * Graphql mutation that was provided to the parent RelatedRecordTable component
+   * Graphql mutation that was provided to the parent of RelatedRecordTable component
    */
   mutation: string;
   /**
-   * The callback function provided to the parent RelatedRecordTale component
+   * The callback function provided to the parent of RelatedRecordTable component
    */
-  onSaveCallback: () => Promise<void>;
+  onSaveCallback?: () => Promise<void>;
   /**
    * Optional additional props passed to the component
    */

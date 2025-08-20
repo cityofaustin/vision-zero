@@ -9,6 +9,8 @@ $anti-flash-white: #f4f5f6;
 $sea-green: #09814a;
 $rojo: #dd0426;
 $jonquil: #ffd22f;
+$dark-grey: rgb(42.5, 47.5, 52.5);
+$night-mode-background: #212529;
 
 /* override bootstrap with our palette */
 $white: #ffffff;
@@ -42,7 +44,7 @@ $sidebarWidth: 4.6rem;
 [data-bs-theme="dark"] .app-navbar,
 .app-sidebar,
 .crash-injury-indicator {
-  background-color: #212529 !important;
+  background-color: $night-mode-background !important;
 }
 
 [data-bs-theme="light"] .app-sidebar {
@@ -75,7 +77,7 @@ $sidebarWidth: 4.6rem;
   // bs border-color
   border-color: #495057 !important;
   // bs tertiary background
-  background-color: rgb(42.5, 47.5, 52.5);
+  background-color: $dark-grey;
 
   &:hover,
   &:active,
@@ -89,7 +91,7 @@ $sidebarWidth: 4.6rem;
 [data-bs-theme="light"] .date-preset-button {
   background-color: $light !important;
   border-color: $light !important;
-  color: #000;
+  color: #000 !important;
 
   &:hover,
   &:active,
@@ -106,6 +108,29 @@ $sidebarWidth: 4.6rem;
   position: fixed !important; /* Override Bootstrap's absolute positioning */
   z-index: 9999;
   pointer-events: none;
+}
+
+[data-bs-theme="light"] .edit-address-button {
+  background-color: $white !important;
+  border-color: $white !important;
+  color: #000 !important;
+
+  &:hover {
+    background-color: $light !important;
+    border-color: $light !important;
+    color: #000 !important;
+  }
+}
+
+[data-bs-theme="dark"] .edit-address-button {
+  background-color: $night-mode-background !important;
+  border-color: $night-mode-background !important;
+  color: $white;
+
+  &:hover {
+    background-color: $dark-grey !important;
+    border-color: $dark-grey !important;
+  }
 }
 
 .app-sidebar {
@@ -282,6 +307,10 @@ to make sure it renders on top is a common fix */
 /* Pushes the mapbox contral area down to make room for our custom button */
 .table-map-container .mapboxgl-ctrl-top-right {
   margin-top: 2.5rem;
+}
+/* Fixes the height and aspect ratio of toggle butons */
+.hide-toggle {
+  aspect-ratio: 1 !important;
 }
 
 @import "bootstrap/scss/bootstrap.scss";

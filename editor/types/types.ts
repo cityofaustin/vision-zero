@@ -75,7 +75,7 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
     record: T,
     onCancel: () => void,
     mutation: string,
-    onSaveCallback: () => Promise<void>
+    onSaveCallback?: () => Promise<void>
   ) => ReactNode;
   /**
    * Styles to be applied to the component's containing element
