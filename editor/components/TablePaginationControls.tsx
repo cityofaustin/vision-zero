@@ -102,7 +102,7 @@ export default function TablePaginationControls({
         )}
         {totalRecordCount <= 0 && <span>No results</span>}
       </div>
-      <ButtonGroup className="me-2" aria-label="Table pagniation controls">
+      <ButtonGroup className="me-2" aria-label="Table pagination controls">
         <OverlayTrigger
           placement="top"
           overlay={<Tooltip id="page-left-tooltip">Prev page</Tooltip>}
