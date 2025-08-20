@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { QueryConfig } from "@/types/queryBuilder";
-import Form from "react-bootstrap/form";
+import Form from "react-bootstrap/Form";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { produce } from "immer";
