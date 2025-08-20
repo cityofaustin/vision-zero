@@ -1,10 +1,11 @@
 import { Popup } from "react-map-gl";
 import { TableMapPopupContentProps } from "./TableMapPopupContent";
+import { GeoJsonProperties } from "geojson";
 
 interface PopupWrapperProps {
   latitude: number;
   longitude: number;
-  featureProperties: any;
+  featureProperties: GeoJsonProperties;
   PopupContent: React.ComponentType<TableMapPopupContentProps>;
   onClose: () => void;
 }
