@@ -10,7 +10,7 @@ export default function TableMapPopupContent({
   properties,
 }: TableMapPopupContentProps) {
   return (
-    <div className="h-100">
+    <div className="h-100 m-1 px-1">
       <div className="fw-bold fs-6 pb-2 border-bottom">
         {properties?.address_primary}
       </div>
