@@ -4,10 +4,12 @@ import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Spinner from "react-bootstrap/Spinner";
 import Tooltip from "react-bootstrap/Tooltip";
 import { FaAngleLeft, FaAngleRight, FaDownload } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
 import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
+import TablePageSizeSelector from "@/components/TablePageSizeSelector";
 import { QueryConfig } from "@/types/queryBuilder";
 import { ColumnVisibilitySetting } from "@/types/types";
 
@@ -94,13 +96,16 @@ export default function TablePaginationControls({
 
   return (
     <ButtonToolbar>
+      <div className="d-flex align-items-center mx-2">
+        {isLoading && <Spinner variant="primary" />}
+      </div>
       <div className="text-nowrap text-secondary d-flex align-items-center me-2">
-        {totalRecordCount > 0 && (
+        {!isLoading && totalRecordCount > 0 && (
           <>
-            <span>{`Showing ${currentPageRowRange[0].toLocaleString()}-${currentPageRowRange[1].toLocaleString()} of ${totalRecordCount.toLocaleString()} results`}</span>
+            <span>{`${currentPageRowRange[0].toLocaleString()}-${currentPageRowRange[1].toLocaleString()} of ${totalRecordCount.toLocaleString()} results`}</span>
           </>
         )}
-        {totalRecordCount <= 0 && <span>No results</span>}
+        {!isLoading && totalRecordCount <= 0 && <span>No results</span>}
       </div>
       <ButtonGroup className="me-2" aria-label="Table pagniation controls">
         <OverlayTrigger
@@ -152,7 +157,10 @@ export default function TablePaginationControls({
           </Button>
         </OverlayTrigger>
       </ButtonGroup>
-
+      <TablePageSizeSelector
+        queryConfig={queryConfig}
+        setQueryConfig={setQueryConfig}
+      />
       {exportable && (
         <OverlayTrigger
           placement="top"
