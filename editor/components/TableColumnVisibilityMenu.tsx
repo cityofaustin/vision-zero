@@ -212,7 +212,7 @@ export default function TableColumnVisibilityMenu({
   ]);
 
   return (
-    <Dropdown>
+    <Dropdown className="d-flex">
       <OverlayTrigger
         placement="top"
         container={document.body}
