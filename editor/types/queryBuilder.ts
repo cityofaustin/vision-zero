@@ -142,8 +142,8 @@ export interface QueryConfig {
   searchFields: SearchFilterField[];
   /**
    * The filter settings for filtering by date. Designed to
-   * be compatible with the DateSeletor component which uses
-   * pre-defiend date ranges as well as custom input
+   * be compatible with the DateSelector component which uses
+   * pre-defined date ranges as well as custom input
    */
   dateFilter?: {
     mode: DateFilterMode;

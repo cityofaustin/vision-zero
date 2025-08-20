@@ -84,7 +84,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   /**
    * Array of columns which should be fetched - this is
-   * is the combination of visibile columns + fetchAlways columns
+   * is the combination of visible columns + fetchAlways columns
    */
   const allColumnsToFetch = useMemo(
     () =>
