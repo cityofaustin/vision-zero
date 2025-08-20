@@ -129,7 +129,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
           </ListGroup>
         </div>
       </div>
-      {/* Main content - essentialy a boostrap "row" — horizontal */}
+      {/* Main content - essentially a bootstrap "row" — horizontal */}
       <div className="main-content-pane d-flex flex-grow-1">
         <div className="flex-grow-1 d-flex flex-column w-100 ">
           {/* vertical container */}
