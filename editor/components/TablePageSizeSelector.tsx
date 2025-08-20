@@ -40,7 +40,7 @@ export default function TablePageSizeSelector({
               const draftQueryConfig = produce(
                 queryConfig,
                 (draftQueryConfig) => {
-                  // type gaurd which enables us to assert that the selected page limit is allowed
+                  // type guard which enables us to assert that the selected page limit is allowed
                   if (
                     !ALLOWED_QUERY_PAGE_SIZES.includes(
                       newPageLimit as AllowedPageSize
@@ -49,7 +49,7 @@ export default function TablePageSizeSelector({
                     return;
                   }
                   draftQueryConfig.limit = newPageLimit as AllowedPageSize;
-                  // reset the current offset to return to the 1st page os results
+                  // reset the current offset to return to the 1st page of results
                   draftQueryConfig.offset = 0;
                   return draftQueryConfig;
                 }
