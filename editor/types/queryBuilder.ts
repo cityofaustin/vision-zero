@@ -1,3 +1,6 @@
+import { TableMapConfig } from "@/types/tableMapConfig";
+import { AllowedPageSize, ExportPageSize } from "@/utils/constants";
+
 /**
  * The types we currently support as filter values
  *
@@ -117,7 +120,7 @@ export interface QueryConfig {
   /**
    * The record limit
    */
-  limit: number;
+  limit: AllowedPageSize | ExportPageSize;
   /**
    * The query offset (for pagination)
    */
@@ -168,6 +171,10 @@ export interface QueryConfig {
    * the file extension
    */
   exportFilename?: string;
+  /**
+   * Optional map configuration. Enables the map view/toggle when present
+   */
+  mapConfig?: TableMapConfig;
 }
 
 /**

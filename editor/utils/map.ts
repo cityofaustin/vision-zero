@@ -1,4 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { bbox } from "@turf/bbox";
+import { FeatureCollection } from "geojson";
+import { LngLatBoundsLike } from "mapbox-gl";
 
 /**
  * Resize observer hook that can be used to trigger resize() when the
@@ -18,7 +21,7 @@ export function useResizeObserver<T extends HTMLElement>(
   useEffect(() => {
     // Capture the current value of the ref when the effect runs
     const currentElement = containerRef.current;
-    
+
     const observer = new ResizeObserver(() => {
       // This timeout has a debouncing effect that prevents
       // the map from flashing on the screen during sidebar
@@ -44,3 +47,23 @@ export function useResizeObserver<T extends HTMLElement>(
 
   return containerRef;
 }
+
+/**
+ * Hook which computes the bounding box of the provided geojson
+ *
+ * Returns undefined if the geojson has no features
+ */
+export const useCurrentBounds = (
+  geojson: FeatureCollection
+): LngLatBoundsLike | undefined =>
+  useMemo(() => {
+    if (!geojson.features.length) {
+      return undefined;
+    }
+    const bounds = bbox(geojson);
+
+    return [
+      [bounds[0], bounds[1]],
+      [bounds[2], bounds[3]],
+    ];
+  }, [geojson]);
