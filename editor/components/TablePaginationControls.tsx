@@ -164,7 +164,6 @@ export default function TablePaginationControls({
       {exportable && (
         <OverlayTrigger
           placement="top"
-          //   delay={{ show: 250, hide: 400 }}
           overlay={<Tooltip id="download-tooltip">Download</Tooltip>}
         >
           <Button
