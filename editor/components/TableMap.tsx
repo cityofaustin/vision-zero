@@ -12,6 +12,7 @@ import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import { FeatureCollection } from "geojson";
 import { TableMapConfig } from "@/types/tableMapConfig";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { GeoJSONFeature } from "mapbox-gl";
 
 export interface LatLon {
   latitude: number;
@@ -71,27 +72,28 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
     }
   }, [geojsonBounds, mapRef]);
 
-  const onMouseEnter = useCallback((e) => {
-    console.log(e, e.features);
-    //setHoverFeature(e.features[0]), [];
-  }, []);
+  // todo, check if this is the right type to use
+  const [selectedFeature, setSelectedFeature] = useState<GeoJSONFeature|null>(null);
 
-  console.log("geojson", geojson);
+  console.log(selectedFeature)
 
   return (
     <MapGL
       ref={mapRef}
       initialViewState={initialViewState}
-      onMouseEnter={onMouseEnter}
       {...DEFAULT_MAP_PARAMS}
       cooperativeGestures={true}
       // Resize the map canvas when parent row expands to fit crash
       onLoad={(e) => e.target.resize()}
       maxZoom={21}
-      interactiveLayerIds={["points-layer"]}
+      interactiveLayerIds={["points-layer"]} // layer id defined in mapConfig
       onClick={(e) => {
         e.originalEvent.stopPropagation();
-        console.log(e, e.features);
+        if (e.features?.length) {
+          setSelectedFeature(e.features[0]);
+        } else {
+          setSelectedFeature(null);
+        }
       }}
     >
       <FullscreenControl position="bottom-right" />
