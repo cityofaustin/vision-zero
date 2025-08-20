@@ -7,7 +7,7 @@ import { ClientError } from "graphql-request";
 import {
   FaCircleCheck,
   FaTriangleExclamation,
-  FaCircleQuestion,
+  FaRegCircleQuestion,
 } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
 
@@ -23,14 +23,14 @@ const formatCrashMatchStatus = (value: unknown) => {
     case "multiple_matches_by_automation":
       return (
         <AlignedLabel>
-          <FaCircleQuestion className="text-secondary me-2" />
+          <FaRegCircleQuestion className="text-secondary me-2" />
           <span>Multiple</span>
         </AlignedLabel>
       );
     case "matched_by_automation":
       return (
         <AlignedLabel>
-          <FaCircleCheck className="text-success me-2" />
+          <FaCircleCheck className="text-success me-2 fs-5" />
           <span>Matched automatically</span>
         </AlignedLabel>
       );
