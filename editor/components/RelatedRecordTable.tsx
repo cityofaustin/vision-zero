@@ -57,7 +57,7 @@ interface RelatedRecordTableProps<
   headerButton?: React.ReactNode;
 
   /**
-   * Show a column visibility picker
+   * Whether to show a column visibility picker
    */
   shouldShowColumnVisibilityPicker?: boolean;
 
@@ -88,11 +88,11 @@ export interface RowActionComponentProps<
    */
   record: T;
   /**
-   * Graphql mutation that was provided to the parent RelatedRecordTable component
+   * Graphql mutation that was provided to the parent of RelatedRecordTable component
    */
   mutation: string;
   /**
-   * The callback function provided to the parent RelatedRecordTale component
+   * The callback function provided to the parent of RelatedRecordTable component
    */
   onSaveCallback?: () => Promise<void>;
   /**
