@@ -25,6 +25,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     sortable: true,
     style: { minWidth: "8rem" },
     valueFormatter: formatDate,
+    fetchAlways: true,
   },
   {
     path: "crash_day_of_week",
@@ -36,7 +37,6 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     path: "crash_date_ct",
     label: "crash_date_ct",
     exportOnly: true,
-    fetchAlways: true,
   },
   {
     path: "crash_time_ct",
