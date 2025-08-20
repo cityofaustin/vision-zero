@@ -1,13 +1,17 @@
 import Link from "next/link";
 import { formatDate } from "@/utils/formatters";
 
-interface TableMapPopupContent {
-  properties: any;
+export interface TableMapPopupContentProps {
+  properties: {
+    address_primary: string;
+    record_locator: string;
+    crash_timestamp: string;
+  };
 }
 
 export default function TableMapPopupContent({
   properties,
-}: TableMapPopupContent) {
+}: TableMapPopupContentProps) {
   return (
     <div className="h-100">
       <div className="fw-bold fs-6 pb-2 border-bottom">

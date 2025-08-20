@@ -1,10 +1,11 @@
 import { Popup } from "react-map-gl";
+import { TableMapPopupContentProps } from "./TableMapPopupContent";
 
 interface PopupWrapperProps {
   latitude: number;
   longitude: number;
   featureProperties: any;
-  PopupContent: React.ComponentType;
+  PopupContent: React.ComponentType<TableMapPopupContentProps>;
   onClose: () => void;
 }
 
@@ -15,7 +16,6 @@ export default function PopupWrapper({
   PopupContent,
   onClose,
 }: PopupWrapperProps) {
-  console.log(featureProperties);
   return (
     <Popup
       latitude={latitude}
