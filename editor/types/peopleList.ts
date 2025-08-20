@@ -13,7 +13,7 @@ export type PeopleListRow = {
   gndr: LookupTableOption;
   prsn_gndr_id: number;
   id: number;
-  injry_sev: LookupTableOption;
+  injry_sev?: LookupTableOption;
   prsn_injry_sev_id: number;
   is_primary_person: boolean;
   prsn_age: number;
