@@ -1,9 +1,5 @@
 import { TableMapConfig } from "@/types/tableMapConfig";
-import {
-  AllowedPageSize,
-  ExportPageSize,
-  MAX_RECORD_EXPORT_LIMIT,
-} from "@/utils/constants";
+import { AllowedPageSize, ExportPageSize } from "@/utils/constants";
 
 /**
  * The types we currently support as filter values
