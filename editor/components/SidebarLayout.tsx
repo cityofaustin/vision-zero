@@ -10,7 +10,7 @@ import { routes } from "@/configs/routes";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import AppFooter from "@/components/AppFooter";
-import { darkModelocalStorageKey } from "@/components/DarkModeToggle";
+import { darkModeLocalStorageKey } from "@/components/DarkModeToggle";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -46,7 +46,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
 
   /** Check dark mode */
   useEffect(() => {
-    const isDarkMode = localStorage.getItem(darkModelocalStorageKey) === "dark";
+    const isDarkMode = localStorage.getItem(darkModeLocalStorageKey) === "dark";
 
     document.documentElement.setAttribute(
       "data-bs-theme",

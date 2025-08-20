@@ -3,20 +3,20 @@ import Form from "react-bootstrap/Form";
 import Dropdown from "react-bootstrap/Dropdown";
 import { FaMoon } from "react-icons/fa6";
 
-export const darkModelocalStorageKey = "userDarkModeSetting";
+export const darkModeLocalStorageKey = "userDarkModeSetting";
 
 /**
  * Dropdown item with a switch that enables dark mode
  */
 export default function DarkModeToggle() {
   const [appColorMode, setAppColorMode] = useState<"dark" | "light">(
-    localStorage.getItem(darkModelocalStorageKey) === "dark" ? "dark" : "light"
+    localStorage.getItem(darkModeLocalStorageKey) === "dark" ? "dark" : "light"
   );
 
   useEffect(() => {
     const htmlElement = document.documentElement;
     htmlElement.setAttribute("data-bs-theme", appColorMode);
-    localStorage.setItem(darkModelocalStorageKey, appColorMode);
+    localStorage.setItem(darkModeLocalStorageKey, appColorMode);
   }, [appColorMode]);
 
   return (
