@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useState } from "react";
+import { MutableRefObject, useEffect, useState, useCallback } from "react";
 import MapGL, {
   FullscreenControl,
   NavigationControl,
@@ -71,21 +71,34 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
     }
   }, [geojsonBounds, mapRef]);
 
+  const onMouseEnter = useCallback((e) => {
+    console.log(e, e.features);
+    //setHoverFeature(e.features[0]), [];
+  }, []);
+
+  console.log("geojson", geojson);
+
   return (
     <MapGL
       ref={mapRef}
       initialViewState={initialViewState}
+      onMouseEnter={onMouseEnter}
       {...DEFAULT_MAP_PARAMS}
       cooperativeGestures={true}
       // Resize the map canvas when parent row expands to fit crash
       onLoad={(e) => e.target.resize()}
       maxZoom={21}
+      interactiveLayerIds={["points-layer"]}
+      onClick={(e) => {
+        e.originalEvent.stopPropagation();
+        console.log(e, e.features);
+      }}
     >
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
       {/* custom geojson source and layer */}
       <Source id="custom-source" type="geojson" data={geojson}>
-        <Layer id="custom-layer" type="circle" {...mapConfig?.layerProps} />
+        <Layer type="circle" {...mapConfig?.layerProps} />
       </Source>
       <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
     </MapGL>
