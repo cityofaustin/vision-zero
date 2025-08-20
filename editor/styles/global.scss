@@ -308,9 +308,5 @@ to make sure it renders on top is a common fix */
 .table-map-container .mapboxgl-ctrl-top-right {
   margin-top: 2.5rem;
 }
-/* Fixes the height and aspect ratio of toggle butons */
-.hide-toggle {
-  aspect-ratio: 1 !important;
-}
 
 @import "bootstrap/scss/bootstrap.scss";

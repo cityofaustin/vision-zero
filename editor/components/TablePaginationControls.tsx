@@ -95,7 +95,7 @@ export default function TablePaginationControls({
   ];
 
   return (
-    <ButtonToolbar>
+    <ButtonToolbar className="flex-nowrap">
       <div className="d-flex align-items-center mx-2">
         {isLoading && <Spinner variant="primary" />}
       </div>
