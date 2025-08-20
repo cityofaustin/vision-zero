@@ -18,6 +18,8 @@ export const GET_EMS_RECORDS = gql`
       incident_number
       incident_problem
       incident_received_datetime
+      latitude
+      longitude
       matched_crash_pks
       mvc_form_position_in_vehicle
       patient_injry_sev_id

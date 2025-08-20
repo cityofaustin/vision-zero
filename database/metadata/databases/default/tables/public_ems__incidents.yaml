@@ -35,6 +35,8 @@ select_permissions:
         - incident_number
         - incident_problem
         - incident_received_datetime
+        - latitude
+        - longitude
         - matched_crash_pks
         - matched_non_cr3_case_ids
         - matched_person_ids
@@ -69,6 +71,8 @@ select_permissions:
         - incident_number
         - incident_problem
         - incident_received_datetime
+        - latitude
+        - longitude
         - matched_crash_pks
         - matched_non_cr3_case_ids
         - matched_person_ids
@@ -103,6 +107,8 @@ select_permissions:
         - incident_number
         - incident_problem
         - incident_received_datetime
+        - latitude
+        - longitude
         - matched_crash_pks
         - matched_non_cr3_case_ids
         - matched_person_ids

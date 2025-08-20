@@ -15,6 +15,8 @@ export type EMSPatientCareRecord = {
   incident_number: number | null;
   incident_problem: string | null;
   incident_received_datetime: string | null;
+  latitude: number | null;
+  longitude: number | null;
   patient_injry_sev: LookupTableOption | null;
   patient_injry_sev_reason?: string | null;
   matched_crash_pks: number[] | null;
