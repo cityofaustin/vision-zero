@@ -21,6 +21,7 @@ export default function PopupWrapper({
     <Popup
       latitude={latitude}
       longitude={longitude}
+      // The popup won't render after multiple map feature click without this prop being false :/
       closeOnClick={false}
       onClose={onClose}
     >
