@@ -16,6 +16,7 @@ export type EMSPatientCareRecord = {
   incident_problem: string | null;
   incident_received_datetime: string | null;
   patient_injry_sev: LookupTableOption | null;
+  patient_injry_sev_reason?: string | null;
   matched_crash_pks: number[] | null;
   mvc_form_position_in_vehicle: string | null;
   patient_injry_sev_id: number | null;
@@ -26,6 +27,7 @@ export type EMSPatientCareRecord = {
   person_id: number | null;
   // we are using Omit to avoid a circular reference
   person?: Omit<PeopleListRow, "ems_pcr"> | null;
+  person_match_status?: string | null;
   travel_mode: string | null;
   unparsed_apd_incident_numbers: string | null;
 };

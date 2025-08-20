@@ -8,6 +8,7 @@ export const GET_EMS_RECORDS = gql`
     ) {
       apd_incident_numbers
       crash_match_status
+      person_match_status
       non_cr3_match_status
       atd_apd_blueform_case_id
       matched_non_cr3_case_ids
@@ -24,6 +25,7 @@ export const GET_EMS_RECORDS = gql`
         id
         label
       }
+      patient_injry_sev_reason
       pcr_patient_age
       pcr_patient_gender
       pcr_patient_race
