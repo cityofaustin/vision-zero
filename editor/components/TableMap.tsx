@@ -12,7 +12,7 @@ import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import { FeatureCollection } from "geojson";
 import { TableMapConfig } from "@/types/tableMapConfig";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { GeoJSONFeature, MapMouseEvent } from "mapbox-gl";
+import { GeoJSONFeature } from "mapbox-gl";
 import PopupWrapper from "@/components/PopupWrapper";
 import TableMapPopupContent from "@/components/TableMapPopupContent";
 
@@ -80,7 +80,7 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
 
   const [cursor, setCursor] = useState("grab");
 
-  const onMouseEnter = useCallback((e: MapMouseEvent) => {
+  const onMouseEnter = useCallback(() => {
     setCursor("pointer");
   }, []);
 
