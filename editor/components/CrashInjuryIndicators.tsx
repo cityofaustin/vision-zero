@@ -39,7 +39,7 @@ export default function CrashInjuryIndicators({
   injuries: CrashInjuryMetric;
 }) {
   return (
-    <div className="crash-injury-indicator fs-6 d-flex align-items-center rounded-3 px-3 border">
+    <div className="crash-injury-indicator fs-6 d-flex align-items-center align-self-center py-2 rounded-3 px-3 border">
       <span className="fw-bold me-3">Injuries</span>
       <InjuryBadge
         value={injuries.vz_fatality_count}
