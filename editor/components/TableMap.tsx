@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useState } from "react";
+import { MutableRefObject, useEffect, useState, useCallback } from "react";
 import MapGL, {
   FullscreenControl,
   NavigationControl,
@@ -79,12 +79,17 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       cooperativeGestures={true}
       onLoad={(e) => e.target.resize()}
       maxZoom={21}
+      interactiveLayerIds={["points-layer"]}
+      onClick={(e) => {
+        e.originalEvent.stopPropagation();
+        console.log(e, e.features);
+      }}
     >
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
       {/* custom geojson source and layer */}
       <Source id="custom-source" type="geojson" data={geojson}>
-        <Layer id="custom-layer" type="circle" {...mapConfig?.layerProps} />
+        <Layer type="circle" {...mapConfig?.layerProps} />
       </Source>
       <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
     </MapGL>
