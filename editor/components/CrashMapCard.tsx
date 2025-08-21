@@ -5,12 +5,12 @@ import Card from "react-bootstrap/Card";
 import { MapRef } from "react-map-gl";
 import CrashMapCoordinateForm from "@/components/CrashMapCoordinateForm";
 import {
-  CrashMap,
+  PointMap,
   LatLonString,
   LatLonSchema,
   LatLon,
   CoordinateValidationError,
-} from "@/components/CrashMap";
+} from "@/components/PointMap";
 import { useMutation } from "@/utils/graphql";
 import { useResizeObserver } from "@/utils/map";
 import { DEFAULT_MAP_PAN_ZOOM } from "@/configs/map";
@@ -43,7 +43,7 @@ export default function CrashMapCard({
   const mapRef = useRef<MapRef | null>(null);
   /**
    * Trigger resize() when the map container size changes - this ensures that
-   * the map repaints when the sidebar is collased/expanded.
+   * the map repaints when the sidebar is collapsed/expanded.
    */
   const mapContainerRef = useResizeObserver<HTMLDivElement>(() => {
     mapRef.current?.resize();
@@ -90,7 +90,7 @@ export default function CrashMapCard({
         </div>
       </Card.Header>
       <Card.Body className="p-1 crash-header-card-body" ref={mapContainerRef}>
-        <CrashMap
+        <PointMap
           savedLatitude={savedLatitude}
           savedLongitude={savedLongitude}
           isEditing={isEditing}

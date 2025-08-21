@@ -33,7 +33,7 @@ export const ALL_PEOPLE_COLUMNS = {
       labelColumnName: "label",
     },
     valueRenderer: (record) => {
-      const value = record.injry_sev.label;
+      const value = record.injry_sev?.label || "";
       const className = `${getInjuryColorClass(value)} px-2 py-1 rounded`;
       return <span className={className}>{value}</span>;
     },

@@ -1,6 +1,7 @@
 import { getYearsAgoDate, makeDateFilters } from "@/utils/dates";
 import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
-import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
+// todo: enable different page size based on list vs map view
+// import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
 const crashesListViewfilterCards: FilterGroup[] = [
   {
@@ -267,21 +268,21 @@ export const crashesListViewQueryConfig: QueryConfig = {
   exportable: true,
   exportFilename: "crashes",
   tableName: "crashes_list_view",
-  limit: DEFAULT_QUERY_LIMIT,
+  limit: 1000,
   offset: 0,
   sortColName: "crash_timestamp",
   sortAsc: false,
   searchFilter: {
     id: "search",
     value: "",
-    column: "record_locator",
+    column: "address_primary",
     operator: "_ilike",
     wildcard: true,
   },
   searchFields: [
+    { label: "Address", value: "address_primary" },
     { label: "Crash ID", value: "record_locator" },
     { label: "Case ID", value: "case_id" },
-    { label: "Address", value: "address_primary" },
   ],
   dateFilter: {
     mode: "1y",
@@ -292,4 +293,28 @@ export const crashesListViewQueryConfig: QueryConfig = {
     }),
   },
   filterCards: crashesListViewfilterCards,
+  mapConfig: {
+    isActive: false,
+    layerProps: {
+      id: "points-layer",
+      type: "circle",
+      paint: {
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          // zoom is 5 (or less)
+          5,
+          6,
+          // zoom is 20 (or greater)
+          20,
+          8,
+        ],
+        "circle-color": "#007cbf",
+        "circle-stroke-width": 0.5,
+        "circle-stroke-color": "#ffffff",
+      },
+    },
+    geojsonTransformerName: "latLon",
+  },
 };

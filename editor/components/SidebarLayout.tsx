@@ -2,9 +2,7 @@
 import { ReactNode, useState, useCallback, useEffect } from "react";
 import { usePathname, useSelectedLayoutSegments } from "next/navigation";
 import { useAuth0 } from "@auth0/auth0-react";
-import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
-import { FaAngleRight } from "react-icons/fa6";
 import AppNavBar from "@/components/AppNavBar";
 import SideBarListItem from "@/components/SideBarListItem";
 import LoginContainer from "@/components/LoginContainer";
@@ -12,44 +10,58 @@ import { routes } from "@/configs/routes";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import AppBreadCrumb from "@/components/AppBreadCrumb";
 import AppFooter from "@/components/AppFooter";
-import { darkModelocalStorageKey } from "@/components/DarkModeToggle";
-import EnvironmentBanner from "@/components/EnvironmentBanner";
+import { darkModeLocalStorageKey } from "@/components/DarkModeToggle";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-const localStorageKey = "sidebarCollapsed";
 
 /**
  * The app sidebar component
  */
 export default function SidebarLayout({ children }: { children: ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
   const { loginWithRedirect, logout, isAuthenticated, isLoading, user } =
     useAuth0();
   const pathName = usePathname();
   const segments = useSelectedLayoutSegments();
 
-  const toggleSidebar = useCallback(
-    () =>
-      setIsCollapsed((prevState) => {
-        localStorage.setItem(localStorageKey, String(!prevState));
-        return !prevState;
-      }),
-    []
-  );
+  const handleMouseEnter = useCallback(() => {
+    if (isCollapsed) {
+      const timeout = setTimeout(() => {
+        setIsCollapsed(false);
+      }, 250);
+      setHoverTimeout(timeout);
+    }
+  }, [isCollapsed]);
 
-  /** Check local storage for initial sidebar state and dark mode */
+  const handleMouseLeave = useCallback(() => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+      setHoverTimeout(null);
+    }
+    if (!isCollapsed) {
+      setIsCollapsed(true);
+    }
+  }, [hoverTimeout, isCollapsed]);
+
+  /** Check dark mode */
   useEffect(() => {
-    const collapsedFromStorage =
-      localStorage.getItem(localStorageKey) === "true";
-    setIsCollapsed(collapsedFromStorage);
-    const isDarkMode = localStorage.getItem(darkModelocalStorageKey) === "dark";
+    const isDarkMode = localStorage.getItem(darkModeLocalStorageKey) === "dark";
 
     document.documentElement.setAttribute(
       "data-bs-theme",
       isDarkMode ? "dark" : "light"
     );
   }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeout) {
+        clearTimeout(hoverTimeout);
+      }
+    };
+  }, [hoverTimeout]);
 
   if (isLoading) {
     /**
@@ -70,7 +82,6 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
         className="d-flex flex-column"
         style={{ height: "100vh", overflow: "hidden" }}
       >
-        <EnvironmentBanner />
         <LoginContainer
           onLogin={() =>
             loginWithRedirect({
@@ -88,57 +99,45 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
    * Render the app
    */
   return (
-    <div
-      className="d-flex flex-column overflow-hidden"
-      style={{ height: "100vh" }}
-    >
-      <EnvironmentBanner />
-      <div className="d-flex flex-grow-1 overflow-hidden">
-        {/* Sidebar */}
-        <div
-          className={`bg-dark app-sidebar d-flex flex-column app-sidebar-${
-            isCollapsed ? "collapsed" : "expanded"
-          }`}
-        >
-          <div className="p-2">
-            <Button
-              onClick={toggleSidebar}
-              variant="dark"
-              className="w-100 text-secondary"
-            >
-              <FaAngleRight
-                className={`sidebar-toggle-${isCollapsed ? "closed" : "open"}`}
-              />
-            </Button>
-          </div>
-          <div className="flex-grow-1 overflow-y-auto">
-            <ListGroup variant="flush" className="px-2">
-              {routes.map((route) => (
-                <PermissionsRequired
-                  allowedRoles={route.allowedRoles}
-                  key={route.path}
-                >
-                  <SideBarListItem
-                    isCollapsed={isCollapsed}
-                    isCurrentPage={segments.includes(route.path)}
-                    Icon={route.icon}
-                    label={route.label}
-                    href={`/${route.path}`}
-                  />
-                </PermissionsRequired>
-              ))}
-            </ListGroup>
-          </div>
+    // Full-height outer div stacks children vertically
+    <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
+      <AppNavBar user={user} logout={logout} />
+      {/* Sidebar */}
+      <div
+        className={`app-sidebar d-flex flex-column h-100 app-sidebar-${
+          isCollapsed ? "collapsed" : "expanded"
+        }`}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className="flex-grow-1 overflow-y-auto">
+          <ListGroup variant="flush">
+            {routes.map((route) => (
+              <PermissionsRequired
+                allowedRoles={route.allowedRoles}
+                key={route.path}
+              >
+                <SideBarListItem
+                  isCollapsed={isCollapsed}
+                  isCurrentPage={segments.includes(route.path)}
+                  Icon={route.icon}
+                  label={route.label}
+                  href={`/${route.path}`}
+                />
+              </PermissionsRequired>
+            ))}
+          </ListGroup>
         </div>
-        {/* Main content */}
-        <div
-          className="flex-grow-1 d-flex flex-column w-100"
-          style={{ minWidth: 0 }}
-        >
-          <AppNavBar user={user} logout={logout} />
-          <main className="flex-grow-1 d-flex flex-column overflow-y-auto">
-            <AppBreadCrumb />
-            <div className="flex-grow-1 px-3 pb-3">{children}</div>
+      </div>
+      {/* Main content - essentially a bootstrap "row" — horizontal */}
+      <div className="main-content-pane d-flex flex-grow-1">
+        <div className="flex-grow-1 d-flex flex-column w-100 ">
+          {/* vertical container */}
+          <main className="flex-grow-1 d-flex flex-column">
+            <div className="d-flex flex-grow-1 flex-column p-3">
+              <AppBreadCrumb />
+              {children}
+            </div>
             <AppFooter />
           </main>
         </div>

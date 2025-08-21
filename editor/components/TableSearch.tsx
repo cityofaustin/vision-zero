@@ -28,7 +28,7 @@ export default function TableSearch({
   setSearchSettings,
 }: TableSearchProps) {
   return (
-    <InputGroup>
+    <InputGroup className="d-flex flex-nowrap align-self-start">
       <InputGroup.Text id="search-icon">
         <FaMagnifyingGlass />
       </InputGroup.Text>

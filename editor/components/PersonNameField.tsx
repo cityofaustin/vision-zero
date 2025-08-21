@@ -22,7 +22,7 @@ interface PersonNameFieldProps {
   /**
    * Function that is an async wrapper around data refetch
    */
-  onSaveCallback: () => Promise<void>;
+  onSaveCallback?: () => Promise<void>;
 }
 
 type PersonNameFormInputs = {
@@ -65,7 +65,7 @@ export default function PersonNameField({
           prsn_last_name: data.prsn_last_name,
         },
       });
-      await onSaveCallback();
+      if (onSaveCallback) await onSaveCallback();
       // onCancel resets the current edit column to null
       onCancel();
     },

@@ -9,6 +9,8 @@ $anti-flash-white: #f4f5f6;
 $sea-green: #09814a;
 $rojo: #dd0426;
 $jonquil: #ffd22f;
+$dark-grey: rgb(42.5, 47.5, 52.5);
+$night-mode-background: #212529;
 
 /* override bootstrap with our palette */
 $white: #ffffff;
@@ -21,6 +23,8 @@ $danger: $rojo;
 $light: $anti-flash-white;
 $dark: $night;
 
+$sidebarWidth: 4.6rem;
+
 // https://isotropic.co/tool/hex-color-to-css-filter/
 .app-brand-img {
   filter: sepia(10%) contrast(130%);
@@ -31,9 +35,24 @@ $dark: $night;
   filter: invert(100%);
 }
 
+.app-navbar {
+  position: fixed !important;
+  z-index: 1050;
+  top: 0;
+}
+
 [data-bs-theme="dark"] .app-navbar,
+.app-sidebar,
 .crash-injury-indicator {
-  background-color: #212529 !important;
+  background-color: $night-mode-background !important;
+}
+
+[data-bs-theme="light"] .app-sidebar {
+  background-color: $light !important;
+}
+
+[data-bs-theme="dark"] .app-sidebar {
+  border-right: 1px solid #495057;
 }
 
 [data-bs-theme="light"] .crash-injury-indicator {
@@ -58,7 +77,7 @@ $dark: $night;
   // bs border-color
   border-color: #495057 !important;
   // bs tertiary background
-  background-color: rgb(42.5, 47.5, 52.5);
+  background-color: $dark-grey;
 
   &:hover,
   &:active,
@@ -72,7 +91,7 @@ $dark: $night;
 [data-bs-theme="light"] .date-preset-button {
   background-color: $light !important;
   border-color: $light !important;
-  color: #000;
+  color: #000 !important;
 
   &:hover,
   &:active,
@@ -83,17 +102,107 @@ $dark: $night;
   }
 }
 
+// Custom tooltip styles prevent the y-scrollbar from briefly flashing
+// and causing a layout shift
+.tooltip {
+  position: fixed !important; /* Override Bootstrap's absolute positioning */
+  z-index: 9999;
+  pointer-events: none;
+}
+
+[data-bs-theme="light"] .edit-address-button {
+  background-color: $white !important;
+  border-color: $white !important;
+  color: #000 !important;
+
+  &:hover {
+    background-color: $light !important;
+    border-color: $light !important;
+    color: #000 !important;
+  }
+}
+
+[data-bs-theme="dark"] .edit-address-button {
+  background-color: $night-mode-background !important;
+  border-color: $night-mode-background !important;
+  color: $white;
+
+  &:hover {
+    background-color: $dark-grey !important;
+    border-color: $dark-grey !important;
+  }
+}
+
 .app-sidebar {
-  transition: width 0.2s ease-out;
+  position: fixed !important;
+  margin-top: 3.9rem;
+  z-index: 1040;
+  left: 0;
+  top: 0;
+  height: 100%;
+  transition:
+    width 0.2s ease-out,
+    box-shadow 0.3s ease-out;
   overflow-x: hidden;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 }
 
 .app-sidebar-expanded {
-  width: 19rem !important;
+  width: 15.5rem !important;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
 }
 
 .app-sidebar-collapsed {
-  width: 4.6rem !important;
+  width: $sidebarWidth !important;
+}
+
+.main-content-pane {
+  margin-top: 3.9rem;
+  margin-left: $sidebarWidth;
+}
+
+[data-bs-theme="light"] .sidebar-list-item,
+[data-bs-theme="light"] .sidebar-list-item:active,
+[data-bs-theme="light"] .sidebar-list-item:focus {
+  background-color: $light;
+}
+
+[data-bs-theme="dark"] .sidebar-list-item,
+[data-bs-theme="dark"] .sidebar-list-item:active,
+[data-bs-theme="dark"] .sidebar-list-item:focus {
+  background-color: #212529;
+}
+
+[data-bs-theme="light"] .sidebar-list-item-current {
+  //   color: $light !important;
+  background-color: #fff !important;
+}
+
+[data-bs-theme="dark"] .sidebar-list-item-current {
+  color: #fff !important;
+  background-color: #495057 !important;
+}
+
+[data-bs-theme="light"] .sidebar-list-item:hover {
+  color: #000 !important;
+}
+
+[data-bs-theme="dark"] .sidebar-list-item:hover {
+  color: #fff !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Add transition for main content margin
+.flex-grow-1 {
+  transition: margin-left 0.3s ease-out;
 }
 
 .mapboxgl-map {
@@ -120,29 +229,8 @@ $dark: $night;
   color: $white;
 }
 
-.sidebar-toggle-open {
-  transform: rotate(180deg);
-  transition: transform 0.2s ease-out; // Optional: Smooth transition
-}
-
-.sidebar-toggle-closed {
-  transform: rotate(360deg);
-  transition: transform 0.2s ease-out; // Optional: Smooth transition
-}
-
 .react-datepicker__calendar-icon {
   margin-top: 0.2rem;
-}
-
-.special-filter {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height 0.2s ease-out;
-}
-
-.special-filter-open {
-  /* Adjust to be just above content height */
-  max-height: 25rem;
 }
 
 .card-header {
@@ -188,5 +276,37 @@ to make sure it renders on top is a common fix */
   content: none !important;
 }
 
+/* wrapper for custom mapbox control */
+.map-custom-ctrl-container-top-right {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  margin-bottom: 2.5rem;
+}
+
+/* Button that looks similar to a mapbox control */
+.map-custom-ctrl-btn {
+  background-color: #fff !important;
+  color: #000 !important;
+  border: none !important;
+  padding: 0px !important;
+  width: 29px;
+  height: 29px;
+  display: flex !important;
+  justify-content: center;
+}
+
+.map-custom-ctrl-btn:hover {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.table-map-container {
+  height: 100%;
+}
+
+/* Pushes the mapbox contral area down to make room for our custom button */
+.table-map-container .mapboxgl-ctrl-top-right {
+  margin-top: 2.5rem;
+}
 
 @import "bootstrap/scss/bootstrap.scss";

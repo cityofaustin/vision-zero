@@ -1,6 +1,5 @@
 "use client";
 import { useState, useCallback } from "react";
-import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import AlignedLabel from "@/components/AlignedLabel";
 import CreateCrashRecordModal from "@/components/CreateCrashRecordModal";
@@ -25,27 +24,28 @@ export default function Crashes() {
 
   return (
     <>
-      <Card className="mt-3">
-        <Card.Header className="fs-3 fw-bold d-flex justify-content-between">
-          Crashes
+      <div className="h-100 d-flex flex-column">
+        <div className="d-flex justify-content-between">
+          <span className="fs-3 fw-bold">Crashes</span>
           <PermissionsRequired allowedRoles={allowedCreateCrashRecordRoles}>
-            <Button className="me-2" onClick={() => setShowNewUserModal(true)}>
+            <Button
+              variant="outline-primary"
+              onClick={() => setShowNewUserModal(true)}
+            >
               <AlignedLabel>
                 <FaCirclePlus className="me-2" />
-                <span>Create crash record</span>
+                <span>Create</span>
               </AlignedLabel>
             </Button>
           </PermissionsRequired>
-        </Card.Header>
-        <Card.Body>
-          <TableWrapper
-            columns={crashesListViewColumns}
-            initialQueryConfig={crashesListViewQueryConfig}
-            localStorageKey={localStorageKey}
-            refetch={refetch}
-          />
-        </Card.Body>
-      </Card>
+        </div>
+        <TableWrapper
+          columns={crashesListViewColumns}
+          initialQueryConfig={crashesListViewQueryConfig}
+          localStorageKey={localStorageKey}
+          refetch={refetch}
+        />
+      </div>
       <CreateCrashRecordModal
         onClose={onCloseModal}
         show={showNewUserModal}

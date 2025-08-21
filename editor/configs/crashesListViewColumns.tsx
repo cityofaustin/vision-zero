@@ -23,7 +23,9 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     path: "crash_timestamp",
     label: "Date",
     sortable: true,
+    style: { minWidth: "8rem" },
     valueFormatter: formatDate,
+    fetchAlways: true,
   },
   {
     path: "crash_day_of_week",
@@ -45,6 +47,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     path: "address_primary",
     label: "Address",
     sortable: true,
+    fetchAlways: true,
   },
   {
     path: "council_district",
@@ -110,19 +113,21 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     exportOnly: true,
   },
   {
-    path: "latitude",
-    label: "latitude",
-    exportOnly: true,
-  },
-  {
     path: "light_cond_id",
     label: "light_cond_id",
     exportOnly: true,
   },
   {
+    path: "latitude",
+    label: "latitude",
+    exportOnly: true,
+    fetchAlways: true,
+  },
+  {
     path: "longitude",
     label: "longitude",
     exportOnly: true,
+    fetchAlways: true,
   },
   {
     path: "non_injry_count",

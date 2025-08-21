@@ -8,13 +8,17 @@ export type EMSPatientCareRecord = {
   crash_match_status: string;
   non_cr3_match_status: string;
   atd_apd_blueform_case_id: number | null;
+  matched_non_cr3_case_ids: number[] | null;
   crash_pk: number | null;
   id: number;
   incident_location_address: string | null;
   incident_number: number | null;
   incident_problem: string | null;
   incident_received_datetime: string | null;
+  latitude: number | null;
+  longitude: number | null;
   patient_injry_sev: LookupTableOption | null;
+  patient_injry_sev_reason?: string | null;
   matched_crash_pks: number[] | null;
   mvc_form_position_in_vehicle: string | null;
   patient_injry_sev_id: number | null;
@@ -25,6 +29,7 @@ export type EMSPatientCareRecord = {
   person_id: number | null;
   // we are using Omit to avoid a circular reference
   person?: Omit<PeopleListRow, "ems_pcr"> | null;
+  person_match_status?: string | null;
   travel_mode: string | null;
   unparsed_apd_incident_numbers: string | null;
 };
