@@ -305,7 +305,7 @@ export const crashesListViewQueryConfig: QueryConfig = {
           ["zoom"],
           // zoom is 5 (or less)
           5,
-          2,
+          6,
           // zoom is 20 (or greater)
           20,
           8,
