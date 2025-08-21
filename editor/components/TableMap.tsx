@@ -77,7 +77,6 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
   const [selectedFeature, setSelectedFeature] = useState<GeoJSONFeature | null>(
     null
   );
-
   const [cursor, setCursor] = useState("grab");
 
   const onMouseEnter = useCallback(() => {
