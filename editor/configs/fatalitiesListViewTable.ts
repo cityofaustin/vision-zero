@@ -289,4 +289,28 @@ export const fatalitiesListViewQueryConfig: QueryConfig = {
     }),
   },
   filterCards: fatalitiesListViewFilterCards,
+  mapConfig: {
+    isActive: false,
+    layerProps: {
+      id: "points-layer",
+      type: "circle",
+      paint: {
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          // zoom is 5 (or less)
+          5,
+          6,
+          // zoom is 20 (or greater)
+          20,
+          8,
+        ],
+        "circle-color": "#007cbf",
+        "circle-stroke-width": 0.5,
+        "circle-stroke-color": "#ffffff",
+      },
+    },
+    geojsonTransformerName: "latLon",
+  },
 };
