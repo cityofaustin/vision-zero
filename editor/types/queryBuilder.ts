@@ -1,3 +1,6 @@
+import { TableMapConfig } from "@/types/tableMapConfig";
+import { AllowedPageSize, ExportPageSize } from "@/utils/constants";
+
 /**
  * The types we currently support as filter values
  *
@@ -107,8 +110,7 @@ export interface SearchFilterField {
 export type DateFilterMode = "ytd" | "all" | "5y" | "1y" | "custom";
 
 /**
- * Configuration object for the graphql
- * query builder
+ * Configuration object for the graphql query builder
  */
 export interface QueryConfig {
   /**
@@ -118,7 +120,7 @@ export interface QueryConfig {
   /**
    * The record limit
    */
-  limit: number;
+  limit: AllowedPageSize | ExportPageSize;
   /**
    * The query offset (for pagination)
    */
@@ -143,8 +145,8 @@ export interface QueryConfig {
   searchFields: SearchFilterField[];
   /**
    * The filter settings for filtering by date. Designed to
-   * be compatible with the DateSeletor component which uses
-   * pre-defiend date ranges as well as custom input
+   * be compatible with the DateSelector component which uses
+   * pre-defined date ranges as well as custom input
    */
   dateFilter?: {
     mode: DateFilterMode;
@@ -169,6 +171,10 @@ export interface QueryConfig {
    * the file extension
    */
   exportFilename?: string;
+  /**
+   * Optional map configuration. Enables the map view/toggle when present
+   */
+  mapConfig?: TableMapConfig;
 }
 
 /**

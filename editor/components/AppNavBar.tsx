@@ -13,6 +13,7 @@ import {
   FaToolbox,
   FaUserLarge,
 } from "react-icons/fa6";
+import EnvironmentBadge from "@/components/EnvironmentBadge";
 import NavBarSearch from "@/components/NavBarSearch";
 import AlignedLabel from "@/components/AlignedLabel";
 import DropdownAnchorToggle from "@/components/DropdownAnchorToggle";
@@ -32,7 +33,7 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
   const userId = user?.["https://hasura.io/jwt/claims"]?.["x-hasura-user-id"];
 
   return (
-    <Navbar className="app-navbar bg-light border-bottom ps-1 pe-3 w-100">
+    <Navbar className="app-navbar bg-light border-bottom pe-3 w-100">
       <Container fluid>
         <Col className="d-flex justify-content-start">
           <Navbar.Brand href="/crashes" as={Link}>
@@ -43,8 +44,9 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
               className="app-brand-img"
             />
           </Navbar.Brand>
+          <EnvironmentBadge />
         </Col>
-        <Col className="d-flex justify-content-end align-items-center">
+        <Col className="d-none d-md-flex justify-content-end align-items-center">
           <NavBarSearch />
           <Dropdown align="end">
             <Dropdown.Toggle id="avatar-toggle" as={DropdownAnchorToggle}>

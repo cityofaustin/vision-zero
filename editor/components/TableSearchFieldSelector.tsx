@@ -18,14 +18,6 @@ export default function TableSearchFieldSelector({
             type="radio"
             checked={searchSettings.searchColumn === field.value}
             onChange={() => {
-              //   const newQueryConfig = { ...queryConfig };
-              //   newQueryConfig.searchFilter = {
-              //     ...newQueryConfig.searchFilter,
-              //     column: field.value,
-              //     value: searchSettings.searchString,
-              //   };
-              //   // reset offset / pagination
-              //   newQueryConfig.offset = 0;
               const newSearchSettings = { ...searchSettings };
               newSearchSettings.searchColumn = field.value;
               setSearchSettings(newSearchSettings);

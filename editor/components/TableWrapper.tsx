@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import Spinner from "react-bootstrap/Spinner";
 import Table from "@/components/Table";
-import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
 import TableAdvancedSearchFilterToggle, {
   useActiveSwitchFilterCount,
 } from "@/components/TableAdvancedSearchFilterToggle";
 import TableDateSelector from "@/components/TableDateSelector";
 import TableExportModal from "@/components/TableExportModal";
+import TableMapToggle from "@/components/TableMapToggle";
+import TableMapWrapper from "@/components/TableMapWrapper";
 import TablePaginationControls from "@/components/TablePaginationControls";
 import TableResetFiltersToggle from "@/components/TableResetFiltersToggle";
 import TableSearch, { SearchSettings } from "@/components/TableSearch";
@@ -58,7 +58,6 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   contextFilters,
   refetch: _refetch,
 }: TableProps<T>) {
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [areFiltersDirty, setAreFiltersDirty] = useState(false);
   const [isQueryConfigLocalStorageLoaded, setIsQueryConfigLocalStorageLoaded] =
     useState(false);
@@ -84,9 +83,30 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     setColumnVisibilitySettings,
   } = useVisibleColumns(columns);
 
+  /**
+   * Array of columns which should be fetched - this is
+   * is the combination of visible columns + fetchAlways columns
+   */
+  const allColumnsToFetch = useMemo(
+    () =>
+      columns.filter((col) => {
+        const colFromVisibleColumns = visibleColumns.find(
+          (visibleColumn) => visibleColumn.path === col.path
+        );
+        if (colFromVisibleColumns) {
+          return true;
+        } else if (col.fetchAlways) {
+          return true;
+        } else {
+          return false;
+        }
+      }),
+    [columns, visibleColumns]
+  );
+
   const query = useQueryBuilder(
     queryConfig,
-    visibleColumns,
+    allColumnsToFetch,
     true,
     contextFilters
   );
@@ -207,6 +227,14 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       queryConfigMutable.dateFilter = undefined;
       initialQueryConfigMutable.dateFilter = undefined;
     }
+    /**
+     * Ignore map toggle state by setting the same value in both configs
+     *  - we don't want the filters dirty when switching between map/list mode
+     */
+    if (queryConfigMutable.mapConfig && initialQueryConfigMutable.mapConfig) {
+      queryConfigMutable.mapConfig.isActive = true;
+      initialQueryConfigMutable.mapConfig.isActive = true;
+    }
     setAreFiltersDirty(!isEqual(queryConfigMutable, initialQueryConfigMutable));
   }, [queryConfig, initialQueryConfig]);
 
@@ -249,11 +277,12 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           </Col>
         </Row>
         <Row className="mb-3">
-          <Col xs={12} md={6} className="d-flex justify-content-start mt-2">
+          <Col xs={12} md={4} className="d-flex justify-content-start mt-2">
             {queryConfig.filterCards?.length > 0 && (
               <TableAdvancedSearchFilterToggle
-                setIsFilterOpen={setIsFilterOpen}
                 activeFilterCount={activeFilterCount}
+                queryConfig={queryConfig}
+                setQueryConfig={setQueryConfig}
               />
             )}
             <TableSearch
@@ -263,18 +292,24 @@ export default function TableWrapper<T extends Record<string, unknown>>({
               setSearchSettings={setSearchSettings}
             />
           </Col>
-          {areFiltersDirty && (
-            <Col className="px-0 mt-2" xs="auto">
-              <TableResetFiltersToggle
-                queryConfig={initialQueryConfig}
+          {queryConfig.mapConfig && (
+            <Col className="px-0 mt-2 me-2" xs="auto">
+              <TableMapToggle
+                queryConfig={queryConfig}
                 setQueryConfig={setQueryConfig}
               />
             </Col>
           )}
-          <Col className="d-flex justify-content-end align-items-center mt-2">
-            {isLoading && <Spinner variant="primary" />}
-          </Col>
-          <Col className="d-flex justify-content-end mt-2" xs="auto">
+          {areFiltersDirty && (
+            <Col className="px-0 mt-2" xs="auto">
+              <TableResetFiltersToggle
+                isMapActive={queryConfig?.mapConfig?.isActive || false}
+                initialQueryConfig={initialQueryConfig}
+                setQueryConfig={setQueryConfig}
+              />
+            </Col>
+          )}
+          <Col className="d-flex justify-content-end mt-2">
             <TablePaginationControls
               columnVisibilitySettings={columnVisibilitySettings}
               setColumnVisibilitySettings={setColumnVisibilitySettings}
@@ -296,31 +331,22 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           </Col>
         </Row>
       </form>
-      <Row
-        className={
-          isFilterOpen
-            ? "special-filter special-filter-open"
-            : " special-filter"
-        }
-      >
-        <Col>
-          <TableAdvancedSearchFilterMenu
-            queryConfig={queryConfig}
-            setQueryConfig={setQueryConfig}
-          />
-        </Col>
-      </Row>
       {/* The actual table itself */}
-      <Row>
-        <Col>
-          <Table<T>
-            rows={rows}
-            columns={visibleColumns}
-            queryConfig={queryConfig}
-            setQueryConfig={setQueryConfig}
-          />
-        </Col>
-      </Row>
+      {(!queryConfig.mapConfig || !queryConfig.mapConfig.isActive) && (
+        <Row>
+          <Col>
+            <Table<T>
+              rows={rows}
+              columns={visibleColumns}
+              queryConfig={queryConfig}
+              setQueryConfig={setQueryConfig}
+            />
+          </Col>
+        </Row>
+      )}
+      {queryConfig.mapConfig && queryConfig.mapConfig.isActive && (
+        <TableMapWrapper mapConfig={queryConfig.mapConfig} data={rows} />
+      )}
       {queryConfig.exportable && (
         <TableExportModal<T>
           exportFilename={queryConfig.exportFilename}
