@@ -1,4 +1,4 @@
--- Adds longitude and latitude to fatalitiies_view for mapping purposes
+-- Adds longitude, latitude, and address_primary to fatalitiies_view for mapping purposes
 DROP view public.fatalities_view;
 
 CREATE
@@ -10,6 +10,7 @@ SELECT
   crashes.record_locator,
   crashes.longitude,
   crashes.latitude,
+  crashes.address_primary,
   units.id AS unit_id,
   concat_ws(
     ' ' :: text,
