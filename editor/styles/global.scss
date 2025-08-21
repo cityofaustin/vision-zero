@@ -10,7 +10,7 @@ $sea-green: #09814a;
 $rojo: #dd0426;
 $jonquil: #ffd22f;
 $dark-grey: rgb(42.5, 47.5, 52.5);
-$night-mode-background: #212529;
+$dark-mode-background: #212529;
 
 /* override bootstrap with our palette */
 $white: #ffffff;
@@ -44,8 +44,22 @@ $sidebarWidth: 4.6rem;
 [data-bs-theme="dark"] .app-navbar,
 .app-sidebar,
 .crash-injury-indicator {
-  background-color: $night-mode-background !important;
+  background-color: $dark-mode-background !important;
 }
+
+[data-bs-theme="dark"] .mapboxgl-popup-tip {
+  border-bottom-color: $dark-grey !important;
+  border-top-color: $dark-grey !important;
+}
+
+[data-bs-theme="dark"] .mapboxgl-popup-content {
+  background-color: $dark-grey !important;
+}
+
+[data-bs-theme="light"] .mapboxgl-popup-content {
+  background-color: $white !important;
+}
+
 
 [data-bs-theme="light"] .app-sidebar {
   background-color: $light !important;
@@ -105,7 +119,8 @@ $sidebarWidth: 4.6rem;
 // Custom tooltip styles prevent the y-scrollbar from briefly flashing
 // and causing a layout shift
 .tooltip {
-  position: fixed !important; /* Override Bootstrap's absolute positioning */
+  position: fixed !important;
+  /* Override Bootstrap's absolute positioning */
   z-index: 9999;
   pointer-events: none;
 }
@@ -123,8 +138,8 @@ $sidebarWidth: 4.6rem;
 }
 
 [data-bs-theme="dark"] .edit-address-button {
-  background-color: $night-mode-background !important;
-  border-color: $night-mode-background !important;
+  background-color: $dark-mode-background !important;
+  border-color: $dark-mode-background !important;
   color: $white;
 
   &:hover {
@@ -195,6 +210,7 @@ $sidebarWidth: 4.6rem;
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -304,7 +320,7 @@ to make sure it renders on top is a common fix */
   height: 100%;
 }
 
-/* Pushes the mapbox contral area down to make room for our custom button */
+/* Pushes the mapbox control area down to make room for our custom button */
 .table-map-container .mapboxgl-ctrl-top-right {
   margin-top: 2.5rem;
 }
