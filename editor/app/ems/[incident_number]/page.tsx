@@ -28,6 +28,7 @@ import { PeopleListRow } from "@/types/peopleList";
 import { FaTruckMedical } from "react-icons/fa6";
 import { parseISO, subHours, addHours } from "date-fns";
 import { Crash } from "@/types/crashes";
+import EMSMapCard from "@/components/EMSMapCard";
 
 export default function EMSDetailsPage({
   params,
@@ -227,6 +228,14 @@ export default function EMSDetailsPage({
             onSaveCallback={onSaveCallback}
           />
         </Col>
+        <Col sm={12} md={6} lg={8} className="mb-3">
+          <EMSMapCard
+            savedLatitude={incident.latitude}
+            savedLongitude={incident.longitude}
+          />
+        </Col>
+      </Row>
+      <Row>
         <Col sm={12} className="mb-3">
           <RelatedRecordTable<EMSPatientCareRecord, EMSLinkRecordButtonProps>
             records={ems_pcrs}

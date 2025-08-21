@@ -211,7 +211,7 @@ export default function TableColumnVisibilityMenu({
   ]);
 
   return (
-    <Dropdown>
+    <Dropdown className="d-flex">
       <OverlayTrigger
         placement="top"
         container={document.body}
@@ -223,10 +223,11 @@ export default function TableColumnVisibilityMenu({
           id="column-visibility-picker"
           disabled={!!disabled}
         >
-          <FaGear />
+          <AlignedLabel>
+            <FaGear />
+          </AlignedLabel>
         </Dropdown.Toggle>
       </OverlayTrigger>
-
       <Dropdown.Menu style={{ maxHeight: "50vh", overflowY: "auto" }}>
         {columnVisibilitySettings.map((col) => {
           return (

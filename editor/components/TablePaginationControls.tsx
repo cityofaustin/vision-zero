@@ -95,7 +95,7 @@ export default function TablePaginationControls({
   ];
 
   return (
-    <ButtonToolbar>
+    <ButtonToolbar className="flex-nowrap">
       <div className="d-flex align-items-center mx-2">
         {isLoading && <Spinner variant="primary" />}
       </div>
@@ -164,7 +164,6 @@ export default function TablePaginationControls({
       {exportable && (
         <OverlayTrigger
           placement="top"
-          //   delay={{ show: 250, hide: 400 }}
           overlay={<Tooltip id="download-tooltip">Download</Tooltip>}
         >
           <Button
