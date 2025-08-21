@@ -13,6 +13,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { FaGear } from "react-icons/fa6";
 import { ColumnVisibilitySetting } from "@/types/types";
 import { ColDataCardDef } from "@/types/types";
+import AlignedLabel from "@/components/AlignedLabel";
 
 interface TableColumnVisibilityMenuProps {
   /**
