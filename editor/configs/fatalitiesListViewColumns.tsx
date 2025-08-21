@@ -87,4 +87,16 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     exportOnly: true,
     fetchAlways: true,
   },
+  {
+    path: "crash_timestamp",
+    label: "crash_timestamp",
+    exportOnly: true,
+    fetchAlways: true,
+  },
+  {
+    path: "address_primary",
+    label: "address_primary",
+    exportOnly: true,
+    fetchAlways: true,
+  },
 ];

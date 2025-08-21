@@ -15,4 +15,6 @@ export type fatalitiesListRow = {
   engineering_area: EngineeringArea | null;
   longitude: number | null;
   latitude: number | null;
+  crash_timestamp: string | null;
+  address_primary: string | null;
 };
