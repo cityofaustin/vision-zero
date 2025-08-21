@@ -25,6 +25,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     sortable: true,
     style: { minWidth: "8rem" },
     valueFormatter: formatDate,
+    fetchAlways: true,
   },
   {
     path: "crash_day_of_week",
@@ -46,6 +47,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     path: "address_primary",
     label: "Address",
     sortable: true,
+    fetchAlways: true,
   },
   {
     path: "council_district",
