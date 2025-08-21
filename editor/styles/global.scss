@@ -11,6 +11,7 @@ $rojo: #dd0426;
 $jonquil: #ffd22f;
 $dark-grey: rgb(42.5, 47.5, 52.5);
 $night-mode-background: #212529;
+$side-bar-gray: #495057;
 
 /* override bootstrap with our palette */
 $white: #ffffff;
@@ -190,6 +191,16 @@ $sidebarWidth: 4.6rem;
 [data-bs-theme="dark"] .sidebar-list-item:hover {
   color: #fff !important;
 }
+
+[data-bs-theme="dark"] .mapboxgl-popup-tip {
+  border-top-color: $side-bar-gray !important;
+  border-bottom-color: $side-bar-gray !important;
+}
+
+[data-bs-theme="dark"] .mapboxgl-popup-content {
+  background: $side-bar-gray !important;
+}
+
 
 @keyframes fadeIn {
   from {
