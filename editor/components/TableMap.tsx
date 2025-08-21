@@ -74,7 +74,6 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
     }
   }, [geojsonBounds, mapRef]);
 
-  // todo, check if this is the right type to use
   const [selectedFeature, setSelectedFeature] = useState<GeoJSONFeature | null>(
     null
   );
