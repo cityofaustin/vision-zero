@@ -12,7 +12,9 @@ import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import { FeatureCollection } from "geojson";
 import { TableMapConfig } from "@/types/tableMapConfig";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { GeoJSONFeature } from "mapbox-gl";
+import { GeoJSONFeature, MapMouseEvent } from "mapbox-gl";
+import PopupWrapper from "@/components/PopupWrapper";
+import TableMapPopupContent from "@/components/TableMapPopupContent";
 
 export interface LatLon {
   latitude: number;
@@ -76,12 +78,25 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
     null
   );
 
+  const [cursor, setCursor] = useState("grab");
+
+  const onMouseEnter = useCallback((e: MapMouseEvent) => {
+    setCursor("pointer");
+  }, []);
+
+  const onMouseLeave = useCallback(() => {
+    setCursor("grab");
+  }, []);
+
   return (
     <MapGL
       ref={mapRef}
       initialViewState={initialViewState}
       {...DEFAULT_MAP_PARAMS}
       cooperativeGestures={true}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      cursor={cursor}
       onLoad={(e) => e.target.resize()}
       maxZoom={21}
       interactiveLayerIds={["points-layer"]} // layer id defined in mapConfig
@@ -101,6 +116,15 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
         <Layer type="circle" {...mapConfig?.layerProps} />
       </Source>
       <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
+      {selectedFeature && (
+        <PopupWrapper
+          longitude={selectedFeature?.properties?.longitude}
+          latitude={selectedFeature?.properties?.latitude}
+          featureProperties={selectedFeature.properties}
+          PopupContent={TableMapPopupContent}
+          onClose={() => setSelectedFeature(null)}
+        />
+      )}
     </MapGL>
   );
 };
