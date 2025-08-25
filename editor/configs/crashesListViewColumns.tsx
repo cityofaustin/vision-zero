@@ -31,6 +31,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     path: "crash_time_ct",
     label: "Time",
     sortable: true,
+    defaultHidden: true,
     style: { minWidth: "8rem" },
   },
   {
