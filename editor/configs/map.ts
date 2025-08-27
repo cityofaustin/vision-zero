@@ -18,6 +18,12 @@ export const MAP_MAX_BOUNDS: [[number, number], [number, number]] = [
   [-96, 32],
 ];
 
+export const mapStyleOptions = {
+  darkStreets: "mapbox://styles/mapbox/dark-v11",
+  lightStreets: "mapbox://styles/mapbox/light-v11",
+  aerial: "mapbox://styles/mapbox/satellite-streets-v12",
+};
+
 export const DEFAULT_MAP_PARAMS = {
   touchPitch: false,
   dragRotate: false,
@@ -26,7 +32,9 @@ export const DEFAULT_MAP_PARAMS = {
   maxBounds: MAP_MAX_BOUNDS,
   // todo: set light vs dark basemap based on user dark mode
   // light-v11 or streets-v11 or satelitte-streets-v11
-  mapStyle: "mapbox://styles/mapbox/dark-v11",
+  mapStyle:
+    // "mapbox://styles/mapbox/dark-v11",
+    "mapbox://styles/mapbox/satellite-streets-v12",
 };
 
 interface Layers {
