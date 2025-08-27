@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useAuth0, User } from "@auth0/auth0-react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 /**
  * Add our claims to the Auth0 ID token—these are
