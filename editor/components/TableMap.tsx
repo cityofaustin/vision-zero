@@ -15,6 +15,9 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { GeoJSONFeature } from "mapbox-gl";
 import PopupWrapper from "@/components/PopupWrapper";
 import TableMapPopupContent from "@/components/TableMapPopupContent";
+import MapSelectBasemap from "@/components/MapSelectBasemap";
+import { mapStyleOptions } from "@/configs/map";
+import { useGetTheme } from "@/utils/useGetTheme";
 
 export interface LatLon {
   latitude: number;
@@ -45,6 +48,18 @@ interface TableMapProps {
  * Map which can be configured to render in the Table component
  */
 export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
+  const isDarkMode = useGetTheme();
+  const [basemap, setBasemap] = useState(
+    isDarkMode ? mapStyleOptions.darkStreets : mapStyleOptions.lightStreets
+  );
+
+  /** Check dark mode */
+  useEffect(() => {
+    setBasemap(
+      isDarkMode ? mapStyleOptions.darkStreets : mapStyleOptions.lightStreets
+    );
+  }, [isDarkMode]);
+
   const geojsonBounds = useCurrentBounds(geojson);
   /**
    * Initialize map based on initial geojson bounds. Bounds may be
@@ -88,42 +103,46 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
   }, []);
 
   return (
-    <MapGL
-      ref={mapRef}
-      initialViewState={initialViewState}
-      {...DEFAULT_MAP_PARAMS}
-      cooperativeGestures={true}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      cursor={cursor}
-      onLoad={(e) => e.target.resize()}
-      maxZoom={21}
-      interactiveLayerIds={["points-layer"]} // layer id defined in mapConfig
-      onClick={(e) => {
-        e.originalEvent.stopPropagation();
-        if (e.features?.length) {
-          setSelectedFeature(e.features[0]);
-        } else {
-          setSelectedFeature(null);
-        }
-      }}
-    >
-      <FullscreenControl position="bottom-right" />
-      <NavigationControl position="top-right" showCompass={false} />
-      {/* custom geojson source and layer */}
-      <Source id="custom-source" type="geojson" data={geojson}>
-        <Layer type="circle" {...mapConfig?.layerProps} />
-      </Source>
-      <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
-      {selectedFeature && (
-        <PopupWrapper
-          longitude={selectedFeature?.properties?.longitude}
-          latitude={selectedFeature?.properties?.latitude}
-          featureProperties={selectedFeature.properties}
-          PopupContent={TableMapPopupContent}
-          onClose={() => setSelectedFeature(null)}
-        />
-      )}
-    </MapGL>
+    !!basemap && (
+      <MapGL
+        ref={mapRef}
+        initialViewState={initialViewState}
+        {...DEFAULT_MAP_PARAMS}
+        mapStyle={basemap}
+        cooperativeGestures={true}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        cursor={cursor}
+        onLoad={(e) => e.target.resize()}
+        maxZoom={21}
+        interactiveLayerIds={["points-layer"]} // layer id defined in mapConfig
+        onClick={(e) => {
+          e.originalEvent.stopPropagation();
+          if (e.features?.length) {
+            setSelectedFeature(e.features[0]);
+          } else {
+            setSelectedFeature(null);
+          }
+        }}
+      >
+        <FullscreenControl position="bottom-right" />
+        <NavigationControl position="top-right" showCompass={false} />
+        {/* custom geojson source and layer */}
+        <Source id="custom-source" type="geojson" data={geojson}>
+          <Layer type="circle" {...mapConfig?.layerProps} />
+        </Source>
+        <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
+        <MapSelectBasemap />
+        {selectedFeature && (
+          <PopupWrapper
+            longitude={selectedFeature?.properties?.longitude}
+            latitude={selectedFeature?.properties?.latitude}
+            featureProperties={selectedFeature.properties}
+            PopupContent={TableMapPopupContent}
+            onClose={() => setSelectedFeature(null)}
+          />
+        )}
+      </MapGL>
+    )
   );
 };
