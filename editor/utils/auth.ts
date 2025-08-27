@@ -69,7 +69,8 @@ export const formatRoleName = (role: string): string => {
  * };
  */
 export const useGetToken = (): (() => Promise<string | undefined>) => {
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently, loginWithRedirect } =
+    useAuth0();
   return useCallback(async (): Promise<string | undefined> => {
     if (!isAuthenticated) {
       return;
@@ -78,9 +79,15 @@ export const useGetToken = (): (() => Promise<string | undefined>) => {
       const accessToken = await getAccessTokenSilently();
       return accessToken;
     } catch (err) {
-      console.error("Error getting access token:", err);
+      console.warn(
+        "Redirecting to login page due to error getting access token:",
+        err
+      );
+      loginWithRedirect({
+        appState: { returnTo: window.location.pathname },
+      });
     }
-    // we can ignore getAccessTokenSilently in our dep array - 
+    // we can ignore getAccessTokenSilently and loginWithRedirect in our dep array -
     // Auth0 didn't bother to memoize it for us and `isAuthenticated`
     // has us covered.
     // eslint-disable-next-line react-hooks/exhaustive-deps

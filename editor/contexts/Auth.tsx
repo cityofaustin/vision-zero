@@ -1,5 +1,7 @@
 "use client";
-import { Auth0Provider } from "@auth0/auth0-react";
+import { Auth0Provider, AppState } from "@auth0/auth0-react";
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 
 const DOMAIN = process.env.NEXT_PUBLIC_AUTH0_DOMAIN!;
 const CLIENT_ID = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID!;
@@ -18,6 +20,20 @@ export default function AuthProvider({
     (typeof window !== "undefined" && window.location.origin + BASE_PATH) ||
     undefined;
 
+  const router = useRouter();
+
+  /**
+   * Callback function that routes the user to their original destination
+   * after login
+   */
+  const onRedirectCallback = useCallback(
+    (appState: AppState | undefined) => {
+      const returnTo = appState?.returnTo || window.location.pathname;
+      router.push(returnTo);
+    },
+    [router]
+  );
+
   return (
     <Auth0Provider
       domain={DOMAIN}
@@ -35,6 +51,7 @@ export default function AuthProvider({
       }}
       useRefreshTokens={true}
       cacheLocation="localstorage"
+      onRedirectCallback={onRedirectCallback}
     >
       {children}
     </Auth0Provider>

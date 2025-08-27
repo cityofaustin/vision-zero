@@ -86,7 +86,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
           onLogin={() =>
             loginWithRedirect({
               appState: {
-                returnTo: BASE_PATH + pathName,
+                returnTo: pathName,
               },
             })
           }
