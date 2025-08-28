@@ -48,17 +48,18 @@ interface TableMapProps {
  * Map which can be configured to render in the Table component
  */
 export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
+  // Use custom hook to get the app theme
   const isDarkMode = useGetTheme();
-  const [basemap, setBasemap] = useState(
-    isDarkMode ? mapStyleOptions.darkStreets : mapStyleOptions.lightStreets
-  );
+  const [basemap, setBasemap] = useState();
 
-  /** Check dark mode */
+  /** Changes the basemap to match app theme unless in aerial mode */
   useEffect(() => {
-    setBasemap(
-      isDarkMode ? mapStyleOptions.darkStreets : mapStyleOptions.lightStreets
-    );
-  }, [isDarkMode]);
+    if (basemap !== mapStyleOptions.aerial) {
+      setBasemap(
+        isDarkMode ? mapStyleOptions.darkStreets : mapStyleOptions.lightStreets
+      );
+    }
+  }, [isDarkMode, basemap]);
 
   const geojsonBounds = useCurrentBounds(geojson);
   /**
@@ -132,7 +133,7 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
           <Layer type="circle" {...mapConfig?.layerProps} />
         </Source>
         <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
-        <MapSelectBasemap />
+        <MapSelectBasemap basemap={basemap} setBasemap={setBasemap} />
         {selectedFeature && (
           <PopupWrapper
             longitude={selectedFeature?.properties?.longitude}
