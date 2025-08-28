@@ -5,7 +5,9 @@ import { mapStyleOptions } from "@/configs/map";
 import { Dispatch, SetStateAction } from "react";
 
 interface MapSelectBasemapProps {
+  /** The mapbox basemap style URL to be used in the map */
   basemap: string;
+  /** Sets the state for the basemap URL */
   setBasemap: Dispatch<SetStateAction<string | undefined>>;
 }
 
