@@ -1,7 +1,5 @@
 import { FeatureCollection } from "geojson";
 import { LayerProps } from "react-map-gl";
-import { mapStyleOptions } from "@/configs/map";
-import { darkModeLocalStorageKey } from "@/components/DarkModeToggle";
 
 /**
  * An index of functions that transform input data into a geojson feature collection
@@ -33,11 +31,6 @@ export const geoJsonTransformers = {
     };
   },
 };
-
-export const getStreetBasemap =
-  localStorage.getItem(darkModeLocalStorageKey) === "dark"
-    ? mapStyleOptions.darkStreets
-    : mapStyleOptions.lightStreets;
 
 /**
  * Configuration object for rendering the map component that plugs
