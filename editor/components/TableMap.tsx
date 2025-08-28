@@ -16,8 +16,8 @@ import { GeoJSONFeature } from "mapbox-gl";
 import PopupWrapper from "@/components/PopupWrapper";
 import TableMapPopupContent from "@/components/TableMapPopupContent";
 import MapSelectBasemap from "@/components/MapSelectBasemap";
-import { mapStyleOptions } from "@/configs/map";
-import { useGetTheme } from "@/utils/useGetTheme";
+import { getBasemapURL } from "@/utils/map";
+import { useCheckDarkMode } from "@/utils/darkMode";
 
 export interface LatLon {
   latitude: number;
@@ -49,17 +49,10 @@ interface TableMapProps {
  */
 export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
   // Use custom hook to get the app theme
-  const isDarkMode = useGetTheme();
-  const [basemap, setBasemap] = useState<string | undefined>();
-
-  /** Changes the basemap to match app theme unless in aerial mode */
-  useEffect(() => {
-    if (basemap !== mapStyleOptions.aerial) {
-      setBasemap(
-        isDarkMode ? mapStyleOptions.darkStreets : mapStyleOptions.lightStreets
-      );
-    }
-  }, [isDarkMode, basemap]);
+  const isDarkMode = useCheckDarkMode();
+  const [basemapType, setBasemapType] = useState<"streets" | "aerial">(
+    "streets"
+  );
 
   const geojsonBounds = useCurrentBounds(geojson);
   /**
@@ -104,12 +97,12 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
   }, []);
 
   return (
-    !!basemap && (
+    !!basemapType && (
       <MapGL
         ref={mapRef}
         initialViewState={initialViewState}
         {...DEFAULT_MAP_PARAMS}
-        mapStyle={basemap}
+        mapStyle={getBasemapURL(basemapType, isDarkMode)}
         cooperativeGestures={true}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
@@ -133,7 +126,10 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
           <Layer type="circle" {...mapConfig?.layerProps} />
         </Source>
         <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
-        <MapSelectBasemap basemap={basemap} setBasemap={setBasemap} />
+        <MapSelectBasemap
+          basemapType={basemapType}
+          setBasemapType={setBasemapType}
+        />
         {selectedFeature && (
           <PopupWrapper
             longitude={selectedFeature?.properties?.longitude}

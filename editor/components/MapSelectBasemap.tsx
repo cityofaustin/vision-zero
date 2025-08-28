@@ -1,22 +1,21 @@
 import { Form } from "react-bootstrap";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Card } from "react-bootstrap";
-import { mapStyleOptions } from "@/configs/map";
 import { Dispatch, SetStateAction } from "react";
 
 interface MapSelectBasemapProps {
-  /** The mapbox basemap style URL to be used in the map */
-  basemap: string;
-  /** Sets the state for the basemap URL */
-  setBasemap: Dispatch<SetStateAction<string | undefined>>;
+  /** The basemap type to be used in the map */
+  basemapType: "streets" | "aerial";
+  /** Sets the state for the basemap type */
+  setBasemapType: Dispatch<SetStateAction<"streets" | "aerial">>;
 }
 
 /**
  * Custom map control that fits the map to current bounds
  */
 export default function MapSelectBasemap({
-  basemap,
-  setBasemap,
+  basemapType,
+  setBasemapType,
 }: MapSelectBasemapProps) {
   return (
     <div className="map-select-basemap-bottom-left">
@@ -26,20 +25,17 @@ export default function MapSelectBasemap({
           <Form.Check
             type="radio"
             label="Streets"
-            checked={
-              basemap === mapStyleOptions.darkStreets ||
-              basemap === mapStyleOptions.lightStreets
-            }
+            checked={basemapType === "streets"}
             onChange={() => {
-              setBasemap(mapStyleOptions.lightStreets);
+              setBasemapType("streets");
             }}
           />
           <Form.Check
             type="radio"
             label="Aerial"
-            checked={basemap === mapStyleOptions.aerial}
+            checked={basemapType === "aerial"}
             onChange={() => {
-              setBasemap(mapStyleOptions.aerial);
+              setBasemapType("aerial");
             }}
           />
         </Card.Body>
