@@ -2,11 +2,20 @@ import { Form } from "react-bootstrap";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Card } from "react-bootstrap";
 import { mapStyleOptions } from "@/configs/map";
+import { Dispatch, SetStateAction } from "react";
+
+interface MapSelectBasemapProps {
+  basemap: string;
+  setBasemap: Dispatch<SetStateAction<string | undefined>>;
+}
 
 /**
  * Custom map control that fits the map to current bounds
  */
-export default function MapSelectBasemap({ basemap, setBasemap }) {
+export default function MapSelectBasemap({
+  basemap,
+  setBasemap,
+}: MapSelectBasemapProps) {
   return (
     <div className="map-select-basemap-bottom-left">
       <Card>

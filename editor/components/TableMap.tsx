@@ -50,7 +50,7 @@ interface TableMapProps {
 export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
   // Use custom hook to get the app theme
   const isDarkMode = useGetTheme();
-  const [basemap, setBasemap] = useState();
+  const [basemap, setBasemap] = useState<string | undefined>();
 
   /** Changes the basemap to match app theme unless in aerial mode */
   useEffect(() => {
