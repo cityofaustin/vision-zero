@@ -17,7 +17,7 @@ export default function DarkModeToggle() {
     const htmlElement = document.documentElement;
     htmlElement.setAttribute("data-bs-theme", appColorMode);
     localStorage.setItem(darkModeLocalStorageKey, appColorMode);
-    // Dispatch custom event which is used in useGetTheme hook
+    // Dispatch custom event which is used in useCheckDarkMode hook
     window.dispatchEvent(
       new CustomEvent("themeChange", {
         detail: { mode: appColorMode },
