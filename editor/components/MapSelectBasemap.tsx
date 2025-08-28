@@ -1,11 +1,12 @@
 import { Form } from "react-bootstrap";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Card } from "react-bootstrap";
+import { mapStyleOptions } from "@/configs/map";
 
 /**
  * Custom map control that fits the map to current bounds
  */
-export default function MapSelectBasemap() {
+export default function MapSelectBasemap({ basemap, setBasemap }) {
   return (
     <div className="map-select-basemap-bottom-left">
       <Card>
@@ -14,18 +15,21 @@ export default function MapSelectBasemap() {
           <Form.Check
             type="radio"
             label="Streets"
-            // value="readonly"
-            // inline
-            // id="readonly"
-            // checked={field.value === "readonly"}
+            checked={
+              basemap === mapStyleOptions.darkStreets ||
+              basemap === mapStyleOptions.lightStreets
+            }
+            onChange={() => {
+              setBasemap(mapStyleOptions.lightStreets);
+            }}
           />
           <Form.Check
             type="radio"
             label="Aerial"
-            // value="editor"
-            // inline
-            // id="editor"
-            // checked={field.value === "editor"}
+            checked={basemap === mapStyleOptions.aerial}
+            onChange={() => {
+              setBasemap(mapStyleOptions.aerial);
+            }}
           />
         </Card.Body>
       </Card>
