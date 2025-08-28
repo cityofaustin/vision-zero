@@ -4,14 +4,14 @@ import { Card } from "react-bootstrap";
 import { Dispatch, SetStateAction } from "react";
 
 interface MapSelectBasemapProps {
-  /** The basemap type to be used in the map */
+  /** The mapbox basemap type to be used in the map */
   basemapType: "streets" | "aerial";
   /** Sets the state for the basemap type */
   setBasemapType: Dispatch<SetStateAction<"streets" | "aerial">>;
 }
 
 /**
- * Custom map control that fits the map to current bounds
+ * Custom map component for selecting the basemap option
  */
 export default function MapSelectBasemap({
   basemapType,
