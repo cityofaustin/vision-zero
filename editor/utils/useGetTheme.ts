@@ -1,27 +1,22 @@
 import { useEffect, useState } from "react";
 import { darkModeLocalStorageKey } from "@/components/DarkModeToggle";
 
-// hooks/useTheme.ts
+/**
+ * Custom hook that returns whether the app is in dark mode
+ */
 export const useGetTheme = () => {
   const [isDarkMode, setIsDarkMode] = useState(
     localStorage.getItem(darkModeLocalStorageKey) === "dark"
   );
-  console.log(isDarkMode, "is dark mode");
 
   useEffect(() => {
-    const checkDarkMode = () => {
+    const handleThemeChange = () => {
       setIsDarkMode(localStorage.getItem(darkModeLocalStorageKey) === "dark");
     };
 
-    const handleThemeChange = () => {
-      checkDarkMode();
-    };
-
-    // window.addEventListener("storage", handleStorageChange);
     window.addEventListener("themeChange", handleThemeChange);
 
     return () => {
-      // window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener("themeChange", handleThemeChange);
     };
   }, []);
