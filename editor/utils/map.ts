@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { bbox } from "@turf/bbox";
 import { FeatureCollection } from "geojson";
 import { LngLatBoundsLike } from "mapbox-gl";
+import { mapStyleOptions } from "@/configs/map";
 
 /**
  * Resize observer hook that can be used to trigger resize() when the
@@ -67,3 +68,18 @@ export const useCurrentBounds = (
       [bounds[2], bounds[3]],
     ];
   }, [geojson]);
+
+/**
+ * Returns the URL for the basemap type depending on app theme
+ */
+export const getBasemapURL = (
+  basemapType: "streets" | "aerial",
+  isDarkMode: boolean
+) => {
+  if (basemapType === "streets") {
+    return isDarkMode
+      ? mapStyleOptions.darkStreets
+      : mapStyleOptions.lightStreets;
+  }
+  return mapStyleOptions.aerial;
+};
