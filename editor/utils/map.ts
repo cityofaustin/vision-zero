@@ -3,6 +3,7 @@ import { bbox } from "@turf/bbox";
 import { FeatureCollection } from "geojson";
 import { LngLatBoundsLike } from "mapbox-gl";
 import { mapStyleOptions } from "@/configs/map";
+import { useTheme } from "@/contexts/ThemeProvider";
 
 /**
  * Resize observer hook that can be used to trigger resize() when the
@@ -72,14 +73,15 @@ export const useCurrentBounds = (
 /**
  * Returns the URL for the basemap type depending on app theme
  */
-export const getBasemapURL = (
-  basemapType: "streets" | "aerial",
-  isDarkMode: boolean
-) => {
-  if (basemapType === "streets") {
-    return isDarkMode
-      ? mapStyleOptions.darkStreets
-      : mapStyleOptions.lightStreets;
-  }
-  return mapStyleOptions.aerial;
+export const useBasemap = (basemapType: "streets" | "aerial") => {
+  const themeMode = useTheme();
+
+  return useMemo(() => {
+    if (basemapType === "streets") {
+      return themeMode === "dark"
+        ? mapStyleOptions.darkStreets
+        : mapStyleOptions.lightStreets;
+    }
+    return mapStyleOptions.aerial;
+  }, [basemapType, themeMode]);
 };
