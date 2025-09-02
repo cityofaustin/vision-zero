@@ -2,6 +2,8 @@ import { Form } from "react-bootstrap";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Card } from "react-bootstrap";
 import { Dispatch, SetStateAction } from "react";
+import AlignedLabel from "@/components/AlignedLabel";
+import { FaMap, FaRegMap } from "react-icons/fa6";
 
 interface MapSelectBasemapProps {
   /** The mapbox basemap type to be used in the map */
@@ -20,9 +22,15 @@ export default function MapSelectBasemap({
   return (
     <div className="map-select-basemap-bottom-left">
       <Card>
-        <Card.Header className="pb-0 ">Basemap</Card.Header>
+        <Card.Header className="pb-0 ">
+          <AlignedLabel>
+            <FaRegMap className="me-2 fs-5" />
+            <span className="fs-6 fw-bold">Basemap</span>
+          </AlignedLabel>
+        </Card.Header>
         <Card.Body className="py-1">
           <Form.Check
+            className="fs-6 my-1"
             type="radio"
             label="Streets"
             checked={basemapType === "streets"}
@@ -31,6 +39,7 @@ export default function MapSelectBasemap({
             }}
           />
           <Form.Check
+            className="fs-6 my-1"
             type="radio"
             label="Aerial"
             checked={basemapType === "aerial"}
