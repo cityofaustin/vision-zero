@@ -49,7 +49,7 @@ export default function Table<T extends Record<string, unknown>>({
             >
               <AlignedLabel>
                 {col.label}
-                {col.path === queryConfig.sortColName && (
+                {col.path === queryConfig.sortColName && col.sortable && (
                   <SortIcon className="ms-1 my-1 text-primary" />
                 )}
               </AlignedLabel>
