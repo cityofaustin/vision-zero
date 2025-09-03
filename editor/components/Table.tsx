@@ -28,18 +28,18 @@ export default function Table<T extends Record<string, unknown>>({
         <tr>
           {columns.map((col) => (
             <th
-              key={String(col.path)}
+              key={String(col.label)}
               className="text-nowrap"
               style={{ cursor: col.sortable ? "pointer" : "auto" }}
               onClick={() => {
                 if (col.sortable) {
                   const newQueryConfig = { ...queryConfig };
-                  if (col.path === queryConfig.sortColName) {
+                  if (col.label === queryConfig.sortColName) {
                     // already sorting on this column, so switch order
                     newQueryConfig.sortAsc = !newQueryConfig.sortAsc;
                   } else {
                     // change sort column and leave order as-is
-                    newQueryConfig.sortColName = String(col.path);
+                    newQueryConfig.sortColName = String(col.label);
                   }
                   // reset offset/pagination
                   newQueryConfig.offset = 0;
@@ -49,7 +49,7 @@ export default function Table<T extends Record<string, unknown>>({
             >
               <AlignedLabel>
                 {col.label}
-                {col.path === queryConfig.sortColName && col.sortable && (
+                {col.label === queryConfig.sortColName && col.sortable && (
                   <SortIcon className="ms-1 my-1 text-primary" />
                 )}
               </AlignedLabel>
@@ -62,7 +62,7 @@ export default function Table<T extends Record<string, unknown>>({
           <tr key={i}>
             {columns.map((col) => (
               // todo: is no-wrap / side-scrolling ok?
-              <td key={String(col.path)} style={col.style}>
+              <td key={String(col.label)} style={col.style}>
                 {renderColumnValue(row, col)}
               </td>
             ))}
