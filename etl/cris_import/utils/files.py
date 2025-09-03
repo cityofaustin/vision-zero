@@ -144,8 +144,21 @@ def get_extract_dir(extract_name):
     return os.path.join(LOCAL_EXTRACTS_DIR, extract_name)
 
 
-def upload_file_to_s3(file_path, object_key):
-    s3_client.upload_file(file_path, BUCKET_NAME, object_key)
+def upload_file_to_s3(file_path, object_key, content_type="binary/octet-stream"):
+    """Upload a local file to AWS S3
+
+    Args:
+        file_path (str): the full path to the extract zip
+        object_key (str): the S3 file key
+        content_type (str, optional): The ContentType header to apply to the file.
+            Defaults to "binary/octet-stream".
+
+    Returns:
+        None
+    """
+    s3_client.upload_file(
+        file_path, BUCKET_NAME, object_key, ExtraArgs={"ContentType": content_type}
+    )
 
 
 def download_cr3_pdf(cris_crash_id):
