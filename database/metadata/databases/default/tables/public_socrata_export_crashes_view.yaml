@@ -24,6 +24,8 @@ select_permissions:
         - is_temp_record
         - latitude
         - law_enf_fatality_count
+        - location_group
+        - location_id
         - longitude
         - micromobility_death_count
         - micromobility_serious_injury_count
@@ -76,6 +78,8 @@ select_permissions:
         - is_temp_record
         - latitude
         - law_enf_fatality_count
+        - location_group
+        - location_id
         - longitude
         - micromobility_death_count
         - micromobility_serious_injury_count
@@ -128,6 +132,8 @@ select_permissions:
         - is_temp_record
         - latitude
         - law_enf_fatality_count
+        - location_group
+        - location_id
         - longitude
         - micromobility_death_count
         - micromobility_serious_injury_count
