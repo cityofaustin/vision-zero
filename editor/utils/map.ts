@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { bbox } from "@turf/bbox";
 import { FeatureCollection } from "geojson";
 import { LngLatBoundsLike } from "mapbox-gl";
@@ -71,17 +71,27 @@ export const useCurrentBounds = (
   }, [geojson]);
 
 /**
- * Returns the URL for the basemap type depending on app theme
+ * Custom hook that manages basemap state and returns the appropriate basemap URL
+ * depending on the selected basemap type and app theme
  */
-export const useBasemap = (basemapType: "streets" | "aerial") => {
-  const themeMode = useTheme();
+export const useBasemap = (initialBasemapType: "streets" | "aerial") => {
+  const [basemapType, setBasemapType] = useState<"streets" | "aerial">(
+    initialBasemapType
+  );
+  const { theme } = useTheme();
 
-  return useMemo(() => {
+  const basemapURL = useMemo(() => {
     if (basemapType === "streets") {
-      return themeMode === "dark"
+      return theme === "dark"
         ? mapStyleOptions.darkStreets
         : mapStyleOptions.lightStreets;
     }
     return mapStyleOptions.aerial;
-  }, [basemapType, themeMode]);
+  }, [basemapType, theme]);
+
+  return {
+    basemapURL,
+    basemapType,
+    setBasemapType,
+  };
 };

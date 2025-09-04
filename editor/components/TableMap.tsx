@@ -47,11 +47,7 @@ interface TableMapProps {
  * Map which can be configured to render in the Table component
  */
 export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
-  const [basemapType, setBasemapType] = useState<"streets" | "aerial">(
-    "streets"
-  );
-
-  const basemapURL = useBasemap(basemapType);
+  const { basemapURL, basemapType, setBasemapType } = useBasemap("streets");
 
   const geojsonBounds = useCurrentBounds(geojson);
   /**
