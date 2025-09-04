@@ -75,4 +75,28 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     label: "Engineering Area",
     sortable: true,
   },
+  {
+    path: "latitude",
+    label: "latitude",
+    exportOnly: true,
+    fetchAlways: true,
+  },
+  {
+    path: "longitude",
+    label: "longitude",
+    exportOnly: true,
+    fetchAlways: true,
+  },
+  {
+    path: "crash_timestamp",
+    label: "crash_timestamp",
+    exportOnly: true,
+    fetchAlways: true,
+  },
+  {
+    path: "address_primary",
+    label: "address_primary",
+    exportOnly: true,
+    fetchAlways: true,
+  },
 ];

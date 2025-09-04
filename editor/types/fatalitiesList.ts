@@ -13,4 +13,8 @@ export type fatalitiesListRow = {
   victim_name: string | null;
   recommendation: Recommendation | null;
   engineering_area: EngineeringArea | null;
+  longitude: number | null;
+  latitude: number | null;
+  crash_timestamp: string | null;
+  address_primary: string | null;
 };
