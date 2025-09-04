@@ -1,6 +1,6 @@
 "use client";
 import { notFound } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import ChangeLog from "@/components/ChangeLog";
@@ -33,6 +33,7 @@ import {
 } from "@/utils/shortcuts";
 import { formatAddresses } from "@/utils/formatters";
 import EMSCardHeader from "@/components/EMSCardHeader";
+import { useDocumentTitle } from "@/utils/documentTitle";
 
 const typename = "crashes";
 
@@ -71,12 +72,13 @@ export default function CrashDetailsPage({
     await refetch();
   }, [refetch]);
 
-  // When data is loaded or updated this sets the title of the page inside the HTML head element
-  useEffect(() => {
-    if (!!data) {
-      document.title = `${data[0].record_locator} - ${formatAddresses(data[0])}`;
-    }
-  }, [data]);
+  // Set document title based on loaded crash data
+  useDocumentTitle(
+    data
+      ? `${data[0].record_locator} - ${formatAddresses(data[0])}`
+      : "Vision Zero Editor",
+    true // exclude the suffix
+  );
 
   if (!data) {
     // todo: loading spinner (would be nice to use a spinner inside cards)
