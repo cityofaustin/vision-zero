@@ -3,7 +3,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { Card } from "react-bootstrap";
 import { Dispatch, SetStateAction } from "react";
 import AlignedLabel from "@/components/AlignedLabel";
-import { FaRegMap } from "react-icons/fa6";
+import { MdOutlineLayers } from "react-icons/md";
 
 interface MapBasemapControlProps {
   /** The mapbox basemap type to be used in the map */
@@ -24,7 +24,7 @@ export default function MapBasemapControl({
       <Card>
         <Card.Header className="pb-0 ">
           <AlignedLabel>
-            <FaRegMap className="me-2 fs-5" />
+            <MdOutlineLayers className="me-2 fs-5" />
             <span className="fs-6 fw-bold">Basemap</span>
           </AlignedLabel>
         </Card.Header>
