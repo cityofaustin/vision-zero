@@ -1,16 +1,12 @@
-// hooks/useDocumentTitle.js
 "use client";
 
 import { useEffect } from "react";
 
-export function useDocumentTitle(title) {
+/**
+ * Custom hook that sets the document title for the page; e.g. "Crashes - Vision Zero Editor"
+ */
+export const useDocumentTitle = (title: string) => {
   useEffect(() => {
-    const originalTitle = document.title;
     document.title = title;
-
-    // Cleanup function to restore original title if needed
-    return () => {
-      document.title = originalTitle;
-    };
   }, [title]);
-}
+};
