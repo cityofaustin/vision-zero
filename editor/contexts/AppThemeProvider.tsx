@@ -18,6 +18,7 @@ export const AppThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   // Initialize with a function to read from localStorage only once
   const [theme, setTheme] = useState<"dark" | "light">(() => {
+    // If we are in the build process (SSR), default to light mode
     if (typeof window === "undefined") return "light";
     const stored = localStorage.getItem(darkModeLocalStorageKey);
     return stored === "dark" ? "dark" : "light";
