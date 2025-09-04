@@ -16,12 +16,24 @@ const ThemeContext = createContext<ThemeContextType | null>(null);
 export const AppThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [theme, setTheme] = useState<"dark" | "light">(
-    localStorage.getItem(darkModeLocalStorageKey) === "dark" ? "dark" : "light"
-  );
+  // Initialize with a default value, then update on client-side
+  const [theme, setTheme] = useState<"dark" | "light">("light");
+
+  // Only run on client-side
+  useEffect(() => {
+    // Get initial theme from localStorage if available
+    const storedTheme = localStorage.getItem(darkModeLocalStorageKey);
+    if (storedTheme === "dark" || storedTheme === "light") {
+      setTheme(storedTheme);
+    }
+  }, []);
 
   // Sets theme in local storage and handles DOM updates when app theme state is updated
   useEffect(() => {
+    // Make sure to only run this on client-side
+    if (typeof window === "undefined") return;
+
+    // This will only run in the browser
     const htmlElement = document.documentElement;
     htmlElement.setAttribute("data-bs-theme", theme);
     localStorage.setItem(darkModeLocalStorageKey, theme);
