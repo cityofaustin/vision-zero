@@ -2,12 +2,12 @@
 import { useEffect, useState, createContext, useContext } from "react";
 import { darkModeLocalStorageKey } from "@/components/DarkModeToggle";
 
-export const ThemeContext = createContext<string | null>(null);
+const ThemeContext = createContext<string | null>(null);
 
 /**
  * Global context provider that returns whether the app is in dark or light mode
  */
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
+export const AppThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [themeMode, setThemeMode] = useState(

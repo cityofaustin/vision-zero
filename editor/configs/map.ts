@@ -21,7 +21,7 @@ export const MAP_MAX_BOUNDS: [[number, number], [number, number]] = [
 /** Different basemap style options */
 export const mapStyleOptions = {
   darkStreets: "mapbox://styles/mapbox/dark-v11",
-  lightStreets: "mapbox://styles/mapbox/streets-v12",
+  lightStreets: "mapbox://styles/mapbox/light-v11",
   aerial: "mapbox://styles/mapbox/satellite-streets-v12",
 };
 

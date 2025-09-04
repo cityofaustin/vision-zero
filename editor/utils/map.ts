@@ -3,7 +3,7 @@ import { bbox } from "@turf/bbox";
 import { FeatureCollection } from "geojson";
 import { LngLatBoundsLike } from "mapbox-gl";
 import { mapStyleOptions } from "@/configs/map";
-import { useTheme } from "@/contexts/ThemeProvider";
+import { useTheme } from "@/contexts/AppThemeProvider";
 
 /**
  * Resize observer hook that can be used to trigger resize() when the
