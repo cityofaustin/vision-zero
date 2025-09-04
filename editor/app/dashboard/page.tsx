@@ -51,6 +51,7 @@ const dashboardLinks: DashboardLinkCardProps[] = [
 ];
 
 export default function Dashboard() {
+  useDocumentTitle("Dashboard - Vision Zero Editor");
   return (
     <>
       <Row className="mt-3">
