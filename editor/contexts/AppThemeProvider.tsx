@@ -20,7 +20,7 @@ export const AppThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.getItem(darkModeLocalStorageKey) === "dark" ? "dark" : "light"
   );
 
-  // Sets theme in local storage and handles DOM updates when themeMode state is updated
+  // Sets theme in local storage and handles DOM updates when app theme state is updated
   useEffect(() => {
     const htmlElement = document.documentElement;
     htmlElement.setAttribute("data-bs-theme", theme);
