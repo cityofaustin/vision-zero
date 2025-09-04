@@ -34,12 +34,12 @@ export default function Table<T extends Record<string, unknown>>({
               onClick={() => {
                 if (col.sortable) {
                   const newQueryConfig = { ...queryConfig };
-                  if (col.label === queryConfig.sortColName) {
+                  if (col.path === queryConfig.sortColName) {
                     // already sorting on this column, so switch order
                     newQueryConfig.sortAsc = !newQueryConfig.sortAsc;
                   } else {
                     // change sort column and leave order as-is
-                    newQueryConfig.sortColName = String(col.label);
+                    newQueryConfig.sortColName = String(col.path);
                   }
                   // reset offset/pagination
                   newQueryConfig.offset = 0;
@@ -49,7 +49,7 @@ export default function Table<T extends Record<string, unknown>>({
             >
               <AlignedLabel>
                 {col.label}
-                {col.label === queryConfig.sortColName && col.sortable && (
+                {col.path === queryConfig.sortColName && col.sortable && (
                   <SortIcon className="ms-1 my-1 text-primary" />
                 )}
               </AlignedLabel>
