@@ -10,14 +10,18 @@ const ThemeContext = createContext<string | null>(null);
 export const AppThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [themeMode, setThemeMode] = useState(
-    localStorage.getItem(darkModeLocalStorageKey)
+  const [themeMode, setThemeMode] = useState<"dark" | "light">(
+    localStorage.getItem(darkModeLocalStorageKey) === "dark" ? "dark" : "light"
   );
 
   // Handles theme changes from anywhere in the app using event listener
   useEffect(() => {
     const handleThemeChange = () => {
-      setThemeMode(localStorage.getItem(darkModeLocalStorageKey));
+      setThemeMode(
+        localStorage.getItem(darkModeLocalStorageKey) === "dark"
+          ? "dark"
+          : "light"
+      );
     };
 
     // Listens for the custom event added in DarkModeToggle.tsx
