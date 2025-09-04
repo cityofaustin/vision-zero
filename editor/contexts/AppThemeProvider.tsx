@@ -1,44 +1,53 @@
 "use client";
-import { useEffect, useState, createContext, useContext } from "react";
+import { useEffect, useState, createContext, useContext, useMemo } from "react";
 import { darkModeLocalStorageKey } from "@/components/DarkModeToggle";
 
-const ThemeContext = createContext<string | null>(null);
+interface ThemeContextType {
+  theme: "dark" | "light";
+  setTheme: (mode: "dark" | "light") => void;
+}
+
+const ThemeContext = createContext<ThemeContextType | null>(null);
 
 /**
  * Global context provider that returns whether the app is in dark or light mode
+ * and also returns an app theme state setter
  */
 export const AppThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [themeMode, setThemeMode] = useState<"dark" | "light">(
+  const [theme, setTheme] = useState<"dark" | "light">(
     localStorage.getItem(darkModeLocalStorageKey) === "dark" ? "dark" : "light"
   );
 
-  // Handles theme changes from anywhere in the app using event listener
+  // Sets theme in local storage and handles DOM updates when themeMode state is updated
   useEffect(() => {
-    const handleThemeChange = () => {
-      setThemeMode(
-        localStorage.getItem(darkModeLocalStorageKey) === "dark"
-          ? "dark"
-          : "light"
-      );
-    };
+    const htmlElement = document.documentElement;
+    htmlElement.setAttribute("data-bs-theme", theme);
+    localStorage.setItem(darkModeLocalStorageKey, theme);
+  }, [theme]);
 
-    // Listens for the custom event added in DarkModeToggle.tsx
-    window.addEventListener("themeChange", handleThemeChange);
-
-    return () => {
-      window.removeEventListener("themeChange", handleThemeChange);
-    };
-  }, []);
+  // Use useMemo to prevent unnecessary re-renders on components that are reading these values unless theme has changed
+  const contextValues = useMemo(
+    () => ({
+      theme,
+      setTheme,
+    }),
+    [theme, setTheme]
+  );
 
   return (
-    <ThemeContext.Provider value={themeMode}>{children}</ThemeContext.Provider>
+    <ThemeContext.Provider value={contextValues}>
+      {children}
+    </ThemeContext.Provider>
   );
 };
 
-/** Use global context to get the app theme */
+/** Use global context to get the app theme and app theme state setter */
 export const useTheme = () => {
   const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error("useTheme must be used within an AppThemeProvider");
+  }
   return context;
 };
