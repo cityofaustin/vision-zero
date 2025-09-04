@@ -7,7 +7,7 @@ import { useDocumentTitle } from "@/utils/documentTitle";
 const localStorageKey = "fatalitiesListViewQueryConfig";
 
 export default function Fatalities() {
-  useDocumentTitle("Fatalities - Vision Zero Editor");
+  useDocumentTitle("Fatalities");
   return (
     <div className="h-100 d-flex flex-column">
       <div>

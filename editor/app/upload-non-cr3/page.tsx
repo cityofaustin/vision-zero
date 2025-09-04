@@ -29,7 +29,7 @@ import { useDocumentTitle } from "@/utils/documentTitle";
 const MAX_ERRORS_TO_DISPLAY = 50;
 
 export default function UploadNonCr3() {
-  useDocumentTitle("Upload Non-CR3 records - Vision Zero Editor");
+  useDocumentTitle("Upload Non-CR3 records");
   const [parsing, setParsing] = useState(false);
   const [data, setData] = useState<NonCr3Upload[] | null>(null);
   const [validationErrors, setValidationErrors] = useState<

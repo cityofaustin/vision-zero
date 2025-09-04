@@ -10,7 +10,7 @@ import { useDocumentTitle } from "@/utils/documentTitle";
 const localStorageKey = "emsListQueryConfig";
 
 export default function EMS() {
-  useDocumentTitle("EMS - Vision Zero Editor");
+  useDocumentTitle("EMS");
   return (
     <div className="h-100 d-flex flex-column">
       <div className="d-flex">

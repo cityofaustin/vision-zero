@@ -6,7 +6,8 @@ import { useEffect } from "react";
  * Custom hook that sets the document title for the page; e.g. "Crashes - Vision Zero Editor"
  */
 export const useDocumentTitle = (title: string) => {
+  const suffix = " - Vision Zero Editor";
   useEffect(() => {
-    document.title = title;
+    document.title = title + suffix;
   }, [title]);
 };

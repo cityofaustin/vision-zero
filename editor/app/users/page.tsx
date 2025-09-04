@@ -17,7 +17,7 @@ import { useDocumentTitle } from "@/utils/documentTitle";
 const allowedCreateUserRoles = ["vz-admin"];
 
 export default function Users() {
-  useDocumentTitle("Users - Vision Zero Editor");
+  useDocumentTitle("Users");
   const router = useRouter();
   const { users, isLoading, isValidating, error, mutate } = useUsersInfinite();
   const [showNewUserModal, setShowNewUserModal] = useState(false);

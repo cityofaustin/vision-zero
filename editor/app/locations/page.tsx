@@ -7,7 +7,7 @@ import { useDocumentTitle } from "@/utils/documentTitle";
 const localStorageKey = "locationsListViewQueryConfig";
 
 export default function Locations() {
-  useDocumentTitle("Locations - Vision Zero Editor");
+  useDocumentTitle("Locations");
   return (
     <div className="h-100 d-flex flex-column">
       <div>

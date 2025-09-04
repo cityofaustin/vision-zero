@@ -15,7 +15,7 @@ const localStorageKey = "crashesListViewQueryConfig";
 const allowedCreateCrashRecordRoles = ["vz-admin", "editor"];
 
 export default function Crashes() {
-  useDocumentTitle("Crashes - Vision Zero Editor");
+  useDocumentTitle("Crashes");
 
   const [refetch, setRefetch] = useState(false);
   const [showNewUserModal, setShowNewUserModal] = useState(false);
