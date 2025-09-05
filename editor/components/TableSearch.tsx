@@ -28,7 +28,7 @@ export default function TableSearch({
   setSearchSettings,
 }: TableSearchProps) {
   return (
-    <form onSubmit={(e) => e.preventDefault()}>
+    <form onSubmit={(e) => e.preventDefault()} className="flex-grow-1">
       <InputGroup className="d-flex flex-nowrap align-self-start">
         <InputGroup.Text id="search-icon">
           <FaMagnifyingGlass />
