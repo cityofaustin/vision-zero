@@ -305,14 +305,24 @@ export const crashesListViewQueryConfig: QueryConfig = {
           ["zoom"],
           // zoom is 5 (or less)
           5,
-          6,
+          2,
           // zoom is 20 (or greater)
           20,
-          8,
+          10,
         ],
-        "circle-color": "#007cbf",
-        "circle-stroke-width": 0.5,
-        "circle-stroke-color": "#ffffff",
+        "circle-color": "#1276d1",
+        "circle-stroke-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          // zoom is 5 (or less)
+          5,
+          1,
+          // zoom is 20 (or greater)
+          20,
+          3,
+        ],
+        "circle-stroke-color": "#fff",
       },
     },
     geojsonTransformerName: "latLon",

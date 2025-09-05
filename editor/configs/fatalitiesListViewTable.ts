@@ -295,19 +295,18 @@ export const fatalitiesListViewQueryConfig: QueryConfig = {
       id: "points-layer",
       type: "circle",
       paint: {
-        "circle-radius": [
+        "circle-color": "#1276d1",
+        "circle-stroke-width": [
           "interpolate",
           ["linear"],
           ["zoom"],
           // zoom is 5 (or less)
           5,
-          6,
+          1,
           // zoom is 20 (or greater)
           20,
-          8,
+          3,
         ],
-        "circle-color": "#007cbf",
-        "circle-stroke-width": 0.5,
         "circle-stroke-color": "#ffffff",
       },
     },

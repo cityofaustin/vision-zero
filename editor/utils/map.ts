@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { bbox } from "@turf/bbox";
 import { FeatureCollection } from "geojson";
 import { LngLatBoundsLike } from "mapbox-gl";
+import { mapStyleOptions } from "@/configs/map";
+import { useTheme } from "@/contexts/AppThemeProvider";
 
 /**
  * Resize observer hook that can be used to trigger resize() when the
@@ -67,3 +69,29 @@ export const useCurrentBounds = (
       [bounds[2], bounds[3]],
     ];
   }, [geojson]);
+
+/**
+ * Custom hook that manages basemap state and returns the appropriate basemap URL
+ * depending on the selected basemap type and app theme
+ */
+export const useBasemap = (initialBasemapType: "streets" | "aerial") => {
+  const [basemapType, setBasemapType] = useState<"streets" | "aerial">(
+    initialBasemapType
+  );
+  const { theme } = useTheme();
+
+  const basemapURL = useMemo(() => {
+    if (basemapType === "streets") {
+      return theme === "dark"
+        ? mapStyleOptions.darkStreets
+        : mapStyleOptions.lightStreets;
+    }
+    return mapStyleOptions.aerial;
+  }, [basemapType, theme]);
+
+  return {
+    basemapURL,
+    basemapType,
+    setBasemapType,
+  };
+};

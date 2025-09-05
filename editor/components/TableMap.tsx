@@ -15,6 +15,8 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { GeoJSONFeature } from "mapbox-gl";
 import PopupWrapper from "@/components/PopupWrapper";
 import TableMapPopupContent from "@/components/TableMapPopupContent";
+import MapBasemapControl from "@/components/MapBasemapControl";
+import { useBasemap } from "@/utils/map";
 
 export interface LatLon {
   latitude: number;
@@ -45,6 +47,8 @@ interface TableMapProps {
  * Map which can be configured to render in the Table component
  */
 export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
+  const { basemapURL, basemapType, setBasemapType } = useBasemap("streets");
+
   const geojsonBounds = useCurrentBounds(geojson);
   /**
    * Initialize map based on initial geojson bounds. Bounds may be
@@ -92,6 +96,7 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       ref={mapRef}
       initialViewState={initialViewState}
       {...DEFAULT_MAP_PARAMS}
+      mapStyle={basemapURL}
       cooperativeGestures={true}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -115,6 +120,10 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
         <Layer type="circle" {...mapConfig?.layerProps} />
       </Source>
       <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
+      <MapBasemapControl
+        basemapType={basemapType}
+        setBasemapType={setBasemapType}
+      />
       {selectedFeature && (
         <PopupWrapper
           longitude={selectedFeature?.properties?.longitude}
