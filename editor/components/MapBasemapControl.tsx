@@ -2,6 +2,8 @@ import { Form } from "react-bootstrap";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Card } from "react-bootstrap";
 import { Dispatch, SetStateAction } from "react";
+import AlignedLabel from "@/components/AlignedLabel";
+import { MdOutlineLayers } from "react-icons/md";
 
 interface MapBasemapControlProps {
   /** The mapbox basemap type to be used in the map */
@@ -20,9 +22,15 @@ export default function MapBasemapControl({
   return (
     <div className="map-select-basemap-bottom-left">
       <Card>
-        <Card.Header className="pb-0 ">Basemap</Card.Header>
+        <Card.Header className="pb-0 ">
+          <AlignedLabel>
+            <MdOutlineLayers className="me-2 fs-5" />
+            <span className="fs-6 fw-bold">Basemap</span>
+          </AlignedLabel>
+        </Card.Header>
         <Card.Body className="py-1">
           <Form.Check
+            className="fs-6 my-1"
             id="streets"
             type="radio"
             label="Streets"
@@ -32,6 +40,7 @@ export default function MapBasemapControl({
             }}
           />
           <Form.Check
+            className="fs-6 my-1"
             id="aerial"
             type="radio"
             label="Aerial"

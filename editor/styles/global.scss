@@ -60,7 +60,6 @@ $sidebarWidth: 4.6rem;
   background-color: $white !important;
 }
 
-
 [data-bs-theme="light"] .app-sidebar {
   background-color: $light !important;
 }
@@ -310,10 +309,11 @@ to make sure it renders on top is a common fix */
   height: 29px;
   display: flex !important;
   justify-content: center;
+  box-shadow: 0 0 0 2px #0000001a;
 }
 
 .map-custom-ctrl-btn:hover {
-  background-color: rgba(255, 255, 255, 0.95) !important;
+  background-color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .map-select-basemap-bottom-left {
@@ -321,6 +321,10 @@ to make sure it renders on top is a common fix */
   bottom: 10px;
   left: 10px;
   margin-bottom: 2.5rem;
+}
+
+.map-select-basemap-bottom-left > .card {
+  box-shadow: 0 0 0 2px #0000001a;
 }
 
 .table-map-container {
