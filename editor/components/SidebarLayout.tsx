@@ -12,8 +12,6 @@ import AppBreadCrumb from "@/components/AppBreadCrumb";
 import AppFooter from "@/components/AppFooter";
 import { darkModeLocalStorageKey } from "@/components/DarkModeToggle";
 
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
 /**
  * The app sidebar component
  */
@@ -86,7 +84,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
           onLogin={() =>
             loginWithRedirect({
               appState: {
-                returnTo: BASE_PATH + pathName,
+                returnTo: pathName,
               },
             })
           }

@@ -140,7 +140,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     try {
       queryConfigFromStorage = JSON.parse(configFromStorageString);
     } catch {
-      console.error(
+      console.warn(
         "Unable to parse queryConfig from local storage. Using default config instead"
       );
       setIsQueryConfigLocalStorageLoaded(true);
@@ -255,82 +255,80 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   return (
     <>
       {/* Table filter controls */}
-      <form onSubmit={(e) => e.preventDefault()}>
-        <Row className="mt-3 mb-2">
-          <Col>
-            <Row>
-              <Col xs={12} md="auto" className="d-flex align-items-center">
-                <TableSearchFieldSelector
-                  queryConfig={queryConfig}
-                  setQueryConfig={setQueryConfig}
-                  searchSettings={searchSettings}
-                  setSearchSettings={setSearchSettings}
-                />
-              </Col>
-              <Col xs={12} md="auto" className="align-items-center">
-                <TableDateSelector
-                  queryConfig={queryConfig}
-                  setQueryConfig={setQueryConfig}
-                />
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-        <Row className="mb-3">
-          <Col xs={12} md={4} className="d-flex justify-content-start mt-2">
-            {queryConfig.filterCards?.length > 0 && (
-              <TableAdvancedSearchFilterToggle
-                activeFilterCount={activeFilterCount}
+      <Row className="mt-3 mb-2">
+        <Col>
+          <Row>
+            <Col xs={12} md="auto" className="d-flex align-items-center">
+              <TableSearchFieldSelector
                 queryConfig={queryConfig}
                 setQueryConfig={setQueryConfig}
+                searchSettings={searchSettings}
+                setSearchSettings={setSearchSettings}
               />
-            )}
-            <TableSearch
-              queryConfig={queryConfig}
-              setQueryConfig={setQueryConfig}
-              searchSettings={searchSettings}
-              setSearchSettings={setSearchSettings}
-            />
-          </Col>
-          {queryConfig.mapConfig && (
-            <Col className="px-0 mt-2 me-2" xs="auto">
-              <TableMapToggle
+            </Col>
+            <Col xs={12} md="auto" className="align-items-center">
+              <TableDateSelector
                 queryConfig={queryConfig}
                 setQueryConfig={setQueryConfig}
               />
             </Col>
-          )}
-          {areFiltersDirty && (
-            <Col className="px-0 mt-2" xs="auto">
-              <TableResetFiltersToggle
-                isMapActive={queryConfig?.mapConfig?.isActive || false}
-                initialQueryConfig={initialQueryConfig}
-                setQueryConfig={setQueryConfig}
-              />
-            </Col>
-          )}
-          <Col className="d-flex justify-content-end mt-2">
-            <TablePaginationControls
-              columnVisibilitySettings={columnVisibilitySettings}
-              setColumnVisibilitySettings={setColumnVisibilitySettings}
+          </Row>
+        </Col>
+      </Row>
+      <Row className="mb-3">
+        <Col xs={12} md={4} className="d-flex justify-content-start mt-2">
+          {queryConfig.filterCards?.length > 0 && (
+            <TableAdvancedSearchFilterToggle
+              activeFilterCount={activeFilterCount}
               queryConfig={queryConfig}
               setQueryConfig={setQueryConfig}
-              recordCount={rows.length}
-              isLoading={isLoading}
-              totalRecordCount={aggregateData?.aggregate?.count || 0}
-              onClickDownload={() => setShowExportModal(true)}
-              exportable={Boolean(queryConfig.exportable)}
-              localStorageKey={localStorageKey}
-              isColVisibilityLocalStorageLoaded={
-                isColVisibilityLocalStorageLoaded
-              }
-              setIsColVisibilityLocalStorageLoaded={
-                setIsColVisibilityLocalStorageLoaded
-              }
+            />
+          )}
+          <TableSearch
+            queryConfig={queryConfig}
+            setQueryConfig={setQueryConfig}
+            searchSettings={searchSettings}
+            setSearchSettings={setSearchSettings}
+          />
+        </Col>
+        {queryConfig.mapConfig && (
+          <Col className="px-0 mt-2 me-2" xs="auto">
+            <TableMapToggle
+              queryConfig={queryConfig}
+              setQueryConfig={setQueryConfig}
             />
           </Col>
-        </Row>
-      </form>
+        )}
+        {areFiltersDirty && (
+          <Col className="px-0 mt-2" xs="auto">
+            <TableResetFiltersToggle
+              isMapActive={queryConfig?.mapConfig?.isActive || false}
+              initialQueryConfig={initialQueryConfig}
+              setQueryConfig={setQueryConfig}
+            />
+          </Col>
+        )}
+        <Col className="d-flex justify-content-end mt-2">
+          <TablePaginationControls
+            columnVisibilitySettings={columnVisibilitySettings}
+            setColumnVisibilitySettings={setColumnVisibilitySettings}
+            queryConfig={queryConfig}
+            setQueryConfig={setQueryConfig}
+            recordCount={rows.length}
+            isLoading={isLoading}
+            totalRecordCount={aggregateData?.aggregate?.count || 0}
+            onClickDownload={() => setShowExportModal(true)}
+            exportable={Boolean(queryConfig.exportable)}
+            localStorageKey={localStorageKey}
+            isColVisibilityLocalStorageLoaded={
+              isColVisibilityLocalStorageLoaded
+            }
+            setIsColVisibilityLocalStorageLoaded={
+              setIsColVisibilityLocalStorageLoaded
+            }
+          />
+        </Col>
+      </Row>
       {/* The actual table itself */}
       {(!queryConfig.mapConfig || !queryConfig.mapConfig.isActive) && (
         <Row>

@@ -19,6 +19,8 @@ query SocrataExportCrashes($limit: Int!, $minId: Int!) {
     is_deleted
     is_temp_record
     latitude
+    location_group
+    location_id
     longitude
     point
     law_enf_fatality_count

@@ -28,7 +28,7 @@ export default function Table<T extends Record<string, unknown>>({
         <tr>
           {columns.map((col) => (
             <th
-              key={String(col.path)}
+              key={String(col.label)}
               className="text-nowrap"
               style={{ cursor: col.sortable ? "pointer" : "auto" }}
               onClick={() => {
@@ -49,7 +49,7 @@ export default function Table<T extends Record<string, unknown>>({
             >
               <AlignedLabel>
                 {col.label}
-                {col.path === queryConfig.sortColName && (
+                {col.path === queryConfig.sortColName && col.sortable && (
                   <SortIcon className="ms-1 my-1 text-primary" />
                 )}
               </AlignedLabel>
@@ -62,7 +62,7 @@ export default function Table<T extends Record<string, unknown>>({
           <tr key={i}>
             {columns.map((col) => (
               // todo: is no-wrap / side-scrolling ok?
-              <td key={String(col.path)} style={col.style}>
+              <td key={String(col.label)} style={col.style}>
                 {renderColumnValue(row, col)}
               </td>
             ))}

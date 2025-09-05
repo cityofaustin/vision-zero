@@ -46,8 +46,11 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
           </Navbar.Brand>
           <EnvironmentBadge />
         </Col>
-        <Col className="d-none d-md-flex justify-content-end align-items-center">
-          <NavBarSearch />
+        <Col className="d-flex justify-content-end align-items-center">
+          {/* Hide navbar  search on xs and sm */}
+          <div className="d-none d-md-flex">
+            <NavBarSearch />
+          </div>
           <Dropdown align="end">
             <Dropdown.Toggle id="avatar-toggle" as={DropdownAnchorToggle}>
               <Image

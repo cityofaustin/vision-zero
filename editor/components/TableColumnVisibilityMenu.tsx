@@ -74,7 +74,7 @@ export const useVisibleColumns = <T extends Record<string, unknown>>(
     () =>
       columns.filter((col) => {
         const colFromVisibilitySettings = columnVisibilitySettings.find(
-          (visibleColumn) => visibleColumn.path === col.path
+          (visibleColumn) => visibleColumn.label === col.label
         );
         /**
          * if a matching column is found in the visibility settings, use it
@@ -111,9 +111,9 @@ export default function TableColumnVisibilityMenu({
   disabled,
 }: TableColumnVisibilityMenuProps) {
   const handleUpdateColVisibility = useCallback(
-    (columns: ColumnVisibilitySetting[], path: string) => {
+    (columns: ColumnVisibilitySetting[], label: string) => {
       const updatedColVisibilitySettings = columns.map((col) => {
-        if (col.path !== path) {
+        if (col.label !== label) {
           return col;
         }
         return { ...col, isVisible: !col.isVisible };
@@ -157,7 +157,7 @@ export default function TableColumnVisibilityMenu({
         columnVisibilityFromStorageString
       );
     } catch {
-      console.error(
+      console.warn(
         "Unable to parse column visibility from local storage. Using default visibility instead"
       );
       setIsColVisibilityLocalStorageLoaded(true);
@@ -173,7 +173,7 @@ export default function TableColumnVisibilityMenu({
       const updatedColVisibilitySettings = columnVisibilitySettings.map(
         (col) => {
           const savedCol = columnVisibilityFromStorage.find(
-            (savedCol) => savedCol.path === col.path
+            (savedCol) => savedCol.label === col.label
           );
           if (savedCol) {
             // use visibility from saved column
@@ -234,9 +234,9 @@ export default function TableColumnVisibilityMenu({
           return (
             <Dropdown.Item
               className="d-flex align-items-center"
-              key={col.path}
+              key={col.label}
               onClick={(e) => {
-                handleUpdateColVisibility(columnVisibilitySettings, col.path);
+                handleUpdateColVisibility(columnVisibilitySettings, col.label);
                 e.preventDefault();
                 e.stopPropagation();
               }}
