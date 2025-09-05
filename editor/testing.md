@@ -39,6 +39,7 @@ The below features should be tested with each role. Features with role-based acc
 - Crashes map: use the fit bounds control (top right corner of map, above +/- buttons) to recenter the map
 - Crashes map: Use the basemap control to change to the **Aerial** imagery basemap. Zoom in to make sure tiles load propery.
 - Crashes map: Switch back to **Streets** basemap. Not switch to dark mode and (1) confirm that the basemap changes to the dark streets basemap and (2) click on a point to confirm that it's pop-up card is styled with a dark background
+- Crashes map: refresh your page to make sure the dark mode map setting persists
 - Crashes map: click on a crash point once more and use the hyperlinked crash ID to navigate to the crash details page
 - Use download button to export records to csv
 - Download modal: Info banner appears with message about # of records to be downloaded
@@ -190,6 +191,12 @@ refresh materialized view location_crashes_view;
 7. Navigate back to the EMS incident details page, and use the falafel menu to "Reset" the record's status.
 8. Notice that the EMS record now has a status of **Unmatched**
 9. Finally, go back to the crash details and once again restore the crash to it's original **Longitude**: `-97.676720393005`. Notice that the EMS record is again listed in the table with a status of **Matched automatically**
+
+### Fatalities list - `/fatalities`
+
+- Search, sort, and filter the falitities list
+- Test the column visibility picker to show/hide columns
+- Toggle the map view and click on a point to open it's pop-up card. Click on the hyperlinked crash ID to navigate the crash details page
 
 ### Top nav
 
