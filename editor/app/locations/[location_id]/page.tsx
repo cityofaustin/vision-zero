@@ -71,7 +71,7 @@ export default function LocationDetailsPage({
 
   // Set document title based on loaded location data
   useDocumentTitle(
-    data
+    data && data.length > 0
       ? `${data[0].location_id} - ${data[0].description}`
       : "Vision Zero Editor",
     true // exclude the suffix
