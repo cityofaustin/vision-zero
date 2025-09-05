@@ -157,7 +157,7 @@ export default function TableColumnVisibilityMenu({
         columnVisibilityFromStorageString
       );
     } catch {
-      console.error(
+      console.warn(
         "Unable to parse column visibility from local storage. Using default visibility instead"
       );
       setIsColVisibilityLocalStorageLoaded(true);

@@ -140,7 +140,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     try {
       queryConfigFromStorage = JSON.parse(configFromStorageString);
     } catch {
-      console.error(
+      console.warn(
         "Unable to parse queryConfig from local storage. Using default config instead"
       );
       setIsQueryConfigLocalStorageLoaded(true);
