@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatDate, formatDollars } from "@/utils/formatters";
+import { formatDate, formatDollars, formatTime } from "@/utils/formatters";
 import { ColDataCardDef } from "@/types/types";
 import { CrashesListRow } from "@/types/crashesList";
 
@@ -28,6 +28,14 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     fetchAlways: true,
   },
   {
+    path: "crash_timestamp",
+    label: "Time",
+    sortable: false,
+    defaultHidden: true,
+    valueFormatter: formatTime,
+    style: { minWidth: "6rem" },
+  },
+  {
     path: "crash_day_of_week",
     label: "Day of week",
     defaultHidden: true,
@@ -36,11 +44,6 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
   {
     path: "crash_date_ct",
     label: "crash_date_ct",
-    exportOnly: true,
-  },
-  {
-    path: "crash_time_ct",
-    label: "crash_time_ct",
     exportOnly: true,
   },
   {

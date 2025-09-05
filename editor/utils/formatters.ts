@@ -42,6 +42,16 @@ export const formatDate = (value: unknown): string => {
 };
 
 /**
+ * Format time as: 12:30 PM
+ */
+export const formatTime = (value: unknown): string => {
+  if (!value || typeof value !== "string") {
+    return "";
+  }
+  return format(parseISO(value), "h:mm a") || "";
+};
+
+/**
  * Format date as: 2025-01-13 4.33.36 PM
  */
 export const formatFileTimestamp = (date: Date): string => {

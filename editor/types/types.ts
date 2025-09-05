@@ -40,7 +40,8 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
   exportOnly?: boolean;
   /**
    * Always include this column in graphql queries, regardless of if it is
-   * hidden or exportOnly
+   * hidden or exportOnly. Enables us to include data that our code depends on
+   * but is not necessarily rendered, e.g. lat/lon
    */
   fetchAlways?: boolean;
   /**

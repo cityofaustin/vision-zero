@@ -24,10 +24,12 @@ import {
   FaCircleInfo,
   FaTriangleExclamation,
 } from "react-icons/fa6";
+import { useDocumentTitle } from "@/utils/documentTitle";
 
 const MAX_ERRORS_TO_DISPLAY = 50;
 
 export default function UploadNonCr3() {
+  useDocumentTitle("Upload Non-CR3 records");
   const [parsing, setParsing] = useState(false);
   const [data, setData] = useState<NonCr3Upload[] | null>(null);
   const [validationErrors, setValidationErrors] = useState<

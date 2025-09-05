@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useCallback, useEffect } from "react";
+import { useMemo, useCallback } from "react";
 import { notFound } from "next/navigation";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -22,6 +22,7 @@ import {
   INSERT_LOCATION_NOTE,
   UPDATE_LOCATION_NOTE,
 } from "@/queries/locationNotes";
+import { useDocumentTitle } from "@/utils/documentTitle";
 
 const typename = "atd_txdot_locations";
 
@@ -68,12 +69,13 @@ export default function LocationDetailsPage({
     await refetch();
   }, [refetch]);
 
-  // When data is loaded or updated this sets the title of the page inside the HTML head element
-  useEffect(() => {
-    if (!!data) {
-      document.title = `${data[0].location_id} - ${data[0].description}`;
-    }
-  }, [data]);
+  // Set document title based on loaded location data
+  useDocumentTitle(
+    data
+      ? `${data[0].location_id} - ${data[0].description}`
+      : "Vision Zero Editor",
+    true // exclude the suffix
+  );
 
   if (!data) {
     // todo: loading spinner (would be nice to use a spinner inside cards)
