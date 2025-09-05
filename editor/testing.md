@@ -8,6 +8,7 @@ The below features should be tested with each role. Features with role-based acc
 
 ### Crashes list - `/crashes`
 
+- Verify page `<title>` element is `Crashes - Vision Zero Editor` (check how the title is rendered in your browser tab)
 - [role: editor, admin] **Create Crash Record** button is visibile in top-right corner of card
 - loading spinner appears to left of pagination controls while page loads
 - loading spinner appears to left of pagination controls when search is updated
@@ -22,20 +23,28 @@ The below features should be tested with each role. Features with role-based acc
 - filter menu toggle shows a badge with how many fitler switches are enabled
 - refresh page and varify that search filters are persisted
 - use Reset button to reset filters. Refresh page to verify reset is persisted.
+- Record count is visible to left of pagination buttons
 - paginate through search results
+- use dropdown menu (to right of pagination controls) to change page size
 - sort by various columns
-- Use column visibility settings menu (gear icon to right of pagination controls) to adjust column visibility
-- Verify column visibility settings persist when page is refreshed
 - sort indicator icon updates as sort column changes
 - Reset filters button appears when sort column is changed
-- Column sort setting is persisted when refresh page
+- Use column visibility settings menu (gear icon to right of pagination controls) to adjust column visibility
+- Verify column visibility settings persist when page is refreshed
+- Column sort setting is persisted when refreshing the page
 - Loading spinner appearas when column sort triggers data refetch
+- Crashes map: Use the **Map** toggle to the right of the search input to switch between the list and map views
+- Crashes map: Adjust the page size to show many features on map
+- Crashes map: zoom in. click on a crash point to display it's pop-up card.
+- Crashes map: use the fit bounds control (top right corner of map, above +/- buttons) to recenter the map
+- Crashes map: Use the basemap control to change to the **Aerial** imagery basemap. Zoom in to make sure tiles load propery.
+- Crashes map: Switch back to **Streets** basemap. Not switch to dark mode and (1) confirm that the basemap changes to the dark streets basemap and (2) click on a point to confirm that it's pop-up card is styled with a dark background
+- Crashes map: click on a crash point once more and use the hyperlinked crash ID to navigate to the crash details page
 - Use download button to export records to csv
 - Download modal: Info banner appears with message about # of records to be downloaded
 - Download modal: Download button is disabled and displays a spinner while data is being fetched
 - Download modal: use Download button to save exported data
 - Open downloaded data in CSV editor and verify it has no rendering or formatting issues
-- Record count is visible to left of Download button
 
 ### Create temporary crash record
 
@@ -53,6 +62,7 @@ The below features should be tested with each role. Features with role-based acc
 - Breadcrumb shows below navbar with Crash ID
 - Verify page `<title>` element is formatted as `<record-locator> - <crash-address>` (check how the title is rendered in your browser tab)
 - Crash address header looks correct
+- [role: editor, admin] Click crash address to edit form inputs. Use **Swap addresses** button to swap primary and secondary address inputs. Confirm changes save correctly.
 - Crash injury widget reflects injuries from **People** card (test by editing person injuries)
 - Temporary record banner is visible for (temp crashes only)
 - [role: editor, admin] Delete tempoary crash record button inside temp record banner (temp crashes only)
@@ -87,9 +97,9 @@ The below features should be tested with each role. Features with role-based acc
 - Crash data card: edit a text input
 - Crash data card: edit a number input
 - Crash data card: edit a yes/no field
+- Crash data card: Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted
 - Crash data card - **Other**: cannot save a speed limit that is not a positive integer
 - Crash data card: nullify a value (e.g. street name) by clearing its input and saving it
-- [role: editor, admin] Crash data card - **Swap addresses** button is visibile in **Primary address** card header can be used to swap primary and secondary addresses
 - Related records - **Units**
   - Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted
   - Verify unit **Contributing factors** are listed and prefixed with either **Primary** or **Possible**
@@ -128,6 +138,7 @@ The below features should be tested with each role. Features with role-based acc
 
 ### Locations list - `/locations`
 
+- Verify page `<title>` element is `Locations - Vision Zero Editor` (check how the title is rendered in your browser tab)
 - filter using search input and selecting a field to search on
 - reset filters
 - filters are preserved (in local storage) when refreshing the page or navigating back to it
@@ -157,6 +168,7 @@ refresh materialized view location_crashes_view;
 ### EMS incident details - `/ems/[incident-number]`
 
 - Page breadcrumb and title—which is the EMS record address—look normal
+- The incident map (top right of page) shows the incident location
 - Navigating to a bogus incident number such as `/ems/1abc` results in 404
 - The **EMS Patients** card displays EMS patients with the same incident number.
 - The **Select person** button is displayed for each EMS patient row
