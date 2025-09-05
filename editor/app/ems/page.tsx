@@ -5,10 +5,12 @@ import { emsListViewColumns } from "@/configs/emsColumns";
 import TableWrapper from "@/components/TableWrapper";
 import { emsListViewQueryConfig } from "@/configs/emsListViewTable";
 import { FaCircleInfo } from "react-icons/fa6";
+import { useDocumentTitle } from "@/utils/documentTitle";
 
 const localStorageKey = "emsListQueryConfig";
 
 export default function EMS() {
+  useDocumentTitle("EMS");
   return (
     <div className="h-100 d-flex flex-column">
       <div className="d-flex">

@@ -12,10 +12,12 @@ import UserModal from "@/components/UserModal";
 import { useUsersInfinite } from "@/utils/users";
 import { User } from "@/types/users";
 import { formatRoleName } from "@/utils/auth";
+import { useDocumentTitle } from "@/utils/documentTitle";
 
 const allowedCreateUserRoles = ["vz-admin"];
 
 export default function Users() {
+  useDocumentTitle("Users");
   const router = useRouter();
   const { users, isLoading, isValidating, error, mutate } = useUsersInfinite();
   const [showNewUserModal, setShowNewUserModal] = useState(false);

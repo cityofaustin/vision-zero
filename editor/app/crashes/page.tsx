@@ -8,11 +8,15 @@ import { crashesListViewColumns } from "@/configs/crashesListViewColumns";
 import { crashesListViewQueryConfig } from "@/configs/crashesListViewTable";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import TableWrapper from "@/components/TableWrapper";
+import { useDocumentTitle } from "@/utils/documentTitle";
+
 const localStorageKey = "crashesListViewQueryConfig";
 
 const allowedCreateCrashRecordRoles = ["vz-admin", "editor"];
 
 export default function Crashes() {
+  useDocumentTitle("Crashes");
+
   const [refetch, setRefetch] = useState(false);
   const [showNewUserModal, setShowNewUserModal] = useState(false);
   const onCloseModal = () => setShowNewUserModal(false);

@@ -5,6 +5,7 @@ import { FaMap, FaChartPie } from "react-icons/fa6";
 import DashboardLinkCard, {
   DashboardLinkCardProps,
 } from "@/components/DashboardLinkCard";
+import { useDocumentTitle } from "@/utils/documentTitle";
 
 const VZV_ENDPOINT = process.env.NEXT_PUBLIC_VZV_ENDPOINT || "";
 
@@ -50,6 +51,7 @@ const dashboardLinks: DashboardLinkCardProps[] = [
 ];
 
 export default function Dashboard() {
+  useDocumentTitle("Dashboard");
   return (
     <>
       <Row className="mt-3">
