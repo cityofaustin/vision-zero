@@ -31,7 +31,6 @@ export const DEFAULT_MAP_PARAMS = {
   boxZoom: false,
   mapboxAccessToken: MAPBOX_TOKEN,
   maxBounds: MAP_MAX_BOUNDS,
-  mapStyle: "mapbox://styles/mapbox/dark-v11",
 };
 
 interface Layers {
