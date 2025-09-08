@@ -20,6 +20,8 @@ import {
   MAP_MAX_BOUNDS,
 } from "@/configs/map";
 import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
+import { useBasemap } from "@/utils/map";
+import MapBasemapControl from "@/components/MapBasemapControl";
 import { COLORS } from "@/utils/constants";
 import { z, ZodFormattedError } from "zod";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -82,6 +84,8 @@ export const PointMap = ({
   mapLatLon,
   setMapLatLon,
 }: PointMapProps) => {
+  const { basemapURL, basemapType, setBasemapType } = useBasemap("aerial");
+
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
       // truncate values to our preferred precision
@@ -118,6 +122,7 @@ export const PointMap = ({
         zoom: DEFAULT_MAP_PAN_ZOOM.zoom,
       }}
       {...DEFAULT_MAP_PARAMS}
+      mapStyle={basemapURL}
       cooperativeGestures={true}
       // Resize the map canvas when parent row expands to fit crash
       onLoad={(e) => e.target.resize()}
@@ -141,13 +146,17 @@ export const PointMap = ({
         />
       )}
       {/* add nearmap raster source and style */}
-      <MapAerialSourceAndLayer />
+      {/* <MapAerialSourceAndLayer /> */}
       {isEditing && setMapLatLon && (
         <MapGeocoderControl
           position="top-left"
           onResult={(latLon: LatLon) => setMapLatLon(latLon)}
         />
       )}
+      <MapBasemapControl
+        basemapType={basemapType}
+        setBasemapType={setBasemapType}
+      />
     </MapGL>
   );
 };
