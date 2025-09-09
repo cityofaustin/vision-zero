@@ -15,7 +15,7 @@ pages = paginator.paginate(Bucket=BUCKET_NAME, Prefix=folder_prefix)
 count = 0
 for page in pages:
     if "Contents" in page:
-        # for each item in the buck
+        # for each item in the bucket
         for obj in page["Contents"]:
             count += 1
             key = obj["Key"]
