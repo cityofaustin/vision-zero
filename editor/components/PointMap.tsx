@@ -19,7 +19,6 @@ import {
   MAP_COORDINATE_PRECISION,
   MAP_MAX_BOUNDS,
 } from "@/configs/map";
-import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
 import { useBasemap } from "@/utils/map";
 import MapBasemapControl from "@/components/MapBasemapControl";
 import { COLORS } from "@/utils/constants";
