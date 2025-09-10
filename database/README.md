@@ -2,7 +2,7 @@
 
 The Vision Zero Database (VZD) is a Postgresql database that serves as the central repository of Austin's traffic crash data. The database is fronted with a GraphQL API, powered by [Hasura](https://github.com/hasura/graphql-engine), which is also used to manage schema migrations.
 
-The design supports an editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Records Information System (CRIS).
+The design supports an editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Records Information System (CRIS) and local emegency medical services.
 
 ![vision zero data flow](../docs/images/data_flow.png)
 
@@ -18,7 +18,8 @@ The design supports an editing environment which enables Vision Zero program sta
     - [User-created crash records, aka "temporary" records](#user-created-crash-records-aka-temporary-records)
     - [Audit fields](#audit-fields)
     - [Change logs](#change-logs)
-  - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems-todo)
+  - [Austin-Travis County Emergency Medical Services (EMS)](#austin-travis-county-emergency-medical-services-ems)
+  - [Austin Fire Department (AFD)](#austin-fire-department-afd)
   - [Geospatial layers](#geospatial-layers)
 - [Common maintenance tasks](#common-maintenance-tasks)
   - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
@@ -177,6 +178,8 @@ For example, consider the `lookups.injry_sev` table, which includes a custom val
 | 99  | KILLED (NON-ATD)         | vz     |
 ```
 
+---
+
 The original migration for this table is [here](https://github.com/cityofaustin/vision-zero/blob/e56e3c6bc654a21f667142ce53232bad44cff7e5/atd-vzd/migrations/default/1715960018005_lookup_table_seeds/up.sql#L11054-L11056).
 
 Because the table has a custom value, it is configured with a check constraint ([PostgreSQL docs](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)) to ensure that future updates to this lookup table do not result in an ID collision:
@@ -253,7 +256,27 @@ Each change log table follows the same structure:
 
 The view `crashes_change_log_view` provides a unioned view of the unified table change logs—this view powers the change log UI in the VZE.
 
-### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)
+### Austin-Travis County Emergency Medical Services (EMS)
+
+The Vision Zero database stores records received from
+[Austin-Travis County Emergency Medical Services](https://www.austintexas.gov/content/ems-austin-travis-county) (EMS).
+
+Although they are stored in the `ems__incidents` table, these are patient-level records (so-called **Patien Care Records** (PCRs)) which describe the EMS provider's impression of the victim's injuries and the outcome of their injuries.
+
+These records can be joined to CRIS people records to provide additional insight into crash victims' injuries. Matching CRIS and EMS records is complex process described in detail below.
+
+#### Integration
+
+EMS records are imported into the Vision Zero database on nightly basis via the AFD + EMS [import ETL](../etl/afd_ems_import/README.md). Records are received via email attachment on a nightly basis and include roughly two-years of data. 
+
+Unlike CRIS records, EMS patient care records are never updated via integration: records are inserted once, and ignored (via `ON CONFLICT DO NOTHING`) on subsequent attempts to import an existing record. Per EMS, it is not expected that records will be modified upstream; it's not necessary to support record updates.
+
+See also:
+* [ETL readme](../etl/afd_ems_import/README.md)
+* [Gitbook docs](https://app.gitbook.com/o/-LzDQOVGhTudbKRDGpUA/s/-M4Ve3sp7qA5cPXha0B4/external-data-sources).
+
+
+### Austin Fire Department (AFD)
 
 ### Geospatial layers
 
