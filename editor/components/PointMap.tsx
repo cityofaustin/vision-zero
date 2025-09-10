@@ -144,8 +144,6 @@ export const PointMap = ({
           color={isEditing ? COLORS.danger : undefined}
         />
       )}
-      {/* add nearmap raster source and style */}
-      {/* <MapAerialSourceAndLayer /> */}
       {isEditing && setMapLatLon && (
         <MapGeocoderControl
           position="top-left"
