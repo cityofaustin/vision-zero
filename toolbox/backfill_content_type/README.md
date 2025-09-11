@@ -1,6 +1,6 @@
 # Backfill CR3 PDF content type
 
-This script set's the `ContentType` header of all CR3 PDFs in our S3 bucket.
+This script sets the `ContentType` header of all CR3 PDFs in our S3 bucket.
 
 See https://github.com/cityofaustin/atd-data-tech/issues/24384.
 
