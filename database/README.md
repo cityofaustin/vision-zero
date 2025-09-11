@@ -261,19 +261,27 @@ The view `crashes_change_log_view` provides a unioned view of the unified table 
 The Vision Zero database stores records received from
 [Austin-Travis County Emergency Medical Services](https://www.austintexas.gov/content/ems-austin-travis-county) (EMS).
 
-Although they are stored in the `ems__incidents` table, these are patient-level records (so-called **Patien Care Records** (PCRs)) which describe the EMS provider's impression of the victim's injuries and the outcome of their injuries.
+Stored in the `ems__incidents` table, these are patient-level records (known to EMS folks as **Patien Care Records** or PCRs) which describe the EMS provider's impression of the victim's injuries and the outcome of their injuries.
 
 These records can be joined to CRIS people records to provide additional insight into crash victims' injuries. Matching CRIS and EMS records is complex process described in detail below.
 
 #### Integration
 
-EMS records are imported into the Vision Zero database on nightly basis via the AFD + EMS [import ETL](../etl/afd_ems_import/README.md). Records are received via email attachment on a nightly basis and include roughly two-years of data. 
+EMS records are received via email attachment on a nightly basis and include roughly two-years of data. The records are imported into the Vision Zero database on a nightly basis via the AFD + EMS [import ETL](../etl/afd_ems_import/README.md).
 
-Unlike CRIS records, EMS patient care records are never updated via integration: records are inserted once, and ignored (via `ON CONFLICT DO NOTHING`) on subsequent attempts to import an existing record. Per EMS, it is not expected that records will be modified upstream; it's not necessary to support record updates.
+Unlike CRIS records, EMS patient care records are never updated via integration: records are inserted once, and ignored on subsequent attempts to import an existing record (`ON CONFLICT DO NOTHING`) . Per EMS, it is not expected that records will be modified upstream, and so it is not necessary to support record updates.
 
-See also:
-* [ETL readme](../etl/afd_ems_import/README.md)
-* [Gitbook docs](https://app.gitbook.com/o/-LzDQOVGhTudbKRDGpUA/s/-M4Ve3sp7qA5cPXha0B4/external-data-sources).
+See also the [ETL readme](../etl/afd_ems_import/README.md) and [Gitbook docs](https://app.gitbook.com/o/-LzDQOVGhTudbKRDGpUA/s/-M4Ve3sp7qA5cPXha0B4/external-data-sources).
+
+#### Crash record matching
+
+Crash match status
+update_crash_ems_match function
+Distance
+Time
+
+
+#### Injury severity classification
 
 
 ### Austin Fire Department (AFD)
