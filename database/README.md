@@ -277,14 +277,30 @@ See also the [ETL readme](../etl/afd_ems_import/README.md) and [Gitbook docs](ht
 
 Our data system enables EMS patient care records to be linked to other crash records in the database. Linking these various records together enables the VZ team to produce more comprehensive analyses of the safety conditions on roadways. Record linking is accomplished through a combination of automated record matching (via database trigger) and/or manual matching of records through the Vision Zero Editor UI.
 
-EMS records can be matched to three different record types, as summarized belo
-| EMS foreign key column     | Foreign table      | Foreign column | Matching mechanism                |
-| -------------------------- | ------------------ | -------------- | --------------------------------- |
-| `crash_pk`                 | `crashes`          | `id`           | Trigger and/or VZE user interface |
-| `person_id`                | `people`           | `id`           | Trigger and/or VZE user interface |
-| `atd_apd_blueform_case_id` | `atd_apd_blueform` | `case_id`      | Trigger                           |
+EMS records can be matched to three different record types, as summarized in the table below.
+
+| EMS foreign key column     | Foreign table      | Foreign column | Matching mechanism                | Note                                                                                                                           |
+| -------------------------- | ------------------ | -------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `crash_pk`                 | `crashes`          | `id`           | Trigger and/or VZE user interface | CRIS-crash level match. This link associates the patient care record to a specific crash, but not to a specific person record. |
+| `person_id`                | `people`           | `id`           | Trigger and/or VZE user interface |  CRIS-person level match. This link associates a patient care to specific CRIS crash person                                    |
+| `atd_apd_blueform_case_id` | `atd_apd_blueform` | `case_id`      | Trigger                           | Also known as "non-CR3" records, this linkage is made automatically via database trigger only.                                 |
+
+
+update_noncr3_ems_match
+update_crash_ems_match
+find_matching_person_ids
+ems_update_handle_record_match_event
+
+
+#### Crash-level matching
+
+#### Person-level matching
+
+#### Non-CR3 matching
 
 #### Other EMS triggers
+
+`ems_incidents_trigger`
 
 #### Injury severity classification
 
