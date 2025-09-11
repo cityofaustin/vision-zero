@@ -263,7 +263,7 @@ The Vision Zero database stores records received from
 
 Stored in the `ems__incidents` table, these are patient-level records (known to EMS folks as **Patien Care Records** or PCRs) which describe the EMS provider's impression of the victim's injuries and the outcome of their injuries.
 
-These records can be joined to CRIS people records to provide additional insight into crash victims' injuries. Matching CRIS and EMS records is complex process described in detail below.
+Crucially, these records can be joined to CRIS people records to provide additional insight into crash victims' injuries. Linking CRIS and EMS records is a complex process described in detail below.
 
 #### Integration
 
@@ -275,14 +275,18 @@ See also the [ETL readme](../etl/afd_ems_import/README.md) and [Gitbook docs](ht
 
 #### Crash record matching
 
-Crash match status
-update_crash_ems_match function
-Distance
-Time
+Our data system enables EMS patient care records to be linked to other crash records in the database. Linking these various records together enables the VZ team to produce more comprehensive analyses of the safety conditions on roadways. Record linking is accomplished through a combination of automated record matching (via database trigger) and/or manual matching of records through the Vision Zero Editor UI.
 
+EMS records can be matched to three different record types, as summarized belo
+| EMS foreign key column     | Foreign table      | Foreign column | Matching mechanism                |
+| -------------------------- | ------------------ | -------------- | --------------------------------- |
+| `crash_pk`                 | `crashes`          | `id`           | Trigger and/or VZE user interface |
+| `person_id`                | `people`           | `id`           | Trigger and/or VZE user interface |
+| `atd_apd_blueform_case_id` | `atd_apd_blueform` | `case_id`      | Trigger                           |
+
+#### Other EMS triggers
 
 #### Injury severity classification
-
 
 ### Austin Fire Department (AFD)
 
