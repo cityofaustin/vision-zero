@@ -47,7 +47,7 @@ const LAYERS: Layers = {
     paint: {
       // This raster layer wont be visible until zoom level 15
       "raster-opacity": [
-        "interpolate",
+        "interpolate", // continuous/smooth opacity transition between zoom levels
         ["linear"],
         ["zoom"],
         14,
