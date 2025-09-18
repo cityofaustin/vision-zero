@@ -114,9 +114,7 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
         }
       }}
     >
-      {basemapType === "aerial" && (
-        <MapAerialSourceAndLayer></MapAerialSourceAndLayer>
-      )}
+      {basemapType === "aerial" && <MapAerialSourceAndLayer />}
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
       {/* custom geojson source and layer */}
