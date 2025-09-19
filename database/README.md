@@ -261,7 +261,7 @@ The view `crashes_change_log_view` provides a unioned view of the unified table 
 The Vision Zero database stores records received from
 [Austin-Travis County Emergency Medical Services](https://www.austintexas.gov/content/ems-austin-travis-county) (EMS).
 
-Stored in the `ems__incidents` table, these are patient-level records (known to EMS folks as **Patien Care Records** or PCRs) which describe the EMS provider's impression of the victim's injuries and the outcome of their injuries.
+Stored in the `ems__incidents` table, these are patient-level records (known to EMS folks as **Patient Care Records** or PCRs) which describe the EMS provider's impression and outcomes of injuries sustained in traffic crashes.
 
 Crucially, these records can be joined to CRIS people records to provide additional insight into crash victims' injuries. Linking CRIS and EMS records is a complex process described in detail below.
 
@@ -290,6 +290,10 @@ update_noncr3_ems_match
 update_crash_ems_match
 find_matching_person_ids
 ems_update_handle_record_match_event
+
+UI action
+ETL
+Dispatched from trigger function
 
 
 #### Crash-level matching
