@@ -44,6 +44,18 @@ const LAYERS: Layers = {
     id: "simple-tiles",
     type: "raster",
     source: "raster-tiles",
+    paint: {
+      // This raster layer wont be visible until zoom level 15
+      "raster-opacity": [
+        "interpolate", // continuous/smooth opacity transition between zoom levels
+        ["linear"],
+        ["zoom"],
+        14,
+        0, // zoom 14: invisible
+        15,
+        1, // zoom 15: fully visible
+      ],
+    },
   },
   streetLabels: {
     // borrowed from mapbox mapbox streets v11 style
