@@ -142,7 +142,7 @@ export const PointMap = ({
       )}
       {/* add nearmap raster source and style */}
       <MapAerialSourceAndLayer />
-      {isEditing && setMapLatLon && (
+      {setMapLatLon && (
         <MapGeocoderControl
           position="top-left"
           onResult={(latLon: LatLon) => setMapLatLon(latLon)}
