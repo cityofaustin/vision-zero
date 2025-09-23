@@ -26,6 +26,7 @@ select_permissions:
       columns:
         - apd_incident_numbers
         - atd_apd_blueform_case_id
+        - austin_full_purpose
         - crash_match_status
         - crash_pk
         - created_at
@@ -62,6 +63,7 @@ select_permissions:
       columns:
         - apd_incident_numbers
         - atd_apd_blueform_case_id
+        - austin_full_purpose
         - crash_match_status
         - crash_pk
         - created_at
@@ -98,6 +100,7 @@ select_permissions:
       columns:
         - apd_incident_numbers
         - atd_apd_blueform_case_id
+        - austin_full_purpose
         - crash_match_status
         - crash_pk
         - created_at
