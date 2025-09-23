@@ -24,6 +24,7 @@ import MapBasemapControl from "@/components/MapBasemapControl";
 import { COLORS } from "@/utils/constants";
 import { z, ZodFormattedError } from "zod";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { MapAerialSourceAndLayer } from "@/components/MapAerialSourceAndLayer";
 
 export interface LatLon {
   latitude: number;
@@ -128,6 +129,7 @@ export const PointMap = ({
       onDrag={isEditing ? onDrag : undefined}
       maxZoom={21}
     >
+      {basemapType === "aerial" && <MapAerialSourceAndLayer />}
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
       {savedLatitude && savedLongitude && !isEditing && (
