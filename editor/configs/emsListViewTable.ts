@@ -365,6 +365,28 @@ const emsListViewFilterCards: FilterGroup[] = [
       },
     ],
   },
+  {
+    id: "geography_filter_card",
+    label: "Jurisdiction",
+    groupOperator: "_and",
+    filterGroups: [
+      {
+        id: "austin_full_purpose",
+        label: "Include outside Austin Full Purpose",
+        groupOperator: "_and",
+        enabled: true,
+        inverted: true,
+        filters: [
+          {
+            id: "austin_full_purpose",
+            column: "austin_full_purpose",
+            operator: "_eq",
+            value: true,
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export const emsListViewQueryConfig: QueryConfig = {
