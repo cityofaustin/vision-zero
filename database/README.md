@@ -285,22 +285,89 @@ EMS records can be matched to three different record types, as summarized in the
 | `person_id`                | `people`           | `id`           | Trigger and/or VZE user interface |  CRIS-person level match. This link associates a patient care to specific CRIS crash person                                    |
 | `atd_apd_blueform_case_id` | `atd_apd_blueform` | `case_id`      | Trigger                           | Also known as "non-CR3" records, this linkage is made automatically via database trigger only.                                 |
 
+#### Matching System Overview
 
-update_noncr3_ems_match
-update_crash_ems_match
-find_matching_person_ids
-ems_update_handle_record_match_event
+The EMS record matching system operates through a coordinated set of database triggers and functions that automatically link EMS incidents to crash records based on spatial and temporal proximity, then refine those matches using demographic data. The system handles three types of matching:
 
-UI action
-ETL
-Dispatched from trigger function
+1. **CRIS Crash Matching**: Links EMS records to official crash reports using location and time
+2. **Person-Level Matching**: Further refines crash matches by linking to specific individuals using demographics
+3. **Non-CR3 Matching**: Links EMS records to police blueform incidents (non-reportable crashes)
 
+The matching process balances automation with manual oversight, allowing staff to review and override automated matches through the Vision Zero Editor interface while maintaining data integrity through comprehensive status tracking.
 
-#### Crash-level matching
+#### Database Triggers
 
-#### Person-level matching
+##### CRIS Crash Matching Trigger (`update_crash_ems_match`)
 
-#### Non-CR3 matching
+**Triggered by**: INSERT/UPDATE operations on the `crashes` table
+
+This trigger handles the initial spatial-temporal matching between EMS incidents and CRIS crash records. When a crash record is inserted or updated, the trigger:
+
+- Searches for EMS records within a 1200-meter radius and ±30-minute time window of the crash
+- For each matching EMS record, identifies all crashes that meet the same spatial-temporal criteria
+- Updates the EMS record's `matched_crash_pks` array with all qualifying crash IDs
+- Sets the `_match_event_name` to `'handle_matched_crash_pks_updated'` to trigger downstream processing
+
+On updates, the trigger also performs cleanup by removing crash IDs from EMS records that no longer meet the matching criteria (due to location/time changes or crash deletions).
+
+##### EMS Record Update Handler (`ems_update_handle_record_match_event`)
+
+**Triggered by**: UPDATE operations on the `ems__incidents` table when `_match_event_name` is set
+
+This is the central orchestration function that processes various matching events and maintains data consistency. It handles multiple event types:
+
+**Manual Matching Events:**
+
+- `unmatch_crash_by_manual_qa`: Clears crash and person matches when staff mark a match as incorrect
+- `unmatch_person_by_manual_qa`: Clears person-level matches while preserving crash matches
+- `match_person_by_manual_qa`: Assigns person matches and synchronizes crash associations
+
+**Automated Events:**
+
+- `reset_crash_match`: Resets EMS record to automated matching state based on current `matched_crash_pks`
+- `handle_matched_crash_pks_updated`: Processes changes to the matched crash IDs array
+- `match_crash_by_automation`: Handles new automated crash matches
+
+The function ensures crash and person matches remain synchronized and respects manual overrides by preserving `matched_by_manual_qa` status.
+
+##### Person Matching Function (`find_matching_person_ids`)
+
+**Called by**: The EMS update handler during automated person-level matching
+
+This function refines crash-level matches by identifying specific individuals within a crash using demographic data. The matching process:
+
+1. Validates the EMS record is already matched to a crash
+2. Checks for duplicate EMS records with identical demographics to avoid conflicts
+3. Queries the `people_list_view` for individuals matching:
+   - Same crash ID
+   - Exact age match
+   - Case-insensitive gender match
+   - Fuzzy ethnicity matching with special handling for Native American categories
+
+Returns an array of matching person IDs, enabling the update handler to determine if there's a single match, multiple matches, or no match.
+
+##### Non-CR3 Matching Trigger (`update_noncr3_ems_match`)
+
+**Triggered by**: INSERT/UPDATE operations on the `atd_apd_blueform` table
+
+This trigger manages matching between EMS records and police "blueform" incidents (non-reportable crashes). Similar to CRIS matching but with tighter spatial criteria (600-meter radius):
+
+- Identifies EMS records within spatial-temporal proximity of blueform incidents
+- Updates match status based on result count (unmatched/single match/multiple matches)
+- Respects manual matching decisions by only updating match arrays for manually matched records
+- Performs cleanup on updates to remove invalid matches
+
+The trigger maintains separate matching columns (`atd_apd_blueform_case_id`, `non_cr3_match_status`, `matched_non_cr3_case_ids`) to track non-CR3 associations independently of CRIS crash matching.
+
+##### Match Status Values
+
+The system uses standardized status values across different match types:
+
+- `unmatched`: No automated or manual matches found
+- `matched_by_automation`: Single match found automatically
+- `matched_by_manual_qa`: Match assigned through staff review
+- `multiple_matches_by_automation`: Multiple potential matches require staff review
+- `unmatched_by_manual_qa`: Staff determined no valid match exists
 
 #### Other EMS triggers
 
