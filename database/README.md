@@ -369,11 +369,12 @@ The system uses standardized status values across different match types:
 - `multiple_matches_by_automation`: Multiple potential matches require staff review
 - `unmatched_by_manual_qa`: Staff determined no valid match exists
 
-#### Other EMS triggers
-
-`ems_incidents_trigger`
-
 #### Injury severity classification
+
+
+#### EMS Spatial Attributes
+
+On the `ems__incidents` table, the `austin_full_purpose` and `location_id` are values set by spatial join on the `geo.jurisdictions` and the `atd_txdot_locations` locations tables, respectively. The values are managed by the `ems_incidents_trigger` trigger, which fires on `INSERT`.
 
 ### Austin Fire Department (AFD)
 
