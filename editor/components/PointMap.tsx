@@ -19,10 +19,12 @@ import {
   MAP_COORDINATE_PRECISION,
   MAP_MAX_BOUNDS,
 } from "@/configs/map";
-import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
+import { useBasemap } from "@/utils/map";
+import MapBasemapControl from "@/components/MapBasemapControl";
 import { COLORS } from "@/utils/constants";
 import { z, ZodFormattedError } from "zod";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { MapAerialSourceAndLayer } from "@/components/MapAerialSourceAndLayer";
 
 export interface LatLon {
   latitude: number;
@@ -82,6 +84,8 @@ export const PointMap = ({
   mapLatLon,
   setMapLatLon,
 }: PointMapProps) => {
+  const { basemapURL, basemapType, setBasemapType } = useBasemap("aerial");
+
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
       // truncate values to our preferred precision
@@ -118,12 +122,14 @@ export const PointMap = ({
         zoom: DEFAULT_MAP_PAN_ZOOM.zoom,
       }}
       {...DEFAULT_MAP_PARAMS}
+      mapStyle={basemapURL}
       cooperativeGestures={true}
       // Resize the map canvas when parent row expands to fit crash
       onLoad={(e) => e.target.resize()}
       onDrag={isEditing ? onDrag : undefined}
       maxZoom={21}
     >
+      {basemapType === "aerial" && <MapAerialSourceAndLayer />}
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
       {savedLatitude && savedLongitude && !isEditing && (
@@ -148,6 +154,10 @@ export const PointMap = ({
           onResult={(latLon: LatLon) => setMapLatLon(latLon)}
         />
       )}
+      <MapBasemapControl
+        basemapType={basemapType}
+        setBasemapType={setBasemapType}
+      />
     </MapGL>
   );
 };
