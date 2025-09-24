@@ -18,6 +18,7 @@ The design supports an editing environment which enables Vision Zero program sta
     - [User-created crash records, aka "temporary" records](#user-created-crash-records-aka-temporary-records)
     - [Audit fields](#audit-fields)
     - [Change logs](#change-logs)
+  - [Austin Police Department non-CR3 or "blueform" crashes](#austin-police-department-non-cr3-or-blueform-crashes)
   - [Austin-Travis County Emergency Medical Services (EMS)](#austin-travis-county-emergency-medical-services-ems)
   - [Austin Fire Department (AFD)](#austin-fire-department-afd)
   - [Geospatial layers](#geospatial-layers)
@@ -255,6 +256,26 @@ Each change log table follows the same structure:
 | `created_by`     | `text`                     | The user who triggered this change - default `system`                              |
 
 The view `crashes_change_log_view` provides a unioned view of the unified table change logs—this view powers the change log UI in the VZE.
+
+### Austin Police Department non-CR3 or "blueform" crashes
+
+Non-CR3 crashes, known colloquially as "blueform" crashes, are crash incidents reported by the Austin Police Department which were not investigated as a TxDOT-reportable crash. These are typically minor traffic incidents with minimal damage or injuries, for which no CR3 crash report was submitted.
+
+These records provide very little detail beyond the date and location of the incident. These records reach are stored in the `atd_apd_blueform` table, and are inserted via the Vision Zero Editor's **Non-CR3 Upload** UI, which allows Vision Zero staff to upload a CSV of records which they receive periodically from APD.
+
+As far as we know, the CSV files that the Vision Zero team receives are created as extracts from APD's Brazos system, which itself is integrated with the City's central Computer-Aided Dispatch (CAD) system.
+
+#### De-duplicating non-CR3 records
+
+Due to limitations of how non-CR3 records are queried from the APD system, it is very common for the imported CSV files to include records which are duplicates of CRIS CR3 crash records in our database.
+
+The `remove_dupe_non_cr3s` trigger fires on insert into the `atd_apd_blueform`, and soft-deletes any non-CR3 records for which there is a `crashes` record meeting this criteria:
+
+- the `crashes` record has an `agency_id` value of `74` (APD)
+- the records have matching `case_id` values
+- the records occurred within a 12-hour window
+
+Note that it is assumed that Non-CR3 records will always be imported _after_ any potentially duplicate CR3 `crashes` have been created. It is incumbent upon the Vision Zero team to ensure that any non-CR3 records they import are at least four weeks old.
 
 ### Austin-Travis County Emergency Medical Services (EMS)
 
