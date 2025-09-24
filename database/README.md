@@ -2,7 +2,7 @@
 
 The Vision Zero Database (VZD) is a Postgresql database that serves as the central repository of Austin's traffic crash data. The database is fronted with a GraphQL API, powered by [Hasura](https://github.com/hasura/graphql-engine), which is also used to manage schema migrations.
 
-The design supports an editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Records Information System (CRIS) and local emegency medical services.
+The design supports an editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Records Information System (CRIS) and local emergency medical services.
 
 ![vision zero data flow](../docs/images/data_flow.png)
 
@@ -106,7 +106,7 @@ You will need to follow these steps to create or update our delivery configurati
 
 4. Click **Save** to save your config
 
-##### Extract file configutration
+##### Extract file configuration
 
 Follow these steps to configure a new extract delivery:
 
@@ -124,15 +124,15 @@ Follow these steps to configure a new extract delivery:
 
 - **Include Crash Reports From**: Process Date range
   - If you are backfilling, include a day before your target day as a buffer.
-  - If you request a process date of today, the extract will not deliver until the next day.
+  - If you request a process date of today, the extract will not be delivered until the next day.
   - To set up a recurring request, add a range of dates that ends in the future.
 
-Any part of the range that falls in the past will be delivered in single zip that is separate from the zips that will deliver in the future. The includes - all records with process dates available including today.
+Any part of the range that falls in the past will be delivered in a single zip that is separate from the zips that will deliver in the future. The includes - all records with process dates available including today.
 
 Any part of the range that is in the future will create daily zips that include each day available going forward. For example, on 4/19/2024, you make a request for Process Begin Date = 01/01/2024 and Process End Date = 12/31/2024 The would receive two zips: One containing all records with process date from 01/01/2024 to 04/18/2024, and one containing all records with process date from 04/19/2024 to 04/19/2024. Going forward, you will receive one zip per day for each process date that passes
 
 - **Extract password**: the password called `EXTRACT_PASSWORD` from Vision Zero CRIS Import 1Password item
-- **Delivery**: How you want to receive it. Typically you would use the pre-configured AWS option, specifiyng the `dev`, `staging`, or `prod` inbox subdirectory. See the CRIS import ETL readme for more details.
+- **Delivery**: How you want to receive it. Typically you would use the pre-configured AWS option, specifyng the `dev`, `staging`, or `prod` inbox subdirectory. See the CRIS import ETL readme for more details.
 
 #### CRIS data processing
 
@@ -209,7 +209,7 @@ Charges records are provided by CRIS and describe a legal charge filed by the re
 
 #### Database IDs, CRIS record IDs, and primary keys
 
-Each of the crashes, units, cris, and charges tables uses an auto-incrementing integer column called `id` as its primary key. CRIS provides a separate set of columns which can be used to uniquely identify records, and these columns are used to match record updates provided by CRIS to their corresponding record in the database.
+Each of the crashes, units, people, and charges tables uses an auto-incrementing integer column called `id` as its primary key. CRIS provides a separate set of columns which can be used to uniquely identify records, and these columns are used to match record updates provided by CRIS to their corresponding record in the database.
 
 For clarity, the column name `crash_pk` is used on tables which reference the crash `id` column, and the column name `cris_crash_id` is used to reference the CRIS-provided ID column, `crash_id`. Prior to Vision Zero v2.0, the name `crash_id` was used universally in reference to the CRIS crash ID column.
 
@@ -232,7 +232,7 @@ User-created records do not have a `cris_crash_id` column. Because `cris_crash_i
 
 #### Audit fields
 
-Audit fields are used through the CRIS record tables and are managed via trigger. Any new tables add to the database should follow the same convention:
+Audit fields are used through the CRIS record tables and are managed via trigger. Any new tables added to the database should follow the same convention:
 
 - `created_at`: the creation timestamp of the record. Default `now()`.
 - `updated_at`: the timestamp of the last record update. Default `now()`, set via trigger on row update.
@@ -241,7 +241,7 @@ Audit fields are used through the CRIS record tables and are managed via trigger
 
 #### Change logs
 
-The database includes an extensive change logging system that captures all edits to any of the nine tables that comprise the crash, unit, and people tables. Change log entries are created via triggers that fire _after_ records are modified, and includes a copy of both the `old` and `new` version of each record as a JSON blob.
+The database includes an extensive change logging system that captures all edits to any of the nine tables that comprise the crash, unit, and people tables. Change log entries are created via triggers that fire _after_ records are modified, and include a copy of both the `old` and `new` version of each record as a JSON blob.
 
 Each change log table follows the same structure:
 
@@ -371,9 +371,9 @@ The system uses standardized status values across different match types:
 
 #### Injury severity classification
 
-CRIS person-level records have an injury level assigned based on the crash investigator's assesment of the injuries each person may have sustained in the crash. The injury severity levels are stored in the `lookups.injry_sev` table and form the basis of all Vision Zero statistics related to crashes injuries.
+CRIS person-level records have an injury level assigned based on the crash investigator's assessment of the injuries each person may have sustained in the crash. The injury severity levels are stored in the `lookups.injry_sev` table and form the basis of all Vision Zero statistics related to crashes injuries.
 
-In order to make EMS records compaitble with CRIS-based analyses, we have established a process to assign a CRIS-style injury classification to EMS patient records. The specific business rules for assigning the injury were developed in partnership with the Vision Zero team as well as our partners at EMS, and reflect our best effort to approximate CRIS's injury levels based on the data we have available.
+In order to make EMS records compatible with CRIS-based analyses, we have established a process to assign a CRIS-style injury classification to EMS patient records. The specific business rules for assigning the injury were developed in partnership with the Vision Zero team as well as our partners at EMS, and reflect our best effort to approximate CRIS's injury levels based on the data we have available.
 
 We have two fields on the `ems__incidents` table related to injury classification, both of which are set via the `update_ems_patient_injry_sev` trigger when a new EMS record is inserted into the database.
 
@@ -392,7 +392,7 @@ On the `ems__incidents` table, the `austin_full_purpose` and `location_id` are v
 
 We have a number of tables which function as geospatial layers which are referenced by crashes and various other records. At the Vision Zero team's request, our team is actively working to expand the number of layers available in the database as well as add new attribute columns to crash records which will be populated based on their intersection with these layers.
 
-See also the guidance for creating a new geospatial layer in the common maintance tasks section, below.
+See also the guidance for creating a new geospatial layer in the common maintenance tasks section, below.
 
 | Table                   | Geometry type  | description                                                                                                      | owner/source                                                         |
 | ----------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
@@ -413,7 +413,7 @@ Follow these steps to add a new column to the database that will be sourced from
 
 1. Remember that all database operations should be deployed through migrations. See the [development and deployment](#development-and-deployment) docs.
 2. Add the new column to both tables of the given record type. For example, if this is a crash-level column, add the column to the `crashes_cris` and `crashes` tables.
-3. Modify the trigger function that inserts new rows into the unified table that corresponds to the record type you are modifying: either the `crashes_cris_insert_rows()`, `units_cris_insert_rows()`, or the `people_cris_insert_rows()` function. Locate the part of the function that inserts into the unified table and add your column name to end of it, then locate the part that selects all values from the new `_cris` record and do the same. **Make sure that the order of the columns in the insert and select parts of the function match up**
+3. Modify the trigger function that inserts new rows into the unified table that corresponds to the record type you are modifying: either the `crashes_cris_insert_rows()`, `units_cris_insert_rows()`, or the `people_cris_insert_rows()` function. Locate the part of the function that inserts into the unified table and add your column name to the end of it, then locate the part that selects all values from the new `_cris` record and do the same. **Make sure that the order of the columns in the insert and select parts of the function match up**
 4. Next, you will need to add your new column to the `_column_metadata` table, so that the CRIS import ETL is aware that this column should be included in imports. For example:
 
 ```sql
@@ -472,7 +472,7 @@ values ('my_generated_column', 'crashes', false);
 
 ### Refresh lookup tables with the latest CRIS values
 
-We have a [helper script](/toolbox/get_lookup_table_changes) that can be used to detect changes between CRIS's lookup tables and the lookup tables in our database. This script can be used to generate migrations to bring the database in sync with CRIS, and it should be run after every CRIS softwware release. See this script's README for more information.
+We have a [helper script](/toolbox/get_lookup_table_changes) that can be used to detect changes between CRIS's lookup tables and the lookup tables in our database. This script can be used to generate migrations to bring the database in sync with CRIS, and it should be run after every CRIS software release. See this script's README for more information.
 
 ### Add a new CRIS lookup table to the database
 
