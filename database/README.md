@@ -371,6 +371,16 @@ The system uses standardized status values across different match types:
 
 #### Injury severity classification
 
+CRIS person-level records have an injury level assigned based on the crash investigator's assesment of the injuries each person may have sustained in the crash. The injury severity levels are stored in the `lookups.injry_sev` table and form the basis of all Vision Zero statistics related to crashes injuries.
+
+In order to make EMS records compaitble with CRIS-based analyses, we have established a process to assign a CRIS-style injury classification to EMS patient records. The specific business rules for assigning the injury were developed in partnership with the Vision Zero team as well as our partners at EMS, and reflect our best effort to approximate CRIS's injury levels based on the data we have available.
+
+We have two fields on the `ems__incidents` table related to injury classification, both of which are set via the `update_ems_patient_injry_sev` trigger when a new EMS record is inserted into the database.
+
+- `ems__incidents.patient_injry_sev_id`: The injury severity ID value which references `lookups.ems_patient_injry_sev`.
+- `ems__incidents.patient_injry_sev_reason`: A text field which describes which field/values were used to assign injury severity level.
+
+The ruleset for assigning injury severity is long: refer to the `update_ems_patient_injry_sev` trigger itself to learn more. See also PR [#1829](https://github.com/cityofaustin/vision-zero/pull/1829) for an example of how these values can be backfilled if needed.
 
 #### EMS Spatial Attributes
 
