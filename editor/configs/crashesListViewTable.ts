@@ -11,7 +11,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
     filterGroups: [
       {
         id: "vz_fatality_crashes",
-        label: "Fatal crashes - Vision Zero",
+        label: "Fatal injuries - Vision Zero",
         groupOperator: "_and",
         enabled: false,
         filters: [
@@ -25,7 +25,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
       },
       {
         id: "cris_fatality_crashes",
-        label: "Fatal crashes - CRIS",
+        label: "Fatal injuries - CRIS",
         groupOperator: "_and",
         enabled: false,
         filters: [
@@ -39,7 +39,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
       },
       {
         id: "law_enforcement_fatality_crashes",
-        label: "Fatal crashes - Law enforcement",
+        label: "Fatal injuries - Law enforcement",
         groupOperator: "_and",
         enabled: false,
         filters: [
