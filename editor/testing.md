@@ -175,7 +175,8 @@ refresh materialized view location_crashes_view;
 - The **Select person** button is displayed for each EMS patient row
 - Click **Select person** to enable the **Select match** button to appear next to any unlinked person records in the **Associated people records** table
 - Click the **Person ID** column for any **EMS Patients** row to manually edit a person ID value
-- - Click the **Person ID** column and save an invalid person ID value and verify an error message is displayed
+- Click the **Person ID** column and save an invalid person ID value and verify an error message is displayed
+- Locate an **unmatched** EMS record, then click the **Person ID** column and save a valid person ID value
 - Use the falafel menu to **Reset** an incident matched to a person ID
 - Use the falafel menu to modify an incident to be **Match not found**
 - The **Possible non-CR3 matches** card should display either no records if there are no matches, one match, or multiple possible matches depending on the non-CR3 match status
