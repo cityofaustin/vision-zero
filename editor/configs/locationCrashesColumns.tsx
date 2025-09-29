@@ -70,7 +70,7 @@ export const locationCrashesColumns: ColDataCardDef<LocationCrashRow>[] = [
     exportOnly: true,
     fetchAlways: true,
   },
-    {
+  {
     path: "longitude",
     label: "longitude",
     exportOnly: true,
