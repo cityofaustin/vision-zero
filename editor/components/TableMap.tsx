@@ -10,12 +10,10 @@ import MapFitBoundsControl from "@/components/MapFitBoundsControl";
 import { useCurrentBounds } from "@/utils/map";
 import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import { FeatureCollection } from "geojson";
-import { TableMapConfig } from "@/types/tableMapConfig";
+import { switchPopupComponent, TableMapConfig } from "@/types/tableMapConfig";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { GeoJSONFeature } from "mapbox-gl";
 import PopupWrapper from "@/components/PopupWrapper";
-import TableMapPopupContent from "@/components/TableMapPopupContent";
-import LocationTableMapPopupContent from "@/components/LocationsTableMapPopupContent";
 import MapBasemapControl from "@/components/MapBasemapControl";
 import { useBasemap } from "@/utils/map";
 import { MapAerialSourceAndLayer } from "@/components/MapAerialSourceAndLayer";
@@ -93,7 +91,7 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
     setCursor("grab");
   }, []);
 
-  const popupComponent = mapConfig.popupComponentName ? LocationTableMapPopupContent : TableMapPopupContent;
+  const popupComponent = switchPopupComponent(mapConfig.popupComponentName);
 
   return (
     <MapGL

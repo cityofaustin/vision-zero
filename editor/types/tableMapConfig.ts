@@ -1,6 +1,7 @@
 import { FeatureCollection } from "geojson";
 import { LayerProps } from "react-map-gl";
-import { TableMapPopupContentProps } from "@/components/TableMapPopupContent";
+import TableMapPopupContent from "@/components/TableMapPopupContent";
+import LocationTableMapPopupContent from "@/components/LocationsTableMapPopupContent";
 
 /**
  * An index of functions that transform input data into a geojson feature collection
@@ -33,6 +34,17 @@ export const geoJsonTransformers = {
   },
 };
 
+// i need to rename this
+export const switchPopupComponent = (popupName: 'locationTableMap' | undefined) => {
+  switch(popupName) {
+    case "locationTableMap":
+      return LocationTableMapPopupContent
+    default:
+      return TableMapPopupContent
+  }
+}
+
+
 /**
  * Configuration object for rendering the map component that plugs
  * into the Table component
@@ -60,5 +72,5 @@ export interface TableMapConfig {
   /**
    * Optional popup component, if not provided then Map will use TableMapPopupContent component
    */
-  popupComponentName?: "locationTableMap" | null;
+  popupComponentName?: "locationTableMap";
 }
