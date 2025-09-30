@@ -60,5 +60,5 @@ export interface TableMapConfig {
   /**
    * Optional popup component, if not provided then Map will use TableMapPopupContent component
    */
-  popupComponent?: React.ComponentType<TableMapPopupContentProps>;
+  popupComponentName?: "locationTableMap" | null;
 }

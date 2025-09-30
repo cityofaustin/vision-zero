@@ -15,6 +15,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { GeoJSONFeature } from "mapbox-gl";
 import PopupWrapper from "@/components/PopupWrapper";
 import TableMapPopupContent from "@/components/TableMapPopupContent";
+import LocationTableMapPopupContent from "@/components/LocationsTableMapPopupContent";
 import MapBasemapControl from "@/components/MapBasemapControl";
 import { useBasemap } from "@/utils/map";
 import { MapAerialSourceAndLayer } from "@/components/MapAerialSourceAndLayer";
@@ -92,6 +93,8 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
     setCursor("grab");
   }, []);
 
+  const popupComponent = mapConfig.popupComponentName ? LocationTableMapPopupContent : TableMapPopupContent;
+
   return (
     <MapGL
       ref={mapRef}
@@ -131,7 +134,7 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
           longitude={selectedFeature?.properties?.longitude}
           latitude={selectedFeature?.properties?.latitude}
           featureProperties={selectedFeature.properties}
-          PopupContent={mapConfig.popupComponent ?? TableMapPopupContent}
+          PopupContent={popupComponent}
           onClose={() => setSelectedFeature(null)}
         />
       )}

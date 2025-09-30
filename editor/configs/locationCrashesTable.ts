@@ -76,7 +76,7 @@ export const locationCrashesQueryConfig: QueryConfig = {
   filterCards: locationCrashesFiltercards,
   mapConfig: {
     isActive: false,
-    popupComponent: LocationTableMapPopupContent,
+    popupComponentName: "locationTableMap",
     layerProps: {
       id: "points-layer",
       type: "circle",
