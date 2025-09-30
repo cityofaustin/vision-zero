@@ -1,6 +1,7 @@
 import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 import { getYearsAgoDate, makeDateFilters } from "@/utils/dates";
+import LocationTableMapPopupContent from "@/components/LocationsTableMapPopupContent";
 
 const locationCrashesFiltercards: FilterGroup[] = [
   {
@@ -75,6 +76,7 @@ export const locationCrashesQueryConfig: QueryConfig = {
   filterCards: locationCrashesFiltercards,
   mapConfig: {
     isActive: false,
+    popupComponent: LocationTableMapPopupContent,
     layerProps: {
       id: "points-layer",
       type: "circle",

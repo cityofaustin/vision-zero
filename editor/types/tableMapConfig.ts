@@ -1,5 +1,6 @@
 import { FeatureCollection } from "geojson";
 import { LayerProps } from "react-map-gl";
+import { TableMapPopupContentProps } from "@/components/TableMapPopupContent";
 
 /**
  * An index of functions that transform input data into a geojson feature collection
@@ -56,4 +57,8 @@ export interface TableMapConfig {
    * todo: implement this ;)
    */
   featureLimit?: number;
+  /**
+   * 
+   */
+  popupComponent?: React.ComponentType<TableMapPopupContentProps>;
 }
