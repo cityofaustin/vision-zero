@@ -144,6 +144,7 @@ update_permissions:
         - matched_crash_pks
         - non_cr3_match_status
         - person_id
+        - person_match_status
         - updated_by
       filter: {}
       check: null
@@ -159,6 +160,7 @@ update_permissions:
         - matched_crash_pks
         - non_cr3_match_status
         - person_id
+        - person_match_status
         - updated_by
       filter: {}
       check: null
