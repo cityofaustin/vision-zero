@@ -74,7 +74,7 @@ export interface TableMapConfig {
    */
   featureLimit?: number;
   /**
-   * Optional popup component, if not provided then Map will use TableMapPopupContent component
+   * Optional name of popup component, if not provided then Map will use TableMapPopupContent component
    */
   popupComponentName?: "locationTableMap";
 }
