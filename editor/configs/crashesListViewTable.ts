@@ -54,7 +54,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
 
       {
         id: "suspected_serious_injury_crashes",
-        label: "Suspected serious injury crashes",
+        label: "Suspected serious injuries",
         groupOperator: "_and",
         enabled: false,
         filters: [
