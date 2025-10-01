@@ -130,9 +130,15 @@ const EMSLinkRecordButton: React.FC<
                       id: record.id,
                       updates: {
                         is_deleted: true,
+                        crash_match_status: "unmatched",
+                        person_match_status: "unmatched",
+                        non_cr3_match_status: "unmatched",
+                        crash_pk: null,
+                        person_id: null,
                       },
                     });
                     if (onSaveCallback) await onSaveCallback();
+                    setShowDeleteModal(false);
                   }}
                 >
                   <span>Ok</span>
