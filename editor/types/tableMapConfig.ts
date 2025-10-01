@@ -34,16 +34,20 @@ export const geoJsonTransformers = {
   },
 };
 
-// i need to rename this
-export const switchPopupComponent = (popupName: 'locationTableMap' | undefined) => {
-  switch(popupName) {
+/**
+ * Returns popup component based on component named in mapConfig.
+ * Default is TableMapPopupContent
+ */
+export const getPopupComponent = (
+  popupName: "locationTableMap" | undefined
+) => {
+  switch (popupName) {
     case "locationTableMap":
-      return LocationTableMapPopupContent
+      return LocationTableMapPopupContent;
     default:
-      return TableMapPopupContent
+      return TableMapPopupContent;
   }
-}
-
+};
 
 /**
  * Configuration object for rendering the map component that plugs
