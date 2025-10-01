@@ -108,10 +108,10 @@ const EMSLinkRecordButton: React.FC<
               }}
             >
               <Modal.Header closeButton>
-                <Modal.Title>Delete patient</Modal.Title>
+                <Modal.Title>Delete record</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                Are you sure you want to delete this patient care record?
+                Are you sure you want to delete this EMS patient record?
               </Modal.Body>
               <Modal.Footer>
                 <Button
