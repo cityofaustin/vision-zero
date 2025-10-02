@@ -141,7 +141,7 @@ const EMSLinkRecordButton: React.FC<
                     setShowDeleteModal(false);
                   }}
                 >
-                  <span>Ok</span>
+                  <span>Delete</span>
                 </Button>
               </Modal.Footer>
             </Modal>
