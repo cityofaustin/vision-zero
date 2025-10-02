@@ -155,7 +155,6 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       queryConfigFromStorage &&
       queryConfigFromStorage?._version !== initialQueryConfig._version
     ) {
-      // deal with this
       const initialQueryConfigKeys = Object.keys(initialQueryConfig);
       const queryConfigFromStorageKeys = Object.keys(queryConfigFromStorage);
 
