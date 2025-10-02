@@ -326,5 +326,6 @@ export const crashesListViewQueryConfig: QueryConfig = {
       },
     },
     geojsonTransformerName: "latLon",
+    defaultBasemap: "streets",
   },
 };

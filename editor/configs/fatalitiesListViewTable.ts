@@ -311,5 +311,6 @@ export const fatalitiesListViewQueryConfig: QueryConfig = {
       },
     },
     geojsonTransformerName: "latLon",
+    defaultBasemap: "streets",
   },
 };

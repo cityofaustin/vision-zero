@@ -77,4 +77,8 @@ export interface TableMapConfig {
    * Optional name of popup component, if not provided then Map will use TableMapPopupContent component
    */
   popupComponentName?: "locationTableMap";
+  /**
+   * 
+   */
+  defaultBasemap: "streets" | "aerial";
 }

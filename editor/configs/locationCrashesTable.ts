@@ -107,5 +107,6 @@ export const locationCrashesQueryConfig: QueryConfig = {
       },
     },
     geojsonTransformerName: "latLon",
+    defaultBasemap: "aerial",
   },
 };
