@@ -109,7 +109,7 @@ export default function LocationDetailsPage({
       </Row>
       <Row>
         <Col className="mb-3">
-          <Card>
+          <Card style={{ height: "75vh" }}>
             <Card.Header>
               <Card.Title>Crashes</Card.Title>
               <Card.Subtitle className="fw-light text-secondary">
@@ -121,7 +121,7 @@ export default function LocationDetailsPage({
                 </AlignedLabel>
               </Card.Subtitle>
             </Card.Header>
-            <Card.Body>
+            <Card.Body className="d-flex flex-column">
               <TableWrapper
                 columns={locationCrashesColumns}
                 initialQueryConfig={locationCrashesQueryConfig}
