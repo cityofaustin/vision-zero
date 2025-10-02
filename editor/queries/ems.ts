@@ -3,7 +3,10 @@ import { gql } from "graphql-request";
 export const GET_EMS_RECORDS = gql`
   query EMSDetails($incident_number: String!) {
     ems__incidents(
-      where: { incident_number: { _eq: $incident_number } }
+      where: {
+        incident_number: { _eq: $incident_number }
+        is_deleted: { _eq: false }
+      }
 
       order_by: { id: asc }
     ) {

@@ -46,7 +46,7 @@ export default function EMSDetailsPage({
    * Get all EMS records associated with this incident
    */
   const {
-    data: all_ems_pcrs,
+    data: ems_pcrs,
     error,
     isValidating,
     refetch: refetchEMS,
@@ -63,14 +63,7 @@ export default function EMSDetailsPage({
   /**
    * Use the first EMS record as the "incident"
    */
-  const incident = all_ems_pcrs?.[0];
-
-  /**
-   * Filter out any soft deleted EMS records
-   */
-  const ems_pcrs = all_ems_pcrs?.filter(
-    (record) => record.is_deleted === false
-  );
+  const incident = ems_pcrs?.[0];
 
   /**
    * Hook which manages which related crash PKs we should
