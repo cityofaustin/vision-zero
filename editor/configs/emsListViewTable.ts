@@ -390,6 +390,7 @@ const emsListViewFilterCards: FilterGroup[] = [
 ];
 
 export const emsListViewQueryConfig: QueryConfig = {
+  _version: 1,
   exportable: true,
   exportFilename: "ems_patient_care_records",
   tableName: "ems__incidents",
