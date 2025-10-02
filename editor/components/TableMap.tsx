@@ -91,7 +91,7 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
     setCursor("grab");
   }, []);
 
-  const popupComponent = getPopupComponent(mapConfig.popupComponentName);
+  const PopupComponent = getPopupComponent(mapConfig.popupComponentName);
 
   return (
     <MapGL
@@ -132,7 +132,7 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
           longitude={selectedFeature?.properties?.longitude}
           latitude={selectedFeature?.properties?.latitude}
           featureProperties={selectedFeature.properties}
-          PopupContent={popupComponent}
+          PopupContent={PopupComponent}
           onClose={() => setSelectedFeature(null)}
         />
       )}
