@@ -47,7 +47,9 @@ interface TableMapProps {
  * Map which can be configured to render in the Table component
  */
 export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
-  const { basemapURL, basemapType, setBasemapType } = useBasemap(mapConfig.defaultBasemap);
+  const { basemapURL, basemapType, setBasemapType } = useBasemap(
+    mapConfig.defaultBasemap
+  );
 
   const geojsonBounds = useCurrentBounds(geojson);
   /**
