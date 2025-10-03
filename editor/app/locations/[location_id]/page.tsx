@@ -27,7 +27,7 @@ import { useDocumentTitle } from "@/utils/documentTitle";
 const typename = "atd_txdot_locations";
 
 /**
- * Hook which returns builds a Filter array with the `location_id` param.
+ * Hook which returns a Filter array with the `location_id` param.
  * This can be passed as a `contextFilter` to the TableWrapper so that the
  * location's crashes table is filtered by location
  * @param {string} locationId - the location ID string from the page route

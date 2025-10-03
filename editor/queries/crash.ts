@@ -254,7 +254,10 @@ export const GET_CRASH = gql`
         text
         crash_pk
       }
-      ems__incidents(order_by: { id: asc }) {
+      ems__incidents(
+        where: { is_deleted: { _eq: false } }
+        order_by: { id: asc }
+      ) {
         id
         apd_incident_numbers
         crash_match_status

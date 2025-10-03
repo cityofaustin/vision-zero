@@ -6,6 +6,8 @@ import { FaLink } from "react-icons/fa6";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import AlignedLabel from "@/components/AlignedLabel";
 import { useMutation } from "@/utils/graphql";
+import { Modal } from "react-bootstrap";
+import { useState } from "react";
 
 const allowedLinkRecordRoles = ["vz-admin", "editor"];
 
@@ -23,10 +25,14 @@ const EMSLinkRecordButton: React.FC<
   onSaveCallback,
   isEditingColumn,
 }) => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const isLinkingAnyRecord = !!additionalProps?.selectedEmsPcr;
   const isLinkingThisRecord =
     additionalProps?.selectedEmsPcr &&
     record.id === additionalProps?.selectedEmsPcr.id;
+
+  const recordId = record.id;
 
   const { mutate: updateEMSRecord } = useMutation(mutation);
 
@@ -89,7 +95,59 @@ const EMSLinkRecordButton: React.FC<
               >
                 Reset
               </Dropdown.Item>
+              <Dropdown.Item
+                onClick={async () => {
+                  setShowDeleteModal(true);
+                }}
+              >
+                Delete
+              </Dropdown.Item>
             </Dropdown.Menu>
+            <Modal
+              show={showDeleteModal}
+              onHide={() => {
+                setShowDeleteModal(false);
+              }}
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>Delete record</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                Are you sure you want to delete this EMS patient record with ID{" "}
+                <strong>{recordId}</strong>?
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  type="submit"
+                  onClick={async () => {
+                    await updateEMSRecord({
+                      id: record.id,
+                      updates: {
+                        is_deleted: true,
+                        crash_match_status: "unmatched",
+                        person_match_status: "unmatched",
+                        non_cr3_match_status: "unmatched",
+                        crash_pk: null,
+                        person_id: null,
+                      },
+                    });
+                    if (onSaveCallback) await onSaveCallback();
+                    setShowDeleteModal(false);
+                  }}
+                >
+                  <span>Delete</span>
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </Dropdown>
         )}
       </div>
