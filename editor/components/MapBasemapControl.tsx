@@ -10,6 +10,8 @@ interface MapBasemapControlProps {
   basemapType: "streets" | "aerial";
   /** Sets the state for the basemap type */
   setBasemapType: Dispatch<SetStateAction<"streets" | "aerial">>;
+  /** Type of map using the basemap control, used to differentiate multiple controls on same page */
+  mapType: "tableMap" | "locationMap" | "pointMap";
 }
 
 /**
