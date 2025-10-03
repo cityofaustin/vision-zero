@@ -6,5 +6,5 @@ export const TableMapConfigSchema = z.object({
   layerProps: z.record(z.unknown()).optional(),
   featureLimit: z.number().optional(),
   popupComponentName: z.literal("locationTableMap").optional(),
+  defaultBaseMap: z.enum(["streets", "aerial"]),
 });
-
