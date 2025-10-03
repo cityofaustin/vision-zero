@@ -291,7 +291,13 @@ to make sure it renders on top is a common fix */
   content: none !important;
 }
 
-/* wrapper for custom mapbox control */
+/* Push the top-right mapbox control container down to accomodate our custom control */
+.table-map-container > .mapboxgl-ctrl-top-right {
+  right: 0;
+  top: 35px !important;
+}
+
+/* wrapper for custom fit-bounds control container */
 .map-custom-ctrl-container-top-right {
   position: absolute;
   top: 10px;
