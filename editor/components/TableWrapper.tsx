@@ -150,6 +150,8 @@ export default function TableWrapper<T extends Record<string, unknown>>({
      * Check if stored config version is current and add/remove unknown
      * properties if needed - this has the effect of bringing the old
      * config in sync with the latest settings
+     *
+     * Todo: nested properties (e.g., mapConfig) are not handled
      */
     if (
       queryConfigFromStorage &&
@@ -179,6 +181,8 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           delete queryConfigFromStorage[key as keyof QueryConfig];
         });
       }
+      // we're now on the latest config version ✨
+      queryConfigFromStorage._version = initialQueryConfig._version;
     }
 
     /**
