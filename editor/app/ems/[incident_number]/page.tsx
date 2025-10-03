@@ -65,6 +65,7 @@ export default function EMSDetailsPage({
    * Use the first EMS record as the "incident"
    */
   const incident = ems_pcrs?.[0];
+
   /**
    * Hook which manages which related crash PKs we should
    * use to query people records
