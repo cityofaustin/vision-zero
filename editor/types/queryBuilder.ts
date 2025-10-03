@@ -114,6 +114,11 @@ export type DateFilterMode = "ytd" | "all" | "5y" | "1y" | "custom";
  */
 export interface QueryConfig {
   /**
+   * The current version of the config—is arbitrary and should be incremented when
+   * changes are made to the config so that earlier version can be migrated when possible
+   */
+  _version: number;
+  /**
    * Table (or view) name to query - todo: specify table schema?
    */
   tableName: string;
