@@ -11,7 +11,7 @@ interface MapBasemapControlProps {
   /** Sets the state for the basemap type */
   setBasemapType: Dispatch<SetStateAction<"streets" | "aerial">>;
   /** Type of map using the basemap control, used to differentiate multiple controls on same page */
-  mapType: "tableMap" | "locationMap" | "pointMap";
+  controlId: string;
 }
 
 /**
@@ -20,7 +20,7 @@ interface MapBasemapControlProps {
 export default function MapBasemapControl({
   basemapType,
   setBasemapType,
-  mapType,
+  controlId,
 }: MapBasemapControlProps) {
   return (
     <div className="map-select-basemap-bottom-left">
@@ -34,7 +34,7 @@ export default function MapBasemapControl({
         <Card.Body className="py-1">
           <Form.Check
             className="fs-6 my-1"
-            id={`${mapType}-streets`}
+            id={`${controlId}-streets`}
             type="radio"
             label="Streets"
             checked={basemapType === "streets"}
@@ -44,7 +44,7 @@ export default function MapBasemapControl({
           />
           <Form.Check
             className="fs-6 my-1"
-            id={`${mapType}-aerial`}
+            id={`${controlId}-aerial`}
             type="radio"
             label="Aerial"
             checked={basemapType === "aerial"}
