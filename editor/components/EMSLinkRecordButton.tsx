@@ -32,6 +32,8 @@ const EMSLinkRecordButton: React.FC<
     additionalProps?.selectedEmsPcr &&
     record.id === additionalProps?.selectedEmsPcr.id;
 
+  const recordId = record.id;
+
   const { mutate: updateEMSRecord } = useMutation(mutation);
 
   return (
@@ -111,7 +113,8 @@ const EMSLinkRecordButton: React.FC<
                 <Modal.Title>Delete record</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                Are you sure you want to delete this EMS patient record?
+                Are you sure you want to delete this EMS patient record with ID{" "}
+                <strong>{recordId}</strong>?
               </Modal.Body>
               <Modal.Footer>
                 <Button
