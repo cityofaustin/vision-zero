@@ -265,6 +265,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
 ];
 
 export const crashesListViewQueryConfig: QueryConfig = {
+  _version: 1,
   exportable: true,
   exportFilename: "crashes",
   tableName: "crashes_list_view",
@@ -326,5 +327,6 @@ export const crashesListViewQueryConfig: QueryConfig = {
       },
     },
     geojsonTransformerName: "latLon",
+    defaultBasemap: "streets",
   },
 };

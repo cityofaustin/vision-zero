@@ -147,10 +147,49 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       return;
     }
     /**
+     * Check if stored config version is current and add/remove unknown
+     * properties if needed - this has the effect of bringing the old
+     * config in sync with the latest settings
+     *
+     * Todo: nested properties (e.g., mapConfig) are not handled
+     */
+    if (
+      queryConfigFromStorage &&
+      queryConfigFromStorage?._version !== initialQueryConfig._version
+    ) {
+      const initialQueryConfigKeys = Object.keys(initialQueryConfig);
+      const queryConfigFromStorageKeys = Object.keys(queryConfigFromStorage);
+
+      const missingKeys = initialQueryConfigKeys.filter(
+        (key) => !(key in queryConfigFromStorage)
+      ) as Array<keyof QueryConfig>;
+
+      const unknownKeys: string[] = queryConfigFromStorageKeys.filter(
+        (key) => !(key in initialQueryConfig)
+      );
+
+      // add missing prop/vals to old config
+      if (missingKeys.length > 0) {
+        const missingProps = Object.fromEntries(
+          missingKeys.map((key) => [key, initialQueryConfig[key]])
+        );
+        Object.assign(queryConfigFromStorage, missingProps);
+      }
+      // delete any unknown props
+      if (unknownKeys.length > 0) {
+        unknownKeys.forEach((key) => {
+          delete queryConfigFromStorage[key as keyof QueryConfig];
+        });
+      }
+      // we're now on the latest config version ✨
+      queryConfigFromStorage._version = initialQueryConfig._version;
+    }
+
+    /**
      * Validate the query config we found in local storage
      */
     try {
-      QueryConfigSchema.parse(queryConfigFromStorage);
+      QueryConfigSchema.strict().parse(queryConfigFromStorage);
     } catch (err) {
       console.error(
         "Invalid QueryConfig found in local storage. Using default config instead."
@@ -183,7 +222,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     if (queryConfigFromStorage) {
       setQueryConfig(queryConfigFromStorage);
     }
-  }, [localStorageKey]);
+  }, [localStorageKey, initialQueryConfig]);
 
   /**
    * Keep changes to query config in sync with localstorage

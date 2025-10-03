@@ -327,10 +327,6 @@ to make sure it renders on top is a common fix */
   box-shadow: 0 0 0 2px #0000001a;
 }
 
-.table-map-container {
-  height: 100%;
-}
-
 /* Pushes the mapbox control area down to make room for our custom button */
 .table-map-container .mapboxgl-ctrl-top-right {
   margin-top: 2.5rem;
