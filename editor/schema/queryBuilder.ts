@@ -88,5 +88,5 @@ export const QueryConfigSchema = z.object({
   filterCards: z.array(FilterGroup),
   exportable: z.boolean().optional(),
   exportFilename: z.string().optional(),
-  mapConfig: TableMapConfigSchema.optional(),
+  mapConfig: TableMapConfigSchema.strict().optional(),
 });
