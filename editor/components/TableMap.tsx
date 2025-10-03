@@ -97,6 +97,11 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
 
   return (
     <MapGL
+      /**
+       * use flexbox instead of height/width percentages - this map should
+       * be embedded in a flex container, or TODO: move style to map config
+       */
+      style={{ flexGrow: 1, height: "auto", width: "auto" }}
       ref={mapRef}
       initialViewState={initialViewState}
       {...DEFAULT_MAP_PARAMS}
