@@ -70,7 +70,7 @@ The below features should be tested with each role. Features with role-based acc
 - Crash map: card header: displays hyperlinked **Location ID** (if crash is matched to a location)
 - Crash map: card header: displays **Provider** as **TxDOT CRIS** (default for new crashes from CRIS) or **Manual Q/A** (if a crash location is edited)
 - Crash map: crash map displays crash location with nearmap aerials by default
-- Crash map: Use the basemap control to change to the **Streets** imagery basemap. Zoom way in and way out to make sure basemap load properly.
+- Crash map: Use the basemap control to change to the **Streets** basemap. Zoom way in and way out to make sure basemap load properly.
 - Crash map: edit crash location by dragging map
 - Crash map: edit crash location by keying in lat/lon
 - Observe in change log that council district, jurisdiction, APD sector, engineer area update when crash location is edited to a distant position
