@@ -159,6 +159,9 @@ The below features should be tested with each role. Features with role-based acc
 refresh materialized view location_crashes_view;
 ```
 
+- use the **Map** toggle the view the map of crashes at the location
+- verify map popup shows the crash **Type** the **Case ID** (for non-cr3 crashes), the **Crash ID** (hyperlinked, for CR3 crashes)
+
 ### EMS list - `/ems`
 
 - filter using various search input fields and filter card switches
@@ -179,6 +182,8 @@ refresh materialized view location_crashes_view;
 - Locate an **unmatched** EMS record, then click the **Person ID** column and save a valid person ID value
 - Use the falafel menu to **Reset** an incident matched to a person ID
 - Use the falafel menu to modify an incident to be **Match not found**
+- Use the falafel menu to **Delete** an EMS record which is matched to a crash. If is is the only EMS record with this incident number, the 404 page will render.
+- Navigate to the crash details page of the deleted record and confirm it is not displayed on the **EMS patien care** card
 - The **Possible non-CR3 matches** card should display either no records if there are no matches, one match, or multiple possible matches depending on the non-CR3 match status
 
 #### These steps test the DB trigger that matches EMS records to crashes
