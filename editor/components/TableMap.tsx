@@ -133,6 +133,7 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       <MapBasemapControl
         basemapType={basemapType}
         setBasemapType={setBasemapType}
+        mapType="tableMap"
       />
       {selectedFeature && (
         <PopupWrapper

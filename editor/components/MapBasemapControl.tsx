@@ -18,6 +18,7 @@ interface MapBasemapControlProps {
 export default function MapBasemapControl({
   basemapType,
   setBasemapType,
+  mapType,
 }: MapBasemapControlProps) {
   return (
     <div className="map-select-basemap-bottom-left">
@@ -31,7 +32,7 @@ export default function MapBasemapControl({
         <Card.Body className="py-1">
           <Form.Check
             className="fs-6 my-1"
-            id="streets"
+            id={`${mapType}-streets`}
             type="radio"
             label="Streets"
             checked={basemapType === "streets"}
@@ -41,7 +42,7 @@ export default function MapBasemapControl({
           />
           <Form.Check
             className="fs-6 my-1"
-            id="aerial"
+            id={`${mapType}-aerial`}
             type="radio"
             label="Aerial"
             checked={basemapType === "aerial"}

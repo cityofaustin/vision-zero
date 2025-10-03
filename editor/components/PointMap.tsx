@@ -157,6 +157,7 @@ export const PointMap = ({
       <MapBasemapControl
         basemapType={basemapType}
         setBasemapType={setBasemapType}
+        mapType={"pointMap"}
       />
     </MapGL>
   );

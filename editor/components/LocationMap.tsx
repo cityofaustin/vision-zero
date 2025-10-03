@@ -84,6 +84,7 @@ export const LocationMap = ({
       <MapBasemapControl
         basemapType={basemapType}
         setBasemapType={setBasemapType}
+        mapType={"locationMap"}
       />
       {basemapType === "aerial" && <MapAerialSourceAndLayer />}
       <Source type="geojson" data={polygonFeature} id="location-polygon">
