@@ -260,6 +260,7 @@ const fatalitiesListViewFilterCards: FilterGroup[] = [
 ];
 
 export const fatalitiesListViewQueryConfig: QueryConfig = {
+  _version: 1,
   exportable: true,
   exportFilename: "fatalities",
   tableName: "fatalities_view",
@@ -311,5 +312,6 @@ export const fatalitiesListViewQueryConfig: QueryConfig = {
       },
     },
     geojsonTransformerName: "latLon",
+    defaultBasemap: "streets",
   },
 };

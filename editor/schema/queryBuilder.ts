@@ -3,6 +3,7 @@
  * need to be kept in sync in order to validate the queryConfig
  * that is parsed from local storage
  */
+import { TableMapConfigSchema } from "@/schema/tableMapConfig";
 import { z } from "zod";
 
 // Base types
@@ -75,6 +76,7 @@ const DateFilter = z.object({
 
 // Main QueryConfig schema
 export const QueryConfigSchema = z.object({
+  _version: z.number(),
   tableName: z.string(),
   limit: z.number(),
   offset: z.number(),
@@ -86,4 +88,5 @@ export const QueryConfigSchema = z.object({
   filterCards: z.array(FilterGroup),
   exportable: z.boolean().optional(),
   exportFilename: z.string().optional(),
+  mapConfig: TableMapConfigSchema.strict().optional(),
 });

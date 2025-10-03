@@ -25,6 +25,7 @@ import EMSLinkToPersonButton, {
 import { emsMatchingPeopleColumns } from "@/configs/emsMatchingPeopleColumns";
 import { emsNonCR3Columns } from "@/configs/nonCR3Columns";
 import { emsDataCards } from "@/configs/emsDataCards";
+import { getMutationVariables } from "@/configs/emsRelatedRecordTable";
 import { PeopleListRow } from "@/types/peopleList";
 import { FaTruckMedical } from "react-icons/fa6";
 import { parseISO, subHours, addHours } from "date-fns";
@@ -64,6 +65,7 @@ export default function EMSDetailsPage({
    * Use the first EMS record as the "incident"
    */
   const incident = ems_pcrs?.[0];
+
   /**
    * Hook which manages which related crash PKs we should
    * use to query people records
@@ -269,6 +271,7 @@ export default function EMSDetailsPage({
             header="EMS patient(s)"
             columns={emsDataCards.patient}
             mutation={UPDATE_EMS_PCR}
+            getMutationVariables={getMutationVariables}
             onSaveCallback={onSaveCallback}
             rowActionComponent={EMSLinkRecordButton}
             rowActionComponentAdditionalProps={linkRecordButtonProps}

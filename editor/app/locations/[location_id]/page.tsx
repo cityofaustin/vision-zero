@@ -27,7 +27,7 @@ import { useDocumentTitle } from "@/utils/documentTitle";
 const typename = "atd_txdot_locations";
 
 /**
- * Hook which returns builds a Filter array with the `location_id` param.
+ * Hook which returns a Filter array with the `location_id` param.
  * This can be passed as a `contextFilter` to the TableWrapper so that the
  * location's crashes table is filtered by location
  * @param {string} locationId - the location ID string from the page route
@@ -109,7 +109,8 @@ export default function LocationDetailsPage({
       </Row>
       <Row>
         <Col className="mb-3">
-          <Card>
+          {/* map will be 75vh, list will grow vertically as needed */}
+          <Card style={{ minHeight: "75vh" }}>
             <Card.Header>
               <Card.Title>Crashes</Card.Title>
               <Card.Subtitle className="fw-light text-secondary">
@@ -121,7 +122,7 @@ export default function LocationDetailsPage({
                 </AlignedLabel>
               </Card.Subtitle>
             </Card.Header>
-            <Card.Body>
+            <Card.Body className="d-flex flex-column flex-grow-1">
               <TableWrapper
                 columns={locationCrashesColumns}
                 initialQueryConfig={locationCrashesQueryConfig}

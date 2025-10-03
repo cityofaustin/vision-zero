@@ -64,4 +64,16 @@ export const locationCrashesColumns: ColDataCardDef<LocationCrashRow>[] = [
     sortable: true,
     valueFormatter: formatDollars,
   },
+  {
+    path: "latitude",
+    label: "latitude",
+    exportOnly: true,
+    fetchAlways: true,
+  },
+  {
+    path: "longitude",
+    label: "longitude",
+    exportOnly: true,
+    fetchAlways: true,
+  },
 ];

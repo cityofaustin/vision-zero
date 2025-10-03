@@ -32,4 +32,5 @@ export type EMSPatientCareRecord = {
   person_match_status?: string | null;
   travel_mode: string | null;
   unparsed_apd_incident_numbers: string | null;
+  is_deleted: boolean;
 };

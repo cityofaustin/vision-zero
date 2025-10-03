@@ -6,8 +6,18 @@ import TableWrapper from "@/components/TableWrapper";
 import { emsListViewQueryConfig } from "@/configs/emsListViewTable";
 import { FaCircleInfo } from "react-icons/fa6";
 import { useDocumentTitle } from "@/utils/documentTitle";
+import { Filter } from "@/types/queryBuilder";
 
 const localStorageKey = "emsListQueryConfig";
+
+const isDeletedFilter: Filter[] = [
+  {
+    id: "is_deleted",
+    value: false,
+    column: "is_deleted",
+    operator: "_eq",
+  },
+];
 
 export default function EMS() {
   useDocumentTitle("EMS");
@@ -32,6 +42,10 @@ export default function EMS() {
         columns={emsListViewColumns}
         initialQueryConfig={emsListViewQueryConfig}
         localStorageKey={localStorageKey}
+        /**
+         * Filters out records that have been soft deleted
+         */
+        contextFilters={isDeletedFilter}
       />
     </div>
   );
