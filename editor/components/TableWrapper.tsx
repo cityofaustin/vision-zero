@@ -222,7 +222,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     if (queryConfigFromStorage) {
       setQueryConfig(queryConfigFromStorage);
     }
-  }, [localStorageKey]);
+  }, [localStorageKey, initialQueryConfig]);
 
   /**
    * Keep changes to query config in sync with localstorage
