@@ -1,7 +1,9 @@
 import { FeatureCollection } from "geojson";
-import { LayerProps } from "react-map-gl";
+import MapGL, { LayerProps } from "react-map-gl";
 import TableMapPopupContent from "@/components/TableMapPopupContent";
 import LocationTableMapPopupContent from "@/components/LocationsTableMapPopupContent";
+
+type MapGLComponentProps = React.ComponentProps<typeof MapGL>;
 
 /**
  * An index of functions that transform input data into a geojson feature collection
@@ -67,6 +69,10 @@ export interface TableMapConfig {
    */
   layerProps?: LayerProps;
   /**
+   * Optional react-map-gl props to pass to the Map instance
+   */
+  mapProps?: Partial<MapGLComponentProps>;
+  /**
    * Optional limit to the number of features to query and render
    * This will override the `limit` set in the QueryConfig
    *
@@ -78,7 +84,7 @@ export interface TableMapConfig {
    */
   popupComponentName?: "locationTableMap";
   /**
-   * 
+   *
    */
   defaultBasemap: "streets" | "aerial";
 }
