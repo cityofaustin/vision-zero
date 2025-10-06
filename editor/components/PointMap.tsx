@@ -19,8 +19,9 @@ import {
   MAP_COORDINATE_PRECISION,
   MAP_MAX_BOUNDS,
 } from "@/configs/map";
-import { useBasemap } from "@/utils/map";
+import { useBasemap, useCurrentBoundsFromPoint } from "@/utils/map";
 import MapBasemapControl from "@/components/MapBasemapControl";
+import MapFitBoundsControl from "./MapFitBoundsControl";
 import { COLORS } from "@/utils/constants";
 import { z, ZodFormattedError } from "zod";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -86,6 +87,9 @@ export const PointMap = ({
 }: PointMapProps) => {
   const { basemapURL, basemapType, setBasemapType } = useBasemap("aerial");
 
+  const geojsonBounds = useCurrentBoundsFromPoint(mapLatLon);
+  console.log(geojsonBounds)
+
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
       // truncate values to our preferred precision
@@ -132,6 +136,7 @@ export const PointMap = ({
       {basemapType === "aerial" && <MapAerialSourceAndLayer />}
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
+      <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
       {savedLatitude && savedLongitude && !isEditing && (
         <Marker
           latitude={savedLatitude}

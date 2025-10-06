@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { bbox } from "@turf/bbox";
+import { lineString } from "@turf/helpers";
 import { FeatureCollection } from "geojson";
 import { LngLatBoundsLike } from "mapbox-gl";
 import { mapStyleOptions } from "@/configs/map";
 import { useTheme } from "@/contexts/AppThemeProvider";
+import { LatLon } from "@/components/TableMap";
 
 /**
  * Resize observer hook that can be used to trigger resize() when the
@@ -69,6 +71,30 @@ export const useCurrentBounds = (
       [bounds[2], bounds[3]],
     ];
   }, [geojson]);
+
+
+/**
+ * Hook which computes the bounding box of the provided point
+ *
+ * Returns undefined if the point does not have lat and lon
+ */
+export const useCurrentBoundsFromPoint = (
+  latLonPoint: LatLon | undefined
+): LngLatBoundsLike | undefined =>
+  useMemo(() => {
+    if (!latLonPoint?.latitude || !latLonPoint?.longitude) {
+      return undefined;
+    }
+
+    const arraything = [[latLonPoint.longitude, latLonPoint.latitude]];
+    const lineStringFeature = lineString([arraything[0], [arraything[0][0], arraything[0][1]]])
+    const bounds = bbox(lineStringFeature);
+
+    return [
+      [bounds[0], bounds[1]],
+      [bounds[2], bounds[3]],
+    ];
+  }, [latLonPoint]);
 
 /**
  * Custom hook that manages basemap state and returns the appropriate basemap URL
