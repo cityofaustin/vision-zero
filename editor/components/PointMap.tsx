@@ -147,7 +147,7 @@ export const PointMap = ({
         />
       )}
       {/* add nearmap raster source and style */}
-      <MapAerialSourceAndLayer />
+      {basemapType === "aerial" && <MapAerialSourceAndLayer />}
       {setMapLatLon && (
         <MapGeocoderControl
           position="top-left"
