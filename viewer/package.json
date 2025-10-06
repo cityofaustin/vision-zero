@@ -30,7 +30,7 @@
     "hookrouter": "^1.2.3",
     "lodash.clonedeep": "^4.5.0",
     "moment": "^2.29.4",
-    "patch-package": "^6.2.2",
+    "patch-package": "^8.0.1",
     "react": "^16.10.2",
     "react-app-polyfill": "^1.0.6",
     "react-chartjs-2": "^2.9.0",
