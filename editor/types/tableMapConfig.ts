@@ -1,5 +1,7 @@
 import { FeatureCollection } from "geojson";
 import { LayerProps } from "react-map-gl";
+import TableMapPopupContent from "@/components/TableMapPopupContent";
+import LocationTableMapPopupContent from "@/components/LocationsTableMapPopupContent";
 
 /**
  * An index of functions that transform input data into a geojson feature collection
@@ -33,6 +35,21 @@ export const geoJsonTransformers = {
 };
 
 /**
+ * Returns popup component based on component named in mapConfig.
+ * Default is TableMapPopupContent
+ */
+export const getPopupComponent = (
+  popupName: "locationTableMap" | undefined
+) => {
+  switch (popupName) {
+    case "locationTableMap":
+      return LocationTableMapPopupContent;
+    default:
+      return TableMapPopupContent;
+  }
+};
+
+/**
  * Configuration object for rendering the map component that plugs
  * into the Table component
  */
@@ -56,4 +73,12 @@ export interface TableMapConfig {
    * todo: implement this ;)
    */
   featureLimit?: number;
+  /**
+   * Optional name of popup component, if not provided then Map will use TableMapPopupContent component
+   */
+  popupComponentName?: "locationTableMap";
+  /**
+   * 
+   */
+  defaultBasemap: "streets" | "aerial";
 }

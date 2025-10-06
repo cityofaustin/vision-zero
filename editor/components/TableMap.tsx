@@ -10,13 +10,13 @@ import MapFitBoundsControl from "@/components/MapFitBoundsControl";
 import { useCurrentBounds } from "@/utils/map";
 import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import { FeatureCollection } from "geojson";
-import { TableMapConfig } from "@/types/tableMapConfig";
+import { getPopupComponent, TableMapConfig } from "@/types/tableMapConfig";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { GeoJSONFeature } from "mapbox-gl";
 import PopupWrapper from "@/components/PopupWrapper";
-import TableMapPopupContent from "@/components/TableMapPopupContent";
 import MapBasemapControl from "@/components/MapBasemapControl";
 import { useBasemap } from "@/utils/map";
+import { MapAerialSourceAndLayer } from "@/components/MapAerialSourceAndLayer";
 
 export interface LatLon {
   latitude: number;
@@ -47,7 +47,9 @@ interface TableMapProps {
  * Map which can be configured to render in the Table component
  */
 export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
-  const { basemapURL, basemapType, setBasemapType } = useBasemap("streets");
+  const { basemapURL, basemapType, setBasemapType } = useBasemap(
+    mapConfig.defaultBasemap
+  );
 
   const geojsonBounds = useCurrentBounds(geojson);
   /**
@@ -91,8 +93,15 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
     setCursor("grab");
   }, []);
 
+  const PopupComponent = getPopupComponent(mapConfig.popupComponentName);
+
   return (
     <MapGL
+      /**
+       * use flexbox instead of height/width percentages - this map should
+       * be embedded in a flex container, or TODO: move style to map config
+       */
+      style={{ flexGrow: 1, height: "auto", width: "auto" }}
       ref={mapRef}
       initialViewState={initialViewState}
       {...DEFAULT_MAP_PARAMS}
@@ -113,6 +122,7 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
         }
       }}
     >
+      {basemapType === "aerial" && <MapAerialSourceAndLayer />}
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
       {/* custom geojson source and layer */}
@@ -123,13 +133,14 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       <MapBasemapControl
         basemapType={basemapType}
         setBasemapType={setBasemapType}
+        controlId="tableMap"
       />
       {selectedFeature && (
         <PopupWrapper
           longitude={selectedFeature?.properties?.longitude}
           latitude={selectedFeature?.properties?.latitude}
           featureProperties={selectedFeature.properties}
-          PopupContent={TableMapPopupContent}
+          PopupContent={PopupComponent}
           onClose={() => setSelectedFeature(null)}
         />
       )}

@@ -37,8 +37,8 @@ The below features should be tested with each role. Features with role-based acc
 - Crashes map: Adjust the page size to show many features on map
 - Crashes map: zoom in. click on a crash point to display it's pop-up card.
 - Crashes map: use the fit bounds control (top right corner of map, above +/- buttons) to recenter the map
-- Crashes map: Use the basemap control to change to the **Aerial** imagery basemap. Zoom in to make sure tiles load propery.
-- Crashes map: Switch back to **Streets** basemap. Not switch to dark mode and (1) confirm that the basemap changes to the dark streets basemap and (2) click on a point to confirm that it's pop-up card is styled with a dark background
+- Crashes map: Use the basemap control to change to the **Aerial** imagery basemap. Zoom in to make sure tiles load properly.
+- Crashes map: Switch back to **Streets** basemap. Now switch to dark mode and (1) confirm that the basemap changes to the dark streets basemap and (2) click on a point to confirm that it's pop-up card is styled with a dark background
 - Crashes map: refresh your page to make sure the dark mode map setting persists
 - Crashes map: click on a crash point once more and use the hyperlinked crash ID to navigate to the crash details page
 - Use download button to export records to csv
@@ -69,7 +69,8 @@ The below features should be tested with each role. Features with role-based acc
 - [role: editor, admin] Delete tempoary crash record button inside temp record banner (temp crashes only)
 - Crash map: card header: displays hyperlinked **Location ID** (if crash is matched to a location)
 - Crash map: card header: displays **Provider** as **TxDOT CRIS** (default for new crashes from CRIS) or **Manual Q/A** (if a crash location is edited)
-- Crash map: crash map displays crash location with nearmap aerials
+- Crash map: crash map displays crash location with nearmap aerials by default
+- Crash map: Use the basemap control to change to the **Streets** basemap. Zoom way in and way out to make sure basemap load properly.
 - Crash map: edit crash location by dragging map
 - Crash map: edit crash location by keying in lat/lon
 - Observe in change log that council district, jurisdiction, APD sector, engineer area update when crash location is edited to a distant position
@@ -159,6 +160,9 @@ The below features should be tested with each role. Features with role-based acc
 refresh materialized view location_crashes_view;
 ```
 
+- use the **Map** toggle the view the map of crashes at the location
+- verify map popup shows the crash **Type** the **Case ID** (for non-cr3 crashes), the **Crash ID** (hyperlinked, for CR3 crashes)
+
 ### EMS list - `/ems`
 
 - filter using various search input fields and filter card switches
@@ -175,9 +179,12 @@ refresh materialized view location_crashes_view;
 - The **Select person** button is displayed for each EMS patient row
 - Click **Select person** to enable the **Select match** button to appear next to any unlinked person records in the **Associated people records** table
 - Click the **Person ID** column for any **EMS Patients** row to manually edit a person ID value
-- - Click the **Person ID** column and save an invalid person ID value and verify an error message is displayed
+- Click the **Person ID** column and save an invalid person ID value and verify an error message is displayed
+- Locate an **unmatched** EMS record, then click the **Person ID** column and save a valid person ID value
 - Use the falafel menu to **Reset** an incident matched to a person ID
 - Use the falafel menu to modify an incident to be **Match not found**
+- Use the falafel menu to **Delete** an EMS record which is matched to a crash. If is is the only EMS record with this incident number, the 404 page will render.
+- Navigate to the crash details page of the deleted record and confirm it is not displayed on the **EMS patien care** card
 - The **Possible non-CR3 matches** card should display either no records if there are no matches, one match, or multiple possible matches depending on the non-CR3 match status
 
 #### These steps test the DB trigger that matches EMS records to crashes

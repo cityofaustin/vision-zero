@@ -10,6 +10,8 @@ import { center } from "@turf/center";
 import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
+import MapBasemapControl from "@/components/MapBasemapControl";
+import { useBasemap } from "@/utils/map";
 import { MultiPolygon } from "@/types/geojson";
 import { LineLayerSpecification } from "mapbox-gl";
 
@@ -60,6 +62,8 @@ export const LocationMap = ({
     locationId
   );
 
+  const { basemapURL, basemapType, setBasemapType } = useBasemap("aerial");
+
   return (
     <MapGL
       ref={mapRef}
@@ -69,6 +73,7 @@ export const LocationMap = ({
         zoom: DEFAULT_MAP_PAN_ZOOM.zoom,
       }}
       {...DEFAULT_MAP_PARAMS}
+      mapStyle={basemapURL}
       cooperativeGestures={true}
       // Resize the map canvas when parent row expands to fit crash
       onLoad={(e) => e.target.resize()}
@@ -76,8 +81,12 @@ export const LocationMap = ({
     >
       <FullscreenControl position="top-left" />
       <NavigationControl position="top-left" showCompass={false} />
-      {/* add nearmap raster source and style */}
-      <MapAerialSourceAndLayer />
+      <MapBasemapControl
+        basemapType={basemapType}
+        setBasemapType={setBasemapType}
+        controlId="locationMap"
+      />
+      {basemapType === "aerial" && <MapAerialSourceAndLayer />}
       <Source type="geojson" data={polygonFeature} id="location-polygon">
         <Layer {...polygonLayer} />
       </Source>
