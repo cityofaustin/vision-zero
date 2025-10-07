@@ -108,7 +108,7 @@ export const locationCrashesQueryConfig: QueryConfig = {
       },
     },
     mapProps: {
-      cooperativeGestures: false,
+      cooperativeGestures: true,
     },
     geojsonTransformerName: "latLon",
     defaultBasemap: "aerial",
