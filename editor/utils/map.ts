@@ -72,7 +72,6 @@ export const useCurrentBounds = (
     ];
   }, [geojson]);
 
-
 /**
  * Hook which computes the bounding box of the provided point
  *
@@ -86,8 +85,11 @@ export const useCurrentBoundsFromPoint = (
       return undefined;
     }
 
-    const arraything = [[latLonPoint.longitude, latLonPoint.latitude]];
-    const lineStringFeature = lineString([arraything[0], [arraything[0][0], arraything[0][1]]])
+    const pointArray = [[latLonPoint.longitude, latLonPoint.latitude]];
+    const lineStringFeature = lineString([
+      pointArray[0],
+      [pointArray[0][0], pointArray[0][1]],
+    ]);
     const bounds = bbox(lineStringFeature);
 
     return [

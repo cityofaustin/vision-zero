@@ -88,7 +88,6 @@ export const PointMap = ({
   const { basemapURL, basemapType, setBasemapType } = useBasemap("aerial");
 
   const geojsonBounds = useCurrentBoundsFromPoint(mapLatLon);
-  console.log(geojsonBounds)
 
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
