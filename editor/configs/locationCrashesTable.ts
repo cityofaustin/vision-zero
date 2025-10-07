@@ -107,6 +107,9 @@ export const locationCrashesQueryConfig: QueryConfig = {
         "circle-stroke-color": "#fff",
       },
     },
+    mapProps: {
+      cooperativeGestures: true,
+    },
     geojsonTransformerName: "latLon",
     defaultBasemap: "aerial",
   },

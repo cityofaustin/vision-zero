@@ -110,7 +110,7 @@ export default function LocationDetailsPage({
       <Row>
         <Col className="mb-3">
           {/* map will be 75vh, list will grow vertically as needed */}
-          <Card style={{ minHeight: "75vh" }}>
+          <Card style={{ minHeight: "85vh" }}>
             <Card.Header>
               <Card.Title>Crashes</Card.Title>
               <Card.Subtitle className="fw-light text-secondary">
