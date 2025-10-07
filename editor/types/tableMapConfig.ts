@@ -3,6 +3,7 @@ import MapGL, { LayerProps } from "react-map-gl";
 import TableMapPopupContent from "@/components/TableMapPopupContent";
 import LocationTableMapPopupContent from "@/components/LocationsTableMapPopupContent";
 
+// importing MapProps does not work: https://github.com/visgl/react-map-gl/issues/2140
 type MapGLComponentProps = React.ComponentProps<typeof MapGL>;
 
 /**
