@@ -52,6 +52,16 @@ export const formatTime = (value: unknown): string => {
 };
 
 /**
+ * Format year as: 2025
+ */
+export const formatYear = (value: unknown): string => {
+  if (!value || typeof value !== "string") {
+    return "";
+  }
+  return format(parseISO(value), "yyyy") || "";
+};
+
+/**
  * Format date as: 2025-01-13 4.33.36 PM
  */
 export const formatFileTimestamp = (date: Date): string => {
