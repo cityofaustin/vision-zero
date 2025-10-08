@@ -16,7 +16,7 @@ export default function FatalCrashDetailsPage({
 
   const typename = "crashes";
 
-  const { data, error, refetch, isValidating } = useQuery<Crash>({
+  const { data, error } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
     variables: { recordLocator },
     typename,
@@ -34,8 +34,6 @@ export default function FatalCrashDetailsPage({
     true // exclude the suffix
   );
 
-  console.log(data, "data", recordLocator);
-
   return (
     <>
       {data && (
@@ -44,7 +42,8 @@ export default function FatalCrashDetailsPage({
             {formatAddresses(data[0])}
           </span>
           <span className="fs-4">
-            {formatYear(data[0].crash_timestamp)} Fatal Crash #{data[0].ytd}
+            {formatYear(data[0].crash_timestamp)} Fatal Crash #
+            {data[0].law_enforcement_ytd_fatality_num}
           </span>
         </div>
       )}
