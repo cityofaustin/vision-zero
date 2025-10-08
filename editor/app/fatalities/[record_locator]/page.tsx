@@ -6,6 +6,9 @@ import { Crash } from "@/types/crashes";
 import { useDocumentTitle } from "@/utils/documentTitle";
 import { formatAddresses } from "@/utils/formatters";
 import { formatYear } from "@/utils/formatters";
+import { Row, Col } from "react-bootstrap";
+import { notFound } from "next/navigation";
+import { Card } from "react-bootstrap";
 
 export default function FatalCrashDetailsPage({
   params,
@@ -34,9 +37,19 @@ export default function FatalCrashDetailsPage({
     true // exclude the suffix
   );
 
+  if (!data) {
+    // todo: loading spinner (would be nice to use a spinner inside cards)
+    return;
+  }
+
+  if (data.length === 0) {
+    // 404
+    notFound();
+  }
+
   return (
     <>
-      {data && (
+      <Row>
         <div className="d-flex justify-content-between mb-3">
           <span className="fs-3 fw-bold text-uppercase">
             {formatAddresses(data[0])}
@@ -46,7 +59,13 @@ export default function FatalCrashDetailsPage({
             {data[0].law_enforcement_ytd_fatality_num}
           </span>
         </div>
-      )}
+      </Row>
+      <Row>
+        <Col>
+          <Card></Card>
+        </Col>
+        <Col></Col>
+      </Row>
     </>
   );
 }
