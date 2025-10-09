@@ -9,6 +9,8 @@ import { formatYear } from "@/utils/formatters";
 import { Row, Col } from "react-bootstrap";
 import { notFound } from "next/navigation";
 import { Card } from "react-bootstrap";
+import DataCard from "@/components/DataCard";
+import { fatalCrashDataCard } from "@/configs/fatalCrashDataCard";
 
 export default function FatalCrashDetailsPage({
   params,
@@ -62,7 +64,14 @@ export default function FatalCrashDetailsPage({
       </Row>
       <Row>
         <Col>
-          <Card></Card>
+          <Card>
+            <Row>
+              <DataCard
+                record={data[0]}
+                columns={fatalCrashDataCard}
+              ></DataCard>
+            </Row>
+          </Card>
         </Col>
         <Col></Col>
       </Row>
