@@ -96,6 +96,13 @@ insert_permissions:
         - vin
     comment: ""
 select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - crash_pk
+        - id
+      filter: {}
+    comment: ""
   - role: vz-admin
     permission:
       columns:
@@ -104,6 +111,14 @@ select_permissions:
       filter: {}
     comment: ""
 update_permissions:
+  - role: editor
+    permission:
+      columns:
+        - is_deleted
+        - updated_by
+      filter: {}
+      check: null
+    comment: ""
   - role: vz-admin
     permission:
       columns:

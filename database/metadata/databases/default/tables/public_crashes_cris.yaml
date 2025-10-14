@@ -158,6 +158,7 @@ select_permissions:
     permission:
       columns:
         - id
+        - is_temp_record
       filter: {}
     comment: ""
   - role: vz-admin
@@ -222,6 +223,14 @@ select_permissions:
       filter: {}
     comment: ""
 update_permissions:
+  - role: editor
+    permission:
+      columns:
+        - is_deleted
+        - updated_by
+      filter: {}
+      check: {}
+    comment: ""
   - role: vz-admin
     permission:
       columns:
