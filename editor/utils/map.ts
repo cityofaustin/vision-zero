@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { bbox } from "@turf/bbox";
-import { lineString } from "@turf/helpers";
+import { AllGeoJSON, lineString } from "@turf/helpers";
 import { FeatureCollection } from "geojson";
 import { LngLatBoundsLike } from "mapbox-gl";
 import { mapStyleOptions } from "@/configs/map";
@@ -58,45 +58,36 @@ export function useResizeObserver<T extends HTMLElement>(
  * Returns undefined if the geojson has no features
  */
 export const useCurrentBounds = (
-  geojson: FeatureCollection
+  geojson: AllGeoJSON
 ): LngLatBoundsLike | undefined =>
   useMemo(() => {
-    if (!geojson.features.length) {
-      return undefined;
-    }
-    const bounds = bbox(geojson);
+    console.log(geojson);
+    if (geojson.type == "FeatureCollection") {
+      if (!geojson.features.length) {
+        return undefined;
+      }
+      const bounds = bbox(geojson);
 
-    return [
-      [bounds[0], bounds[1]],
-      [bounds[2], bounds[3]],
-    ];
+      return [
+        [bounds[0], bounds[1]],
+        [bounds[2], bounds[3]],
+      ];
+    }
+    if (geojson.type == "Point") {
+      const point = {
+        longitude: geojson.coordinates[0],
+        latitude: geojson.coordinates[1],
+      };
+      if (!point?.latitude || !point?.longitude) {
+        return undefined;
+      }
+
+      return [
+        [point.longitude, point.latitude],
+        [point.longitude, point.latitude],
+      ];
+    }
   }, [geojson]);
-
-/**
- * Hook which computes the bounding box of the provided point
- *
- * Returns undefined if the point does not have lat and lon
- */
-export const useCurrentBoundsFromPoint = (
-  latLonPoint: LatLon | undefined
-): LngLatBoundsLike | undefined =>
-  useMemo(() => {
-    if (!latLonPoint?.latitude || !latLonPoint?.longitude) {
-      return undefined;
-    }
-
-    const pointArray = [[latLonPoint.longitude, latLonPoint.latitude]];
-    const lineStringFeature = lineString([
-      pointArray[0],
-      [pointArray[0][0], pointArray[0][1]],
-    ]);
-    const bounds = bbox(lineStringFeature);
-
-    return [
-      [bounds[0], bounds[1]],
-      [bounds[2], bounds[3]],
-    ];
-  }, [latLonPoint]);
 
 /**
  * Custom hook that manages basemap state and returns the appropriate basemap URL

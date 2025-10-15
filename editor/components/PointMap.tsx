@@ -19,7 +19,7 @@ import {
   MAP_COORDINATE_PRECISION,
   MAP_MAX_BOUNDS,
 } from "@/configs/map";
-import { useBasemap, useCurrentBoundsFromPoint } from "@/utils/map";
+import { useBasemap, useCurrentBounds } from "@/utils/map";
 import MapBasemapControl from "@/components/MapBasemapControl";
 import MapFitBoundsControl from "./MapFitBoundsControl";
 import { COLORS } from "@/utils/constants";
@@ -87,7 +87,10 @@ export const PointMap = ({
 }: PointMapProps) => {
   const { basemapURL, basemapType, setBasemapType } = useBasemap("aerial");
 
-  const geojsonBounds = useCurrentBoundsFromPoint(mapLatLon);
+  const geojsonBounds = useCurrentBounds({
+    type: "Point",
+    coordinates: mapLatLon ? [mapLatLon.longitude, mapLatLon.latitude] : [],
+  });
 
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
