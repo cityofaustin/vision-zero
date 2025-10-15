@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { bbox } from "@turf/bbox";
-import { AllGeoJSON, lineString } from "@turf/helpers";
-import { FeatureCollection } from "geojson";
+import { AllGeoJSON } from "@turf/helpers";
 import { LngLatBoundsLike } from "mapbox-gl";
 import { mapStyleOptions } from "@/configs/map";
 import { useTheme } from "@/contexts/AppThemeProvider";
-import { LatLon } from "@/components/TableMap";
 
 /**
  * Resize observer hook that can be used to trigger resize() when the
