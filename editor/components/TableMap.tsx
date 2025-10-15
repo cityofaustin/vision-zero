@@ -17,6 +17,7 @@ import PopupWrapper from "@/components/PopupWrapper";
 import MapBasemapControl from "@/components/MapBasemapControl";
 import { useBasemap } from "@/utils/map";
 import { MapAerialSourceAndLayer } from "@/components/MapAerialSourceAndLayer";
+import MapGeocoderControl from "./MapGeocoderControl";
 
 export interface LatLon {
   latitude: number;
@@ -123,6 +124,7 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       }}
     >
       {basemapType === "aerial" && <MapAerialSourceAndLayer />}
+      <MapGeocoderControl position="top-left" />
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
       {/* custom geojson source and layer */}
