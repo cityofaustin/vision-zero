@@ -74,8 +74,9 @@ const Footer = () => {
         position: relative;
         background: ${colors.dark};
         top: -20px;
+        padding: 8px;
         border: 10px solid ${colors.dark};
-        border-radius: 50% 50% 0 0;
+        border-radius: 60% 60% 0 0;
         left: 50%;
         transform: translate(-50%, 0%);
       }
