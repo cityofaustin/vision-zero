@@ -59,7 +59,6 @@ export const useCurrentBounds = (
   geojson: AllGeoJSON
 ): LngLatBoundsLike | undefined =>
   useMemo(() => {
-    console.log(geojson);
     if (geojson.type == "FeatureCollection") {
       if (!geojson.features.length) {
         return undefined;
