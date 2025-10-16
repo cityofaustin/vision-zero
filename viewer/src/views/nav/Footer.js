@@ -113,7 +113,7 @@ const Footer = () => {
         <Container fluid className="mt-5">
           <img
             alt="City of Austin seal"
-            className="coa-seal float-left"
+            className="coa-logo float-left"
             height="100px"
             src={logo}
           />
