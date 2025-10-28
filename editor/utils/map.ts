@@ -59,31 +59,16 @@ export const useCurrentBounds = (
   geojson: AllGeoJSON
 ): LngLatBoundsLike | undefined =>
   useMemo(() => {
-    if (geojson.type == "FeatureCollection") {
-      if (!geojson.features.length) {
-        return undefined;
-      }
-      const bounds = bbox(geojson);
+    const bounds = bbox(geojson);
 
-      return [
-        [bounds[0], bounds[1]],
-        [bounds[2], bounds[3]],
-      ];
+    if (Math.abs(bounds[0]) > 180) {
+      return undefined;
     }
-    if (geojson.type == "Point") {
-      const point = {
-        longitude: geojson.coordinates[0],
-        latitude: geojson.coordinates[1],
-      };
-      if (!point?.latitude || !point?.longitude) {
-        return undefined;
-      }
 
-      return [
-        [point.longitude, point.latitude],
-        [point.longitude, point.latitude],
-      ];
-    }
+    return [
+      [bounds[0], bounds[1]],
+      [bounds[2], bounds[3]],
+    ];
   }, [geojson]);
 
 /**
