@@ -11,7 +11,7 @@ ADMIN_SECRET = "hasurapassword"
 
 GET_UNMATCHED_EMS_PCRS = """
 query GetEMSTodo {
-  ems__incidents(limit: 5000, where: {crash_pk: {_is_null: false}, person_id: {_is_null: true}, is_deleted: { _eq: false } }) {
+  ems__incidents(limit: 1000, where: {crash_pk: {_is_null: false}, person_id: {_is_null: true}, is_deleted: { _eq: false } }) {
     id
     incident_number
   }
@@ -55,6 +55,7 @@ query GetUnmatchedCrashPeople($crash_pk: Int!, $matched_ids: [Int!]) {
       id
       label
     }
+    mode_desc
     prsn_injry_sev_id
     prsn_taken_to
   }

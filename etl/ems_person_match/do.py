@@ -1,5 +1,8 @@
 # from pprint import pprint as print
 from itertools import groupby
+import logging
+
+from rapidfuzz import fuzz
 
 from utils.graphql import (
     make_hasura_request,
@@ -8,9 +11,13 @@ from utils.graphql import (
     GET_EMS_PCRS_BY_INCIDENT_NUMBER,
 )
 
-from utils.field_maps import POSITION_IN_VEHICLE_MAP
+from utils.field_maps import (
+    EMS_POS_IN_VEHICLE_TO_CRIS_OCC_POS_MAP,
+    CRIS_MODE_CAT_TO_EMS_TRAVEL_MODE_MAP,
+)
 
 AGE_GAP_TOLERANCE = 3
+TRANSPORT_DEST_MATCH_MIN_MIN_SCORE = 50
 
 # fmt: off
 tests = [
@@ -18,6 +25,10 @@ tests = [
     {
         "name": "a",
         "attrs": ["sex", "ethnicity", "age", "pos_in_vehicle", "travel_mode", "injury_severity"],
+    },
+    {
+        "name": "a2",
+        "attrs": ["sex", "ethnicity", "age", "pos_in_vehicle", "travel_mode"],
     },
     {
         "name": "b",
@@ -36,10 +47,23 @@ tests = [
         "attrs": ["sex", "ethnicity", "age_fuzzy"],
     },
     {
+        "name": "f+",
+        "attrs": ["sex", "age_fuzzy", "transport_dest"],
+    },
+    {
         "name": "f",
         "attrs": ["sex", "age_fuzzy"],
     },
+    {
+        "name": "g",
+        "attrs": ["sex", "transport_dest"],
+    },
+    {
+        "name": "i",
+        "attrs": ["transport_dest"],
+    },
 ]
+
 # fmt: on
 
 
@@ -73,6 +97,18 @@ def is_fuzzy_age_match(pcr, person):
 
 
 def is_position_in_vehicle_match(pcr, person):
+    pcr_position = pcr["mvc_form_position_in_vehicle"]
+    person_position = person.get("occpnt_pos", {}).get("label", "")
+    if pcr_position and person_position:
+        pcr_position = pcr_position.lower()
+        person_position = person_position.lower()
+        pcr_position_mapped = EMS_POS_IN_VEHICLE_TO_CRIS_OCC_POS_MAP.get(pcr_position)
+        if pcr_position_mapped:
+            return pcr_position_mapped == person_position
+    return False
+
+
+def is_mode_match(pcr, person):
     """
     Consider this query and inc 25257-0313, which highlights ped mode mismatches:
     SELECT
@@ -87,29 +123,30 @@ def is_position_in_vehicle_match(pcr, person):
         AND travel_mode = 'Pedestrian'
         AND mode_desc != 'Pedestrian';
     """
-    pcr_position_val = str(pcr["mvc_form_position_in_vehicle"]).lower()
-    person_position_val = str(person.get("occpnt_pos", {}).get("label", "")).lower()
-    if pcr_position_val and person_position_val:
-        mapped_pcr_position_val = POSITION_IN_VEHICLE_MAP.get(pcr_position_val)
-        return (
-            mapped_pcr_position_val and mapped_pcr_position_val == person_position_val
-        )
+    pcr_mode = pcr["travel_mode"]
+    person_mode = person["mode_desc"]
+    if pcr_mode and person_mode:
+        pcr_mode = pcr_mode.lower()
+        person_mode = person_mode.lower()
+        person_mode_mapped = CRIS_MODE_CAT_TO_EMS_TRAVEL_MODE_MAP.get(person_mode)
+        if person_mode_mapped:
+            return pcr_mode == person_mode_mapped
     return False
 
 
-def is_mode_match(pcr, person):
-    # travel_mode -> mode_desc
-    # Motorcycle
-    # Pedestrian
-    # Bicycle
-    # E-Scooter
-    # Motor Vehicle
-    return "todo"
-
-
 def is_transport_dest_match(pcr, person):
-    # prsn_taken_to
-    return "todo"
+    pcr_transport_dest = pcr["pcr_transport_destination"]
+    person_transport_dest = person["prsn_taken_to"]
+    if pcr_transport_dest and person_transport_dest:
+        similarity = fuzz.ratio(
+            pcr_transport_dest.lower(), person_transport_dest.lower()
+        )
+        if similarity > TRANSPORT_DEST_MATCH_MIN_MIN_SCORE:
+            # if similarity < 60 and similarity > 20:
+            # print(f"\n{similarity}\n{pcr_transport_dest}\n{person_transport_dest}\n")
+            # breakpoint()
+            return True
+    return False
 
 
 def is_injury_severity_match(pcr, person):
@@ -129,24 +166,23 @@ def is_person_id_matched(person_id, match_results):
 
 def print_match_results(match_results):
     matched = [pcr for pcr in match_results if pcr["matched_person_id"]]
-    print(
+    logging.debug(
         f"{len(matched)} PCRs matched, {len(get_unmatched_pcrs(match_results))} unmatched"
     )
 
 
 def assign_matches(match_results):
     for test in tests:
-        print(f"Starting test: {test['name']}")
+        logging.debug(f"Starting test: {test['name']}")
         unmatched_pcrs = get_unmatched_pcrs(match_results)
         if not unmatched_pcrs:
-            print("No more testing needed")
             break
         for pcr in unmatched_pcrs:
-            print(f"Testing PCR ID {pcr['id']}")
+            logging.debug(f"Testing PCR ID {pcr['id']}")
             for person in pcr["people"]:
                 if is_person_id_matched(person["id"], match_results):
                     # todo: abort earlier if all people are matched
-                    print(
+                    logging.debug(
                         f"Skipping person ID {person['id']} because they are already matched"
                     )
                     continue
@@ -154,7 +190,7 @@ def assign_matches(match_results):
                     # test passed — assign person_id
                     pcr["matched_person_id"] = person["id"]
                     pcr["test_name_passed"] = test["name"]
-                    print(f"matched to person ID {person['id']}")
+                    logging.debug(f"matched to person ID {person['id']}")
                     break
     return
 
@@ -169,6 +205,7 @@ def all_equal(iterable):
 
 def main():
     # get all PCRs that are matched to a crash_pk but not a person_id (future: and don't have a "match_attempted" status)
+    logging.info("Getting EMS PCRs to match...")
     ems_pcrs_data = make_hasura_request(query=GET_UNMATCHED_EMS_PCRS)
     ems_pcrs = ems_pcrs_data["ems__incidents"]
     # group by incident_number
@@ -177,6 +214,8 @@ def main():
         inc_num = pcr["incident_number"]
         if inc_num not in inc_nums_todo:
             inc_nums_todo.append(inc_num)
+
+    logging.info(f"{len(ems_pcrs)} pcrs from {len(inc_nums_todo)} incidents to process")
     # attempt to match each PCR to a CRIS person record
     all_match_results = []
     for inc_num in inc_nums_todo:
@@ -191,7 +230,9 @@ def main():
         # leave them for manual review
         #
         if not all_equal([pcr["crash_pk"] for pcr in pcrs]):
-            print(f"Skipping incident {inc_num} because crash_pks are not uniform")
+            logging.debug(
+                f"Skipping incident {inc_num} because crash_pks are not uniform"
+            )
             continue
 
         crash_pk = pcrs[0]["crash_pk"]
@@ -210,7 +251,7 @@ def main():
 
         if not people_unmatched:
             # todo: update needs match status flag
-            print("no peep avail")
+            logging.debug("No people available to match")
             continue
 
         match_results = []
@@ -233,19 +274,27 @@ def main():
                 person_match_result["injury_severity"] = is_injury_severity_match(
                     pcr, person
                 )
-                person_match_result["travel_mode"] = "todo"
+                person_match_result["travel_mode"] = is_mode_match(pcr, person)
+                person_match_result["transport_dest"] = is_transport_dest_match(
+                    pcr, person
+                )
                 pcr_match_result["people"].append(person_match_result)
             match_results.append(pcr_match_result)
         assign_matches(match_results)
         print_match_results(match_results)
         all_match_results += [pcr for pcr in match_results if pcr["matched_person_id"]]
-    stuff = {}
-    for stu in all_match_results:
-        if stu["test_name_passed"] not in stuff:
-            stuff[stu["test_name_passed"]] = 0
-        stuff[stu["test_name_passed"]] += 1
-    print(stuff)
-    breakpoint()
+
+    # log what just happened
+    stats = {}
+    for pcr in all_match_results:
+        if pcr["test_name_passed"] not in stats:
+            stats[pcr["test_name_passed"]] = 0
+        stats[pcr["test_name_passed"]] += 1
+
+    for key in sorted(list(stats.keys())):
+        logging.info(f"{key}: {stats[key]}")
 
 
-main()
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    main()
