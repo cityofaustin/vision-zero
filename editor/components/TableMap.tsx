@@ -107,7 +107,6 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       initialViewState={initialViewState}
       {...DEFAULT_MAP_PARAMS}
       mapStyle={basemapURL}
-      cooperativeGestures={true}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       cursor={cursor}
@@ -122,6 +121,8 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
           setSelectedFeature(null);
         }
       }}
+      // conditionally include props from mapConfig
+      {...(mapConfig.mapProps || {})}
     >
       {basemapType === "aerial" && <MapAerialSourceAndLayer />}
       <MapGeocoderControl position="top-left" />
