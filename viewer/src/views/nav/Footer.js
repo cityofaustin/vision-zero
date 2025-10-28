@@ -4,7 +4,7 @@ import { Container, Row, Col } from "reactstrap";
 import styled from "styled-components";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
-import logo from "./COA-Logo-Stacked-Faded-White-RGB.png";
+import logo from "./COA-Logo-Stacked-Faded-White-RGB.svg";
 
 let pckg = require("../../../package.json");
 
