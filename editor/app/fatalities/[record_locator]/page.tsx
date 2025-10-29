@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { useQuery } from "@/utils/graphql";
 import { GET_CRASH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
@@ -11,15 +12,27 @@ import { notFound } from "next/navigation";
 import { Card } from "react-bootstrap";
 import DataCard from "@/components/DataCard";
 import { fatalCrashDataCard } from "@/configs/fatalCrashDataCard";
+import { MapRef } from "react-map-gl";
+import { useResizeObserver } from "@/utils/map";
+import FatalCrashDetailsMap from "@/components/FatalCrashDetailsMap";
 
 export default function FatalCrashDetailsPage({
   params,
 }: {
   params: { record_locator: string };
 }) {
+  const mapRef = useRef<MapRef | null>(null);
   const recordLocator = params.record_locator;
 
   const typename = "crashes";
+
+  /**
+   * Trigger resize() when the map container size changes - this ensures that
+   * the map repaints when the sidebar is collapsed/expanded.
+   */
+  const mapContainerRef = useResizeObserver<HTMLDivElement>(() => {
+    mapRef.current?.resize();
+  });
 
   const { data, error } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
@@ -49,6 +62,10 @@ export default function FatalCrashDetailsPage({
     notFound();
   }
 
+  const crash = data[0];
+
+  console.log(crash);
+
   return (
     <>
       <Row>
@@ -64,13 +81,12 @@ export default function FatalCrashDetailsPage({
       </Row>
       <Row>
         <Col>
-          <Card>
-            <Row>
-              <DataCard
-                record={data[0]}
-                columns={fatalCrashDataCard}
-              ></DataCard>
-            </Row>
+          <Card ref={mapContainerRef}>
+            <DataCard
+              record={data[0]}
+              columns={fatalCrashDataCard}
+              footerComponent={FatalCrashDetailsMap}
+            ></DataCard>
           </Card>
         </Col>
         <Col></Col>
