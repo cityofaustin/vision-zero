@@ -89,7 +89,8 @@ export const PointMap = ({
 
   const geojsonBounds = useCurrentBounds({
     type: "Point",
-    coordinates: mapLatLon ? [mapLatLon.longitude, mapLatLon.latitude] : [],
+    coordinates:
+      savedLatitude && savedLongitude ? [savedLongitude, savedLatitude] : [],
   });
 
   const onDrag = useCallback(
