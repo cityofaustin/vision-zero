@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useCallback } from "react";
+import { use, useMemo, useCallback } from "react";
 import { notFound } from "next/navigation";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -49,9 +49,9 @@ const useLocationIdFilter = (locationId: string): Filter[] =>
 export default function LocationDetailsPage({
   params,
 }: {
-  params: { location_id: string };
+  params: Promise<{ location_id: string }>;
 }) {
-  const locationId = params.location_id;
+  const { location_id: locationId } = use(params);
 
   const locationIdFilter = useLocationIdFilter(locationId);
 
