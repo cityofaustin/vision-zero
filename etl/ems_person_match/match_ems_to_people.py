@@ -116,13 +116,6 @@ def is_person_id_matched(person_id, incident_match_results):
     return False
 
 
-def print_match_results(match_results):
-    matched = [pcr for pcr in match_results if pcr["matched_person_id"]]
-    logging.debug(
-        f"{len(matched)} PCRs matched, {len(get_unmatched_pcrs(match_results))} unmatched"
-    )
-
-
 def all_equal(iterable):
     """Check that all values in the iterable are equal
     h/t https://stackoverflow.com/questions/3844801/check-if-all-elements-in-a-list-are-equal
@@ -278,7 +271,6 @@ def main():
             incident_match_results.append(pcr_comparison_result)
 
         assign_people_to_pcrs(incident_match_results)
-        print_match_results(incident_match_results)
         all_match_results += [
             pcr for pcr in incident_match_results if pcr["matched_person_id"]
         ]
@@ -335,17 +327,6 @@ def main():
             logging.info(
                 f"Updated PCR {pcr['id']} from incident {pcr['incident_number']}",
             )
-
-    # log what just happened
-    stats = {"total_matches": 0}
-    for pcr in all_match_results:
-        if pcr["test_name_passed"] not in stats:
-            stats[pcr["test_name_passed"]] = 0
-        stats[pcr["test_name_passed"]] += 1
-        stats["total_matches"] += 1
-
-    for key in sorted(list(stats.keys())):
-        logging.info(f"{key}: {stats[key]}")
 
 
 if __name__ == "__main__":
