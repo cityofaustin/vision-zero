@@ -35,9 +35,10 @@ The below features should be tested with each role. Features with role-based acc
 - Loading spinner appearas when column sort triggers data refetch
 - Crashes map: Use the **Map** toggle to the right of the search input to switch between the list and map views
 - Crashes map: Adjust the page size to show many features on map
+- Crash map: use the address search to find a location within Austin metro area
 - Crashes map: zoom in. click on a crash point to display it's pop-up card.
 - Crashes map: use the fit bounds control (top right corner of map, above +/- buttons) to recenter the map
-- Crashes map: Use the basemap control to change to the **Aerial** imagery basemap. Zoom in to make sure tiles load properly.
+- Crashes map: Use the basemap control to change to the **Aerial** imagery basemap. Zoom in to make sure tiles load properly. Zoom out, and notice that the tiles transition to the mapbox satellite layer with road line features on top of the imagery.
 - Crashes map: Switch back to **Streets** basemap. Now switch to dark mode and (1) confirm that the basemap changes to the dark streets basemap and (2) click on a point to confirm that it's pop-up card is styled with a dark background
 - Crashes map: refresh your page to make sure the dark mode map setting persists
 - Crashes map: click on a crash point once more and use the hyperlinked crash ID to navigate to the crash details page
@@ -74,7 +75,8 @@ The below features should be tested with each role. Features with role-based acc
 - Crash map: edit crash location by dragging map
 - Crash map: edit crash location by keying in lat/lon
 - Observe in change log that council district, jurisdiction, APD sector, engineer area update when crash location is edited to a distant position
-- Crash map: in edit mode, use the address search to find a location within Austin metro area
+- Crash map: use the address search to find a location within Austin metro area
+- Crash map: use the fit bounds control (top right corner of map, above +/- buttons) to recenter the map
 - Crash map: verify **Location ID** updates when crash is moved to another intersection
 - Crash map: validation restricts keying in lat/lon with alpha characters
 - Crash map: validation restricts keying in empty/blank lat/lon
