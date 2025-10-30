@@ -23,13 +23,6 @@ export interface HeaderActionComponentProps<T extends Record<string, unknown>> {
   onSaveCallback?: () => Promise<void>;
 }
 
-export interface FooterComponentProps<T extends Record<string, unknown>> {
-  /**
-   * The records to be rendered in the table
-   */
-  record: T;
-}
-
 interface DataCardProps<T extends Record<string, unknown>> {
   /**
    * The record that contains the data to be displayed
@@ -66,7 +59,6 @@ interface DataCardProps<T extends Record<string, unknown>> {
   /** The key to use when saving and loading table column visibility data to local storage.
    * Optional because not all tables have col visibility settings enabled */
   localStorageKey?: string;
-  footerComponent?: React.ComponentType<FooterComponentProps<T>>;
 }
 
 /**
@@ -82,7 +74,6 @@ export default function DataCard<T extends Record<string, unknown>>({
   headerActionComponent: HeaderActionComponent,
   shouldShowColumnVisibilityPicker,
   localStorageKey,
-  footerComponent: FooterComponent,
 }: DataCardProps<T>) {
   const [
     isColVisibilityLocalStorageLoaded,
@@ -230,7 +221,6 @@ export default function DataCard<T extends Record<string, unknown>>({
             })}
           </tbody>
         </Table>
-        {FooterComponent && <FooterComponent record={record}></FooterComponent>}
       </Card.Body>
     </Card>
   );
