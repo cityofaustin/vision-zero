@@ -47,13 +47,6 @@ const fetcher = <T>([query, variables, token, hasuraRoleName]: [
       Authorization: `Bearer ${token}`,
       "x-hasura-role": hasuraRoleName,
     },
-    // Explicitly set cache behavior for Next.js 15
-    fetch: (url, options) => {
-      return fetch(url, {
-        ...options,
-        cache: "no-store",
-      });
-    },
   });
 
 interface UseQueryProps {
@@ -178,13 +171,6 @@ export const useMutation = (mutation: RequestDocument) => {
           headers: {
             Authorization: `Bearer ${token}`,
             "x-hasura-role": hasuraRole,
-          },
-          // Explicitly set cache behavior for Next.js 15
-          fetch: (url, options) => {
-            return fetch(url, {
-              ...options,
-              cache: "no-store",
-            });
           },
         });
         const data = await client.request<T>(mutation, variables);
