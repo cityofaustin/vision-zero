@@ -48,6 +48,13 @@ const formatCrashMatchStatus = (value: unknown) => {
           <span>Unmatched by review/QA</span>
         </AlignedLabel>
       );
+    case "match_not_found_by_automation":
+      return (
+        <AlignedLabel>
+          <FaTriangleExclamation className="text-secondary me-2" />
+          <span>Match not found by automation</span>
+        </AlignedLabel>
+      );
     default:
       return "";
   }

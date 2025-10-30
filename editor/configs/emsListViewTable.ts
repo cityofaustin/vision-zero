@@ -313,6 +313,20 @@ const emsListViewFilterCards: FilterGroup[] = [
           },
         ],
       },
+      {
+        id: "match_not_found_by_automation",
+        label: "Not found by automation",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "match_not_found_by_automation",
+            column: "person_match_status",
+            operator: "_eq",
+            value: "match_not_found_by_automation",
+          },
+        ],
+      },
     ],
   },
 
