@@ -131,8 +131,12 @@ def all_equal(iterable):
     return next(g, True) and not next(g, False)
 
 
-def match_pcr_to_person(pcr, person):
-    """Compare a PCR record to a person record and assign which attributes match
+def compare_pcr_to_person(pcr, person):
+    """Compare a PCR record to a person record and flag each potentially
+     matching attribute as true/false.
+
+     This function prepares an object when will be used later to assign
+     people records to PCRs based on the match rules.
 
     Args:
         pcr (dict): an ems__incidents record, aka a patien care record
@@ -157,7 +161,13 @@ def match_pcr_to_person(pcr, person):
 
 
 def assign_people_to_pcrs(incident_match_results):
-    """Assign person_id's to PCRs
+    """Assign person_id's to PCRs. This function applies our hierarchical
+    matching rues to determin the PCR-person record match.
+
+    It works by iterating through each ruleset and testing it against each
+    PCR in the incident. The first rule that finds a match wins, preventing
+    the same person from being matched to multiple PCRs. See also the
+    MATCH_RULES docstring.
 
     Args:
         incident_match_results (list): A list of PCRs with person match metadata
@@ -169,13 +179,15 @@ def assign_people_to_pcrs(incident_match_results):
         logging.debug(f"Starting test: {attr_set['name']}")
         unmatched_pcrs = get_unmatched_pcrs(incident_match_results)
         if not unmatched_pcrs:
+            # nothing left to do
             break
+
         for pcr in unmatched_pcrs:
-            logging.debug(f"Testing PCR ID {pcr['id']}")
+            logging.debug(f"Checking PCR ID {pcr['id']} for matches")
             for person in pcr["possible_matching_people"]:
                 if is_person_id_matched(person["id"], incident_match_results):
                     logging.debug(
-                        f"Skipping person ID {person['id']} because they are already matched"
+                        f"Skipping person ID {person['id']} because it is are already matched"
                     )
                     continue
                 if all(person[attr] for attr in attr_set["attrs"]):
@@ -183,7 +195,9 @@ def assign_people_to_pcrs(incident_match_results):
                     pcr["matched_person_id"] = person["id"]
                     pcr["test_name_passed"] = attr_set["name"]
                     pcr["person_match_attributes"] = attr_set["attrs"]
-                    logging.debug(f"matched to person ID {person['id']}")
+                    logging.debug(
+                        f"Matched PCR {pcr['id']} to person ID {person['id']}"
+                    )
                     break
     return
 
@@ -239,7 +253,7 @@ def main():
 
         incident_match_results = []
         for pcr in pcrs_unmatched:
-            pcr_match_result = {
+            pcr_comparison_result = {
                 "id": pcr["id"],
                 "incident_number": pcr["incident_number"],
                 "possible_matching_people": [],
@@ -251,16 +265,16 @@ def main():
             if not people_unmatched:
                 # nothing we can do, so append to match results so that
                 # the record will be flagged as match not found
-                incident_match_results.append(pcr_match_result)
+                incident_match_results.append(pcr_comparison_result)
                 continue
 
             # compare the pcr to each person record and save results
             possible_matching_people = [
-                match_pcr_to_person(pcr, person) for person in people_unmatched
+                compare_pcr_to_person(pcr, person) for person in people_unmatched
             ]
-            pcr_match_result["possible_matching_people"] = possible_matching_people
+            pcr_comparison_result["possible_matching_people"] = possible_matching_people
 
-            incident_match_results.append(pcr_match_result)
+            incident_match_results.append(pcr_comparison_result)
 
         assign_people_to_pcrs(incident_match_results)
         print_match_results(incident_match_results)
