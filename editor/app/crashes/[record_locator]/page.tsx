@@ -1,6 +1,6 @@
 "use client";
 import { notFound } from "next/navigation";
-import { useCallback } from "react";
+import { use, useCallback } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import ChangeLog from "@/components/ChangeLog";
@@ -51,9 +51,9 @@ const shortcutKeyLookup: ShortcutKeyLookup[] = [
 export default function CrashDetailsPage({
   params,
 }: {
-  params: { record_locator: string };
+  params: Promise<{ record_locator: string }>;
 }) {
-  const recordLocator = params.record_locator;
+  const { record_locator: recordLocator } = use(params);
 
   // Call hook to watch out for the use of keyboard shortcuts
   useKeyboardShortcut(shortcutKeyLookup, scrollToElementOnKeyPress);

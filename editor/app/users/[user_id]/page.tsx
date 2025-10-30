@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from "react";
+import { use, useState, useCallback } from "react";
 import { notFound, useRouter } from "next/navigation";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -54,11 +54,11 @@ const COLUMNS: UserColumn[] = [
 export default function UserDetails({
   params,
 }: {
-  params: { user_id: string };
+  params: Promise<{ user_id: string }>;
 }) {
   const getToken = useGetToken();
   const router = useRouter();
-  const userId = params.user_id;
+  const { user_id: userId } = use(params);
   const { data: user, mutate } = useUser(userId);
   const [showEditUserModal, setShowEditUserModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);

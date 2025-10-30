@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { use, useCallback, useEffect, useMemo, useState } from "react";
 import { notFound } from "next/navigation";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
@@ -36,12 +36,12 @@ import { NonCR3Record } from "@/types/nonCr3";
 export default function EMSDetailsPage({
   params,
 }: {
-  params: { incident_number: string };
+  params: Promise<{ incident_number: string }>;
 }) {
   const [selectedEmsPcr, setSelectedEmsPcr] =
     useState<EMSPatientCareRecord | null>(null);
 
-  const incident_number = params.incident_number;
+  const { incident_number } = use(params);
 
   /**
    * Get all EMS records associated with this incident
