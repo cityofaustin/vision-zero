@@ -2,16 +2,25 @@ import os
 
 import requests
 
-from utils.exceptions import HasuraAPIError
-    
+from utils.exceptions import HasuraAPIError, EMSPersonIdError
+
 # ENDPOINT = os.getenv("HASURA_GRAPHQL_ENDPOINT")
 # ADMIN_SECRET = os.getenv("HASURA_GRAPHQL_ADMIN_SECRET")
 ENDPOINT = "http://0.0.0.0:8084/v1/graphql"
 ADMIN_SECRET = "hasurapassword"
 
+
 GET_UNMATCHED_EMS_PCRS = """
 query GetEMSTodo {
-  ems__incidents(limit: 1000, where: {crash_pk: {_is_null: false}, person_id: {_is_null: true}, is_deleted: { _eq: false } }) {
+  ems__incidents(
+    limit: 100, 
+    order_by: { id: desc }
+    where: {
+      person_match_status: {_neq: "match_not_found_by_automation"},
+      crash_pk: {_is_null: false},
+      person_id: {_is_null: true},
+      is_deleted: {_eq: false}
+    }) {
     id
     incident_number
   }
@@ -62,6 +71,29 @@ query GetUnmatchedCrashPeople($crash_pk: Int!, $matched_ids: [Int!]) {
 }
 """
 
+UPDATE_EMS_PCR = """
+mutation UpdateEMSIncidentPCR($id: Int!, $updates: ems__incidents_set_input!) {
+  update_ems__incidents_by_pk(pk_columns: {id: $id}, _set: $updates) {
+    id
+  }
+}
+"""
+
+
+def is_person_id_conflict(errors):
+    """Inspect a Hasura API errors to check for an ems__incidents_person_id_key
+    unique constraint conflict.
+
+    Args:
+        hasuraErrors (bool): _description_
+    """
+    for err in errors:
+        dbError = err.get("extensions", {}).get("internal", {}).get("error", None)
+        if dbError and "ems__incidents_person_id_key" in dbError["message"]:
+            return True
+        return False
+    return False
+
 
 def make_hasura_request(*, query, variables=None):
     """Make a POST request to the graphql API.
@@ -87,56 +119,8 @@ def make_hasura_request(*, query, variables=None):
     data = res.json()
     try:
         return data["data"]
-    except (KeyError, TypeError) as err:
-        breakpoint()
-        raise HasuraAPIError(data) from err
-
-
-def create_log_entry(
-    *, s3_file_key=None, extract_name=None, local_zip_file_path=None, **kwargs
-):
-    """Insert a new entry in the `_cris_import_log` tracking table.
-
-    Args:
-        s3_file_key (str, optional): the S3 file key of the extract. Defaults to None.
-        extract_name (str, optional): the name of the extract. required if s3_file_key is None.
-
-    Returns:
-        int: the record ID of the log entry that was created
-    """
-    if not s3_file_key and not extract_name:
-        raise ValueError("s3_file_key or extract_name are required to create log entry")
-
-    object_name = (
-        s3_file_key
-        if s3_file_key
-        else local_zip_file_path if local_zip_file_path else extract_name
-    )
-
-    variables = {
-        "data": {
-            "object_path": s3_file_key if s3_file_key else "local",
-            "object_name": object_name,
-        }
-    }
-    data = make_hasura_request(
-        query=CRIS_IMPORT_LOG_INSERT_MUTATION, variables=variables
-    )
-    return data["insert__cris_import_log_one"]["id"]
-
-
-def update_log_entry(*, log_entry_id, payload):
-    """Update a cris_activity_log record
-
-    Args:
-        log_entry_id (int): the log record ID
-        payload (dict): the record values to update. typically a combination of:
-            - completed_at (str): the utc iso timestamp at which the import completed
-            - records_processed (dict): a dict with the number of records processed by table type.
-                E.g.: {"crashes": 0,"units": 0,"persons": 0,"charges": 0,"pdfs": 0}
-    """
-    variables = {
-        "id": log_entry_id,
-        "data": payload,
-    }
-    make_hasura_request(query=CRIS_IMPORT_LOG_UPDATE_MUTATION, variables=variables)
+    except KeyError as err:
+        if data["errors"] and is_person_id_conflict(data["errors"]):
+            raise EMSPersonIdError(data) from err
+        else:
+            raise HasuraAPIError(data) from err

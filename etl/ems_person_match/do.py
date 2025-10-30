@@ -1,14 +1,16 @@
-# from pprint import pprint as print
 from itertools import groupby
 import logging
 
 from rapidfuzz import fuzz
+
+from utils.exceptions import EMSPersonIdError
 
 from utils.graphql import (
     make_hasura_request,
     GET_UNMATCHED_EMS_PCRS,
     GET_UNMATCHED_CRASH_PEOPLE,
     GET_EMS_PCRS_BY_INCIDENT_NUMBER,
+    UPDATE_EMS_PCR,
 )
 
 from utils.field_maps import (
@@ -16,55 +18,10 @@ from utils.field_maps import (
     CRIS_MODE_CAT_TO_EMS_TRAVEL_MODE_MAP,
 )
 
+from utils.match_criteria import TESTS
+
 AGE_GAP_TOLERANCE = 3
 TRANSPORT_DEST_MATCH_MIN_MIN_SCORE = 50
-
-# fmt: off
-tests = [
-    # if a person matches to a pcr here - assign even if multiple PCRs match
-    {
-        "name": "a",
-        "attrs": ["sex", "ethnicity", "age", "pos_in_vehicle", "travel_mode", "injury_severity"],
-    },
-    {
-        "name": "a2",
-        "attrs": ["sex", "ethnicity", "age", "pos_in_vehicle", "travel_mode"],
-    },
-    {
-        "name": "b",
-        "attrs": ["sex", "ethnicity", "age", "pos_in_vehicle", "injury_severity"],
-    },
-    {
-        "name": "c",
-        "attrs": ["sex", "ethnicity", "age", "pos_in_vehicle",],
-    },
-    {
-        "name": "d",
-        "attrs": ["sex", "ethnicity", "age",],
-    },
-    {
-        "name": "e",
-        "attrs": ["sex", "ethnicity", "age_fuzzy"],
-    },
-    {
-        "name": "f+",
-        "attrs": ["sex", "age_fuzzy", "transport_dest"],
-    },
-    {
-        "name": "f",
-        "attrs": ["sex", "age_fuzzy"],
-    },
-    {
-        "name": "g",
-        "attrs": ["sex", "transport_dest"],
-    },
-    {
-        "name": "i",
-        "attrs": ["transport_dest"],
-    },
-]
-
-# fmt: on
 
 
 def is_sex_match(pcr, person):
@@ -90,7 +47,7 @@ def is_age_match(pcr, person):
     return pcr["pcr_patient_age"] == person["prsn_age"]
 
 
-def is_fuzzy_age_match(pcr, person):
+def is_approx_age_match(pcr, person):
     if pcr["pcr_patient_age"] is None or person["prsn_age"] is None:
         return False
     return abs(pcr["pcr_patient_age"] - person["prsn_age"]) <= AGE_GAP_TOLERANCE
@@ -134,19 +91,19 @@ def is_mode_match(pcr, person):
     return False
 
 
-def is_transport_dest_match(pcr, person):
+def get_transport_dest_score(pcr, person):
     pcr_transport_dest = pcr["pcr_transport_destination"]
     person_transport_dest = person["prsn_taken_to"]
     if pcr_transport_dest and person_transport_dest:
-        similarity = fuzz.ratio(
-            pcr_transport_dest.lower(), person_transport_dest.lower()
-        )
-        if similarity > TRANSPORT_DEST_MATCH_MIN_MIN_SCORE:
-            # if similarity < 60 and similarity > 20:
-            # print(f"\n{similarity}\n{pcr_transport_dest}\n{person_transport_dest}\n")
-            # breakpoint()
-            return True
-    return False
+        ratio = fuzz.ratio(pcr_transport_dest.lower(), person_transport_dest.lower())
+        if ratio >= 90:
+            print("*******\n")
+            print(ratio)
+            print(f"{pcr_transport_dest}\n")
+            print(f"{person_transport_dest}\n")
+            print("*******\n")
+        return fuzz.ratio(pcr_transport_dest.lower(), person_transport_dest.lower())
+    return 0
 
 
 def is_injury_severity_match(pcr, person):
@@ -154,11 +111,13 @@ def is_injury_severity_match(pcr, person):
 
 
 def get_unmatched_pcrs(match_results):
+    """Return a list of all PCR records that have not been assigned a person_id"""
     return [pcr for pcr in match_results if not pcr["matched_person_id"]]
 
 
-def is_person_id_matched(person_id, match_results):
-    for pcr in match_results:
+def is_person_id_matched(person_id, incident_match_results):
+    """Check to see if a person_id is matched to any PCRs in an incident"""
+    for pcr in incident_match_results:
         if pcr["matched_person_id"] == person_id:
             return True
     return False
@@ -171,30 +130,6 @@ def print_match_results(match_results):
     )
 
 
-def assign_matches(match_results):
-    for test in tests:
-        logging.debug(f"Starting test: {test['name']}")
-        unmatched_pcrs = get_unmatched_pcrs(match_results)
-        if not unmatched_pcrs:
-            break
-        for pcr in unmatched_pcrs:
-            logging.debug(f"Testing PCR ID {pcr['id']}")
-            for person in pcr["people"]:
-                if is_person_id_matched(person["id"], match_results):
-                    # todo: abort earlier if all people are matched
-                    logging.debug(
-                        f"Skipping person ID {person['id']} because they are already matched"
-                    )
-                    continue
-                if all(person[attr] for attr in test["attrs"]):
-                    # test passed — assign person_id
-                    pcr["matched_person_id"] = person["id"]
-                    pcr["test_name_passed"] = test["name"]
-                    logging.debug(f"matched to person ID {person['id']}")
-                    break
-    return
-
-
 def all_equal(iterable):
     """Check that all values in the iterable are equal
     h/t https://stackoverflow.com/questions/3844801/check-if-all-elements-in-a-list-are-equal
@@ -203,8 +138,65 @@ def all_equal(iterable):
     return next(g, True) and not next(g, False)
 
 
+def match_pcr_to_person(pcr, person):
+    """Compare a PCR record to a person record and assign which attributes match
+
+    Args:
+        pcr (dict): an ems__incidents record, aka a patien care record
+        person (dict): a CRIS person record
+
+    Returns:
+        dict: An object that holds the results of each attribute match test
+    """
+    person_match_result = {"id": person["id"]}
+    person_match_result["sex"] = is_sex_match(pcr, person)
+    person_match_result["ethnicity"] = is_ethnicty_match(pcr, person)
+    person_match_result["age_approx"] = is_approx_age_match(pcr, person)
+    person_match_result["age"] = is_age_match(pcr, person)
+    person_match_result["pos_in_vehicle"] = is_position_in_vehicle_match(pcr, person)
+    person_match_result["injury_severity"] = is_injury_severity_match(pcr, person)
+    person_match_result["travel_mode"] = is_mode_match(pcr, person)
+    person_match_result["transport_dest_score"] = get_transport_dest_score(pcr, person)
+    person_match_result["transport_dest"] = (
+        person_match_result["transport_dest_score"] > TRANSPORT_DEST_MATCH_MIN_MIN_SCORE
+    )
+    return person_match_result
+
+
+def assign_people_to_pcrs(incident_match_results):
+    """Assign person_id's to PCRs
+
+    Args:
+        incident_match_results (list): A list of PCRs with person match metadata
+
+    Returns:
+        None: PCRs are updated in place
+    """
+    for test in TESTS:
+        logging.debug(f"Starting test: {test['name']}")
+        unmatched_pcrs = get_unmatched_pcrs(incident_match_results)
+        if not unmatched_pcrs:
+            break
+        for pcr in unmatched_pcrs:
+            logging.debug(f"Testing PCR ID {pcr['id']}")
+            for person in pcr["possible_matching_people"]:
+                if is_person_id_matched(person["id"], incident_match_results):
+                    logging.debug(
+                        f"Skipping person ID {person['id']} because they are already matched"
+                    )
+                    continue
+                if all(person[attr] for attr in test["attrs"]):
+                    # test passed — assign person_id
+                    pcr["matched_person_id"] = person["id"]
+                    pcr["test_name_passed"] = test["name"]
+                    pcr["person_match_attributes"] = test["attrs"]
+                    logging.debug(f"matched to person ID {person['id']}")
+                    break
+    return
+
+
 def main():
-    # get all PCRs that are matched to a crash_pk but not a person_id (future: and don't have a "match_attempted" status)
+    # get all PCRs that are matched to a crash_pk but not a person_id
     logging.info("Getting EMS PCRs to match...")
     ems_pcrs_data = make_hasura_request(query=GET_UNMATCHED_EMS_PCRS)
     ems_pcrs = ems_pcrs_data["ems__incidents"]
@@ -216,8 +208,9 @@ def main():
             inc_nums_todo.append(inc_num)
 
     logging.info(f"{len(ems_pcrs)} pcrs from {len(inc_nums_todo)} incidents to process")
-    # attempt to match each PCR to a CRIS person record
+
     all_match_results = []
+    # attempt to match each PCR to a CRIS person record
     for inc_num in inc_nums_todo:
         # get all PCRs with this incident number (some of which may already be matched)
         pcrs = make_hasura_request(
@@ -225,12 +218,14 @@ def main():
             variables={"incident_number": inc_num},
         )["ems__incidents"]
 
-        # make sure all PCRs have the same crash_pk. it is an extreme edge case but it is
-        # possible that not all PCRs are matched to the same crash. ignore these and
-        # leave them for manual review
-        #
+        """
+        Make sure all PCRs have the same crash_pk. it is an edge case but it is
+        possible that not all PCRs are matched to the same crash. ignore these and
+        leave them for manual review
+        """
         if not all_equal([pcr["crash_pk"] for pcr in pcrs]):
-            logging.debug(
+            # todo: need to manually fix the small number of these and decide how to handle going forward
+            logging.info(
                 f"Skipping incident {inc_num} because crash_pks are not uniform"
             )
             continue
@@ -249,47 +244,77 @@ def main():
             variables={"crash_pk": crash_pk, "matched_ids": already_matched_people_ids},
         )["people_list_view"]
 
-        if not people_unmatched:
-            # todo: update needs match status flag
-            logging.debug("No people available to match")
-            continue
-
-        match_results = []
+        incident_match_results = []
         for pcr in pcrs_unmatched:
             pcr_match_result = {
                 "id": pcr["id"],
-                "people": [],
+                "incident_number": pcr["incident_number"],
+                "possible_matching_people": [],
                 "matched_person_id": None,
-                "test_name_passed": [],
+                "person_match_attributes": [],
+                "test_name_passed": None,  # todo: delete this — just using it for analaysis
             }
-            for person in people_unmatched:
-                person_match_result = {"id": person["id"]}
-                person_match_result["sex"] = is_sex_match(pcr, person)
-                person_match_result["ethnicity"] = is_ethnicty_match(pcr, person)
-                person_match_result["age_fuzzy"] = is_fuzzy_age_match(pcr, person)
-                person_match_result["age"] = is_age_match(pcr, person)
-                person_match_result["pos_in_vehicle"] = is_position_in_vehicle_match(
-                    pcr, person
+
+            if not people_unmatched:
+                # nothing we can do, so append to match results so that
+                # the record will be flagged as match not found
+                incident_match_results.append(pcr_match_result)
+                continue
+
+            # compare the pcr to each person record and save results
+            possible_matching_people = [
+                match_pcr_to_person(pcr, person) for person in people_unmatched
+            ]
+            pcr_match_result["possible_matching_people"] = possible_matching_people
+
+            incident_match_results.append(pcr_match_result)
+
+        assign_people_to_pcrs(incident_match_results)
+        print_match_results(incident_match_results)
+        all_match_results += [
+            pcr for pcr in incident_match_results if pcr["matched_person_id"]
+        ]
+        for pcr in incident_match_results:
+            updates = None
+            if pcr["matched_person_id"]:
+                updates = {
+                    "person_match_status": "matched_by_automation",
+                    "person_id": pcr["matched_person_id"],
+                    "person_match_attributes": pcr["person_match_attributes"],
+                }
+            else:
+                updates = {
+                    "person_match_status": "unmatched_by_automation",
+                }
+
+            try:
+                make_hasura_request(
+                    query=UPDATE_EMS_PCR,
+                    variables={"id": pcr["id"], "updates": updates},
                 )
-                person_match_result["injury_severity"] = is_injury_severity_match(
-                    pcr, person
+            except EMSPersonIdError:
+                """TODO: explain wth is going on here"""
+                logging.info("Attempting to update conflict record...")
+                updates = {
+                    "person_match_status": "unmatched_by_automation",
+                }
+                make_hasura_request(
+                    query=UPDATE_EMS_PCR,
+                    variables={"id": pcr["id"], "updates": updates},
                 )
-                person_match_result["travel_mode"] = is_mode_match(pcr, person)
-                person_match_result["transport_dest"] = is_transport_dest_match(
-                    pcr, person
-                )
-                pcr_match_result["people"].append(person_match_result)
-            match_results.append(pcr_match_result)
-        assign_matches(match_results)
-        print_match_results(match_results)
-        all_match_results += [pcr for pcr in match_results if pcr["matched_person_id"]]
+                pcr["matched_person_id"] = None
+
+            logging.info(
+                f"Updated PCR {pcr['id']} from incident {pcr['incident_number']}",
+            )
 
     # log what just happened
-    stats = {}
+    stats = {"total_matches": 0}
     for pcr in all_match_results:
         if pcr["test_name_passed"] not in stats:
             stats[pcr["test_name_passed"]] = 0
         stats[pcr["test_name_passed"]] += 1
+        stats["total_matches"] += 1
 
     for key in sorted(list(stats.keys())):
         logging.info(f"{key}: {stats[key]}")
