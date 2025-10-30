@@ -9,11 +9,10 @@ from utils.exceptions import HasuraAPIError, EMSPersonIdError
 ENDPOINT = "http://0.0.0.0:8084/v1/graphql"
 ADMIN_SECRET = "hasurapassword"
 
-
 GET_UNMATCHED_EMS_PCRS = """
 query GetEMSTodo {
   ems__incidents(
-    limit: 200, 
+    # limit: 500, 
     order_by: { id: desc }
     where: {
       person_match_status: {_neq: "match_not_found_by_automation"},
