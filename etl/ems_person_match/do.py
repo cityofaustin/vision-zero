@@ -18,10 +18,10 @@ from utils.field_maps import (
     CRIS_MODE_CAT_TO_EMS_TRAVEL_MODE_MAP,
 )
 
-from utils.match_criteria import TESTS
+from utils.match_rules import MATCH_RULES
 
 AGE_GAP_TOLERANCE = 3
-TRANSPORT_DEST_MATCH_MIN_MIN_SCORE = 50
+TRANSPORT_DEST_MATCH_MIN_MIN_SCORE = 90
 
 
 def is_sex_match(pcr, person):
@@ -95,13 +95,6 @@ def get_transport_dest_score(pcr, person):
     pcr_transport_dest = pcr["pcr_transport_destination"]
     person_transport_dest = person["prsn_taken_to"]
     if pcr_transport_dest and person_transport_dest:
-        ratio = fuzz.ratio(pcr_transport_dest.lower(), person_transport_dest.lower())
-        if ratio >= 90:
-            print("*******\n")
-            print(ratio)
-            print(f"{pcr_transport_dest}\n")
-            print(f"{person_transport_dest}\n")
-            print("*******\n")
         return fuzz.ratio(pcr_transport_dest.lower(), person_transport_dest.lower())
     return 0
 
@@ -172,8 +165,8 @@ def assign_people_to_pcrs(incident_match_results):
     Returns:
         None: PCRs are updated in place
     """
-    for test in TESTS:
-        logging.debug(f"Starting test: {test['name']}")
+    for attr_set in MATCH_RULES:
+        logging.debug(f"Starting test: {attr_set['name']}")
         unmatched_pcrs = get_unmatched_pcrs(incident_match_results)
         if not unmatched_pcrs:
             break
@@ -185,11 +178,11 @@ def assign_people_to_pcrs(incident_match_results):
                         f"Skipping person ID {person['id']} because they are already matched"
                     )
                     continue
-                if all(person[attr] for attr in test["attrs"]):
+                if all(person[attr] for attr in attr_set["attrs"]):
                     # test passed — assign person_id
                     pcr["matched_person_id"] = person["id"]
-                    pcr["test_name_passed"] = test["name"]
-                    pcr["person_match_attributes"] = test["attrs"]
+                    pcr["test_name_passed"] = attr_set["name"]
+                    pcr["person_match_attributes"] = attr_set["attrs"]
                     logging.debug(f"matched to person ID {person['id']}")
                     break
     return
@@ -293,8 +286,28 @@ def main():
                     variables={"id": pcr["id"], "updates": updates},
                 )
             except EMSPersonIdError:
-                """TODO: explain wth is going on here"""
+                """
+                It occasionaly happens that records from different EMS incidents
+                match the same crash and people. This can happen because of data
+                quality issues (such as dupelicate EMS records), complex crashes
+                that invovled multiple units/locations, or random chance in which
+                two crashes with occur near the same place/time involving people
+                with the same demographics.
+
+                For example, see crash ID 21074898 and incidents 25292-0255 and
+                25292-0273.
+
+                When this happens, the automation may attempt to match the EMS
+                record to a person that is already matched to a different EMS
+                record, resulting in a violation of the unique constraint on the
+                ems__incidents.person_id column.
+
+                This code block handles this case by assigning such records as
+                unmatched_by_automation so that they are ignored on future
+                ETL runs.
+                """
                 logging.info("Attempting to update conflict record...")
+                print(f"problem: {inc_num} - {pcr['id']}")
                 updates = {
                     "person_match_status": "unmatched_by_automation",
                 }

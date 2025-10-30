@@ -1,5 +1,20 @@
+"""
+Hierarchical matching rules for linking EMS PCR records to CRIS people records.
+
+Rules are applied sequentially from most to least restrictive. This ensures
+high-confidence matches are made first.
+
+Each rule specifies  which attributes must match (evaluate to True) between the
+PCR and person record for the pairing to be accepted. The first rule that finds
+a match wins, preventing the same person from being matched to multiple PCRs.
+
+Each rule contains:
+  - name: Identifier used for logging match statistics
+  - attrs: List of attributes that must ALL match in the comparison results
+"""
+
 # fmt: off
-TESTS = [
+MATCH_RULES = [
     {
         "name": "a",
         "attrs": ["sex", "ethnicity", "age", "pos_in_vehicle", "travel_mode", "injury_severity"],
