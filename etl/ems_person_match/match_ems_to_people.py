@@ -162,7 +162,7 @@ def compare_pcr_to_person(pcr, person):
 
 def assign_people_to_pcrs(incident_match_results):
     """Assign person_id's to PCRs. This function applies our hierarchical
-    matching rues to determin the PCR-person record match.
+    matching rues to determine the PCR-person record match.
 
     It works by iterating through each ruleset and testing it against each
     PCR in the incident. The first rule that finds a match wins, preventing
@@ -170,10 +170,11 @@ def assign_people_to_pcrs(incident_match_results):
     MATCH_RULES docstring.
 
     Args:
-        incident_match_results (list): A list of PCRs with person match metadata
+        incident_match_results (list): A list of PCRs with person comparison
+        results
 
     Returns:
-        None: PCRs are updated in place
+        None: PCRs are updated in place with the matched person_id
     """
     for attr_set in MATCH_RULES:
         logging.debug(f"Starting test: {attr_set['name']}")
@@ -303,8 +304,8 @@ def main():
                 """
                 It occasionaly happens that records from different EMS incidents
                 match the same crash and people. This can happen because of data
-                quality issues (such as dupelicate EMS records), complex crashes
-                that invovled multiple units/locations, or random chance in which
+                quality issues (such as duplicate EMS records), complex crashes
+                that invovle multiple units/locations, or random chance in which
                 two crashes with occur near the same place/time involving people
                 with the same demographics.
 

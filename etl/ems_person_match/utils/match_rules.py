@@ -4,7 +4,7 @@ Hierarchical matching rules for linking EMS PCR records to CRIS people records.
 Rules are applied sequentially from most to least restrictive. This ensures
 high-confidence matches are made first.
 
-Each rule specifies  which attributes must match (evaluate to True) between the
+Each rule specifies which attributes must match  between the
 PCR and person record for the pairing to be accepted. The first rule that finds
 a match wins, preventing the same person from being matched to multiple PCRs.
 
