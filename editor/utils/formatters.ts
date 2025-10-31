@@ -32,7 +32,7 @@ export const formatIsoDateTime = (value: unknown): string => {
 };
 
 /**
- * Format date as: 2024-11-05 9:18 AM
+ * Format date as: 08/24/2025 8:57 PM — Sun
  */
 export const formatIsoDateTimeWithDay = (value: unknown): string => {
   if (!value || typeof value !== "string") {
