@@ -1,2 +1,2 @@
-rapidfuzz==3
-requests==2
+rapidfuzz==3.*
+requests==2.*
