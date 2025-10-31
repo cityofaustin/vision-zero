@@ -16,7 +16,7 @@ WITH
         FROM
             units
         WHERE
-            units.is_deleted
+            units.is_deleted = false
     ),
     distinct_unit_types AS (
         SELECT
