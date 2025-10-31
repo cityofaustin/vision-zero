@@ -84,12 +84,21 @@ const ZoomResetControls = ({
         >
           <FaMagnifyingGlassMinus />
         </Button>
+        <Button
+          size="sm"
+          variant="outline-primary"
+          onClick={handleReset}
+          title="Reset"
+        >
+          <SlActionUndo className="me-2" />
+          Reset
+        </Button>
       </ButtonGroup>
       <Button
         size="sm"
         variant="outline-primary"
-        onClick={handleReset}
-        title="Reset"
+        onClick={() => console.log("save")}
+        title="save"
       >
         <SlActionUndo className="me-2" />
         Reset
@@ -126,6 +135,7 @@ const RotateControls = ({
 export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [diagramError, setDiagramError] = useState(false);
   const [rotation, setRotation] = useState(0);
+  const [scale, setScale] = useState(1);
 
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
 
@@ -153,6 +163,8 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             centerOnInit={true}
             ref={transformComponentRef}
             wheel={{ activationKeys: ["Meta", "Shift"] }}
+            onTransformed={(e) => console.log("on transform: ", e.state)}
+            onZoomStop={(stop) => console.log("stop", stop)}
           >
             <ZoomResetControls
               setRotation={setRotation}
