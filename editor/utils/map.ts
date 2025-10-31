@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { bbox } from "@turf/bbox";
-import { FeatureCollection } from "geojson";
+import { AllGeoJSON } from "@turf/helpers";
 import { LngLatBoundsLike } from "mapbox-gl";
 import { mapStyleOptions } from "@/configs/map";
 import { useTheme } from "@/contexts/AppThemeProvider";
@@ -56,13 +56,14 @@ export function useResizeObserver<T extends HTMLElement>(
  * Returns undefined if the geojson has no features
  */
 export const useCurrentBounds = (
-  geojson: FeatureCollection
+  geojson: AllGeoJSON
 ): LngLatBoundsLike | undefined =>
   useMemo(() => {
-    if (!geojson.features.length) {
+    const bounds = bbox(geojson);
+
+    if (Math.abs(bounds[0]) > 180) {
       return undefined;
     }
-    const bounds = bbox(geojson);
 
     return [
       [bounds[0], bounds[1]],
