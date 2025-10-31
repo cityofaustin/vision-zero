@@ -9,11 +9,11 @@ import { formatAddresses } from "@/utils/formatters";
 import { formatYear } from "@/utils/formatters";
 import { Row, Col } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
-import { notFound } from "next/navigation";
 import { Card } from "react-bootstrap";
 import { MapRef } from "react-map-gl";
 import { formatIsoDateTimeWithDay } from "@/utils/formatters";
 import { PointMap } from "@/components/PointMap";
+import { notFound } from "next/navigation";
 
 export default function FatalCrashDetailsPage({
   params,
@@ -55,16 +55,14 @@ export default function FatalCrashDetailsPage({
 
   const crash = data[0];
 
-  console.log(crash);
-
   return (
     <>
       <Row>
-        <div className="d-flex justify-content-between mb-3">
+        <div className="d-flex justify-content-between align-items-center mb-3">
           <span className="fs-3 fw-bold text-uppercase">
             {formatAddresses(data[0])}
           </span>
-          <span className="fs-4">
+          <span className="fs-5">
             {formatYear(data[0].crash_timestamp)} Fatal Crash #
             {data[0].law_enforcement_ytd_fatality_num}
           </span>
