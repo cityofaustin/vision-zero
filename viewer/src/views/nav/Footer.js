@@ -4,7 +4,7 @@ import { Container, Row, Col } from "reactstrap";
 import styled from "styled-components";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
-import logo from "./coa_seal_transparent_white.png";
+import logo from "./COA-Logo-Stacked-Faded-White-RGB.svg";
 
 let pckg = require("../../../package.json");
 
@@ -35,7 +35,7 @@ const Footer = () => {
       padding: 10px 15px 10px 15px;
     }
 
-    .coa-seal {
+    .coa-logo {
       z-index: 2;
       position: relative;
       left: 100px;
@@ -52,16 +52,16 @@ const Footer = () => {
       color: ${colors.light};
     }
 
-    /* Prevent links from overlapping CoA seal */
+    /* Prevent links from overlapping CoA logo */
     @media only screen and (max-width: ${responsive.bootstrapLarge}px) {
-      .coa-seal {
+      .coa-logo {
         position: relative;
         left: 40px;
         top: 45px;
       }
     }
 
-    /* Center CoA seal and links on mobile */
+    /* Center CoA logo and links on mobile */
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       text-align: center;
 
@@ -70,12 +70,13 @@ const Footer = () => {
         margin: 0px auto;
       }
 
-      .coa-seal {
+      .coa-logo {
         position: relative;
         background: ${colors.dark};
         top: -20px;
+        padding: 8px;
         border: 10px solid ${colors.dark};
-        border-radius: 50%;
+        border-radius: 60% 60% 0 0;
         left: 50%;
         transform: translate(-50%, 0%);
       }
@@ -113,7 +114,7 @@ const Footer = () => {
         <Container fluid className="mt-5">
           <img
             alt="City of Austin seal"
-            className="coa-seal float-left"
+            className="coa-logo float-left"
             height="100px"
             src={logo}
           />

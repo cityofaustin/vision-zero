@@ -17,6 +17,7 @@ import PopupWrapper from "@/components/PopupWrapper";
 import MapBasemapControl from "@/components/MapBasemapControl";
 import { useBasemap } from "@/utils/map";
 import { MapAerialSourceAndLayer } from "@/components/MapAerialSourceAndLayer";
+import MapGeocoderControl from "./MapGeocoderControl";
 
 export interface LatLon {
   latitude: number;
@@ -106,7 +107,6 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       initialViewState={initialViewState}
       {...DEFAULT_MAP_PARAMS}
       mapStyle={basemapURL}
-      cooperativeGestures={true}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       cursor={cursor}
@@ -121,8 +121,11 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
           setSelectedFeature(null);
         }
       }}
+      // conditionally include props from mapConfig
+      {...(mapConfig.mapProps || {})}
     >
       {basemapType === "aerial" && <MapAerialSourceAndLayer />}
+      <MapGeocoderControl position="top-left" />
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
       {/* custom geojson source and layer */}
