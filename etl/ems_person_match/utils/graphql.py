@@ -4,10 +4,8 @@ import requests
 
 from utils.exceptions import HasuraAPIError, EMSPersonIdError
 
-# ENDPOINT = os.getenv("HASURA_GRAPHQL_ENDPOINT")
-# ADMIN_SECRET = os.getenv("HASURA_GRAPHQL_ADMIN_SECRET")
-ENDPOINT = "http://0.0.0.0:8084/v1/graphql"
-ADMIN_SECRET = "hasurapassword"
+ENDPOINT = os.getenv("HASURA_GRAPHQL_ENDPOINT")
+ADMIN_SECRET = os.getenv("HASURA_GRAPHQL_ADMIN_SECRET")
 
 GET_UNMATCHED_EMS_PCRS = """
 query GetEMSTodo {
