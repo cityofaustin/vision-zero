@@ -1,14 +1,8 @@
 # EMS PCR to CRIS Person Matching ETL
 
-This ETL automatically matches Emergency Medical Services (EMS) Patient Care Records (PCRs) to CRIS person records for the same crash.
+This ETL matches EMS patient care records (PCRs) to CRIS person records in the Vision Zero Database.
 
-## Problem
-
-EMS and CRIS systems independently record information about the same crash victims. PCRs are linked to crashes but not to specific people within those crashes, making it difficult to track patient outcomes and injury patterns.
-
-## Solution
-
-The script uses hierarchical attribute matching to link records:
+The script uses hierarchical attribute matching to link records, and works like so:
 
 1. **Fetches** unmatched EMS PCRs that have a crash_pk but no person_id
 2. **Groups** PCRs by incident number
