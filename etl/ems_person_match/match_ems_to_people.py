@@ -169,12 +169,10 @@ def assign_people_to_pcrs(incident_match_results):
         None: PCRs are updated in place with the matched person_id
     """
     for attr_set in MATCH_RULES:
-        logger.debug(f"Starting test: {attr_set['name']}")
         unmatched_pcrs = get_unmatched_pcrs(incident_match_results)
         if not unmatched_pcrs:
             # nothing left to do
             break
-
         for pcr in unmatched_pcrs:
             logger.debug(f"Checking PCR ID {pcr['id']} for matches")
             for person in pcr["possible_matching_people"]:
@@ -183,11 +181,10 @@ def assign_people_to_pcrs(incident_match_results):
                         f"Skipping person ID {person['id']} because it is are already matched"
                     )
                     continue
-                if all(person[attr] for attr in attr_set["attrs"]):
+                if all(person[attr] for attr in attr_set):
                     # test passed — assign person_id
                     pcr["matched_person_id"] = person["id"]
-                    pcr["test_name_passed"] = attr_set["name"]
-                    pcr["person_match_attributes"] = attr_set["attrs"]
+                    pcr["person_match_attributes"] = attr_set
                     logger.debug(f"Matched PCR {pcr['id']} to person ID {person['id']}")
                     break
     return
@@ -250,7 +247,6 @@ def main():
                 "possible_matching_people": [],
                 "matched_person_id": None,
                 "person_match_attributes": [],
-                "test_name_passed": None,  # todo: delete this — just using it for analaysis
             }
 
             if not people_unmatched:
