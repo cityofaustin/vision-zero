@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW units_involved_view AS
+CREATE OR REPLACE VIEW unit_types_involved_view AS
 WITH
     unit_types AS (
         SELECT
@@ -49,6 +49,6 @@ SELECT
     CASE
         WHEN total_units = 1 THEN unit_types_array[1]
         ELSE ARRAY_TO_STRING(unit_types_array, '/')
-    END AS units_involved
+    END AS unit_types_involved
 FROM
     crash_summaries;

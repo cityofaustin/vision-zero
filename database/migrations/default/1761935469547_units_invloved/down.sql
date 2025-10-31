@@ -1,1 +1,1 @@
-DROP VIEW units_involved_view;
+DROP VIEW unit_types_involved_view;
