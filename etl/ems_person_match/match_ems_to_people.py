@@ -65,20 +65,6 @@ def is_position_in_vehicle_match(pcr, person):
 
 
 def is_mode_match(pcr, person):
-    """
-    Consider this query and inc 25257-0313, which highlights ped mode mismatches:
-    SELECT
-        incident_number,
-        travel_mode,
-        mode_desc
-    FROM
-        ems__incidents
-        LEFT JOIN people_list_view ON people_list_view.id = person_id
-    WHERE
-        person_id IS NOT NULL
-        AND travel_mode = 'Pedestrian'
-        AND mode_desc != 'Pedestrian';
-    """
     pcr_mode = pcr["travel_mode"]
     person_mode = person["mode_desc"]
     if pcr_mode and person_mode:
