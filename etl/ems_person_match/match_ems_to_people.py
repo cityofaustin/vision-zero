@@ -313,8 +313,7 @@ def main():
                 unmatched_by_automation so that they are ignored on future
                 ETL runs.
                 """
-                logging.info("Attempting to update conflict record...")
-                print(f"problem: {inc_num} - {pcr['id']}")
+                logging.info(f"Inciden {inc_num}, ID {pcr['id']} will be unmatched due to person_id conflict")
                 updates = {
                     "person_match_status": "unmatched_by_automation",
                 }
