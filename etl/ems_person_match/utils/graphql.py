@@ -10,10 +10,9 @@ ADMIN_SECRET = os.getenv("HASURA_GRAPHQL_ADMIN_SECRET")
 GET_UNMATCHED_EMS_PCRS = """
 query GetEMSTodo {
   ems__incidents(
-    # limit: 500, 
     order_by: { id: desc }
     where: {
-      person_match_status: {_neq: "unmatched_by_automation"},
+      person_match_status: {_in: ["unmatched", "multiple_matches_by_automation"]},
       crash_pk: {_is_null: false},
       person_id: {_is_null: true},
       is_deleted: {_eq: false}
