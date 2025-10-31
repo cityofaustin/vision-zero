@@ -29,6 +29,7 @@ export default function LocationMapCard({ location }: { location: Location }) {
             polygon={location.geometry}
             locationId={location.location_id}
             mapRef={mapRef}
+            useColorStreets={true}
           />
         )}
       </Card.Body>

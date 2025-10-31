@@ -32,6 +32,7 @@ export default function EMSMapCard({
           savedLatitude={savedLatitude}
           savedLongitude={savedLongitude}
           mapRef={mapRef}
+          useColorStreets={true}
         />
       </Card.Body>
     </Card>
