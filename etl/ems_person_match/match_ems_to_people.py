@@ -5,6 +5,10 @@ from rapidfuzz import fuzz
 
 from utils.exceptions import EMSPersonIdError
 
+from utils.field_maps import (
+    EMS_POS_IN_VEHICLE_TO_CRIS_OCC_POS_MAP,
+    CRIS_MODE_CAT_TO_EMS_TRAVEL_MODE_MAP,
+)
 from utils.graphql import (
     make_hasura_request,
     GET_UNMATCHED_EMS_PCRS,
@@ -12,12 +16,7 @@ from utils.graphql import (
     GET_EMS_PCRS_BY_INCIDENT_NUMBER,
     UPDATE_EMS_PCR,
 )
-
-from utils.field_maps import (
-    EMS_POS_IN_VEHICLE_TO_CRIS_OCC_POS_MAP,
-    CRIS_MODE_CAT_TO_EMS_TRAVEL_MODE_MAP,
-)
-
+from utils.logging import get_logger
 from utils.match_rules import MATCH_RULES
 
 AGE_GAP_TOLERANCE = 3
@@ -170,17 +169,17 @@ def assign_people_to_pcrs(incident_match_results):
         None: PCRs are updated in place with the matched person_id
     """
     for attr_set in MATCH_RULES:
-        logging.debug(f"Starting test: {attr_set['name']}")
+        logger.debug(f"Starting test: {attr_set['name']}")
         unmatched_pcrs = get_unmatched_pcrs(incident_match_results)
         if not unmatched_pcrs:
             # nothing left to do
             break
 
         for pcr in unmatched_pcrs:
-            logging.debug(f"Checking PCR ID {pcr['id']} for matches")
+            logger.debug(f"Checking PCR ID {pcr['id']} for matches")
             for person in pcr["possible_matching_people"]:
                 if is_person_id_matched(person["id"], incident_match_results):
-                    logging.debug(
+                    logger.debug(
                         f"Skipping person ID {person['id']} because it is are already matched"
                     )
                     continue
@@ -189,16 +188,14 @@ def assign_people_to_pcrs(incident_match_results):
                     pcr["matched_person_id"] = person["id"]
                     pcr["test_name_passed"] = attr_set["name"]
                     pcr["person_match_attributes"] = attr_set["attrs"]
-                    logging.debug(
-                        f"Matched PCR {pcr['id']} to person ID {person['id']}"
-                    )
+                    logger.debug(f"Matched PCR {pcr['id']} to person ID {person['id']}")
                     break
     return
 
 
 def main():
     # get all PCRs that are matched to a crash_pk but not a person_id
-    logging.info("Getting EMS PCRs to match...")
+    logger.info("Getting EMS PCRs to match...")
     ems_pcrs_data = make_hasura_request(query=GET_UNMATCHED_EMS_PCRS)
     ems_pcrs = ems_pcrs_data["ems__incidents"]
     # group by incident_number
@@ -208,7 +205,7 @@ def main():
         if inc_num not in inc_nums_todo:
             inc_nums_todo.append(inc_num)
 
-    logging.info(f"{len(ems_pcrs)} pcrs from {len(inc_nums_todo)} incidents to process")
+    logger.info(f"{len(ems_pcrs)} pcrs from {len(inc_nums_todo)} incidents to process")
 
     all_match_results = []
     # attempt to match each PCR to a CRIS person record
@@ -226,7 +223,7 @@ def main():
         """
         if not all_equal([pcr["crash_pk"] for pcr in pcrs]):
             # todo: need to manually fix the small number of these and decide how to handle going forward
-            logging.info(
+            logger.info(
                 f"Skipping incident {inc_num} because crash_pks are not uniform"
             )
             continue
@@ -313,7 +310,9 @@ def main():
                 unmatched_by_automation so that they are ignored on future
                 ETL runs.
                 """
-                logging.info(f"Inciden {inc_num}, ID {pcr['id']} will be unmatched due to person_id conflict")
+                logger.info(
+                    f"Inciden {inc_num}, ID {pcr['id']} will be unmatched due to person_id conflict"
+                )
                 updates = {
                     "person_match_status": "unmatched_by_automation",
                 }
@@ -323,11 +322,11 @@ def main():
                 )
                 pcr["matched_person_id"] = None
 
-            logging.info(
+            logger.info(
                 f"Updated PCR {pcr['id']} from incident {pcr['incident_number']}",
             )
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    logger = get_logger("match_ems_to_people", logging.INFO)
     main()
