@@ -1,19 +1,20 @@
 "use client";
 
+import { notFound } from "next/navigation";
 import { useRef } from "react";
-import { useQuery } from "@/utils/graphql";
+import { Card, Col, Row } from "react-bootstrap";
+import Table from "react-bootstrap/Table";
+import { MapRef } from "react-map-gl";
+import { PointMap } from "@/components/PointMap";
 import { GET_CRASH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
 import { useDocumentTitle } from "@/utils/documentTitle";
-import { formatAddresses } from "@/utils/formatters";
-import { formatYear } from "@/utils/formatters";
-import { Row, Col } from "react-bootstrap";
-import Table from "react-bootstrap/Table";
-import { Card } from "react-bootstrap";
-import { MapRef } from "react-map-gl";
-import { formatIsoDateTimeWithDay } from "@/utils/formatters";
-import { PointMap } from "@/components/PointMap";
-import { notFound } from "next/navigation";
+import {
+  formatAddresses,
+  formatIsoDateTimeWithDay,
+  formatYear,
+} from "@/utils/formatters";
+import { useQuery } from "@/utils/graphql";
 
 export default function FatalCrashDetailsPage({
   params,
