@@ -19,7 +19,7 @@ export default function EMSMapCard({
   const mapRef = useRef<MapRef | null>(null);
   /**
    * Trigger resize() when the map container size changes - this ensures that
-   * the map repaints when the sidebar is collased/expanded.
+   * the map repaints when the sidebar is collapsed/expanded.
    */
   const mapContainerRef = useResizeObserver<HTMLDivElement>(() => {
     mapRef.current?.resize();
@@ -32,6 +32,7 @@ export default function EMSMapCard({
           savedLatitude={savedLatitude}
           savedLongitude={savedLongitude}
           mapRef={mapRef}
+          useColorStreets={true}
         />
       </Card.Body>
     </Card>

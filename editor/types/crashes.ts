@@ -77,4 +77,5 @@ export type Crash = {
   charges_cris: Charge[] | null;
   people_list_view: PeopleListRow[] | null;
   crashes_list_view: CrashesListRow;
+  is_coa_roadway: boolean | null;
 };
