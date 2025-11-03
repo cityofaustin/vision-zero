@@ -65,6 +65,7 @@ const ZoomResetControls = ({
   const handleReset = () => {
     resetTransform();
     setValue("rotation", 0);
+    setValue("scale", 1);
     zoomToImage();
   };
 
@@ -117,7 +118,6 @@ const RotateControls = ({
   setValue: UseFormSetValue<CrashDiagramOrientation>;
   register: UseFormRegister<CrashDiagramOrientation>;
 }) => {
-
   return (
     <div className="mt-2">
       <Form.Range
@@ -169,10 +169,10 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   };
 
   // zoom to the scale saved in database, or default value (1)
-  const initZoomToImage = () => {
+  const initZoomToImage = (initScale: number) => {
     if (transformComponentRef.current) {
       const { zoomToElement } = transformComponentRef.current;
-      zoomToElement("crashDiagramImage", undefined, 1);
+      zoomToElement("crashDiagramImage", undefined, initScale);
     }
   };
 
@@ -193,8 +193,10 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             centerOnInit={true}
             ref={transformComponentRef}
             wheel={{ activationKeys: ["Meta", "Shift"] }}
-            onTransformed={(e) => console.log("on transform: ", e.state)}
-            onZoomStop={(stop) => console.log("stop", stop)}
+            onTransformed={(e) => {
+              console.log("on transform: ", e.state);
+              setValue("scale", e.state.scale);
+            }}
           >
             <ZoomResetControls
               setValue={setValue}
@@ -208,7 +210,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
                 alt="crash diagram"
                 id="crashDiagramImage"
                 onLoad={() => {
-                  initZoomToImage();
+                  initZoomToImage(defaultValues.scale);
                 }}
                 onError={() => {
                   console.error("Error loading CR3 diagram image");
@@ -248,10 +250,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               <FaRotate />
             </div>
             <div className="flex-grow-1">
-              <RotateControls
-                setValue={setValue}
-                register={register}
-              />
+              <RotateControls setValue={setValue} register={register} />
             </div>
           </div>
         </Card.Footer>
