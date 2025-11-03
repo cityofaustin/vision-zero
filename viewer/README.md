@@ -1,6 +1,6 @@
 # Vision Zero Viewer (VZV)
 
-![Vision Zero Viewer](docs/images/vzv.png)
+![Vision Zero Viewer](../docs/images/vzv.png)
 
 The Vision Zero Viewer is a public-facing interactive web app showing crash data related to Vision Zero. Users can view crash data by different categories, including transportation mode, demographic groups impacted, time of day, and location.
 
