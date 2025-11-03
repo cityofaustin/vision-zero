@@ -6,9 +6,9 @@ The Vision Zero Crash Data System is a suite of tools which support the City of 
 
 The system has a primary focus on storing, editing, and analyzing traffic crash data, and comprises these core components:
 
-- Vision Zero Database (VZD): A postgresql database which stores crash and crash-related records
-- [Vision Zero Editor](https://visionzero.austin.gov/editor) (VZE): A web application which enables City staff to browse and edit crash data
-- [Vision Zero Viewer](https://visionzero.austin.gov/viewer) (VZV): A public-facing dashboard which provides key metrics and insights about crash injuries and fatalities
+- [Vision Zero Viewer](./database/README.md) (VZD): A postgresql database which stores crash and crash-related records
+- [Vision Zero Editor (VZE)](./editor/README.md) (VZE): A web application which enables City staff to browse and edit crash data
+- [Vision Zero Viewer](./viewer/README.md) (VZV): A public-facing dashboard which provides key metrics and insights about crash injuries and fatalities
 
 This repository also holds integration scripts for consuming crash data from external sources, as well as publishing crash data to the City's Open Data Portal.
 
