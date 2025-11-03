@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
 
-const formatCrashMatchStatus = (value: unknown) => {
+export const formatCrashMatchStatus = (value: unknown) => {
   switch (value) {
     case "unmatched":
       return (
@@ -60,6 +60,23 @@ const formatCrashMatchStatus = (value: unknown) => {
   }
 };
 
+const formatMatchAttrName = (value: unknown) => {
+  switch (value) {
+    case "pos_in_vehicle":
+      return "position in vehicle";
+    case "travel_mode":
+      return "travel mode";
+    case "age_approx":
+      return "age (approx)";
+    case "transport_dest":
+        return "transport destination"
+    case "injury_severity":
+        return "injury severity"
+    default:
+      return value;
+  }
+};
+
 export const ALL_EMS_COLUMNS = {
   apd_incident_numbers: {
     path: "apd_incident_numbers",
@@ -79,12 +96,22 @@ export const ALL_EMS_COLUMNS = {
     valueRenderer: (value) => formatCrashMatchStatus(value.person_match_status),
     sortable: true,
   },
+  person_match_attributes: {
+    path: "person_match_attributes",
+    label: "Person match attributes",
+    valueRenderer: (record) => {
+      if (!record.person_match_attributes) return "";
+      return record.person_match_attributes.map((attr) => formatMatchAttrName(attr)).join("\n")
+    },
+    defaultHidden: true,
+  },
   non_cr3_match_status: {
     path: "non_cr3_match_status",
     label: "Non-CR3 match status",
     valueRenderer: (value) =>
       formatCrashMatchStatus(value.non_cr3_match_status),
     sortable: true,
+    defaultHidden: true,
   },
   atd_apd_blueform_case_id: {
     path: "atd_apd_blueform_case_id",
@@ -140,6 +167,7 @@ export const ALL_EMS_COLUMNS = {
     path: "incident_problem",
     label: "Problem",
     sortable: true,
+    defaultHidden: true,
   },
   incident_received_datetime_with_timestamp: {
     path: "incident_received_datetime",
