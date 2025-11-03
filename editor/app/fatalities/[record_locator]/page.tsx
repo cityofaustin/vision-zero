@@ -111,7 +111,6 @@ export default function FatalCrashDetailsPage({
                   savedLongitude={crash.longitude}
                   mapRef={mapRef}
                   initialBasemapType="streets"
-                  useColorStreets={true}
                 />
               </Row>
             </Card.Body>

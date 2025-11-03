@@ -97,7 +97,6 @@ export default function CrashMapCard({
           mapLatLon={mapLatLon}
           setMapLatLon={setMapLatLon}
           mapRef={mapRef}
-          useColorStreets={true}
         />
       </Card.Body>
       <Card.Footer>

@@ -60,11 +60,6 @@ interface PointMapProps {
    * The default basemap type
    */
   initialBasemapType?: "aerial" | "streets";
-
-  /**
-   * Whether to use the colorful basemap when on streets mode
-   */
-  useColorStreets?: boolean;
   /**
    * The initial latitude - used when not editing
    */
@@ -90,7 +85,6 @@ interface PointMapProps {
 export const PointMap = ({
   mapRef,
   initialBasemapType,
-  useColorStreets,
   savedLatitude,
   savedLongitude,
   isEditing,
@@ -98,8 +92,7 @@ export const PointMap = ({
   setMapLatLon,
 }: PointMapProps) => {
   const { basemapURL, basemapType, setBasemapType } = useBasemap(
-    initialBasemapType || "aerial",
-    useColorStreets
+    initialBasemapType || "aerial"
   );
 
   const geojsonBounds = useCurrentBounds({

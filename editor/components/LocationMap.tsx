@@ -22,7 +22,6 @@ interface LocationMapProps {
   mapRef: MutableRefObject<MapRef | null>;
   polygon: MultiPolygon;
   locationId: string;
-  useColorStreets?: boolean;
 }
 
 const polygonLayer: LineLayerSpecification = {
@@ -57,17 +56,13 @@ export const LocationMap = ({
   mapRef,
   polygon,
   locationId,
-  useColorStreets,
 }: LocationMapProps) => {
   const [polygonFeature, centerFeature] = usePolygonFeature(
     polygon,
     locationId
   );
 
-  const { basemapURL, basemapType, setBasemapType } = useBasemap(
-    "aerial",
-    useColorStreets
-  );
+  const { basemapURL, basemapType, setBasemapType } = useBasemap("aerial");
 
   return (
     <MapGL

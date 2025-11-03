@@ -75,10 +75,7 @@ export const useCurrentBounds = (
  * Custom hook that manages basemap state and returns the appropriate basemap URL
  * depending on the selected basemap type and app theme
  */
-export const useBasemap = (
-  initialBasemapType: "streets" | "aerial",
-  useColorStreets?: boolean
-) => {
+export const useBasemap = (initialBasemapType: "streets" | "aerial") => {
   const [basemapType, setBasemapType] = useState<"streets" | "aerial">(
     initialBasemapType
   );
@@ -86,16 +83,12 @@ export const useBasemap = (
 
   const basemapURL = useMemo(() => {
     if (basemapType === "streets") {
-      if (useColorStreets) {
-        return mapStyleOptions.colorStreets;
-      } else {
-        return theme === "dark"
-          ? mapStyleOptions.darkStreets
-          : mapStyleOptions.lightStreets;
-      }
+      return theme === "dark"
+        ? mapStyleOptions.darkStreets
+        : mapStyleOptions.lightStreets;
     }
     return mapStyleOptions.aerial;
-  }, [basemapType, theme, useColorStreets]);
+  }, [basemapType, theme]);
 
   return {
     basemapURL,
