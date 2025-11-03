@@ -69,9 +69,9 @@ const formatMatchAttrName = (value: unknown) => {
     case "age_approx":
       return "age (approx)";
     case "transport_dest":
-        return "transport destination"
+      return "transport destination";
     case "injury_severity":
-        return "injury severity"
+      return "injury severity";
     default:
       return value;
   }
@@ -101,7 +101,9 @@ export const ALL_EMS_COLUMNS = {
     label: "Person match attributes",
     valueRenderer: (record) => {
       if (!record.person_match_attributes) return "";
-      return record.person_match_attributes.map((attr) => formatMatchAttrName(attr)).join("\n")
+      return record.person_match_attributes
+        .map((attr) => formatMatchAttrName(attr))
+        .join("\n");
     },
     defaultHidden: true,
   },
@@ -117,6 +119,7 @@ export const ALL_EMS_COLUMNS = {
     path: "atd_apd_blueform_case_id",
     label: "Non-CR3 Case ID",
     sortable: true,
+    defaultHidden: true,
   },
   crash_pk: {
     path: "crash_pk",
