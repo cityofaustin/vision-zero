@@ -54,18 +54,16 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    */
   relationship?: Relationship<T>;
   /**
-   * Will enable a clickable column header that sorts tables on this column
+   * Will enable a clickable column header that sorts tables on this column. In the Table
+   * component, sorting is managed server-side via graphql query. I related record
+   * tables, sorting is managed client-side
    */
   sortable?: boolean;
   /**
-   * An optional custom sort function to use when sorting tables. Applied wehe sorting
-   * related record tables
+   * An optional custom sort function to use when sorting related record tables. Default
+   * behavior is to sort values as strings
    */
   compareFunc?: (a: unknown, b: unknown) => number;
-// /**
-//  * A function which 
-//  */
-//   valueGetter?: (value: unknown, record: T) => ReactNode;
   /**
    * Function which formats a column value as a string. See formHelpers.getRecordValue()
    * as an example of how the column value arg is supplied.
