@@ -7,7 +7,7 @@ import { formatAddresses, formatIsoDateTime } from "@/utils/formatters";
 import { commonValidations } from "@/utils/formHelpers";
 
 export const ALL_PEOPLE_COLUMNS = {
-  id: { path: "id", label: "ID" },
+  id: { path: "id", label: "ID", sortable: true },
   drvr_city_name: {
     path: "drvr_city_name",
     label: "City",
@@ -19,6 +19,7 @@ export const ALL_PEOPLE_COLUMNS = {
   unit_type: {
     path: "unit.unit_desc.label",
     label: "Travel mode",
+    sortable: true,
   },
   injry_sev: {
     path: "injry_sev.label",
@@ -37,10 +38,12 @@ export const ALL_PEOPLE_COLUMNS = {
       const className = `${getInjuryColorClass(value)} px-2 py-1 rounded`;
       return <span className={className}>{value}</span>;
     },
+    sortable: true,
   },
   prsn_nbr: {
     path: "prsn_nbr",
     label: "Person",
+    sortable: true,
   },
   prsn_type: {
     path: "prsn_type.label",
@@ -67,6 +70,7 @@ export const ALL_PEOPLE_COLUMNS = {
       idColumnName: "id",
       labelColumnName: "label",
     },
+    sortable: true,
   },
   prsn_age: {
     path: "prsn_age",
@@ -77,10 +81,12 @@ export const ALL_PEOPLE_COLUMNS = {
       validate: commonValidations.isNullableInteger,
       min: { value: 0, message: "Age cannot be negative" },
     },
+    sortable: true,
   },
   prsn_taken_to: {
     path: "prsn_taken_to",
     label: "Transported to",
+    sortable: true,
   },
   gndr: {
     path: "gndr.label",
@@ -94,6 +100,7 @@ export const ALL_PEOPLE_COLUMNS = {
       idColumnName: "id",
       labelColumnName: "label",
     },
+    sortable: true,
   },
   drvr_ethncty: {
     path: "drvr_ethncty.label",
@@ -107,6 +114,7 @@ export const ALL_PEOPLE_COLUMNS = {
       idColumnName: "id",
       labelColumnName: "label",
     },
+    sortable: true,
   },
   drvr_zip: {
     path: "drvr_zip",
@@ -154,6 +162,7 @@ export const ALL_PEOPLE_COLUMNS = {
     path: "crash_timestamp",
     label: "Crash date",
     valueFormatter: formatIsoDateTime,
+    sortable: true,
   },
   address_combined: {
     path: "crash.address_primary",
@@ -161,6 +170,7 @@ export const ALL_PEOPLE_COLUMNS = {
     valueRenderer: (record) => {
       return record.crash ? formatAddresses(record.crash) : "";
     },
+    sortable: true,
   },
   record_locator: {
     path: "crash.record_locator",

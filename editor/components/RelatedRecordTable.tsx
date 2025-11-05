@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import RelatedRecordTableRow from "@/components/RelatedRecordTableRow";
 import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
 import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
 import { ColDataCardDef } from "@/types/types";
-import { Path } from "@/types/utils";
+import { sortCompareStrings } from "@/utils/sorting";
+import { getRecordValue } from "@/utils/formHelpers";
+import { FaSortDown, FaSortUp } from "react-icons/fa6";
+import AlignedLabel from "@/components/AlignedLabel";
 
 interface RelatedRecordTableProps<
   T extends Record<string, unknown>,
@@ -112,16 +115,27 @@ interface SortSettings<T extends Record<string, unknown>> {
   asc: boolean;
 }
 
-const useSortedData = <T extends Record<string, unknown>>({
-  data,
+const useSortedRows = <T extends Record<string, unknown>>({
+  records,
   sortSettings,
 }: {
-  data: T[];
+  records: T[];
   sortSettings: SortSettings<T>;
-}) => {
-  // todo: add sortFunc prop to coldatacard def, use valuegetter or what have you
-  return "hi";
-};
+}) =>
+  useMemo(() => {
+    console.log("hello");
+    const sortCol = sortSettings.col;
+    if (!sortCol) {
+      return records;
+    }
+    const compareFunc = sortCol.compareFunc ? sortCol.compareFunc : sortCompareStrings;
+    return records.toSorted((a, b) =>
+      compareFunc(
+        getRecordValue(sortSettings.asc ? a : b, sortCol),
+        getRecordValue(sortSettings.asc ? b : a, sortCol)
+      )
+    );
+  }, [records, sortSettings.asc, sortSettings.col]);
 
 /**
  * Generic component which renders editable fields in a Card
@@ -162,6 +176,10 @@ export default function RelatedRecordTable<
     columnVisibilitySettings,
     setColumnVisibilitySettings,
   } = useVisibleColumns(columns);
+
+  const recordsSorted = useSortedRows({ records, sortSettings });
+
+  const SortIcon = sortSettings.asc ? FaSortUp : FaSortDown;
 
   return (
     <Card>
@@ -204,7 +222,7 @@ export default function RelatedRecordTable<
                     if (col.sortable) {
                       if (col.path === sortSettings.col?.path) {
                         // already sorting on this column, so switch order
-                        sortSettingsNew.asc = !!sortSettings.asc;
+                        sortSettingsNew.asc = !sortSettings.asc;
                       } else {
                         // change sort column and leave order as-is
                         sortSettingsNew.col = col;
@@ -213,7 +231,12 @@ export default function RelatedRecordTable<
                     }
                   }}
                 >
-                  {col.label}
+                  <AlignedLabel>
+                    {col.label}
+                    {col.path === sortSettings.col?.path && col.sortable && (
+                      <SortIcon className="ms-1 my-1 text-primary" />
+                    )}
+                  </AlignedLabel>
                 </th>
               ))}
               {/* add an empty header for the row action */}
@@ -221,7 +244,7 @@ export default function RelatedRecordTable<
             </tr>
           </thead>
           <tbody>
-            {records.length === 0 ? (
+            {recordsSorted.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.length + (rowActionComponent ? 1 : 0)}
@@ -231,7 +254,7 @@ export default function RelatedRecordTable<
                 </td>
               </tr>
             ) : (
-              records.map((record, i) => (
+              recordsSorted.map((record, i) => (
                 <RelatedRecordTableRow<T, P>
                   key={i}
                   columns={visibleColumns}
