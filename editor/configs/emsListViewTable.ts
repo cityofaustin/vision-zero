@@ -237,7 +237,6 @@ const emsListViewFilterCards: FilterGroup[] = [
       },
     ],
   },
-
   {
     id: "person_match_status_filter_card",
     label: "Person match status",
@@ -315,7 +314,7 @@ const emsListViewFilterCards: FilterGroup[] = [
       },
       {
         id: "unmatched_by_automation",
-        label: "Not found by automation",
+        label: "Unmatched by automation",
         groupOperator: "_and",
         enabled: false,
         filters: [
@@ -329,7 +328,6 @@ const emsListViewFilterCards: FilterGroup[] = [
       },
     ],
   },
-
   {
     id: "non_cr3_match_status_filter_card",
     label: "Non-CR3 match status",

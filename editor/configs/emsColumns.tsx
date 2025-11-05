@@ -262,6 +262,7 @@ export const emsListViewColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
   ALL_EMS_COLUMNS.apd_incident_numbers,
   ALL_EMS_COLUMNS.crash_match_status,
   ALL_EMS_COLUMNS.person_match_status,
+  ALL_EMS_COLUMNS.person_match_attributes,
   ALL_EMS_COLUMNS.cris_crash_id,
   ALL_EMS_COLUMNS.non_cr3_match_status,
   ALL_EMS_COLUMNS.atd_apd_blueform_case_id,
