@@ -66,7 +66,7 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
   compareFunc?: (a: unknown, b: unknown) => number;
   /**
    * Function which formats a column value as a string. See formHelpers.getRecordValue()
-   * as an example of how the column value arg is supplied.
+   * as an example of how the column value arg is supplied
    */
   valueFormatter?: (
     value: unknown,
