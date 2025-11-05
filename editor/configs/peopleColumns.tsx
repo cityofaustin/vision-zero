@@ -5,16 +5,20 @@ import { PeopleListRow } from "@/types/peopleList";
 import PersonNameField from "@/components/PersonNameField";
 import { formatAddresses, formatIsoDateTime } from "@/utils/formatters";
 import { commonValidations } from "@/utils/formHelpers";
+import { compareNumbersAndBools } from "@/utils/sorting";
 
 export const ALL_PEOPLE_COLUMNS = {
   id: { path: "id", label: "ID", sortable: true },
   drvr_city_name: {
     path: "drvr_city_name",
     label: "City",
+    sortable: true,
   },
   unit_nbr: {
     path: "unit_nbr",
     label: "Unit",
+    sortable: true,
+    compareFunc: compareNumbersAndBools,
   },
   unit_type: {
     path: "unit.unit_desc.label",
@@ -44,6 +48,7 @@ export const ALL_PEOPLE_COLUMNS = {
     path: "prsn_nbr",
     label: "Person",
     sortable: true,
+    compareFunc: compareNumbersAndBools,
   },
   prsn_type: {
     path: "prsn_type.label",
@@ -57,6 +62,7 @@ export const ALL_PEOPLE_COLUMNS = {
       idColumnName: "id",
       labelColumnName: "label",
     },
+    sortable: true,
   },
   occpnt_pos: {
     path: "occpnt_pos.label",
@@ -82,6 +88,7 @@ export const ALL_PEOPLE_COLUMNS = {
       min: { value: 0, message: "Age cannot be negative" },
     },
     sortable: true,
+    compareFunc: compareNumbersAndBools,
   },
   prsn_taken_to: {
     path: "prsn_taken_to",
@@ -124,12 +131,15 @@ export const ALL_PEOPLE_COLUMNS = {
     inputOptions: {
       validate: commonValidations.isNullableZipCode,
     },
+    sortable: true,
   },
   prsn_exp_homelessness: {
     path: "prsn_exp_homelessness",
     label: "Suspected unhoused",
     inputType: "yes_no",
     editable: true,
+    sortable: true,
+    compareFunc: compareNumbersAndBools,
   },
   prsn_last_name: {
     path: "prsn_last_name",
@@ -157,6 +167,7 @@ export const ALL_PEOPLE_COLUMNS = {
   case_id: {
     path: "crash.case_id",
     label: "Case ID",
+    sortable: true,
   },
   crash_timestamp: {
     path: "crash_timestamp",

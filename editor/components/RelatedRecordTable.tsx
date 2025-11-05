@@ -5,7 +5,7 @@ import RelatedRecordTableRow from "@/components/RelatedRecordTableRow";
 import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
 import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
 import { ColDataCardDef } from "@/types/types";
-import { sortCompareStrings } from "@/utils/sorting";
+import { compareStrings } from "@/utils/sorting";
 import { getRecordValue } from "@/utils/formHelpers";
 import { FaSortDown, FaSortUp } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
@@ -123,12 +123,13 @@ const useSortedRows = <T extends Record<string, unknown>>({
   sortSettings: SortSettings<T>;
 }) =>
   useMemo(() => {
-    console.log("hello");
     const sortCol = sortSettings.col;
     if (!sortCol) {
       return records;
     }
-    const compareFunc = sortCol.compareFunc ? sortCol.compareFunc : sortCompareStrings;
+    const compareFunc = sortCol.compareFunc
+      ? sortCol.compareFunc
+      : compareStrings;
     return records.toSorted((a, b) =>
       compareFunc(
         getRecordValue(sortSettings.asc ? a : b, sortCol),
