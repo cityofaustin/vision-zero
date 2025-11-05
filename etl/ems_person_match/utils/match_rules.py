@@ -17,10 +17,14 @@ MATCH_RULES = [
     ["sex", "ethnicity", "age", "pos_in_vehicle",],
     ["sex", "ethnicity", "age",  "injury_severity"],
     ["sex", "ethnicity", "age"],
-    ["sex", "ethnicity", "age_approx",  "pos_in_vehicle"],
+    # low quality matches 👇
+    ["sex", "ethnicity", "age_approx", "pos_in_vehicle"],
     ["sex", "age", "transport_dest"],
     ["sex", "age_approx", "transport_dest"],
+    ["sex", "ethnicity", "age_approx"],
+    ["sex", "age"],
     ["sex", "age_approx"],
+    ["ethnicity", "age"],
     ["sex", "transport_dest"],
     ["transport_dest"],
 ]

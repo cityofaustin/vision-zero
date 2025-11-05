@@ -54,7 +54,7 @@ def is_approx_age_match(pcr, person):
 
 def is_position_in_vehicle_match(pcr, person):
     pcr_position = pcr["mvc_form_position_in_vehicle"]
-    person_position = person.get("occpnt_pos", {}).get("label", "")
+    person_position = (person.get("occpnt_pos") or {}).get("label", "")
     if pcr_position and person_position:
         pcr_position = pcr_position.lower()
         person_position = person_position.lower()
