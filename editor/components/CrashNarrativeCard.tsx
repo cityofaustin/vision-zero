@@ -36,7 +36,7 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
       }
     } catch (error) {
       console.error(error);
-      window.alert(`Failed to download CR3: An unknown error has occured`);
+      window.alert(`Failed to download CR3: An unknown error has occurred`);
     }
   };
 
