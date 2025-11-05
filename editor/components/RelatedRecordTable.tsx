@@ -5,6 +5,7 @@ import RelatedRecordTableRow from "@/components/RelatedRecordTableRow";
 import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
 import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
 import { ColDataCardDef } from "@/types/types";
+import { Path } from "@/types/utils";
 
 interface RelatedRecordTableProps<
   T extends Record<string, unknown>,
@@ -106,6 +107,22 @@ export interface RowActionComponentProps<
   isEditingColumn?: boolean | null;
 }
 
+interface SortSettings<T extends Record<string, unknown>> {
+  col: null | ColDataCardDef<T>;
+  asc: boolean;
+}
+
+const useSortedData = <T extends Record<string, unknown>>({
+  data,
+  sortSettings,
+}: {
+  data: T[];
+  sortSettings: SortSettings<T>;
+}) => {
+  // todo: add sortFunc prop to coldatacard def, use valuegetter or what have you
+  return "hi";
+};
+
 /**
  * Generic component which renders editable fields in a Card
  */
@@ -128,6 +145,11 @@ export default function RelatedRecordTable<
   shouldShowColumnVisibilityPicker,
   localStorageKey,
 }: RelatedRecordTableProps<T, P>) {
+  const [sortSettings, setSortSettings] = useState<SortSettings<T>>({
+    col: null,
+    asc: true,
+  });
+
   const [
     isColVisibilityLocalStorageLoaded,
     setIsColVisibilityLocalStorageLoaded,
@@ -171,7 +193,26 @@ export default function RelatedRecordTable<
           <thead>
             <tr>
               {visibleColumns.map((col) => (
-                <th key={String(col.path)} style={{ textWrap: "nowrap" }}>
+                <th
+                  key={String(col.path)}
+                  style={{
+                    textWrap: "nowrap",
+                    cursor: col.sortable ? "pointer" : "auto",
+                  }}
+                  onClick={() => {
+                    const sortSettingsNew = { ...sortSettings };
+                    if (col.sortable) {
+                      if (col.path === sortSettings.col?.path) {
+                        // already sorting on this column, so switch order
+                        sortSettingsNew.asc = !!sortSettings.asc;
+                      } else {
+                        // change sort column and leave order as-is
+                        sortSettingsNew.col = col;
+                      }
+                      setSortSettings(sortSettingsNew);
+                    }
+                  }}
+                >
                   {col.label}
                 </th>
               ))}
