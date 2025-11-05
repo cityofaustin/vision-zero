@@ -21,6 +21,7 @@ import {
 import { Crash } from "@/types/crashes";
 import { useForm, UseFormRegister, UseFormSetValue } from "react-hook-form";
 import { CrashDiagramOrientation } from "@/types/crashDiagramOrientation";
+import { useMutation } from "@/utils/graphql";
 
 const CR3_DIAGRAM_BASE_URL = process.env.NEXT_PUBLIC_CR3_DIAGRAM_BASE_URL!;
 
@@ -53,12 +54,14 @@ const DiagramAlert: React.FC<DiagramAlertProps> = ({
   </Alert>
 );
 
-const ZoomResetControls = ({
+const ZoomResetSaveControls = ({
   setValue,
   zoomToImage,
+  isDirty,
 }: {
   setValue: UseFormSetValue<CrashDiagramOrientation>;
   zoomToImage: () => void;
+  isDirty: boolean;
 }) => {
   const { zoomIn, zoomOut, resetTransform } = useControls();
 
@@ -103,6 +106,7 @@ const ZoomResetControls = ({
         variant="outline-primary"
         onClick={() => console.log("save")}
         title="save"
+        disabled={!isDirty}
       >
         <FaFloppyDisk className="me-2" />
         Save
@@ -125,7 +129,9 @@ const RotateControls = ({
         min="-180"
         max="180"
         id="formControlRange"
-        onChange={(e) => setValue("rotation", Number(e.target.value))}
+        onChange={(e) =>
+          setValue("rotation", Number(e.target.value), { shouldDirty: true })
+        }
         title="Rotate Diagram"
       />
     </div>
@@ -195,12 +201,14 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             wheel={{ activationKeys: ["Meta", "Shift"] }}
             onTransformed={(e) => {
               console.log("on transform: ", e.state);
-              setValue("scale", e.state.scale);
+              // running into an issue where on load it zooms to fit, which is dirtying the form
+              setValue("scale", e.state.scale, {shouldDirty: true});
             }}
           >
-            <ZoomResetControls
+            <ZoomResetSaveControls
               setValue={setValue}
               zoomToImage={resetZoomToImage}
+              isDirty={isDirty}
             />
             <TransformComponent contentStyle={{ mixBlendMode: "multiply" }}>
               <Image
