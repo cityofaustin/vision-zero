@@ -55,7 +55,7 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
   relationship?: Relationship<T>;
   /**
    * Will enable a clickable column header that sorts tables on this column. In the Table
-   * component, sorting is managed server-side via graphql query. I related record
+   * component, sorting is managed server-side via graphql query. In related record
    * tables, sorting is managed client-side
    */
   sortable?: boolean;
