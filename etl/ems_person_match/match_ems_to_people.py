@@ -8,6 +8,7 @@ from utils.exceptions import EMSPersonIdError
 from utils.field_maps import (
     EMS_POS_IN_VEHICLE_TO_CRIS_OCC_POS_MAP,
     CRIS_MODE_CAT_TO_EMS_TRAVEL_MODE_MAP,
+    CRIS_TO_EMS_TRANSPORT_DEST,
 )
 from utils.graphql import (
     make_hasura_request,
@@ -20,7 +21,7 @@ from utils.logging import get_logger
 from utils.match_rules import MATCH_RULES
 
 AGE_GAP_TOLERANCE = 3
-TRANSPORT_DEST_MATCH_MIN_MIN_SCORE = 90
+TRANSPORT_DEST_MATCH_MIN_MIN_SCORE = 95
 
 
 def is_sex_match(pcr, person):
@@ -80,6 +81,18 @@ def get_transport_dest_score(pcr, person):
     pcr_transport_dest = pcr["pcr_transport_destination"]
     person_transport_dest = person["prsn_taken_to"]
     if pcr_transport_dest and person_transport_dest:
+        pcr_transport_dest = pcr_transport_dest.lower().replace("'", "").strip()
+        person_transport_dest = person_transport_dest.lower().replace("'", "").strip()
+        mapped_person_transport_dest = CRIS_TO_EMS_TRANSPORT_DEST.get(
+            person_transport_dest
+        )
+        if (
+            mapped_person_transport_dest
+            and mapped_person_transport_dest == pcr_transport_dest
+        ):
+            # exact match
+            return 100
+        # no exact match, let the fuzzy matcher assign a score
         return fuzz.ratio(pcr_transport_dest.lower(), person_transport_dest.lower())
     return 0
 
@@ -154,7 +167,8 @@ def assign_people_to_pcrs(incident_match_results):
     Returns:
         None: PCRs are updated in place with the matched person_id
     """
-    for attr_set in MATCH_RULES:
+    for match_rule in MATCH_RULES:
+        match_attributes = match_rule["match_attributes"]
         unmatched_pcrs = get_unmatched_pcrs(incident_match_results)
         if not unmatched_pcrs:
             # nothing left to do
@@ -167,10 +181,11 @@ def assign_people_to_pcrs(incident_match_results):
                         f"Skipping person ID {person['id']} because it is are already matched"
                     )
                     continue
-                if all(person[attr] for attr in attr_set):
+                if all(person[attr] for attr in match_attributes):
                     # test passed — assign person_id
                     pcr["matched_person_id"] = person["id"]
-                    pcr["person_match_attributes"] = attr_set
+                    pcr["person_match_attributes"] = match_attributes
+                    pcr["person_match_score"] = match_rule["match_score"]
                     logger.debug(f"Matched PCR {pcr['id']} to person ID {person['id']}")
                     break
     return
@@ -260,6 +275,7 @@ def main():
                     "person_match_status": "matched_by_automation",
                     "person_id": pcr["matched_person_id"],
                     "person_match_attributes": pcr["person_match_attributes"],
+                    "person_match_score": pcr["person_match_score"],
                 }
             else:
                 updates = {
