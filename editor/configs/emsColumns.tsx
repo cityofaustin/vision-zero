@@ -60,6 +60,26 @@ export const formatCrashMatchStatus = (value: unknown) => {
   }
 };
 
+export const formatMatchScore = (value: unknown) => {
+  const score = Number(value);
+  if (!score) return "";
+  if (score >= 99) {
+    return (
+      <AlignedLabel>
+        <FaCircleCheck className="text-success me-2 fs-5" />
+        <span>High</span>
+      </AlignedLabel>
+    );
+  } else {
+    return (
+      <AlignedLabel>
+        <FaTriangleExclamation className="text-secondary me-2" />
+        <span>Low</span>
+      </AlignedLabel>
+    );
+  }
+};
+
 const formatMatchAttrName = (value: unknown) => {
   switch (value) {
     case "pos_in_vehicle":
@@ -105,6 +125,12 @@ export const ALL_EMS_COLUMNS = {
         .map((attr) => formatMatchAttrName(attr))
         .join("\n");
     },
+    defaultHidden: true,
+  },
+  person_match_score: {
+    path: "person_match_score",
+    label: "Person match quality",
+    valueRenderer: (record) => formatMatchScore(record.person_match_score),
     defaultHidden: true,
   },
   non_cr3_match_status: {
@@ -263,6 +289,7 @@ export const emsListViewColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
   ALL_EMS_COLUMNS.crash_match_status,
   ALL_EMS_COLUMNS.person_match_status,
   ALL_EMS_COLUMNS.person_match_attributes,
+  ALL_EMS_COLUMNS.person_match_score,
   ALL_EMS_COLUMNS.cris_crash_id,
   ALL_EMS_COLUMNS.non_cr3_match_status,
   ALL_EMS_COLUMNS.atd_apd_blueform_case_id,

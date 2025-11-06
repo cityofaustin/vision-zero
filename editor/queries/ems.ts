@@ -15,6 +15,7 @@ export const GET_EMS_RECORDS = gql`
       crash_match_status
       person_match_status
       person_match_attributes
+      person_match_score
       non_cr3_match_status
       atd_apd_blueform_case_id
       matched_non_cr3_case_ids

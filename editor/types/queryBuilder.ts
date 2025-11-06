@@ -23,6 +23,7 @@ export interface Filter {
   operator:
     | "_gte"
     | "_lte"
+    | "_lt"
     | "_gt"
     | "_eq"
     | "_neq"
