@@ -128,7 +128,7 @@ def compare_pcr_to_person(pcr, person):
     """Compare a PCR record to a person record and flag each potentially
      matching attribute as true/false.
 
-     This function prepares an object when will be used later to assign
+     This function prepares an object which will be used later to assign
      people records to PCRs based on the match rules.
 
     Args:

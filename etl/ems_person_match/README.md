@@ -19,7 +19,7 @@ The script uses hierarchical attribute matching to link records, and works like 
 
 2. Save a copy of `env_template` as `.env` in the root of this repo.
 
-3. Create a Python environment and install the dependecies in `requirements.txt`, or use the provided Docker configuration:
+3. Create a Python environment and install the dependencies in `requirements.txt`, or use the provided Docker configuration:
 
 ```
 docker build . -t atddocker/vz-ems-person-match:development
