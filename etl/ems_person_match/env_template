@@ -1,2 +1,2 @@
-HASURA_ADMIN_SECRET=hasurapassword
+HASURA_GRAPHQL_ADMIN_SECRET=hasurapassword
 HASURA_GRAPHQL_ENDPOINT=http://host.docker.internal:8084/v1/graphql
