@@ -32,7 +32,7 @@ def is_sex_match(pcr, person):
 
 def is_ethnicty_match(pcr, person):
     if not person["drvr_ethncty"] or not pcr["pcr_patient_race"]:
-        return
+        return False
     return (
         person["drvr_ethncty"]["label"].lower() in pcr["pcr_patient_race"].lower()
     ) or (
@@ -98,7 +98,9 @@ def get_transport_dest_score(pcr, person):
 
 
 def is_injury_severity_match(pcr, person):
-    return pcr["patient_injry_sev_id"] == person["prsn_injry_sev_id"]
+    if pcr["patient_injry_sev_id"] and person["prsn_injry_sev_id"]:
+        return pcr["patient_injry_sev_id"] == person["prsn_injry_sev_id"]
+    return False
 
 
 def get_unmatched_pcrs(match_results):
