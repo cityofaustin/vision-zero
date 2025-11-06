@@ -6,7 +6,7 @@ class HasuraAPIError(Exception):
 
 class EMSPersonIdError(Exception):
     """Indicates violation of the unique ems__incidents_person_id_key constraint -
-    this happens attempting to match an EMS record to a person record that is
-    already matched to a different EMS records"""
+    this happens when attempting to match an EMS record to a person record that is
+    already matched to a different EMS record"""
 
     pass

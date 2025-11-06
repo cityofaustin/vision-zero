@@ -1,4 +1,6 @@
-ALTER TABLE ems__incidents DROP COLUMN person_match_attributes;
+ALTER TABLE ems__incidents
+    DROP COLUMN person_match_attributes,
+    DROP COLUMN  person_match_score;
 
 ALTER TABLE ems__incidents
 DROP CONSTRAINT ems__incidents_person_match_status_check;
