@@ -259,6 +259,7 @@ export default function EMSDetailsPage({
           <EMSMapCard
             savedLatitude={incident.latitude}
             savedLongitude={incident.longitude}
+            matchingPeople={matchingPeople}
           />
         </Col>
       </Row>

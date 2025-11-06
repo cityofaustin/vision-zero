@@ -4,6 +4,7 @@ import {
   Dispatch,
   SetStateAction,
   MutableRefObject,
+  ReactNode,
 } from "react";
 import MapGL, {
   FullscreenControl,
@@ -72,6 +73,10 @@ interface PointMapProps {
    */
   mapLatLon?: LatLon;
   setMapLatLon?: Dispatch<SetStateAction<LatLon>>;
+  /**
+   * Additional layers to be rendered on the map
+   */
+  children?: ReactNode;
 }
 
 /**
@@ -84,6 +89,7 @@ export const PointMap = ({
   isEditing,
   mapLatLon,
   setMapLatLon,
+  children,
 }: PointMapProps) => {
   const { basemapURL, basemapType, setBasemapType } = useBasemap("aerial");
 
@@ -167,6 +173,7 @@ export const PointMap = ({
         setBasemapType={setBasemapType}
         controlId="pointMap"
       />
+      {children}
     </MapGL>
   );
 };
