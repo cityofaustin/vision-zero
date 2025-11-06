@@ -6,7 +6,6 @@ import { useResizeObserver } from "@/utils/map";
 import { PeopleListRow } from "@/types/peopleList";
 import { Crash } from "@/types/crashes";
 import { geoJsonTransformers } from "@/types/tableMapConfig";
-import { crashesListViewQueryConfig } from "@/configs/crashesListViewTable";
 
 interface EMSMapCardProps {
   savedLatitude: number | null;
@@ -69,7 +68,7 @@ const useCrashesGeojson = (matchingPeople: PeopleListRow[] | undefined) =>
       return undefined;
     }
     // Get a unique list of crashes from matching people
-    const crashIdsFound: Number[] = [];
+    const crashIdsFound: number[] = [];
     const crashes: Crash[] = [];
     matchingPeople.forEach((person) => {
       if (crashIdsFound.includes(person.crash_pk) || !person.crash) {
@@ -77,7 +76,6 @@ const useCrashesGeojson = (matchingPeople: PeopleListRow[] | undefined) =>
       }
       crashIdsFound.push(person.crash_pk);
       crashes.push(person.crash);
-      person.crash;
     });
     // Turn list of crashes into a geojson
     return geoJsonTransformers.latLon(crashes);
