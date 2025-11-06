@@ -52,6 +52,7 @@ select_permissions:
         - pcr_transport_destination
         - person_id
         - person_match_attributes
+        - person_match_score
         - person_match_status
         - travel_mode
         - unparsed_apd_incident_numbers
@@ -91,6 +92,7 @@ select_permissions:
         - pcr_transport_destination
         - person_id
         - person_match_attributes
+        - person_match_score
         - person_match_status
         - travel_mode
         - unparsed_apd_incident_numbers
@@ -130,6 +132,7 @@ select_permissions:
         - pcr_transport_destination
         - person_id
         - person_match_attributes
+        - person_match_score
         - person_match_status
         - travel_mode
         - unparsed_apd_incident_numbers
