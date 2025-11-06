@@ -14,11 +14,15 @@ manual review/QA.
 """
 # fmt: off
 MATCH_RULES = [
+    { "match_score": 99, "match_attributes": ["sex", "ethnicity", "age", "pos_in_vehicle", "travel_mode", "injury_severity", "transport_dest"],},
+    { "match_score": 99, "match_attributes": ["sex", "ethnicity", "age", "pos_in_vehicle", "travel_mode", "transport_dest"],},
     { "match_score": 99, "match_attributes": ["sex", "ethnicity", "age", "pos_in_vehicle", "travel_mode", "injury_severity"],},
     { "match_score": 99, "match_attributes": ["sex", "ethnicity", "age", "pos_in_vehicle", "travel_mode"],},
     { "match_score": 99, "match_attributes": ["sex", "ethnicity", "age", "pos_in_vehicle", "injury_severity"],},
     { "match_score": 99, "match_attributes": ["sex", "ethnicity", "age", "pos_in_vehicle",],},
     { "match_score": 99, "match_attributes": ["sex", "ethnicity", "age",  "injury_severity"],},
+    { "match_score": 99, "match_attributes": ["sex", "ethnicity", "age", "transport_dest", "injury_severity"],},
+    { "match_score": 99, "match_attributes": ["sex", "ethnicity", "age", "transport_dest"],},
     { "match_score": 99, "match_attributes": ["sex", "ethnicity", "age"],},
     { "match_score": 25, "match_attributes": ["sex", "ethnicity", "age_approx", "pos_in_vehicle"],},
     { "match_score": 25, "match_attributes": ["sex", "age", "transport_dest"],},
