@@ -33,4 +33,5 @@ export type PeopleListRow = {
   ems_pcr?: Omit<EMSPatientCareRecord, "person">;
   occpnt_pos: LookupTableOption;
   prsn_occpnt_pos_id: number;
+  rest?: LookupTableOption;
 };
