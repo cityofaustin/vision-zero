@@ -297,6 +297,17 @@ to make sure it renders on top is a common fix */
   top: 35px !important;
 }
 
+/* Pushes the mapbox control area down to make room for our custom button */
+.crash-header-card-body .mapboxgl-ctrl-top-right {
+  margin-top: 2.5rem;
+}
+
+/* Push the top-right mapbox control container down to accomodate our custom control */
+.crash-header-card-body > .mapboxgl-ctrl-top-right {
+  right: 0;
+  top: 35px !important;
+}
+
 /* wrapper for custom fit-bounds control container */
 .map-custom-ctrl-container-top-right {
   position: absolute;
