@@ -1,11 +1,12 @@
 import { useMemo, useRef } from "react";
 import Card from "react-bootstrap/Card";
-import { Layer, LayerProps, MapRef, Source } from "react-map-gl";
+import { Layer, LayerProps, MapRef, Marker, Source } from "react-map-gl";
 import { PointMap } from "@/components/PointMap";
 import { useResizeObserver } from "@/utils/map";
 import { PeopleListRow } from "@/types/peopleList";
 import { Crash } from "@/types/crashes";
-import { geoJsonTransformers } from "@/types/tableMapConfig";
+import { geoJsonTransformers } from "@/utils/map";
+import { FaCarBurst } from "react-icons/fa6";
 
 interface EMSMapCardProps {
   savedLatitude: number | null;
@@ -23,10 +24,10 @@ const crashLayerProps: LayerProps = {
       ["zoom"],
       // zoom is 5 (or less)
       5,
-      2,
+      5,
       // zoom is 20 (or greater)
       20,
-      10,
+      15,
     ],
     "circle-color": "#1276d1",
     "circle-stroke-width": [
@@ -48,7 +49,7 @@ const labelLayerProps: LayerProps = {
   id: "points-labels",
   type: "symbol",
   layout: {
-    "text-field": ["get", "record_locator"], // or whatever property contains your label text
+    "text-field": ["concat", "CR3 - ", ["get", "record_locator"]],
     "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
     "text-size": 12,
     "text-offset": [0, 1.5], // offset below the circle
@@ -56,9 +57,9 @@ const labelLayerProps: LayerProps = {
     "text-allow-overlap": false, // prevents label collisions
   },
   paint: {
-    "text-color": "#000",
+    "text-color": "#1276d1",
     "text-halo-color": "#fff",
-    "text-halo-width": 2,
+    "text-halo-width": 3,
   },
 };
 
@@ -108,11 +109,30 @@ export default function EMSMapCard({
           savedLongitude={savedLongitude}
           mapRef={mapRef}
         >
-          {" "}
-          <Source id="custom-source" type="geojson" data={crashesGeojson}>
-            <Layer {...crashLayerProps} />
-            <Layer {...labelLayerProps} />
-          </Source>
+          {crashesGeojson && (
+            <Source id="custom-source" type="geojson" data={crashesGeojson}>
+              <Layer {...crashLayerProps} />
+              <Layer {...labelLayerProps} />
+            </Source>
+          )}
+          {crashesGeojson &&
+            crashesGeojson.features.map((feature) => (
+              <Marker
+                key={feature.properties?.id}
+                longitude={feature.geometry.coordinates[0]}
+                latitude={feature.geometry.coordinates[1]}
+                anchor="center"
+              >
+                <div
+                  style={{
+                    transform: "translate(0%,-7%)",
+                    pointerEvents: "none",
+                  }}
+                >
+                  <FaCarBurst size={16} color="#fff" />
+                </div>
+              </Marker>
+            ))}
         </PointMap>
       </Card.Body>
     </Card>
