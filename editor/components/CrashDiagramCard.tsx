@@ -19,8 +19,15 @@ import {
   useControls,
 } from "react-zoom-pan-pinch";
 import { Crash } from "@/types/crashes";
-import { useForm, UseFormRegister, UseFormSetValue } from "react-hook-form";
+import {
+  useForm,
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormHandleSubmit,
+  SubmitHandler,
+} from "react-hook-form";
 import { CrashDiagramOrientation } from "@/types/crashDiagramOrientation";
+import { UPDATE_CRASH } from "@/queries/crash";
 import { useMutation } from "@/utils/graphql";
 
 const CR3_DIAGRAM_BASE_URL = process.env.NEXT_PUBLIC_CR3_DIAGRAM_BASE_URL!;
@@ -58,10 +65,14 @@ const ZoomResetSaveControls = ({
   setValue,
   zoomToImage,
   isDirty,
+  onSave,
+  handleSubmit,
 }: {
   setValue: UseFormSetValue<CrashDiagramOrientation>;
   zoomToImage: () => void;
   isDirty: boolean;
+  onSave: SubmitHandler<CrashDiagramOrientation>;
+  handleSubmit: UseFormHandleSubmit<CrashDiagramOrientation>;
 }) => {
   const { zoomIn, zoomOut, resetTransform } = useControls();
 
@@ -104,7 +115,7 @@ const ZoomResetSaveControls = ({
       <Button
         size="sm"
         variant="outline-primary"
-        onClick={() => console.log("save")}
+        onClick={handleSubmit(onSave)}
         title="save"
         disabled={!isDirty}
       >
@@ -165,6 +176,15 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
     defaultValues,
   });
 
+  const { mutate } = useMutation(UPDATE_CRASH);
+
+  const onSave: SubmitHandler<CrashDiagramOrientation> = async (data) => {
+    await mutate({
+      id: crash.id,
+      updates: { diagram_zoom_rotate: data },
+    });
+  };
+
   const formValues = watch();
 
   const resetZoomToImage = () => {
@@ -202,13 +222,15 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             onTransformed={(e) => {
               console.log("on transform: ", e.state);
               // running into an issue where on load it zooms to fit, which is dirtying the form
-              setValue("scale", e.state.scale, {shouldDirty: true});
+              setValue("scale", e.state.scale, { shouldDirty: true });
             }}
           >
             <ZoomResetSaveControls
               setValue={setValue}
               zoomToImage={resetZoomToImage}
               isDirty={isDirty}
+              onSave={onSave}
+              handleSubmit={handleSubmit}
             />
             <TransformComponent contentStyle={{ mixBlendMode: "multiply" }}>
               <Image
