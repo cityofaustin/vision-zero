@@ -37,8 +37,7 @@ WITH
                 ORDER BY
                     unit_type
             ) AS unit_types_array,
-            SUM(unit_count) AS total_units,
-            COUNT(DISTINCT unit_type) AS distinct_unit_types
+            SUM(unit_count) AS total_units
         FROM
             distinct_unit_types
         GROUP BY
@@ -47,7 +46,9 @@ WITH
 SELECT
     crash_pk,
     CASE
-        WHEN total_units = 1 THEN unit_types_array[1]
+        WHEN total_units = 1::numeric THEN 'Single ' || unit_types_array[1]
+        WHEN total_units > 1::numeric AND array_length(unit_types_array, 1) = 1::numeric
+            then unit_types_array[1] || '/' || unit_types_array[1]
         ELSE ARRAY_TO_STRING(unit_types_array, '/')
     END AS unit_types_involved
 FROM
