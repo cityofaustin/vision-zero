@@ -10,7 +10,8 @@ WITH
                 OR veh_body_styl_id = 90 THEN 'Motorcycle'
                 WHEN veh_body_styl_id = 177 THEN 'E-Scooter'
                 WHEN unit_desc_id = 1
-                AND veh_body_styl_id IN (9, 23, 30, 47, 69, 100, 103, 104, 105, 106, 107, 109) THEN 'Car'
+                AND veh_body_styl_id IN (0, 9, 23, 30, 47, 69, 100, 103, 104, 105, 106, 107, 109) THEN 'Car'
+
                 ELSE 'Other'
             END AS unit_type
         FROM
