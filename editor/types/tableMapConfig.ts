@@ -1,41 +1,9 @@
-import { FeatureCollection } from "geojson";
 import MapGL, { LayerProps } from "react-map-gl";
 import TableMapPopupContent from "@/components/TableMapPopupContent";
 import LocationTableMapPopupContent from "@/components/LocationsTableMapPopupContent";
 
 // importing MapProps does not work: https://github.com/visgl/react-map-gl/issues/2140
 type MapGLComponentProps = React.ComponentProps<typeof MapGL>;
-
-/**
- * An index of functions that transform input data into a geojson feature collection
- */
-export const geoJsonTransformers = {
-  latLon: (data: Record<string, unknown>[]): FeatureCollection => {
-    if (!data || data.length === 0) {
-      return {
-        type: "FeatureCollection" as const,
-        features: [],
-      };
-    }
-    const features = data
-      .filter((row) => row.latitude && row.longitude) // Filter out items without coordinates
-      .map((row, index) => ({
-        type: "Feature" as const,
-        id: index,
-        geometry: {
-          type: "Point" as const,
-          coordinates: [Number(row.longitude), Number(row.latitude)],
-        },
-        properties: {
-          ...row, // Include all original data as properties
-        },
-      }));
-    return {
-      type: "FeatureCollection" as const,
-      features,
-    };
-  },
-};
 
 /**
  * Returns popup component based on component named in mapConfig.
