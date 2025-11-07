@@ -118,7 +118,7 @@ export default function FatalCrashDetailsPage({
           </Card>
         </Col>
         <Col>
-          <FatalityVictimsCard />
+          <FatalityVictimsCard crash={crash} />
         </Col>
       </Row>
     </>
