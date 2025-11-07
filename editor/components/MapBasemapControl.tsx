@@ -4,6 +4,13 @@ import { Card } from "react-bootstrap";
 import { Dispatch, SetStateAction } from "react";
 import AlignedLabel from "@/components/AlignedLabel";
 import { MdOutlineLayers } from "react-icons/md";
+import { FaMapPin } from "react-icons/fa6";
+
+export interface CustomLayerToggle {
+  label: string;
+  checked: boolean;
+  onChange: () => void;
+}
 
 interface MapBasemapControlProps {
   /** The mapbox basemap type to be used in the map */
@@ -12,6 +19,7 @@ interface MapBasemapControlProps {
   setBasemapType: Dispatch<SetStateAction<"streets" | "aerial">>;
   /** Type of map using the basemap control, used to differentiate multiple controls on same page */
   controlId: string;
+  customLayerToggles?: CustomLayerToggle[];
 }
 
 /**
@@ -21,10 +29,34 @@ export default function MapBasemapControl({
   basemapType,
   setBasemapType,
   controlId,
+  customLayerToggles,
 }: MapBasemapControlProps) {
   return (
     <div className="map-select-basemap-bottom-left">
       <Card>
+        {customLayerToggles && (
+          <>
+            <Card.Header className="pb-0 ">
+              <AlignedLabel>
+                <FaMapPin className="me-2 fs-5" />
+                <span className="fs-6 fw-bold">Layers</span>
+              </AlignedLabel>
+            </Card.Header>
+            <Card.Body className="py-1">
+              {customLayerToggles?.map((toggle) => (
+                <Form.Check
+                  key={toggle.label}
+                  className="fs-6 my-1"
+                  id={`${toggle.label}`}
+                  type="checkbox"
+                  label={toggle.label}
+                  checked={toggle.checked}
+                  onChange={() => toggle.onChange()}
+                />
+              ))}
+            </Card.Body>
+          </>
+        )}
         <Card.Header className="pb-0 ">
           <AlignedLabel>
             <MdOutlineLayers className="me-2 fs-5" />

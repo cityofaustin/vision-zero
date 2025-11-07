@@ -260,6 +260,7 @@ export default function EMSDetailsPage({
             savedLatitude={incident.latitude}
             savedLongitude={incident.longitude}
             matchingPeople={matchingPeople}
+            nonCR3Crashes={nonCR3Crashes}
           />
         </Col>
       </Row>

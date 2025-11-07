@@ -21,7 +21,9 @@ import {
   MAP_MAX_BOUNDS,
 } from "@/configs/map";
 import { useBasemap, useCurrentBounds } from "@/utils/map";
-import MapBasemapControl from "@/components/MapBasemapControl";
+import MapBasemapControl, {
+  CustomLayerToggle,
+} from "@/components/MapBasemapControl";
 import MapFitBoundsControl from "./MapFitBoundsControl";
 import { COLORS } from "@/utils/constants";
 import { z, ZodFormattedError } from "zod";
@@ -77,6 +79,10 @@ interface PointMapProps {
    * Additional layers to be rendered on the map
    */
   children?: ReactNode;
+  /**
+   * Configs for adding custom layer toggles to the basemap control
+   */
+  customLayerToggles?: CustomLayerToggle[];
 }
 
 /**
@@ -90,6 +96,7 @@ export const PointMap = ({
   mapLatLon,
   setMapLatLon,
   children,
+  customLayerToggles,
 }: PointMapProps) => {
   const { basemapURL, basemapType, setBasemapType } = useBasemap("aerial");
 
@@ -146,6 +153,23 @@ export const PointMap = ({
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
       <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
+      {/* add nearmap raster source and style */}
+      {basemapType === "aerial" && <MapAerialSourceAndLayer />}
+      {setMapLatLon && (
+        <MapGeocoderControl
+          position="top-left"
+          onResult={(latLon: LatLon) => setMapLatLon(latLon)}
+        />
+      )}
+      <MapBasemapControl
+        basemapType={basemapType}
+        setBasemapType={setBasemapType}
+        customLayerToggles={customLayerToggles}
+        controlId="pointMap"
+      />
+      {/* Custom layers */}
+      {children}
+      {/* editable + not editable point layers */}
       {savedLatitude && savedLongitude && !isEditing && (
         <Marker
           latitude={savedLatitude}
@@ -160,20 +184,6 @@ export const PointMap = ({
           color={isEditing ? COLORS.danger : undefined}
         />
       )}
-      {/* add nearmap raster source and style */}
-      {basemapType === "aerial" && <MapAerialSourceAndLayer />}
-      {setMapLatLon && (
-        <MapGeocoderControl
-          position="top-left"
-          onResult={(latLon: LatLon) => setMapLatLon(latLon)}
-        />
-      )}
-      <MapBasemapControl
-        basemapType={basemapType}
-        setBasemapType={setBasemapType}
-        controlId="pointMap"
-      />
-      {children}
     </MapGL>
   );
 };
