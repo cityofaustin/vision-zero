@@ -1,6 +1,7 @@
 import { Marker, MarkerProps } from "react-map-gl";
 import { FaCarBurst } from "react-icons/fa6";
 import { ICON_MAP_MARKER_STYLES } from "@/configs/map";
+
 export default function CrashMapMarker(props: MarkerProps) {
   return (
     <Marker {...props} anchor="center">
