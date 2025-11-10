@@ -32,7 +32,7 @@ export default function FatalityVictimsCard({
               const unitYearMakeModel =
                 `${unit.veh_mod_year || ""} ${unit.veh_make?.label || ""} ${unit.veh_mod?.label || ""}`.trim();
               return (
-                <ListGroupItem style={{ border: "none" }} key={unit.id}>
+                <ListGroupItem key={unit.id}>
                   <div className="d-flex w-100 justify-content-start align-items-center">
                     <h5 className="mb-1 me-2">
                       <span className="fw-bold"> Unit {unit.unit_nbr}</span>
