@@ -1,31 +1,19 @@
 import { Marker, MarkerProps } from "react-map-gl";
 import { FaTruckMedical } from "react-icons/fa6";
+import { ICON_MAP_MARKER_STYLES } from "@/configs/map";
 
 export default function EMSIncidentMarker(props: MarkerProps) {
   return (
     <Marker {...props} anchor="center">
       <div
+        className="icon-map-marker"
         style={{
-          width: 36,
-          height: 36,
-          borderRadius: "50%",
+          ...ICON_MAP_MARKER_STYLES,
           backgroundColor: "#dd0426",
-          border: "1.5px solid #fff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
           pointerEvents: "none",
-          position: "relative",
-          zIndex: 1000000
         }}
       >
-        <FaTruckMedical
-          size={20}
-          color="#fff"
-          //   style={{ transform: "translate(0%,-7%)" }}
-        />
+        <FaTruckMedical size={20} color="#fff" />
       </div>
     </Marker>
   );
