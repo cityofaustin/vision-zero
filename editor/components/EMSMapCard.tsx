@@ -1,16 +1,18 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import Card from "react-bootstrap/Card";
-import { Layer, LayerProps, MapRef, Marker, Source } from "react-map-gl";
+import { Layer, MapRef, Source } from "react-map-gl";
 import { PointMap } from "@/components/PointMap";
 import { useResizeObserver } from "@/utils/map";
 import { PeopleListRow } from "@/types/peopleList";
 import { Crash } from "@/types/crashes";
 import { geoJsonTransformers } from "@/utils/map";
-import { FaCarBurst } from "react-icons/fa6";
 import { NonCR3Record } from "@/types/nonCr3";
-import { MdOutlineStickyNote2 } from "react-icons/md";
 import { CustomLayerToggle } from "@/components/MapBasemapControl";
 import EMSIncidentMarker from "@/components/EMSMapMarker";
+import NonCR3MapMarker from "@/components/NonCR3MapMarker";
+import CrashMapMarker from "@/components/CrashMapMarker";
+import { crashesLabelLayerProps } from "@/configs/crashesLayerConfig";
+import { nonCr3LabelLayerProps } from "@/configs/nonCr3LabelLayerProps";
 
 interface EMSMapCardProps {
   savedLatitude: number | null;
@@ -18,105 +20,6 @@ interface EMSMapCardProps {
   matchingPeople?: PeopleListRow[];
   nonCR3Crashes?: NonCR3Record[];
 }
-
-const crashLayerProps: LayerProps = {
-  id: "crash-points",
-  type: "circle",
-  paint: {
-    "circle-radius": [
-      "interpolate",
-      ["linear"],
-      ["zoom"],
-      // zoom is 5 (or less)
-      5,
-      10,
-      // zoom is 20 (or greater)
-      20,
-      17,
-    ],
-    "circle-color": "#1276d1",
-    "circle-stroke-width": [
-      "interpolate",
-      ["linear"],
-      ["zoom"],
-      // zoom is 5 (or less)
-      5,
-      1,
-      // zoom is 20 (or greater)
-      20,
-      2,
-    ],
-    "circle-stroke-color": "#fff",
-  },
-};
-
-const crashLabelLayerProps: LayerProps = {
-  id: "crash-points-labels",
-  type: "symbol",
-  layout: {
-    // "text-field": ["concat", "CR3 ", ["get", "record_locator"]],
-    "text-field": ["get", "record_locator"],
-    "text-font": ["Arial Unicode MS Bold"],
-    "text-size": 16,
-    "text-offset": [0, 1.5], // offset below the circle
-    "text-anchor": "top",
-    "text-allow-overlap": false, // prevents label collisions
-  },
-  paint: {
-    "text-color": "#1276d1",
-    "text-halo-color": "#fff",
-    "text-halo-width": 1.5,
-  },
-};
-
-const nonCr3LayerProps: LayerProps = {
-  id: "non-cr3-points",
-  type: "circle",
-  paint: {
-    "circle-radius": [
-      "interpolate",
-      ["linear"],
-      ["zoom"],
-      // zoom is 5 (or less)
-      5,
-      10,
-      // zoom is 20 (or greater)
-      20,
-      17,
-    ],
-    "circle-color": "#6b7676",
-    "circle-stroke-width": [
-      "interpolate",
-      ["linear"],
-      ["zoom"],
-      // zoom is 5 (or less)
-      5,
-      1,
-      // zoom is 20 (or greater)
-      20,
-      2,
-    ],
-    "circle-stroke-color": "#fff",
-  },
-};
-
-const nonCr3LabelLayerProps: LayerProps = {
-  id: "non-cr3-points-labels",
-  type: "symbol",
-  layout: {
-    "text-field": ["concat", "", ["get", "case_id"]],
-    "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
-    "text-size": 14,
-    "text-offset": [0, 1.5], // offset below the circle
-    "text-anchor": "top",
-    "text-allow-overlap": false, // prevents label collisions
-  },
-  paint: {
-    "text-color": "#6b7676",
-    "text-halo-color": "#fff",
-    "text-halo-width": 1.5,
-  },
-};
 
 const useCrashesGeojson = (matchingPeople: PeopleListRow[] | undefined) =>
   useMemo(() => {
@@ -216,55 +119,39 @@ export default function EMSMapCard({
           {/* CR3 crash layers */}
           {showCrashes && crashesGeojson && (
             <Source id="cr3-crashes" type="geojson" data={crashesGeojson}>
-              <Layer {...crashLayerProps} />
-              <Layer {...crashLabelLayerProps} />
+              <Layer {...crashesLabelLayerProps} />
             </Source>
           )}
           {showCrashes &&
             crashesGeojson &&
-            crashesGeojson.features.map((feature) => (
-              <Marker
-                key={feature.properties?.id}
+            crashesGeojson.features.map((feature, i) => (
+              <CrashMapMarker
+                key={i}
                 longitude={feature.geometry.coordinates[0]}
                 latitude={feature.geometry.coordinates[1]}
                 anchor="center"
-              >
-                <div
-                  style={{
-                    transform: "translate(0%,-7%)",
-                    pointerEvents: "none",
-                  }}
-                >
-                  <FaCarBurst size={22} color="#fff" />
-                </div>
-              </Marker>
+              />
             ))}
           {/* Non-CR3 crash layers */}
           {showNonCr3s && nonCR3Geojson && (
             <Source id="non-cr3-crashes" type="geojson" data={nonCR3Geojson}>
-              <Layer {...nonCr3LayerProps} />
               <Layer {...nonCr3LabelLayerProps} />
             </Source>
           )}
           {showNonCr3s &&
             nonCR3Geojson &&
-            nonCR3Geojson.features.map((feature) => (
-              <Marker
-                key={feature.properties?.case_id}
+            nonCR3Geojson.features.map((feature, i) => (
+              <NonCR3MapMarker
+                key={i}
                 longitude={feature.geometry.coordinates[0]}
                 latitude={feature.geometry.coordinates[1]}
                 anchor="center"
-              >
-                <div
-                  style={{
-                    transform: "translate(0%,-7%)",
-                    pointerEvents: "none",
-                  }}
-                >
-                  <MdOutlineStickyNote2 size={22} color="#fff" />
-                </div>
-              </Marker>
+              />
             ))}
+          <EMSIncidentMarker
+            latitude={savedLatitude || 0}
+            longitude={savedLongitude || 0}
+          />
         </PointMap>
       </Card.Body>
     </Card>

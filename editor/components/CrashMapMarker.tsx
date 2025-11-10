@@ -1,7 +1,7 @@
 import { Marker, MarkerProps } from "react-map-gl";
-import { FaTruckMedical } from "react-icons/fa6";
+import { FaCarBurst } from "react-icons/fa6";
 
-export default function EMSIncidentMarker(props: MarkerProps) {
+export default function CrashMapMarker(props: MarkerProps) {
   return (
     <Marker {...props} anchor="center">
       <div
@@ -9,7 +9,7 @@ export default function EMSIncidentMarker(props: MarkerProps) {
           width: 36,
           height: 36,
           borderRadius: "50%",
-          backgroundColor: "#dd0426",
+          backgroundColor: "#1276d1",
           border: "1.5px solid #fff",
           display: "flex",
           alignItems: "center",
@@ -18,14 +18,10 @@ export default function EMSIncidentMarker(props: MarkerProps) {
           boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
           pointerEvents: "none",
           position: "relative",
-          zIndex: 1000000
+          zIndex: 10,
         }}
       >
-        <FaTruckMedical
-          size={20}
-          color="#fff"
-          //   style={{ transform: "translate(0%,-7%)" }}
-        />
+        <FaCarBurst size={22} color="#fff" />
       </div>
     </Marker>
   );

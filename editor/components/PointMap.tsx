@@ -2,6 +2,7 @@ import {
   ComponentType,
   useCallback,
   useEffect,
+  useMemo,
   Dispatch,
   SetStateAction,
   MutableRefObject,
@@ -82,7 +83,8 @@ interface PointMapProps {
    */
   CustomMarker?: ComponentType<MarkerProps> | null;
   /**
-   * Additional layers to be rendered on the map
+   * Additional layers, markers, or any other elements to be
+   * rendered on the map
    */
   children?: ReactNode;
   /**
@@ -132,7 +134,7 @@ export const PointMap = ({
 
   useEffect(() => {
     if (!isEditing && setMapLatLon) {
-      // initialize edit coordiantes and reset them after saving
+      // initialize edit coordinates and reset them after saving
       setMapLatLon({
         latitude: savedLatitude || DEFAULT_MAP_PAN_ZOOM.latitude,
         longitude: savedLongitude || DEFAULT_MAP_PAN_ZOOM.longitude,
@@ -141,6 +143,16 @@ export const PointMap = ({
   }, [isEditing, setMapLatLon, savedLatitude, savedLongitude]);
 
   const Marker = CustomMarker ? CustomMarker : MapboxMarker;
+
+  /**
+   * Update the key of the marker when children changes - this is a bit
+   * of a hack to ensure that the marker is always rendered on top of
+   * other map markers
+   */
+  const dynamicMarkerKey = useMemo(() => {
+    if (!children) return "no-children";
+    return Date.now();
+  }, [children]);
 
   return (
     <MapGL
@@ -181,13 +193,15 @@ export const PointMap = ({
       {/* editable + not editable point layers */}
       {savedLatitude && savedLongitude && !isEditing && (
         <Marker
+          key={dynamicMarkerKey}
           latitude={savedLatitude}
           longitude={savedLongitude}
           color={COLORS.primary}
-        ></Marker>
+        />
       )}
       {isEditing && mapLatLon && (
         <Marker
+          key={dynamicMarkerKey}
           latitude={mapLatLon.latitude}
           longitude={mapLatLon.longitude}
           color={isEditing ? COLORS.danger : undefined}
