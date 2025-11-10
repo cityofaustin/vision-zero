@@ -66,7 +66,7 @@ const useLayerToggles = (
   }, [showCrashes, showNoncr3Crashes, onToggleCrashes, onToggleNonCR3s]);
 
 /**
- * Card component that renders the crash map with no editing capabilities
+ * Map which displays the EMS incident location as well as nearby crashes and non-cr3s
  */
 export default function EMSMapCard({
   savedLatitude,
