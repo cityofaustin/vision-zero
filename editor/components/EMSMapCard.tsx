@@ -11,8 +11,8 @@ import { CustomLayerToggle } from "@/components/MapBasemapControl";
 import EMSIncidentMarker from "@/components/EMSMapMarker";
 import NonCR3MapMarker from "@/components/NonCR3MapMarker";
 import CrashMapMarker from "@/components/CrashMapMarker";
-import { crashesLabelLayerProps } from "@/configs/crashesLayerConfig";
-import { nonCr3LabelLayerProps } from "@/configs/nonCr3LabelLayerProps";
+import { crashesLayerLabels } from "@/configs/crashesLayerLabels";
+import { nonCr3LayerLabels } from "@/configs/nonCr3LayerLabels";
 
 interface EMSMapCardProps {
   savedLatitude: number | null;
@@ -119,7 +119,7 @@ export default function EMSMapCard({
           {/* CR3 crash layers */}
           {showCrashes && crashesGeojson && (
             <Source id="cr3-crashes" type="geojson" data={crashesGeojson}>
-              <Layer {...crashesLabelLayerProps} />
+              <Layer {...crashesLayerLabels} />
             </Source>
           )}
           {showCrashes &&
@@ -135,7 +135,7 @@ export default function EMSMapCard({
           {/* Non-CR3 crash layers */}
           {showNonCr3s && nonCR3Geojson && (
             <Source id="non-cr3-crashes" type="geojson" data={nonCR3Geojson}>
-              <Layer {...nonCr3LabelLayerProps} />
+              <Layer {...nonCr3LayerLabels} />
             </Source>
           )}
           {showNonCr3s &&

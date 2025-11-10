@@ -1,6 +1,6 @@
 import { LayerProps } from "react-map-gl";
 
-export const crashesLabelLayerProps: LayerProps = {
+export const crashesLayerLabels: LayerProps = {
   id: "crash-points-labels",
   type: "symbol",
   layout: {
