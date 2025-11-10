@@ -67,12 +67,14 @@ const ZoomResetSaveControls = ({
   isDirty,
   onSave,
   handleSubmit,
+  diagramSaved,
 }: {
   setValue: UseFormSetValue<CrashDiagramOrientation>;
   zoomToImage: () => void;
   isDirty: boolean;
   onSave: SubmitHandler<CrashDiagramOrientation>;
   handleSubmit: UseFormHandleSubmit<CrashDiagramOrientation>;
+  diagramSaved: boolean;
 }) => {
   const { zoomIn, zoomOut, resetTransform } = useControls();
 
@@ -114,13 +116,13 @@ const ZoomResetSaveControls = ({
       </ButtonGroup>
       <Button
         size="sm"
-        variant="outline-primary"
+        variant={diagramSaved ? "primary" : "outline-primary"}
         onClick={handleSubmit(onSave)}
-        title="save"
+        title={"save"}
         disabled={!isDirty}
       >
         <FaFloppyDisk className="me-2" />
-        Save
+        {diagramSaved ? "Saved" : "Save"}
       </Button>
     </div>
   );
@@ -151,7 +153,7 @@ const RotateControls = ({
 
 export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [diagramError, setDiagramError] = useState(false);
-
+  const [diagramSaved, setDiagramSaved] = useState(false);
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
 
   const defaultValues = useMemo(() => {
@@ -231,6 +233,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               isDirty={isDirty}
               onSave={onSave}
               handleSubmit={handleSubmit}
+              diagramSaved={diagramSaved}
             />
             <TransformComponent contentStyle={{ mixBlendMode: "multiply" }}>
               <Image
