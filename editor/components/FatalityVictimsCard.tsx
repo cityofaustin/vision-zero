@@ -49,9 +49,9 @@ export default function FatalityVictimsCard({
                             {victim.prsn_first_name} {victim.prsn_mid_name}{" "}
                             {victim.prsn_last_name}
                           </span>
-                          {victim.prsn_type_id !== 3 &&
+                          {victim.prsn_type_id !== 3 && // pedalcyclist
                             // Dont show person type for cyclists or pedestrians bc its redundant
-                            victim.prsn_type_id !== 4 && (
+                            victim.prsn_type_id !== 4 && ( // pedestrian
                               <small className="text-secondary">
                                 {victim.prsn_type.label}
                               </small>
@@ -73,9 +73,9 @@ export default function FatalityVictimsCard({
                         </span>
                         {victim.rest?.label &&
                           // Only show restraint field for cars
-                          unit.unit_desc_id === 1 &&
-                          unit.veh_body_styl_id !== 71 &&
-                          unit.veh_body_styl_id !== 90 && (
+                          unit.unit_desc_id === 1 && // motor vehicle
+                          unit.veh_body_styl_id !== 71 && // motorycle
+                          unit.veh_body_styl_id !== 90 && ( // police motorcycle
                             <span>Restraint used: {victim.rest.label}</span>
                           )}
                         {victim.prsn_exp_homelessness && (
