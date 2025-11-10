@@ -1,4 +1,6 @@
 export type CrashDiagramOrientation = {
-  scale: number;
+  scale: number | undefined;
   rotation: number;
+  positionX: number;
+  positionY: number;
 };

@@ -65,14 +65,14 @@ const DiagramAlert: React.FC<DiagramAlertProps> = ({
 
 const ZoomResetSaveControls = ({
   setValue,
-  zoomToImage,
+  resetZoomToImage,
   isDirty,
   onSave,
   handleSubmit,
   diagramSaved,
 }: {
   setValue: UseFormSetValue<CrashDiagramOrientation>;
-  zoomToImage: () => void;
+  resetZoomToImage: () => void;
   isDirty: boolean;
   onSave: SubmitHandler<CrashDiagramOrientation>;
   handleSubmit: UseFormHandleSubmit<CrashDiagramOrientation>;
@@ -83,8 +83,10 @@ const ZoomResetSaveControls = ({
   const handleReset = () => {
     resetTransform();
     setValue("rotation", 0);
-    setValue("scale", 1);
-    zoomToImage();
+    setValue("scale", undefined);
+    setValue("positionX", 0);
+    setValue("positionY", 0);
+    resetZoomToImage();
   };
 
   return (
@@ -165,10 +167,14 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
       ? {
           scale: crash.diagram_zoom_rotate.scale,
           rotation: crash.diagram_zoom_rotate.rotation,
+          positionX: crash.diagram_zoom_rotate?.positionX,
+          positionY: crash.diagram_zoom_rotate?.positionY,
         }
       : {
-          scale: 1,
+          scale: undefined, // undefined so the image zooms to fit whole image in frame
           rotation: 0,
+          positionX: 0,
+          positionY: 0,
         };
   }, [crash]);
 
@@ -202,11 +208,15 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   };
 
   // zoom to the scale saved in database, or default value (1)
-  const initZoomToImage = (initScale: number) => {
+  const initZoomToImage = (
+    initScale: number | undefined,
+    initPositionX: number,
+    initPositionY: number
+  ) => {
     if (transformComponentRef.current) {
-      const { zoomToElement } = transformComponentRef.current;
-      // zoomToElement("crashDiagramImage", undefined, 1);
-      zoomToElement("crashDiagramImage", initScale);
+      const { zoomToElement, setTransform } = transformComponentRef.current;
+      setTransform(initPositionX, initPositionY, 1);
+      zoomToElement("crashDiagramImage", initScale, 1);
     }
   };
 
@@ -231,11 +241,13 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               console.log("on transform: ", e.state);
               // running into an issue where on load it zooms to fit, which is dirtying the form
               setValue("scale", e.state.scale, { shouldDirty: true });
+              setValue("positionX", e.state.positionX, { shouldDirty: true });
+              setValue("positionY", e.state.positionY, { shouldDirty: true });
             }}
           >
             <ZoomResetSaveControls
               setValue={setValue}
-              zoomToImage={resetZoomToImage}
+              resetZoomToImage={resetZoomToImage}
               isDirty={isDirty}
               onSave={onSave}
               handleSubmit={handleSubmit}
@@ -249,7 +261,11 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
                 alt="crash diagram"
                 id="crashDiagramImage"
                 onLoad={() => {
-                  initZoomToImage(defaultValues.scale);
+                  initZoomToImage(
+                    defaultValues.scale,
+                    defaultValues.positionX,
+                    defaultValues.positionY
+                  );
                 }}
                 onError={() => {
                   console.error("Error loading CR3 diagram image");
