@@ -14,9 +14,6 @@ export default function FatalityVictimsCard({
   );
   const units = crash.units;
 
-  if (!victims) {
-    return;
-  }
   return (
     <Card>
       <Card.Header>
@@ -28,7 +25,7 @@ export default function FatalityVictimsCard({
             const unitVictims = victims?.filter(
               (victim) => victim.unit_nbr === unit.unit_nbr
             );
-            if (unitVictims?.length > 0) {
+            if (unitVictims && unitVictims?.length > 0) {
               const unitYearMakeModel =
                 `${unit.veh_mod_year || ""} ${unit.veh_make?.label || ""} ${unit.veh_mod?.label || ""}`.trim();
               return (
