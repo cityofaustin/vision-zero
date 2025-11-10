@@ -1,4 +1,5 @@
 import {
+  ComponentType,
   useCallback,
   useEffect,
   Dispatch,
@@ -9,9 +10,10 @@ import {
 import MapGL, {
   FullscreenControl,
   NavigationControl,
-  Marker,
+  Marker as MapboxMarker,
   ViewStateChangeEvent,
   MapRef,
+  MarkerProps,
 } from "react-map-gl";
 import MapGeocoderControl from "@/components/MapGeocoderControl";
 import {
@@ -76,6 +78,10 @@ interface PointMapProps {
   mapLatLon?: LatLon;
   setMapLatLon?: Dispatch<SetStateAction<LatLon>>;
   /**
+   * Optional custom Marker component to use as the marker.
+   */
+  CustomMarker?: ComponentType<MarkerProps> | null;
+  /**
    * Additional layers to be rendered on the map
    */
   children?: ReactNode;
@@ -95,6 +101,7 @@ export const PointMap = ({
   isEditing,
   mapLatLon,
   setMapLatLon,
+  CustomMarker,
   children,
   customLayerToggles,
 }: PointMapProps) => {
@@ -132,6 +139,8 @@ export const PointMap = ({
       });
     }
   }, [isEditing, setMapLatLon, savedLatitude, savedLongitude]);
+
+  const Marker = CustomMarker ? CustomMarker : MapboxMarker;
 
   return (
     <MapGL

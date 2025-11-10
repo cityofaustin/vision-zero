@@ -10,6 +10,7 @@ import { FaCarBurst } from "react-icons/fa6";
 import { NonCR3Record } from "@/types/nonCr3";
 import { MdOutlineStickyNote2 } from "react-icons/md";
 import { CustomLayerToggle } from "@/components/MapBasemapControl";
+import EMSIncidentMarker from "@/components/EMSMapMarker";
 
 interface EMSMapCardProps {
   savedLatitude: number | null;
@@ -28,10 +29,10 @@ const crashLayerProps: LayerProps = {
       ["zoom"],
       // zoom is 5 (or less)
       5,
-      5,
+      10,
       // zoom is 20 (or greater)
       20,
-      15,
+      17,
     ],
     "circle-color": "#1276d1",
     "circle-stroke-width": [
@@ -43,7 +44,7 @@ const crashLayerProps: LayerProps = {
       1,
       // zoom is 20 (or greater)
       20,
-      3,
+      2,
     ],
     "circle-stroke-color": "#fff",
   },
@@ -53,9 +54,10 @@ const crashLabelLayerProps: LayerProps = {
   id: "crash-points-labels",
   type: "symbol",
   layout: {
-    "text-field": ["concat", "CR3 ", ["get", "record_locator"]],
-    "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
-    "text-size": 12,
+    // "text-field": ["concat", "CR3 ", ["get", "record_locator"]],
+    "text-field": ["get", "record_locator"],
+    "text-font": ["Arial Unicode MS Bold"],
+    "text-size": 16,
     "text-offset": [0, 1.5], // offset below the circle
     "text-anchor": "top",
     "text-allow-overlap": false, // prevents label collisions
@@ -63,7 +65,7 @@ const crashLabelLayerProps: LayerProps = {
   paint: {
     "text-color": "#1276d1",
     "text-halo-color": "#fff",
-    "text-halo-width": 3,
+    "text-halo-width": 1.5,
   },
 };
 
@@ -77,12 +79,12 @@ const nonCr3LayerProps: LayerProps = {
       ["zoom"],
       // zoom is 5 (or less)
       5,
-      5,
+      10,
       // zoom is 20 (or greater)
       20,
-      15,
+      17,
     ],
-    "circle-color": "#1276d1",
+    "circle-color": "#6b7676",
     "circle-stroke-width": [
       "interpolate",
       ["linear"],
@@ -92,7 +94,7 @@ const nonCr3LayerProps: LayerProps = {
       1,
       // zoom is 20 (or greater)
       20,
-      3,
+      2,
     ],
     "circle-stroke-color": "#fff",
   },
@@ -104,15 +106,15 @@ const nonCr3LabelLayerProps: LayerProps = {
   layout: {
     "text-field": ["concat", "", ["get", "case_id"]],
     "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
-    "text-size": 12,
+    "text-size": 14,
     "text-offset": [0, 1.5], // offset below the circle
     "text-anchor": "top",
     "text-allow-overlap": false, // prevents label collisions
   },
   paint: {
-    "text-color": "#1276d1",
+    "text-color": "#6b7676",
     "text-halo-color": "#fff",
-    "text-halo-width": 3,
+    "text-halo-width": 1.5,
   },
 };
 
@@ -209,6 +211,7 @@ export default function EMSMapCard({
           savedLongitude={savedLongitude}
           mapRef={mapRef}
           customLayerToggles={customLayerToggles}
+          CustomMarker={EMSIncidentMarker}
         >
           {/* CR3 crash layers */}
           {showCrashes && crashesGeojson && (
@@ -232,7 +235,7 @@ export default function EMSMapCard({
                     pointerEvents: "none",
                   }}
                 >
-                  <FaCarBurst size={16} color="#fff" />
+                  <FaCarBurst size={22} color="#fff" />
                 </div>
               </Marker>
             ))}
@@ -258,7 +261,7 @@ export default function EMSMapCard({
                     pointerEvents: "none",
                   }}
                 >
-                  <MdOutlineStickyNote2 size={16} color="#fff" />
+                  <MdOutlineStickyNote2 size={22} color="#fff" />
                 </div>
               </Marker>
             ))}
