@@ -29,8 +29,10 @@ import {
 import { CrashDiagramOrientation } from "@/types/crashDiagramOrientation";
 import { UPDATE_CRASH } from "@/queries/crash";
 import { useMutation } from "@/utils/graphql";
+import PermissionsRequired from "@/components/PermissionsRequired";
 
 const CR3_DIAGRAM_BASE_URL = process.env.NEXT_PUBLIC_CR3_DIAGRAM_BASE_URL!;
+const allowedUserSaveDiagramRoles = ["vz-admin", "editor"];
 
 interface DiagramAlertProps {
   variant: "info" | "danger" | "success" | "warning";
@@ -114,16 +116,18 @@ const ZoomResetSaveControls = ({
           Reset
         </Button>
       </ButtonGroup>
-      <Button
-        size="sm"
-        variant={diagramSaved ? "primary" : "outline-primary"}
-        onClick={handleSubmit(onSave)}
-        title={"save"}
-        disabled={!isDirty}
-      >
-        <FaFloppyDisk className="me-2" />
-        {diagramSaved ? "Saved" : "Save"}
-      </Button>
+      <PermissionsRequired allowedRoles={allowedUserSaveDiagramRoles}>
+        <Button
+          size="sm"
+          variant={diagramSaved ? "primary" : "outline-primary"}
+          onClick={handleSubmit(onSave)}
+          title={"save"}
+          disabled={!isDirty}
+        >
+          <FaFloppyDisk className="me-2" />
+          {diagramSaved ? "Saved" : "Save"}
+        </Button>
+      </PermissionsRequired>
     </div>
   );
 };
@@ -185,6 +189,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
       id: crash.id,
       updates: { diagram_zoom_rotate: data },
     });
+    setDiagramSaved(true);
   };
 
   const formValues = watch();
@@ -200,7 +205,8 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const initZoomToImage = (initScale: number) => {
     if (transformComponentRef.current) {
       const { zoomToElement } = transformComponentRef.current;
-      zoomToElement("crashDiagramImage", undefined, initScale);
+      // zoomToElement("crashDiagramImage", undefined, 1);
+      zoomToElement("crashDiagramImage", initScale);
     }
   };
 
