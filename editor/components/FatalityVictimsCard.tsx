@@ -14,9 +14,8 @@ export default function FatalityVictimsCard({
     (person) => person.prsn_injry_sev_id === 4
   );
   const units = crash.units;
-  console.log(units);
+
   if (!victims) {
-    // todo: loading spinner (would be nice to use a spinner inside cards)
     return;
   }
   return (
@@ -54,9 +53,13 @@ export default function FatalityVictimsCard({
                             {victim.prsn_first_name} {victim.prsn_mid_name}{" "}
                             {victim.prsn_last_name}
                           </span>
-                          <small className="text-secondary">
-                            {victim.prsn_type.label}
-                          </small>
+                          {victim.prsn_type_id !== 3 &&
+                            // Dont show person type for cyclists or pedestrians bc its redundant
+                            victim.prsn_type_id !== 4 && (
+                              <small className="text-secondary">
+                                {victim.prsn_type.label}
+                              </small>
+                            )}
                         </div>
                         {victim.injry_sev?.label && (
                           <span
