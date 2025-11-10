@@ -9,7 +9,6 @@ interface FatalityVictimsCardProps {
 export default function FatalityVictimsCard({
   crash,
 }: FatalityVictimsCardProps) {
-  console.log(crash.people_list_view);
   const victims = crash.people_list_view?.filter(
     (person) => person.prsn_injry_sev_id === 4
   );
