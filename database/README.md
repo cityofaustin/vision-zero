@@ -2,7 +2,7 @@
 
 The Vision Zero Database (VZD) is a Postgresql database that serves as the central repository of Austin's traffic crash data. The database is fronted with a GraphQL API, powered by [Hasura](https://github.com/hasura/graphql-engine), which is also used to manage schema migrations.
 
-The design supports an editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Records Information System (CRIS).
+The design supports an editing environment which enables Vision Zero program staff to edit and enrich crash data, while also allowing record updates to flow into the database from upstream sources, such as the TxDOT Crash Records Information System (CRIS) and local emergency medical services.
 
 ![vision zero data flow](../docs/images/data_flow.png)
 
@@ -18,7 +18,9 @@ The design supports an editing environment which enables Vision Zero program sta
     - [User-created crash records, aka "temporary" records](#user-created-crash-records-aka-temporary-records)
     - [Audit fields](#audit-fields)
     - [Change logs](#change-logs)
-  - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems-todo)
+  - [Austin Police Department non-CR3 or "blueform" crashes](#austin-police-department-non-cr3-or-blueform-crashes)
+  - [Austin-Travis County Emergency Medical Services (EMS)](#austin-travis-county-emergency-medical-services-ems)
+  - [Austin Fire Department (AFD)](#austin-fire-department-afd)
   - [Geospatial layers](#geospatial-layers)
 - [Common maintenance tasks](#common-maintenance-tasks)
   - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
@@ -105,7 +107,7 @@ You will need to follow these steps to create or update our delivery configurati
 
 4. Click **Save** to save your config
 
-##### Extract file configutration
+##### Extract file configuration
 
 Follow these steps to configure a new extract delivery:
 
@@ -123,15 +125,15 @@ Follow these steps to configure a new extract delivery:
 
 - **Include Crash Reports From**: Process Date range
   - If you are backfilling, include a day before your target day as a buffer.
-  - If you request a process date of today, the extract will not deliver until the next day.
+  - If you request a process date of today, the extract will not be delivered until the next day.
   - To set up a recurring request, add a range of dates that ends in the future.
 
-Any part of the range that falls in the past will be delivered in single zip that is separate from the zips that will deliver in the future. The includes - all records with process dates available including today.
+Any part of the range that falls in the past will be delivered in a single zip that is separate from the zips that will deliver in the future. The includes - all records with process dates available including today.
 
 Any part of the range that is in the future will create daily zips that include each day available going forward. For example, on 4/19/2024, you make a request for Process Begin Date = 01/01/2024 and Process End Date = 12/31/2024 The would receive two zips: One containing all records with process date from 01/01/2024 to 04/18/2024, and one containing all records with process date from 04/19/2024 to 04/19/2024. Going forward, you will receive one zip per day for each process date that passes
 
 - **Extract password**: the password called `EXTRACT_PASSWORD` from Vision Zero CRIS Import 1Password item
-- **Delivery**: How you want to receive it. Typically you would use the pre-configured AWS option, specifiyng the `dev`, `staging`, or `prod` inbox subdirectory. See the CRIS import ETL readme for more details.
+- **Delivery**: How you want to receive it. Typically you would use the pre-configured AWS option, specifyng the `dev`, `staging`, or `prod` inbox subdirectory. See the CRIS import ETL readme for more details.
 
 #### CRIS data processing
 
@@ -177,6 +179,8 @@ For example, consider the `lookups.injry_sev` table, which includes a custom val
 | 99  | KILLED (NON-ATD)         | vz     |
 ```
 
+---
+
 The original migration for this table is [here](https://github.com/cityofaustin/vision-zero/blob/e56e3c6bc654a21f667142ce53232bad44cff7e5/atd-vzd/migrations/default/1715960018005_lookup_table_seeds/up.sql#L11054-L11056).
 
 Because the table has a custom value, it is configured with a check constraint ([PostgreSQL docs](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)) to ensure that future updates to this lookup table do not result in an ID collision:
@@ -206,7 +210,7 @@ Charges records are provided by CRIS and describe a legal charge filed by the re
 
 #### Database IDs, CRIS record IDs, and primary keys
 
-Each of the crashes, units, cris, and charges tables uses an auto-incrementing integer column called `id` as its primary key. CRIS provides a separate set of columns which can be used to uniquely identify records, and these columns are used to match record updates provided by CRIS to their corresponding record in the database.
+Each of the crashes, units, people, and charges tables uses an auto-incrementing integer column called `id` as its primary key. CRIS provides a separate set of columns which can be used to uniquely identify records, and these columns are used to match record updates provided by CRIS to their corresponding record in the database.
 
 For clarity, the column name `crash_pk` is used on tables which reference the crash `id` column, and the column name `cris_crash_id` is used to reference the CRIS-provided ID column, `crash_id`. Prior to Vision Zero v2.0, the name `crash_id` was used universally in reference to the CRIS crash ID column.
 
@@ -229,7 +233,7 @@ User-created records do not have a `cris_crash_id` column. Because `cris_crash_i
 
 #### Audit fields
 
-Audit fields are used through the CRIS record tables and are managed via trigger. Any new tables add to the database should follow the same convention:
+Audit fields are used through the CRIS record tables and are managed via trigger. Any new tables added to the database should follow the same convention:
 
 - `created_at`: the creation timestamp of the record. Default `now()`.
 - `updated_at`: the timestamp of the last record update. Default `now()`, set via trigger on row update.
@@ -238,7 +242,7 @@ Audit fields are used through the CRIS record tables and are managed via trigger
 
 #### Change logs
 
-The database includes an extensive change logging system that captures all edits to any of the nine tables that comprise the crash, unit, and people tables. Change log entries are created via triggers that fire _after_ records are modified, and includes a copy of both the `old` and `new` version of each record as a JSON blob.
+The database includes an extensive change logging system that captures all edits to any of the nine tables that comprise the crash, unit, and people tables. Change log entries are created via triggers that fire _after_ records are modified, and include a copy of both the `old` and `new` version of each record as a JSON blob.
 
 Each change log table follows the same structure:
 
@@ -253,13 +257,163 @@ Each change log table follows the same structure:
 
 The view `crashes_change_log_view` provides a unioned view of the unified table change logs—this view powers the change log UI in the VZE.
 
-### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)
+### Austin Police Department non-CR3 or "blueform" crashes
+
+Non-CR3 crashes, known colloquially as "blueform" crashes, are crash incidents reported by the Austin Police Department which were not investigated as a TxDOT-reportable crash. These are typically minor traffic incidents with minimal damage or injuries, for which no CR3 crash report was submitted.
+
+These records provide very little detail beyond the date and location of the incident. These records reach are stored in the `atd_apd_blueform` table, and are inserted via the Vision Zero Editor's **Non-CR3 Upload** UI, which allows Vision Zero staff to upload a CSV of records which they receive periodically from APD.
+
+As far as we know, the CSV files that the Vision Zero team receives are created as extracts from APD's Brazos system, which itself is integrated with the City's central Computer-Aided Dispatch (CAD) system.
+
+#### De-duplicating non-CR3 records
+
+Due to limitations of how non-CR3 records are queried from the APD system, it is very common for the imported CSV files to include records which are duplicates of CRIS CR3 crash records in our database.
+
+The `remove_dupe_non_cr3s` trigger fires on insert into the `atd_apd_blueform`, and soft-deletes any non-CR3 records for which there is a `crashes` record meeting this criteria:
+
+- the `crashes` record has an `agency_id` value of `74` (APD)
+- the records have matching `case_id` values
+- the records occurred within a 12-hour window
+
+Note that it is assumed that Non-CR3 records will always be imported _after_ any potentially duplicate CR3 `crashes` have been created. It is incumbent upon the Vision Zero team to ensure that any non-CR3 records they import are at least four weeks old.
+
+### Austin-Travis County Emergency Medical Services (EMS)
+
+The Vision Zero database stores records received from
+[Austin-Travis County Emergency Medical Services](https://www.austintexas.gov/content/ems-austin-travis-county) (EMS).
+
+Stored in the `ems__incidents` table, these are patient-level records (known to EMS folks as **Patient Care Records** or PCRs) which describe the EMS provider's impression and outcomes of injuries sustained in traffic crashes.
+
+Crucially, these records can be joined to CRIS people records to provide additional insight into crash victims' injuries. Linking CRIS and EMS records is a complex process described in detail below.
+
+#### Integration
+
+EMS records are received via email attachment on a nightly basis and include roughly two-years of data. The records are imported into the Vision Zero database on a nightly basis via the AFD + EMS [import ETL](../etl/afd_ems_import/README.md).
+
+Unlike CRIS records, EMS patient care records are never updated via integration: records are inserted once, and ignored on subsequent attempts to import an existing record (`ON CONFLICT DO NOTHING`) . Per EMS, it is not expected that records will be modified upstream, and so it is not necessary to support record updates.
+
+See also the [ETL readme](../etl/afd_ems_import/README.md) and [Gitbook docs](https://app.gitbook.com/o/-LzDQOVGhTudbKRDGpUA/s/-M4Ve3sp7qA5cPXha0B4/external-data-sources).
+
+#### Crash record matching
+
+Our data system enables EMS patient care records to be linked to other crash records in the database. Linking these various records together enables the VZ team to produce more comprehensive analyses of the safety conditions on roadways. Record linking is accomplished through a combination of automated record matching (via database trigger) and/or manual matching of records through the Vision Zero Editor UI.
+
+EMS records can be matched to three different record types, as summarized in the table below.
+
+| EMS foreign key column     | Foreign table      | Foreign column | Matching mechanism                | Note                                                                                                                           |
+| -------------------------- | ------------------ | -------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `crash_pk`                 | `crashes`          | `id`           | Trigger and/or VZE user interface | CRIS-crash level match. This link associates the patient care record to a specific crash, but not to a specific person record. |
+| `person_id`                | `people`           | `id`           | Trigger and/or VZE user interface |  CRIS-person level match. This link associates a patient care to specific CRIS crash person                                    |
+| `atd_apd_blueform_case_id` | `atd_apd_blueform` | `case_id`      | Trigger                           | Also known as "non-CR3" records, this linkage is made automatically via database trigger only.                                 |
+
+#### Matching System Overview
+
+The EMS record matching system operates through a coordinated set of database triggers and functions that automatically link EMS incidents to crash records based on spatial and temporal proximity, then refine those matches using demographic data. The system handles three types of matching:
+
+1. **CRIS Crash Matching**: Links EMS records to official crash reports using location and time
+2. **Person-Level Matching**: Further refines crash matches by linking to specific individuals using demographics
+3. **Non-CR3 Matching**: Links EMS records to police blueform incidents (non-reportable crashes)
+
+The matching process balances automation with manual oversight, allowing staff to review and override automated matches through the Vision Zero Editor interface while maintaining data integrity through comprehensive status tracking.
+
+#### Database Triggers
+
+##### CRIS Crash Matching Trigger (`update_crash_ems_match`)
+
+**Triggered by**: INSERT/UPDATE operations on the `crashes` table
+
+This trigger handles the initial spatial-temporal matching between EMS incidents and CRIS crash records. When a crash record is inserted or updated, the trigger:
+
+- Searches for EMS records within a 1200-meter radius and ±30-minute time window of the crash
+- For each matching EMS record, identifies all crashes that meet the same spatial-temporal criteria
+- Updates the EMS record's `matched_crash_pks` array with all qualifying crash IDs
+- Sets the `_match_event_name` to `'handle_matched_crash_pks_updated'` to trigger downstream processing
+
+On updates, the trigger also performs cleanup by removing crash IDs from EMS records that no longer meet the matching criteria (due to location/time changes or crash deletions).
+
+##### EMS Record Update Handler (`ems_update_handle_record_match_event`)
+
+**Triggered by**: UPDATE operations on the `ems__incidents` table when `_match_event_name` is set
+
+This is the central orchestration function that processes various matching events and maintains data consistency. It handles multiple event types:
+
+**Manual Matching Events:**
+
+- `unmatch_crash_by_manual_qa`: Clears crash and person matches when staff mark a match as incorrect
+- `unmatch_person_by_manual_qa`: Clears person-level matches while preserving crash matches
+- `match_person_by_manual_qa`: Assigns person matches and synchronizes crash associations
+
+**Automated Events:**
+
+- `reset_crash_match`: Resets EMS record to automated matching state based on current `matched_crash_pks`
+- `handle_matched_crash_pks_updated`: Processes changes to the matched crash IDs array
+- `match_crash_by_automation`: Handles new automated crash matches
+
+The function ensures crash and person matches remain synchronized and respects manual overrides by preserving `matched_by_manual_qa` status.
+
+##### Person Matching Function (`find_matching_person_ids`)
+
+**Called by**: The EMS update handler during automated person-level matching
+
+This function refines crash-level matches by identifying specific individuals within a crash using demographic data. The matching process:
+
+1. Validates the EMS record is already matched to a crash
+2. Checks for duplicate EMS records with identical demographics to avoid conflicts
+3. Queries the `people_list_view` for individuals matching:
+   - Same crash ID
+   - Exact age match
+   - Case-insensitive gender match
+   - Fuzzy ethnicity matching with special handling for Native American categories
+
+Returns an array of matching person IDs, enabling the update handler to determine if there's a single match, multiple matches, or no match.
+
+##### Non-CR3 Matching Trigger (`update_noncr3_ems_match`)
+
+**Triggered by**: INSERT/UPDATE operations on the `atd_apd_blueform` table
+
+This trigger manages matching between EMS records and police "blueform" incidents (non-reportable crashes). Similar to CRIS matching but with tighter spatial criteria (600-meter radius):
+
+- Identifies EMS records within spatial-temporal proximity of blueform incidents
+- Updates match status based on result count (unmatched/single match/multiple matches)
+- Respects manual matching decisions by only updating match arrays for manually matched records
+- Performs cleanup on updates to remove invalid matches
+
+The trigger maintains separate matching columns (`atd_apd_blueform_case_id`, `non_cr3_match_status`, `matched_non_cr3_case_ids`) to track non-CR3 associations independently of CRIS crash matching.
+
+##### Match Status Values
+
+The system uses standardized status values across different match types:
+
+- `unmatched`: No automated or manual matches found
+- `matched_by_automation`: Single match found automatically
+- `matched_by_manual_qa`: Match assigned through staff review
+- `multiple_matches_by_automation`: Multiple potential matches require staff review
+- `unmatched_by_manual_qa`: Staff determined no valid match exists
+
+#### Injury severity classification
+
+CRIS person-level records have an injury level assigned based on the crash investigator's assessment of the injuries each person may have sustained in the crash. The injury severity levels are stored in the `lookups.injry_sev` table and form the basis of all Vision Zero statistics related to crashes injuries.
+
+In order to make EMS records compatible with CRIS-based analyses, we have established a process to assign a CRIS-style injury classification to EMS patient records. The specific business rules for assigning the injury were developed in partnership with the Vision Zero team as well as our partners at EMS, and reflect our best effort to approximate CRIS's injury levels based on the data we have available.
+
+We have two fields on the `ems__incidents` table related to injury classification, both of which are set via the `update_ems_patient_injry_sev` trigger when a new EMS record is inserted into the database.
+
+- `ems__incidents.patient_injry_sev_id`: The injury severity ID value which references `lookups.ems_patient_injry_sev`.
+- `ems__incidents.patient_injry_sev_reason`: A text field which describes which field/values were used to assign injury severity level.
+
+The ruleset for assigning injury severity is long: refer to the `update_ems_patient_injry_sev` trigger itself to learn more. See also PR [#1829](https://github.com/cityofaustin/vision-zero/pull/1829) for an example of how these values can be backfilled if needed.
+
+#### EMS Spatial Attributes
+
+On the `ems__incidents` table, the `austin_full_purpose` and `location_id` are values set by spatial join on the `geo.jurisdictions` and the `atd_txdot_locations` locations tables, respectively. The values are managed by the `ems_incidents_trigger` trigger, which fires on `INSERT`.
+
+### Austin Fire Department (AFD)
 
 ### Geospatial layers
 
 We have a number of tables which function as geospatial layers which are referenced by crashes and various other records. At the Vision Zero team's request, our team is actively working to expand the number of layers available in the database as well as add new attribute columns to crash records which will be populated based on their intersection with these layers.
 
-See also the guidance for creating a new geospatial layer in the common maintance tasks section, below.
+See also the guidance for creating a new geospatial layer in the common maintenance tasks section, below.
 
 | Table                   | Geometry type  | description                                                                                                      | owner/source                                                         |
 | ----------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
@@ -280,7 +434,7 @@ Follow these steps to add a new column to the database that will be sourced from
 
 1. Remember that all database operations should be deployed through migrations. See the [development and deployment](#development-and-deployment) docs.
 2. Add the new column to both tables of the given record type. For example, if this is a crash-level column, add the column to the `crashes_cris` and `crashes` tables.
-3. Modify the trigger function that inserts new rows into the unified table that corresponds to the record type you are modifying: either the `crashes_cris_insert_rows()`, `units_cris_insert_rows()`, or the `people_cris_insert_rows()` function. Locate the part of the function that inserts into the unified table and add your column name to end of it, then locate the part that selects all values from the new `_cris` record and do the same. **Make sure that the order of the columns in the insert and select parts of the function match up**
+3. Modify the trigger function that inserts new rows into the unified table that corresponds to the record type you are modifying: either the `crashes_cris_insert_rows()`, `units_cris_insert_rows()`, or the `people_cris_insert_rows()` function. Locate the part of the function that inserts into the unified table and add your column name to the end of it, then locate the part that selects all values from the new `_cris` record and do the same. **Make sure that the order of the columns in the insert and select parts of the function match up**
 4. Next, you will need to add your new column to the `_column_metadata` table, so that the CRIS import ETL is aware that this column should be included in imports. For example:
 
 ```sql
@@ -339,7 +493,7 @@ values ('my_generated_column', 'crashes', false);
 
 ### Refresh lookup tables with the latest CRIS values
 
-We have a [helper script](/toolbox/get_lookup_table_changes) that can be used to detect changes between CRIS's lookup tables and the lookup tables in our database. This script can be used to generate migrations to bring the database in sync with CRIS, and it should be run after every CRIS softwware release. See this script's README for more information.
+We have a [helper script](/toolbox/get_lookup_table_changes) that can be used to detect changes between CRIS's lookup tables and the lookup tables in our database. This script can be used to generate migrations to bring the database in sync with CRIS, and it should be run after every CRIS software release. See this script's README for more information.
 
 ### Add a new CRIS lookup table to the database
 
