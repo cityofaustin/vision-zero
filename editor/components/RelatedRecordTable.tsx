@@ -5,7 +5,7 @@ import RelatedRecordTableRow from "@/components/RelatedRecordTableRow";
 import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
 import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
 import { ColDataCardDef } from "@/types/types";
-import { compareStrings } from "@/utils/sorting";
+import { compareNumbersAndBools, compareStrings } from "@/utils/sorting";
 import { getRecordValue } from "@/utils/formHelpers";
 import { FaSortDown, FaSortUp } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
@@ -118,9 +118,11 @@ interface SortSettings<T extends Record<string, unknown>> {
 const useSortedRows = <T extends Record<string, unknown>>({
   records,
   sortSettings,
+  defaultCompareFunc,
 }: {
   records: T[];
   sortSettings: SortSettings<T>;
+  defaultCompareFunc: (a: unknown, b: unknown) => number;
 }) =>
   useMemo(() => {
     const sortCol = sortSettings.col;
@@ -129,7 +131,7 @@ const useSortedRows = <T extends Record<string, unknown>>({
     }
     const compareFunc = sortCol.compareFunc
       ? sortCol.compareFunc
-      : compareStrings;
+      : defaultCompareFunc;
     return records.toSorted((a, b) =>
       compareFunc(
         getRecordValue(sortSettings.asc ? a : b, sortCol),
@@ -137,6 +139,49 @@ const useSortedRows = <T extends Record<string, unknown>>({
       )
     );
   }, [records, sortSettings.asc, sortSettings.col]);
+
+/**
+ * Determines the default sort compare function to use based on
+ * values in the data. It ignores null and undefined values and
+ * otherwise falls back to compareStrings if all values are
+ * not uniformly numbers or bools.
+ */
+const useDefaultCompareFunc = <T extends Record<string, unknown>>({
+  records,
+  sortSettings,
+}: {
+  records: T[];
+  sortSettings: SortSettings<T>;
+}) => {
+  if (
+    !records ||
+    records.length === 0 ||
+    sortSettings.col === null ||
+    sortSettings.col.compareFunc
+  ) {
+    // nothing to do because there are no records, no sort column, or a compareFunc
+    // is defined
+    return compareStrings;
+  }
+  const col = sortSettings.col;
+  const allValues = records.map((record) => getRecordValue(record, col));
+  // get array of all types, ignoring null and undefined
+  const allTypes = allValues
+    .filter((val) => val !== undefined && val !== null)
+    .map((value) => typeof value);
+  // reduce array to unique types
+  // @ts-ignore: todo: merge updated tsconfig with 2017 esm target
+  const uniqueTypes = [...new Set(allTypes)];
+  if (uniqueTypes.length > 0) {
+    // mixed types: use string
+    return compareStrings;
+  } else if (uniqueTypes[0] === "number" || uniqueTypes[0] === "boolean") {
+    return compareNumbersAndBools;
+  } else {
+    // sort strings and objects as objects
+    return compareStrings;
+  }
+};
 
 /**
  * Generic component which renders editable fields in a Card
@@ -178,7 +223,12 @@ export default function RelatedRecordTable<
     setColumnVisibilitySettings,
   } = useVisibleColumns(columns);
 
-  const recordsSorted = useSortedRows({ records, sortSettings });
+  const defaultCompareFunc = useDefaultCompareFunc({ records, sortSettings });
+  const recordsSorted = useSortedRows({
+    records,
+    sortSettings,
+    defaultCompareFunc,
+  });
 
   const SortIcon = sortSettings.asc ? FaSortUp : FaSortDown;
 
