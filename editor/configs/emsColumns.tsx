@@ -80,7 +80,7 @@ export const formatMatchScore = (value: unknown) => {
   }
 };
 
-const formatMatchAttrName = (value: unknown) => {
+const formatMatchAttrName = (value: string) => {
   switch (value) {
     case "pos_in_vehicle":
       return "position in vehicle";
