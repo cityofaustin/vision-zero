@@ -170,7 +170,6 @@ const useDefaultCompareFunc = <T extends Record<string, unknown>>({
     .filter((val) => val !== undefined && val !== null)
     .map((value) => typeof value);
   // reduce array to unique types
-  // @ts-ignore: todo: merge updated tsconfig with 2017 esm target
   const uniqueTypes = [...new Set(allTypes)];
   if (uniqueTypes.length > 1) {
     // mixed types: use string
