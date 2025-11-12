@@ -138,7 +138,7 @@ const useSortedRows = <T extends Record<string, unknown>>({
         getRecordValue(sortSettings.asc ? b : a, sortCol)
       )
     );
-  }, [records, sortSettings.asc, sortSettings.col]);
+  }, [records, sortSettings.asc, sortSettings.col, defaultCompareFunc]);
 
 /**
  * Determines the default sort compare function to use based on
