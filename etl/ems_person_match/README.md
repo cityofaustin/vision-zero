@@ -11,6 +11,8 @@ The script uses hierarchical attribute matching to link records, and works like 
    - Compares each PCR against each person using demographic and incident attributes
    - Applies matching rules in order from most to least restrictive
    - Assigns the first valid match found
+   - Assigns a score to the quality of the match, which is an arbitrary value determined by the VZ team to indicate a high (score=99) or low (score=25) quality match
+
 4. **Updates** the database with match results or flags records as unmatched
 
 ## Quick start
