@@ -21,7 +21,7 @@ from utils.logging import get_logger
 from utils.match_rules import MATCH_RULES
 
 AGE_GAP_TOLERANCE = 3
-TRANSPORT_DEST_MATCH_MIN_MIN_SCORE = 95
+TRANSPORT_DEST_MATCH_MIN_SCORE = 95
 
 
 def is_sex_match(pcr, person):
@@ -148,7 +148,7 @@ def compare_pcr_to_person(pcr, person):
     person_match_result["travel_mode"] = is_mode_match(pcr, person)
     person_match_result["transport_dest_score"] = get_transport_dest_score(pcr, person)
     person_match_result["transport_dest"] = (
-        person_match_result["transport_dest_score"] > TRANSPORT_DEST_MATCH_MIN_MIN_SCORE
+        person_match_result["transport_dest_score"] > TRANSPORT_DEST_MATCH_MIN_SCORE
     )
     return person_match_result
 
