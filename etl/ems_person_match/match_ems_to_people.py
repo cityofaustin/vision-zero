@@ -311,7 +311,7 @@ def main():
                 ETL runs.
                 """
                 logger.info(
-                    f"Inciden {inc_num}, ID {pcr['id']} will be unmatched due to person_id conflict"
+                    f"Incident {inc_num}, ID {pcr['id']} will be unmatched due to person_id conflict"
                 )
                 updates = {
                     "person_match_status": "unmatched_by_automation",
