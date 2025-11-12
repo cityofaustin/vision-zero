@@ -20,6 +20,10 @@ Nodejs tool load ArcGIS Online (AGOL) layers into the Vision Zero database.
 
 Script which compares lookup tables between a CRIS extract and the VZ database and generates database migrations. We should run this script after CRIS software releases.
 
+### Crash Narrative Flagging
+
+This script runs a Large Language Model (LLM) locally to flag input text as potentially containing personally identifiable information (PII).
+
 ## Archive
 
 These toolbox scripts were deleted from the repository. Most of them are incompatible with v2.0 of our database. These deletions were committed at hash `569511cc0d598120be4146920623f55c1a8501a3`.
