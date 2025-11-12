@@ -227,7 +227,6 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             ref={transformComponentRef}
             wheel={{ activationKeys: ["Meta", "Shift"] }}
             onTransformed={(e) => {
-              console.log("on transform: ", e.state);
               // running into an issue where on load it zooms to fit, which is dirtying the form
               setValue("scale", e.state.scale, { shouldDirty: true });
             }}
