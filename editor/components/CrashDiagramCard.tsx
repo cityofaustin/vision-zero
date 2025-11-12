@@ -79,7 +79,9 @@ const ZoomResetSaveControls = ({
   handleSubmit: UseFormHandleSubmit<CrashDiagramOrientation>;
   diagramSaved: boolean;
 }) => {
-  const { zoomIn, zoomOut, resetTransform } = useControls();
+  const { zoomIn, zoomOut, resetTransform, instance } = useControls();
+
+  console.log("reset save controls ", instance.transformState.scale);
 
   const handleReset = () => {
     resetTransform();
@@ -94,7 +96,13 @@ const ZoomResetSaveControls = ({
         <Button
           size="sm"
           variant="outline-primary"
-          onClick={() => zoomIn(0.25)}
+          onClick={() => {
+            const newScale = instance.transformState.scale + 0.25;
+            zoomIn(0.25);
+            setValue("scale", newScale, {
+              shouldDirty: true,
+            });
+          }}
           title="Zoom In"
         >
           <FaMagnifyingGlassPlus />
@@ -102,7 +110,13 @@ const ZoomResetSaveControls = ({
         <Button
           size="sm"
           variant="outline-primary"
-          onClick={() => zoomOut(0.25)}
+          onClick={() => {
+            const newScale = instance.transformState.scale - 0.25;
+            zoomOut(0.25);
+            setValue("scale", newScale, {
+              shouldDirty: true,
+            });
+          }}
           title="Zoom Out"
         >
           <FaMagnifyingGlassMinus />
@@ -207,6 +221,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
     if (transformComponentRef.current) {
       const { zoomToElement } = transformComponentRef.current;
       zoomToElement("crashDiagramImage", undefined, 1);
+      setValue("scale", undefined, { shouldDirty: true });
     }
   };
 
@@ -235,10 +250,15 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             centerOnInit={true}
             ref={transformComponentRef}
             wheel={{ activationKeys: ["Meta", "Shift"] }}
-            onTransformed={(e) => {
-              // running into an issue where on load it zooms to fit, which is dirtying the form
+            onZoom={(e) => {
+              console.log("this is on zoom", e.state.scale);
               setValue("scale", e.state.scale, { shouldDirty: true });
             }}
+            // onTransformed={(e) => {
+            //   // running into an issue where on load it zooms to fit, which is dirtying the form
+            //   console.log("this is ontransformed", e.state.scale);
+            //   setValue("scale", e.state.scale, { shouldDirty: true });
+            // }}
           >
             <ZoomResetSaveControls
               setValue={setValue}
