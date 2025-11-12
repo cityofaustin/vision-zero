@@ -172,7 +172,7 @@ const useDefaultCompareFunc = <T extends Record<string, unknown>>({
   // reduce array to unique types
   // @ts-ignore: todo: merge updated tsconfig with 2017 esm target
   const uniqueTypes = [...new Set(allTypes)];
-  if (uniqueTypes.length > 0) {
+  if (uniqueTypes.length > 1) {
     // mixed types: use string
     return compareStrings;
   } else if (uniqueTypes[0] === "number" || uniqueTypes[0] === "boolean") {

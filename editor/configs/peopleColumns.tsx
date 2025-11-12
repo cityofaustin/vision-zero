@@ -5,7 +5,6 @@ import { PeopleListRow } from "@/types/peopleList";
 import PersonNameField from "@/components/PersonNameField";
 import { formatAddresses, formatIsoDateTime } from "@/utils/formatters";
 import { commonValidations } from "@/utils/formHelpers";
-import { compareNumbersAndBools } from "@/utils/sorting";
 
 export const ALL_PEOPLE_COLUMNS = {
   id: { path: "id", label: "ID", sortable: true },
@@ -18,7 +17,6 @@ export const ALL_PEOPLE_COLUMNS = {
     path: "unit_nbr",
     label: "Unit",
     sortable: true,
-    compareFunc: compareNumbersAndBools,
   },
   unit_type: {
     path: "unit.unit_desc.label",
@@ -48,7 +46,6 @@ export const ALL_PEOPLE_COLUMNS = {
     path: "prsn_nbr",
     label: "Person",
     sortable: true,
-    compareFunc: compareNumbersAndBools,
   },
   prsn_type: {
     path: "prsn_type.label",
@@ -88,7 +85,6 @@ export const ALL_PEOPLE_COLUMNS = {
       min: { value: 0, message: "Age cannot be negative" },
     },
     sortable: true,
-    compareFunc: compareNumbersAndBools,
   },
   prsn_taken_to: {
     path: "prsn_taken_to",
@@ -139,7 +135,6 @@ export const ALL_PEOPLE_COLUMNS = {
     inputType: "yes_no",
     editable: true,
     sortable: true,
-    compareFunc: compareNumbersAndBools,
   },
   prsn_last_name: {
     path: "prsn_last_name",
