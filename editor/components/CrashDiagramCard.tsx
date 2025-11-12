@@ -10,6 +10,7 @@ import {
   FaMagnifyingGlassMinus,
   FaRotate,
   FaFloppyDisk,
+  FaCheck,
 } from "react-icons/fa6";
 import { SlActionUndo } from "react-icons/sl";
 import {
@@ -119,13 +120,20 @@ const ZoomResetSaveControls = ({
       <PermissionsRequired allowedRoles={allowedUserSaveDiagramRoles}>
         <Button
           size="sm"
-          variant={diagramSaved ? "primary" : "outline-primary"}
+          variant={diagramSaved ? "outline-primary" : "primary"}
           onClick={handleSubmit(onSave)}
           title={"save"}
           disabled={!isDirty}
         >
-          <FaFloppyDisk className="me-2" />
-          {diagramSaved ? "Saved" : "Save"}
+          {!diagramSaved ? (
+            <>
+              <FaFloppyDisk className="me-2" /> Save
+            </>
+          ) : (
+            <>
+              <FaCheck className="me-2" /> Saved
+            </>
+          )}
         </Button>
       </PermissionsRequired>
     </div>
