@@ -194,6 +194,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
 
   const formValues = watch();
 
+  // zoom image to scale "undefined" effectively zooming to fit entire image in frame
   const resetZoomToImage = () => {
     if (transformComponentRef.current) {
       const { zoomToElement } = transformComponentRef.current;
@@ -201,7 +202,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
     }
   };
 
-  // zoom to the scale saved in database, or default value (1)
+  // zoom to the scale saved in database, or default
   const initZoomToImage = (initScale: number | undefined) => {
     if (transformComponentRef.current) {
       const { zoomToElement } = transformComponentRef.current;
