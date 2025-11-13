@@ -152,35 +152,36 @@ const useDefaultCompareFunc = <T extends Record<string, unknown>>({
 }: {
   records: T[];
   sortSettings: SortSettings<T>;
-}) => {
-  if (
-    !records ||
-    records.length === 0 ||
-    sortSettings.col === null ||
-    sortSettings.col.compareFunc
-  ) {
-    // nothing to do because there are no records, no sort column, or a compareFunc
-    // is defined
-    return compareStrings;
-  }
-  const col = sortSettings.col;
-  const allValues = records.map((record) => getRecordValue(record, col));
-  // get array of all types, ignoring null and undefined
-  const allTypes = allValues
-    .filter((val) => val !== undefined && val !== null)
-    .map((value) => typeof value);
-  // reduce array to unique types
-  const uniqueTypes = [...new Set(allTypes)];
-  if (uniqueTypes.length > 1) {
-    // mixed types: use string
-    return compareStrings;
-  } else if (uniqueTypes[0] === "number" || uniqueTypes[0] === "boolean") {
-    return compareNumbersAndBools;
-  } else {
-    // sort strings and objects as objects
-    return compareStrings;
-  }
-};
+}) =>
+  useMemo(() => {
+    if (
+      !records ||
+      records.length === 0 ||
+      sortSettings.col === null ||
+      sortSettings.col.compareFunc
+    ) {
+      // nothing to do because there are no records, no sort column, or a compareFunc
+      // is defined
+      return compareStrings;
+    }
+    const col = sortSettings.col;
+    const allValues = records.map((record) => getRecordValue(record, col));
+    // get array of all types, ignoring null and undefined
+    const allTypes = allValues
+      .filter((val) => val !== undefined && val !== null)
+      .map((value) => typeof value);
+    // reduce array to unique types
+    const uniqueTypes = [...new Set(allTypes)];
+    if (uniqueTypes.length > 1) {
+      // mixed types: use string
+      return compareStrings;
+    } else if (uniqueTypes[0] === "number" || uniqueTypes[0] === "boolean") {
+      return compareNumbersAndBools;
+    } else {
+      // sort strings and objects as objects
+      return compareStrings;
+    }
+  }, [records, sortSettings]);
 
 /**
  * Generic component which renders editable fields in a Card
