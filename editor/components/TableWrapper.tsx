@@ -119,9 +119,12 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     hasAggregates: true,
   });
 
-  if (error) {
-    console.error(error);
-  }
+  // Log errors in an effect to avoid setState during render
+  useEffect(() => {
+    if (error) {
+      console.error(error);
+    }
+  }, [error]);
 
   const activeFilterCount = useActiveSwitchFilterCount(queryConfig);
 

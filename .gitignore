@@ -96,3 +96,7 @@ zappa_settings.json
 
 env_file
 /app
+
+# Example CSV inputs for crash narrative flagging
+!toolbox/crash_narrative_flagging/example_input.csv
+!toolbox/crash_narrative_flagging/example_output.csv
