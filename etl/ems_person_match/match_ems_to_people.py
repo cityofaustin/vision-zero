@@ -294,8 +294,8 @@ def main():
                 It occasionaly happens that records from different EMS incidents
                 match the same crash and people. This can happen because of data
                 quality issues (such as duplicate EMS records), complex crashes
-                that invovle multiple units/locations, or random chance in which
-                two crashes with occur near the same place/time involving people
+                that involve multiple units/locations, or random chance in which
+                two crashes occur near the same place/time involving people
                 with the same demographics.
 
                 For example, see crash ID 21074898 and incidents 25292-0255 and
