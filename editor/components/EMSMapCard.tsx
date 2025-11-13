@@ -13,6 +13,10 @@ import NonCR3MapMarker from "@/components/NonCR3MapMarker";
 import CrashMapMarker from "@/components/CrashMapMarker";
 import { crashesLayerLabels } from "@/configs/crashesLayerLabels";
 import { nonCr3LayerLabels } from "@/configs/nonCr3LayerLabels";
+import AlignedLabel from "@/components/AlignedLabel";
+import { FaCarBurst } from "react-icons/fa6";
+import { ICON_MAP_MARKER_STYLES } from "@/configs/map";
+import { MdOutlineStickyNote2 } from "react-icons/md";
 
 interface EMSMapCardProps {
   savedLatitude: number | null;
@@ -56,9 +60,56 @@ const useLayerToggles = (
 ): CustomLayerToggle[] =>
   useMemo(() => {
     return [
-      { label: "CR3 crashes", checked: showCrashes, onChange: onToggleCrashes },
       {
-        label: "Non-CR3 crashes",
+        id: "cr3_crashes",
+        sectionHeader: (
+          <Card.Header className="pb-0">
+            <span className="fs-6 fw-bold">Crashes</span>
+          </Card.Header>
+        ),
+        label: (
+          <AlignedLabel>
+            <span
+              className="me-1"
+              style={{
+                ...ICON_MAP_MARKER_STYLES,
+                height: 25,
+                width: 25,
+                border: "none",
+                backgroundColor: "#1276d1",
+                color: "#fff",
+                cursor: "default",
+              }}
+            >
+              <FaCarBurst className="fs-5" />
+            </span>
+            CR3
+          </AlignedLabel>
+        ),
+        checked: showCrashes,
+        onChange: onToggleCrashes,
+      },
+      {
+        id: "noncr3_crashes",
+        label: (
+          <AlignedLabel>
+            <span
+              className="me-1"
+              style={{
+                ...ICON_MAP_MARKER_STYLES,
+                height: 25,
+                width: 25,
+                border: "none",
+                backgroundColor: "#6b7676",
+                color: "#fff",
+                cursor: "default",
+              }}
+            >
+              <MdOutlineStickyNote2 className="fs-5" />
+            </span>
+            Non-CR3
+          </AlignedLabel>
+        ),
         checked: showNoncr3Crashes,
         onChange: onToggleNonCR3s,
       },

@@ -1,15 +1,33 @@
+import { Fragment } from "react";
 import { Form } from "react-bootstrap";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Card } from "react-bootstrap";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, ReactNode, SetStateAction } from "react";
 import AlignedLabel from "@/components/AlignedLabel";
 import { MdOutlineLayers } from "react-icons/md";
 import { FaMapPin } from "react-icons/fa6";
 
 export interface CustomLayerToggle {
-  label: string;
+  /**
+   * ID string that uniquely identifies this toggle among all selectors in the basmap control
+   */
+  id: string;
+  /**
+   * The toggle's label
+   */
+  label: ReactNode;
+  /**
+   * If the label's checkbox input is checked
+   */
   checked: boolean;
+  /**
+   * Handler fired when the checkbox input changes
+   */
   onChange: () => void;
+  /**
+   * Optional header element to render above this toggle
+   */
+  sectionHeader?: ReactNode;
 }
 
 interface MapBasemapControlProps {
@@ -36,23 +54,20 @@ export default function MapBasemapControl({
       <Card>
         {customLayerToggles && (
           <>
-            <Card.Header className="pb-0 ">
-              <AlignedLabel>
-                <FaMapPin className="me-2 fs-5" />
-                <span className="fs-6 fw-bold">Layers</span>
-              </AlignedLabel>
-            </Card.Header>
             <Card.Body className="py-1">
               {customLayerToggles?.map((toggle) => (
-                <Form.Check
-                  key={toggle.label}
-                  className="fs-6 my-1"
-                  id={`${toggle.label}`}
-                  type="checkbox"
-                  label={toggle.label}
-                  checked={toggle.checked}
-                  onChange={() => toggle.onChange()}
-                />
+                <Fragment>
+                  {toggle.sectionHeader && toggle.sectionHeader}
+                  <Form.Check
+                    key={toggle.id}
+                    className="fs-6 my-1"
+                    id={toggle.id}
+                    type="checkbox"
+                    label={toggle.label}
+                    checked={toggle.checked}
+                    onChange={() => toggle.onChange()}
+                  />
+                </Fragment>
               ))}
             </Card.Body>
           </>
