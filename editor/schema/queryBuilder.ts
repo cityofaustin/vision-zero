@@ -19,6 +19,7 @@ const Filter = z.object({
   operator: z.enum([
     "_gte",
     "_lte",
+    "_lt",
     "_gt",
     "_eq",
     "_neq",

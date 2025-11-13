@@ -159,7 +159,6 @@ const emsListViewFilterCards: FilterGroup[] = [
       },
     ],
   },
-
   {
     id: "crash_match_status_filter_card",
     label: "Crash match status",
@@ -237,7 +236,6 @@ const emsListViewFilterCards: FilterGroup[] = [
       },
     ],
   },
-
   {
     id: "person_match_status_filter_card",
     label: "Person match status",
@@ -315,7 +313,7 @@ const emsListViewFilterCards: FilterGroup[] = [
       },
       {
         id: "unmatched_by_automation",
-        label: "Not found by automation",
+        label: "Unmatched by automation",
         groupOperator: "_and",
         enabled: false,
         filters: [
@@ -329,7 +327,41 @@ const emsListViewFilterCards: FilterGroup[] = [
       },
     ],
   },
-
+  {
+    id: "person_match_score_filter_card",
+    label: "Person match quality",
+    groupOperator: "_or",
+    filterGroups: [
+      {
+        id: "high_quality",
+        label: "High",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "high_quality",
+            column: "person_match_score",
+            operator: "_gte",
+            value: 99,
+          },
+        ],
+      },
+      {
+        id: "low_quality",
+        label: "Low",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+           {
+            id: "low_quality",
+            column: "person_match_score",
+            operator: "_lt",
+            value: 99,
+          },
+        ],
+      },
+    ],
+  },
   {
     id: "non_cr3_match_status_filter_card",
     label: "Non-CR3 match status",

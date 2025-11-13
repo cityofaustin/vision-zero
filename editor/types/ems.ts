@@ -30,6 +30,8 @@ export type EMSPatientCareRecord = {
   // we are using Omit to avoid a circular reference
   person?: Omit<PeopleListRow, "ems_pcr"> | null;
   person_match_status?: string | null;
+  person_match_attributes?: string[] | null;
+  person_match_score?: number | null;
   travel_mode: string | null;
   unparsed_apd_incident_numbers: string | null;
   is_deleted: boolean;
