@@ -81,8 +81,6 @@ const ZoomResetSaveControls = ({
 }) => {
   const { zoomIn, zoomOut, resetTransform, instance } = useControls();
 
-  console.log("reset save controls ", instance.transformState.scale);
-
   const handleReset = () => {
     resetTransform();
     setValue("rotation", 0);
@@ -251,14 +249,8 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             ref={transformComponentRef}
             wheel={{ activationKeys: ["Meta", "Shift"] }}
             onZoom={(e) => {
-              console.log("this is on zoom", e.state.scale);
               setValue("scale", e.state.scale, { shouldDirty: true });
             }}
-            // onTransformed={(e) => {
-            //   // running into an issue where on load it zooms to fit, which is dirtying the form
-            //   console.log("this is ontransformed", e.state.scale);
-            //   setValue("scale", e.state.scale, { shouldDirty: true });
-            // }}
           >
             <ZoomResetSaveControls
               setValue={setValue}
