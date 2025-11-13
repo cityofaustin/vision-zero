@@ -5,6 +5,7 @@ import { PeopleListRow } from "@/types/peopleList";
 import PersonNameField from "@/components/PersonNameField";
 import { formatAddresses, formatIsoDateTime } from "@/utils/formatters";
 import { commonValidations } from "@/utils/formHelpers";
+import { formatCrashMatchStatus } from "@/configs/emsColumns";
 
 export const ALL_PEOPLE_COLUMNS = {
   id: { path: "id", label: "ID" },
@@ -173,6 +174,14 @@ export const ALL_PEOPLE_COLUMNS = {
         </Link>
       ) : (
         ""
+      ),
+  },
+  ems_match_status: {
+    path: "ems_pcr.id",
+    label: "EMS match status",
+    valueRenderer: (record) =>
+      formatCrashMatchStatus(
+        record.ems_pcr?.person_match_status || "unmatched"
       ),
   },
 } satisfies Record<string, ColDataCardDef<PeopleListRow>>;

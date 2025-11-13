@@ -15,4 +15,5 @@ export const emsMatchingPeopleColumns = [
   ALL_PEOPLE_COLUMNS.address_combined,
   ALL_PEOPLE_COLUMNS.record_locator,
   ALL_PEOPLE_COLUMNS.id,
+  ALL_PEOPLE_COLUMNS.ems_match_status
 ];
