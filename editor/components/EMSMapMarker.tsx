@@ -9,11 +9,13 @@ export default function EMSIncidentMarker(props: MarkerProps) {
         className="icon-map-marker"
         style={{
           ...ICON_MAP_MARKER_STYLES,
+          width: 30,
+          height: 30,
           backgroundColor: "#dd0426",
           pointerEvents: "none",
         }}
       >
-        <FaTruckMedical size={20} color="#fff" />
+        <FaTruckMedical size={18} color="#fff" />
       </div>
     </Marker>
   );
