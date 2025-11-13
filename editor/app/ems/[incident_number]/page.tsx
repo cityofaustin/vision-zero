@@ -247,7 +247,7 @@ export default function EMSDetailsPage({
         </Col>
       </Row>
       <Row>
-        <Col sm={12} md={6} lg={4} className="mb-3">
+        <Col sm={12} md={4} lg={3} className="mb-3">
           <DataCard<EMSPatientCareRecord>
             record={incident}
             title="Summary"
@@ -255,10 +255,12 @@ export default function EMSDetailsPage({
             mutation={""}
           />
         </Col>
-        <Col sm={12} md={6} lg={8} className="mb-3">
+        <Col sm={12} md={8} lg={9} className="mb-3">
           <EMSMapCard
             savedLatitude={incident.latitude}
             savedLongitude={incident.longitude}
+            matchingPeople={matchingPeople}
+            nonCR3Crashes={nonCR3Crashes}
           />
         </Col>
       </Row>

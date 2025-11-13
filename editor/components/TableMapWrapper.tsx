@@ -2,7 +2,8 @@ import { useMemo, useRef } from "react";
 import { MapRef } from "react-map-gl";
 import { useResizeObserver } from "@/utils/map";
 import { TableMap } from "@/components/TableMap";
-import { TableMapConfig, geoJsonTransformers } from "@/types/tableMapConfig";
+import { TableMapConfig } from "@/types/tableMapConfig";
+import { geoJsonTransformers } from "@/utils/map";
 
 interface TableMapWrapperProps<T extends Record<string, unknown>> {
   mapConfig: TableMapConfig;

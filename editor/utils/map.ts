@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { bbox } from "@turf/bbox";
 import { AllGeoJSON } from "@turf/helpers";
+import { FeatureCollection, Point } from "geojson";
 import { LngLatBoundsLike } from "mapbox-gl";
 import { mapStyleOptions } from "@/configs/map";
 import { useTheme } from "@/contexts/AppThemeProvider";
@@ -95,4 +96,36 @@ export const useBasemap = (initialBasemapType: "streets" | "aerial") => {
     basemapType,
     setBasemapType,
   };
+};
+
+
+/**
+ * An index of functions that transform input data into a geojson feature collection
+ */
+export const geoJsonTransformers = {
+  latLon: (data: Record<string, unknown>[]): FeatureCollection<Point> => {
+    if (!data || data.length === 0) {
+      return {
+        type: "FeatureCollection" as const,
+        features: [],
+      };
+    }
+    const features = data
+      .filter((row) => row.latitude && row.longitude) // Filter out items without coordinates
+      .map((row, index) => ({
+        type: "Feature" as const,
+        id: index,
+        geometry: {
+          type: "Point" as const,
+          coordinates: [Number(row.longitude), Number(row.latitude)],
+        },
+        properties: {
+          ...row, // Include all original data as properties
+        },
+      }));
+    return {
+      type: "FeatureCollection" as const,
+      features,
+    };
+  },
 };
