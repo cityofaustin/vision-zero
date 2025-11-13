@@ -19,7 +19,6 @@ import {
   ReactZoomPanPinchRef,
   useControls,
 } from "react-zoom-pan-pinch";
-import { Crash } from "@/types/crashes";
 import {
   useForm,
   UseFormRegister,
@@ -27,6 +26,7 @@ import {
   UseFormHandleSubmit,
   SubmitHandler,
 } from "react-hook-form";
+import { Crash } from "@/types/crashes";
 import { CrashDiagramOrientation } from "@/types/crashDiagramOrientation";
 import { UPDATE_CRASH } from "@/queries/crash";
 import { useMutation } from "@/utils/graphql";
@@ -187,7 +187,8 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
           rotation: crash.diagram_zoom_rotate.rotation,
         }
       : {
-          scale: undefined, // undefined so the image zooms to fit whole image in frame
+          // scaled undefined zooms to fit whole image in frame
+          scale: undefined,
           rotation: 0,
         };
   }, [crash]);
@@ -212,7 +213,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
     setDiagramSaved(true);
   };
 
-  const formValues = watch();
+  const rotation = watch("rotation");
 
   // zoom image to scale "undefined" effectively zooming to fit entire image in frame
   const resetZoomToImage = () => {
@@ -263,7 +264,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             <TransformComponent contentStyle={{ mixBlendMode: "multiply" }}>
               <Image
                 fluid
-                style={{ transform: `rotate(${formValues.rotation}deg)` }}
+                style={{ transform: `rotate(${rotation}deg)` }}
                 src={`${CR3_DIAGRAM_BASE_URL}/${crash.record_locator}.jpeg`}
                 alt="crash diagram"
                 id="crashDiagramImage"
