@@ -5,7 +5,6 @@ import { Card } from "react-bootstrap";
 import { Dispatch, ReactNode, SetStateAction } from "react";
 import AlignedLabel from "@/components/AlignedLabel";
 import { MdOutlineLayers } from "react-icons/md";
-import { FaMapPin } from "react-icons/fa6";
 
 export interface CustomLayerToggle {
   /**
