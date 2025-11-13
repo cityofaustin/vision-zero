@@ -56,10 +56,9 @@ export default function MapBasemapControl({
           <>
             <Card.Body className="py-1">
               {customLayerToggles?.map((toggle) => (
-                <Fragment>
+                <Fragment key={toggle.id}>
                   {toggle.sectionHeader && toggle.sectionHeader}
                   <Form.Check
-                    key={toggle.id}
                     className="fs-6 my-1"
                     id={toggle.id}
                     type="checkbox"
