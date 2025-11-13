@@ -175,11 +175,23 @@ refresh materialized view location_crashes_view;
 ### EMS incident details - `/ems/[incident-number]`
 
 - Page breadcrumb and title—which is the EMS record address—look normal
-- The incident map (top right of page) shows the incident location
+- Incident map (top right of page) 
+    - Use the EMS list page to filter/find an incident that has been matched automatically to a crash, person, and non-cr3 record
+    - The incident map should display a CR3 crash (blue circle with car icon) and non-cr3 (gray cricle with sticky note icon) on the map as well as the EMS incident (red circle with ambulence icon)
+    - Use the layer selector to toggle the CR3 and non-cr3 layers on/off
+    - Use the layer selector to switch beetween the satellite and streets basemap
 - Navigating to a bogus incident number such as `/ems/1abc` results in 404
-- The **EMS Patients** card displays EMS patients with the same incident number.
-- The **Select person** button is displayed for each EMS patient row
-- Click **Select person** to enable the **Select match** button to appear next to any unlinked person records in the **Associated people records** table
+
+#### EMS -> CR3 matching UI
+
+- Locate an incident with multiple EMS patients: sort the EMS list by incident number and find rows that have the same incident number—visit the details page for any of the rows.
+- The **EMS Patients** card displays multiple EMS patients with the same incident number.
+- Use the column visibility selector to enable all columns on the **EMS Patients**
+- Find an EMS patient record with a **person match status** of **Matched automatically**. Verify that the **Person match attributes** and **Match quality** fields are populated
+- If **any** of the EMS patient records are not matched to a crash, the **Possible CR3 people matches** table will display **people** records from crashes that occurred during a 12-hour window of the crash
+- The **Possible CR3 people matches** will also display **people** records from any crashes which are matched to any of the EMS patient records
+- To match an EMS patien to a crash, confirm that the **Select person** button is displayed for each EMS patient row
+- Click **Select person** to enable the **Select match** button to appear next to any unlinked person records in the **Possible CR3 people matches** table
 - Click the **Person ID** column for any **EMS Patients** row to manually edit a person ID value
 - Click the **Person ID** column and save an invalid person ID value and verify an error message is displayed
 - Locate an **unmatched** EMS record, then click the **Person ID** column and save a valid person ID value
