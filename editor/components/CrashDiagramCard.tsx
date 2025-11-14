@@ -148,12 +148,14 @@ const ZoomResetSaveControls = ({
             <AlignedLabel>
               {(isDirty || (!isDirty && !isSaved)) && (
                 <>
-                  <FaFloppyDisk className="me-2" />Save
+                  <FaFloppyDisk className="me-2" />
+                  Save
                 </>
               )}
               {isSaved && !isDirty && (
                 <>
-                  <FaCheckCircle className="me-2" />Saved
+                  <FaCheckCircle className="me-2" />
+                  Saved
                 </>
               )}
             </AlignedLabel>
@@ -277,7 +279,10 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               handleSubmit={handleSubmit}
               isSaved={isSaved}
             />
-            <TransformComponent contentStyle={{ mixBlendMode: "multiply" }}>
+            <TransformComponent
+              wrapperStyle={{ width: "100%" }}
+              contentStyle={{ mixBlendMode: "multiply" }}
+            >
               <Image
                 fluid
                 style={{ transform: `rotate(${rotation}deg)` }}
