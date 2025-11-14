@@ -31,6 +31,7 @@ import { CrashDiagramOrientation } from "@/types/crashDiagramOrientation";
 import { UPDATE_CRASH } from "@/queries/crash";
 import { useMutation } from "@/utils/graphql";
 import PermissionsRequired from "@/components/PermissionsRequired";
+import AlignedLabel from "@/components/AlignedLabel";
 
 const CR3_DIAGRAM_BASE_URL = process.env.NEXT_PUBLIC_CR3_DIAGRAM_BASE_URL!;
 const allowedUserSaveDiagramRoles = ["vz-admin", "editor"];
@@ -103,7 +104,9 @@ const ZoomResetSaveControls = ({
           }}
           title="Zoom In"
         >
-          <FaMagnifyingGlassPlus />
+          <AlignedLabel>
+            <FaMagnifyingGlassPlus />
+          </AlignedLabel>
         </Button>
         <Button
           size="sm"
@@ -117,7 +120,9 @@ const ZoomResetSaveControls = ({
           }}
           title="Zoom Out"
         >
-          <FaMagnifyingGlassMinus />
+          <AlignedLabel>
+            <FaMagnifyingGlassMinus />
+          </AlignedLabel>
         </Button>
         <Button
           size="sm"
@@ -125,29 +130,35 @@ const ZoomResetSaveControls = ({
           onClick={handleReset}
           title="Reset"
         >
-          <SlActionUndo className="me-2" />
-          Reset
+          <AlignedLabel>
+            <SlActionUndo className="me-2" />
+            Reset
+          </AlignedLabel>
         </Button>
       </ButtonGroup>
       <PermissionsRequired allowedRoles={allowedUserSaveDiagramRoles}>
-        <Button
-          size="sm"
-          variant={"primary"}
-          onClick={handleSubmit(onSave)}
-          title={"save"}
-          disabled={!isDirty}
-        >
-          {(isDirty || (!isDirty && !isSaved)) && (
-            <span>
-              <FaFloppyDisk className="me-2" /> Save
-            </span>
-          )}
-          {isSaved && !isDirty && (
-            <span>
-              <FaCheckCircle className="me-2" /> Saved
-            </span>
-          )}
-        </Button>
+        <AlignedLabel>
+          <Button
+            size="sm"
+            variant={"primary"}
+            onClick={handleSubmit(onSave)}
+            title={"save"}
+            disabled={!isDirty}
+          >
+            <AlignedLabel>
+              {(isDirty || (!isDirty && !isSaved)) && (
+                <span>
+                  <FaFloppyDisk className="me-2" /> Save
+                </span>
+              )}
+              {isSaved && !isDirty && (
+                <span>
+                  <FaCheckCircle className="me-2" /> Saved
+                </span>
+              )}
+            </AlignedLabel>
+          </Button>
+        </AlignedLabel>
       </PermissionsRequired>
     </div>
   );
