@@ -1,0 +1,26 @@
+table:
+  name: change_log_ems__incidents
+  schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - id
+        - record_id
+        - record_json
+        - created_by
+        - operation_type
+        - created_at
+      filter: {}
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - id
+        - record_id
+        - record_json
+        - created_by
+        - operation_type
+        - created_at
+      filter: {}
+    comment: ""
