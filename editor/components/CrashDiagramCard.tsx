@@ -148,12 +148,12 @@ const ZoomResetSaveControls = ({
             <AlignedLabel>
               {(isDirty || (!isDirty && !isSaved)) && (
                 <span>
-                  <FaFloppyDisk className="me-2" /> Save
+                  <FaFloppyDisk className="me-2" />Save
                 </span>
               )}
               {isSaved && !isDirty && (
                 <span>
-                  <FaCheckCircle className="me-2" /> Saved
+                  <FaCheckCircle className="me-2" />Saved
                 </span>
               )}
             </AlignedLabel>
