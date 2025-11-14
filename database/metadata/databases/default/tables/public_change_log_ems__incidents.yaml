@@ -24,3 +24,14 @@ select_permissions:
         - created_at
       filter: {}
     comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - id
+        - record_id
+        - record_json
+        - created_by
+        - operation_type
+        - created_at
+      filter: {}
+    comment: ""
