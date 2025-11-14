@@ -10,8 +10,8 @@ import {
   FaMagnifyingGlassMinus,
   FaRotate,
   FaFloppyDisk,
-  FaCheck,
 } from "react-icons/fa6";
+import { FaCheckCircle } from "react-icons/fa";
 import { SlActionUndo } from "react-icons/sl";
 import {
   TransformWrapper,
@@ -70,12 +70,14 @@ const ZoomResetSaveControls = ({
   isDirty,
   onSave,
   handleSubmit,
+  isSaved,
 }: {
   setValue: UseFormSetValue<CrashDiagramOrientation>;
   resetZoomToImage: () => void;
   isDirty: boolean;
   onSave: SubmitHandler<CrashDiagramOrientation>;
   handleSubmit: UseFormHandleSubmit<CrashDiagramOrientation>;
+  isSaved: boolean;
 }) => {
   const { zoomIn, zoomOut, resetTransform, instance } = useControls();
 
@@ -127,21 +129,26 @@ const ZoomResetSaveControls = ({
           Reset
         </Button>
       </ButtonGroup>
-      {isDirty && (
-        <PermissionsRequired allowedRoles={allowedUserSaveDiagramRoles}>
-          <Button
-            size="sm"
-            variant={"primary"}
-            onClick={handleSubmit(onSave)}
-            title={"save"}
-            disabled={!isDirty}
-          >
-            <>
+      <PermissionsRequired allowedRoles={allowedUserSaveDiagramRoles}>
+        <Button
+          size="sm"
+          variant={"primary"}
+          onClick={handleSubmit(onSave)}
+          title={"save"}
+          disabled={!isDirty}
+        >
+          {(isDirty || (!isDirty && !isSaved)) && (
+            <span>
               <FaFloppyDisk className="me-2" /> Save
-            </>
-          </Button>
-        </PermissionsRequired>
-      )}
+            </span>
+          )}
+          {isSaved && !isDirty && (
+            <span>
+              <FaCheckCircle className="me-2" /> Saved
+            </span>
+          )}
+        </Button>
+      </PermissionsRequired>
     </div>
   );
 };
@@ -171,6 +178,7 @@ const RotateControls = ({
 
 export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [diagramError, setDiagramError] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
 
   const defaultValues = useMemo(() => {
@@ -207,6 +215,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
 
     // do not clear values from form, but clear dirty state to hide saved button
     reset(data, { keepDirty: false });
+    setIsSaved(true);
   };
 
   const rotation = watch("rotation");
@@ -255,6 +264,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               isDirty={isDirty}
               onSave={onSave}
               handleSubmit={handleSubmit}
+              isSaved={isSaved}
             />
             <TransformComponent contentStyle={{ mixBlendMode: "multiply" }}>
               <Image
