@@ -70,14 +70,12 @@ const ZoomResetSaveControls = ({
   isDirty,
   onSave,
   handleSubmit,
-  diagramSaved,
 }: {
   setValue: UseFormSetValue<CrashDiagramOrientation>;
   resetZoomToImage: () => void;
   isDirty: boolean;
   onSave: SubmitHandler<CrashDiagramOrientation>;
   handleSubmit: UseFormHandleSubmit<CrashDiagramOrientation>;
-  diagramSaved: boolean;
 }) => {
   const { zoomIn, zoomOut, resetTransform, instance } = useControls();
 
@@ -129,25 +127,21 @@ const ZoomResetSaveControls = ({
           Reset
         </Button>
       </ButtonGroup>
-      <PermissionsRequired allowedRoles={allowedUserSaveDiagramRoles}>
-        <Button
-          size="sm"
-          variant={diagramSaved ? "outline-primary" : "primary"}
-          onClick={handleSubmit(onSave)}
-          title={"save"}
-          disabled={!isDirty}
-        >
-          {!diagramSaved ? (
+      {isDirty && (
+        <PermissionsRequired allowedRoles={allowedUserSaveDiagramRoles}>
+          <Button
+            size="sm"
+            variant={"primary"}
+            onClick={handleSubmit(onSave)}
+            title={"save"}
+            disabled={!isDirty}
+          >
             <>
               <FaFloppyDisk className="me-2" /> Save
             </>
-          ) : (
-            <>
-              <FaCheck className="me-2" /> Saved
-            </>
-          )}
-        </Button>
-      </PermissionsRequired>
+          </Button>
+        </PermissionsRequired>
+      )}
     </div>
   );
 };
@@ -177,7 +171,6 @@ const RotateControls = ({
 
 export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [diagramError, setDiagramError] = useState(false);
-  const [diagramSaved, setDiagramSaved] = useState(false);
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
 
   const defaultValues = useMemo(() => {
@@ -199,6 +192,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
     formState: { isDirty },
     setValue,
     watch,
+    reset,
   } = useForm({
     defaultValues,
   });
@@ -210,7 +204,9 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
       id: crash.id,
       updates: { diagram_zoom_rotate: data },
     });
-    setDiagramSaved(true);
+
+    // do not clear values from form, but clear dirty state to hide saved button
+    reset(data, { keepDirty: false });
   };
 
   const rotation = watch("rotation");
@@ -259,7 +255,6 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               isDirty={isDirty}
               onSave={onSave}
               handleSubmit={handleSubmit}
-              diagramSaved={diagramSaved}
             />
             <TransformComponent contentStyle={{ mixBlendMode: "multiply" }}>
               <Image
