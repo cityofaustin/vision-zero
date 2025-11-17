@@ -39,7 +39,6 @@ const typename = "crashes";
 
 // Lookup object that maps key shortcuts to the associated DOM element id to scroll to
 const shortcutKeyLookup: ShortcutKeyLookup[] = [
-  { key: "A", elementId: "address" },
   { key: "U", elementId: "units" },
   { key: "P", elementId: "people" },
   { key: "E", elementId: "ems" },
@@ -160,7 +159,11 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="units">
+      <Row id="units" style={{ scrollMarginTop: "55px" }}>
+        <div className="text-secondary fw-light text-end">
+          Press <span className="font-monospace">shift</span> +{" "}
+          <span className="font-monospace">U</span> to scroll here
+        </div>
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
             records={crash.units || []}
@@ -175,7 +178,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="people">
+      <Row id="people" style={{ scrollMarginTop: "55px" }}>
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
             records={crash.people_list_view || []}
@@ -190,7 +193,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="ems">
+      <Row id="ems" style={{ scrollMarginTop: "55px" }}>
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
             records={crash.ems__incidents || []}
@@ -205,7 +208,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="charges">
+      <Row id="charges" style={{ scrollMarginTop: "55px" }}>
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
             records={crash.charges_cris || []}
@@ -218,7 +221,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="notes">
+      <Row id="notes" style={{ scrollMarginTop: "55px" }}>
         <Col sm={12} className="mb-3">
           <NotesCard
             notes={crash.crash_notes || []}
@@ -231,7 +234,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="fatality">
+      <Row id="fatality" style={{ scrollMarginTop: "55px" }}>
         <Col sm={12} md={6} className="mb-3">
           <CrashRecommendationCard
             recommendation={crash.recommendation}
