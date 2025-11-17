@@ -42,7 +42,7 @@ See the [database documentation](/database#geospatial-layers) about geospatial l
 - Use the `--help` flag to see which layer options are available.
 
 ```shell
-$ node src/load_agol_layer.js --help
+$ node --env-file=local.env src/load_agol_layer.js --help
 Usage: load_agol_layer [options]
 
 Options:
