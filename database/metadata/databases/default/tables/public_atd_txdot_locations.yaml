@@ -30,6 +30,16 @@ select_permissions:
   - role: editor
     permission:
       columns:
+        - apd_sectors
+        - area_eng_areas
+        - council_districts
+        - signal_eng_areas
+        - street_levels
+        - zip_codes
+        - is_deleted
+        - is_hin
+        - is_service_road
+        - is_signalized
         - location_id
         - street_level
         - last_update
@@ -38,8 +48,11 @@ select_permissions:
         - scale_factor
         - council_district
         - is_intersection
+        - signal_id
         - location_group
-        - description
+        - location_name
+        - signal_status
+        - signal_type
         - geometry
       filter: {}
       allow_aggregations: true
@@ -47,6 +60,16 @@ select_permissions:
   - role: readonly
     permission:
       columns:
+        - apd_sectors
+        - area_eng_areas
+        - council_districts
+        - signal_eng_areas
+        - street_levels
+        - zip_codes
+        - is_deleted
+        - is_hin
+        - is_service_road
+        - is_signalized
         - location_id
         - street_level
         - last_update
@@ -55,8 +78,11 @@ select_permissions:
         - scale_factor
         - council_district
         - is_intersection
+        - signal_id
         - location_group
-        - description
+        - location_name
+        - signal_status
+        - signal_type
         - geometry
       filter: {}
       allow_aggregations: true
@@ -64,6 +90,16 @@ select_permissions:
   - role: vz-admin
     permission:
       columns:
+        - apd_sectors
+        - area_eng_areas
+        - council_districts
+        - signal_eng_areas
+        - street_levels
+        - zip_codes
+        - is_deleted
+        - is_hin
+        - is_service_road
+        - is_signalized
         - location_id
         - street_level
         - last_update
@@ -72,8 +108,11 @@ select_permissions:
         - scale_factor
         - council_district
         - is_intersection
+        - signal_id
         - location_group
-        - description
+        - location_name
+        - signal_status
+        - signal_type
         - geometry
       filter: {}
       allow_aggregations: true
