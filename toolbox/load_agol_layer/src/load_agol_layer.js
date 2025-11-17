@@ -1,11 +1,20 @@
+/**
+ * TODO!
+ * add in all update columns correct
+ * delete with deletes
+ * deal with audit fields, which need cleanup in db
+ * 
+ * 
+ */
+
 const { program, Option } = require("commander");
 const { arcgisToGeoJSON } = require("@terraformer/arcgis");
 const {
   getEsriJson,
-  getEsriLayerUrl,
   getEsriToken,
   getInsertMutation,
   getTruncateMutation,
+  getUpsertMutation,
   handleFields,
   makeHasuraRequest,
   makeUniformMultiPoly,
@@ -43,8 +52,7 @@ const main = async ({ layer: layerName, save }) => {
   layerConfig.query_params.token = token;
 
   console.log("Downloading layer...");
-  const layerUrl = getEsriLayerUrl(layerConfig);
-  const esriJson = await getEsriJson(layerUrl);
+  const esriJson = await getEsriJson(layerConfig);
 
   /**
    * Although the ArcGIS REST API can return geojson directly, the resulting geometries
@@ -77,17 +85,40 @@ const main = async ({ layer: layerName, save }) => {
     geometry,
   }));
 
-  console.log(`Truncating ${layerConfig.tableName} table...`);
-  const truncateMutation = getTruncateMutation(layerConfig.tableName);
-  await makeHasuraRequest({ query: truncateMutation });
+  /**
+   * Determine the hasura object name in the api schema
+   */
+  const objectName =
+    layerConfig.tableSchema === "public"
+      ? layerConfig.tableName
+      : layerConfig.tableSchema + "_" + layerConfig.tableName;
+
+  if (!layerConfig.upsert) {
+    console.log(`Truncating ${objectName}...`);
+    const truncateMutation = getTruncateMutation(objectName);
+    await makeHasuraRequest({ query: truncateMutation });
+  }
 
   console.log("Inserting new features...");
-  const insertMutation = getInsertMutation(layerConfig.tableName);
-  const result = await makeHasuraRequest({
-    query: insertMutation,
-    variables: { objects },
-  });
-  console.log(result);
+
+  const mutation = layerConfig.upsert
+    ? getUpsertMutation(objectName, layerConfig.onConflictConstraintName, [
+        "location_name",
+      ])
+    : getInsertMutation(objectName);
+  const results = [];
+
+  const chunkSize = 2000;
+
+  for (let i = 0; i < objects.length; i += chunkSize) {
+    // `  Inserting chunk ${i + 1}/${chunks.length} (${chunk.length} objects)...`;
+    console.log("CHUNK", i);
+    result = await makeHasuraRequest({
+      query: mutation,
+      variables: { objects: objects.slice(i, i + chunkSize) },
+    });
+    results.push(result);
+  }
 };
 
-main(args);
+main(args).catch((err) => console.log(err));
