@@ -5,7 +5,7 @@ ALTER TABLE atd_txdot_locations ALTER COLUMN is_intersection DROP DEFAULT;
 ALTER TABLE atd_txdot_locations ALTER COLUMN is_intersection TYPE integer
     USING CASE WHEN is_intersection = TRUE THEN 1 ELSE 0 END;
 
-ALTER TABLE atd_txdot_locations ALTER COLUMN is_intersection SET DEFAULT 0;
+DROP TRIGGER if exists set_public_atd_txdot_locations_updated_at  ON public.atd_txdot_locations;
 
 ALTER TABLE atd_txdot_locations
     drop column is_signalized,
@@ -20,10 +20,15 @@ ALTER TABLE atd_txdot_locations
     drop column signal_id,
     drop column signal_type,
     drop column signal_status,
-    drop column is_deleted;
+    drop column is_deleted,
+    drop column created_at,
+    drop column updated_at,
+    drop column created_by,
+    drop column updated_by,
+    add column last_update DATE,
+    add column scale_factor integer;
 
 alter table geo.non_coa_roadways drop column objectid;
-
 
 DROP VIEW locations_list_view;
 CREATE VIEW locations_list_view AS 

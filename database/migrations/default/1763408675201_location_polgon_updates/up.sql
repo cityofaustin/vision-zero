@@ -26,7 +26,24 @@ ALTER TABLE atd_txdot_locations
     add column signal_id integer,
     add column signal_type text,
     add column signal_status text,
-    add column is_deleted boolean not null default false;
+    add column is_deleted boolean not null default false,
+    add column created_at timestamp with time zone DEFAULT now() NOT NULL,
+    add column updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    add column created_by text not null default 'system',
+    add column updated_by text not null default 'system';
+
+-- copy the values from `last_update` into the new audit fields
+UPDATE atd_txdot_locations
+    SET created_at = (last_update || ' 00:00:00')::timestamp AT TIME ZONE 'America/Chicago',
+    updated_at = (last_update || ' 00:00:00')::timestamp AT TIME ZONE 'America/Chicago';
+
+-- drop the old audit field as well as `scale_factor`, which is unused
+    alter table atd_txdot_locations
+        drop column last_update,
+        drop column scale_factor;
+
+-- attach `updated_at` setter trigger
+CREATE TRIGGER set_public_atd_txdot_locations_updated_at BEFORE UPDATE ON public.atd_txdot_locations FOR EACH ROW EXECUTE FUNCTION public.set_current_timestamp_updated_at();
 
 -- add pk column to non-coa roadways
 alter table geo.non_coa_roadways add column objectid integer;
