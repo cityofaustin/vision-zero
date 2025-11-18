@@ -1,6 +1,5 @@
 /**
  * TODO!
- * add in all update columns correct
  * deal with audit fields, which need cleanup in db
  */
 
@@ -17,7 +16,6 @@ const {
   makeUniformMultiPoly,
   reduceGeomPrecision,
   saveJSONFile,
-  coerceBooleanFields,
 } = require("./utils");
 const { LAYERS } = require("./settings");
 
@@ -44,13 +42,18 @@ const args = program.opts();
 const main = async ({ layer: layerName, save }) => {
   console.log(`Processing ${layerName}`);
   const layerConfig = LAYERS[layerName];
+  const pkField = layerConfig.fields.find((field) => field.isPrimaryKey);
+
+  if (!pkField) {
+    throw new Error(`No primary key field fond in layer settings :(`);
+  }
 
   console.log("Getting AGOL token...");
   const { token } = await getEsriToken();
   layerConfig.query_params.token = token;
 
   console.log("Downloading layer...");
-  const esriJson = await getEsriJson(layerConfig);
+  const esriJson = await getEsriJson(layerConfig, pkField.inputName);
 
   /**
    * Although the ArcGIS REST API can return geojson directly, the resulting geometries
@@ -62,7 +65,7 @@ const main = async ({ layer: layerName, save }) => {
    */
   let geojson = arcgisToGeoJSON(esriJson);
 
-  coerceBooleanFields(geojson.features, layerConfig.booleanFields);
+  //   coerceBooleanFields(geojson.features, layerConfig.booleanFields);
 
   if (esriJson.geometryType.toLowerCase().includes("polygon")) {
     makeUniformMultiPoly(geojson.features);
@@ -72,8 +75,8 @@ const main = async ({ layer: layerName, save }) => {
 
   reduceGeomPrecision(geojson.features);
 
-  if (layerConfig.transformer) {
-    layerConfig.transformer(geojson);
+  if (layerConfig.customTransformer) {
+    layerConfig.customTransformer(geojson);
   }
 
   if (save) {
@@ -99,20 +102,38 @@ const main = async ({ layer: layerName, save }) => {
     await makeHasuraRequest({ query: truncateMutation });
   }
 
-  console.log("Inserting new features...");
+  /**
+   * Gather a list of fields to use as updateFields, although this is only needed if
+   * an upsert mutation is performed. We simply take the entire field array excluding
+   * the primary key
+   */
 
-  const mutation = layerConfig.upsert
-    ? getUpsertMutation(objectName, layerConfig.onConflictConstraintName, [
-        "location_name",
-      ])
+  const isUpsert = layerConfig.upsert;
+
+  const updateFields = layerConfig.fields
+    .filter((field) => !field.isPrimaryKey)
+    .map((field) => field.outputName);
+
+  const mutation = isUpsert
+    ? getUpsertMutation(
+        objectName,
+        layerConfig.onConflictConstraintName,
+        updateFields
+      )
     : getInsertMutation(objectName);
   const results = [];
 
   const chunkSize = 2000;
 
+  const totalChunks = Math.ceil(objects.length / chunkSize);
+
   for (let i = 0; i < objects.length; i += chunkSize) {
-    // `  Inserting chunk ${i + 1}/${chunks.length} (${chunk.length} objects)...`;
-    console.log("CHUNK", i);
+    console.log(
+      `(${i / chunkSize + 1}/${totalChunks}) ${
+        isUpsert ? "Upserting" : "Inserting"
+      } ${objects.length} features...`
+    );
+
     result = await makeHasuraRequest({
       query: mutation,
       variables: { objects: objects.slice(i, i + chunkSize) },
