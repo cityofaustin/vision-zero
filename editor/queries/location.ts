@@ -5,7 +5,7 @@ export const GET_LOCATION = gql`
     atd_txdot_locations(where: { location_id: { _eq: $locationId } }) {
       location_id
       street_level
-      description
+      location_name
       geometry
       latitude
       longitude
