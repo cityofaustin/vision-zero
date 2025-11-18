@@ -54,7 +54,6 @@ const makeUniformMultiPoly = (features) => {
     if (feature.geometry.type === "Polygon") {
       feature.geometry.type = "MultiPolygon";
       feature.geometry.coordinates = [feature.geometry.coordinates];
-      console.log(`Converted Polygon to MultiPolygon`);
     }
   });
 };
@@ -205,7 +204,6 @@ const getEsriJson = async (
       `Fetched ${features.length} features (total: ${combinedJson.features.length})`
     );
 
-    // Check if we got fewer features than requested - means we're done
     if (features.length < pageSize) {
       hasMore = false;
     } else {
@@ -213,11 +211,6 @@ const getEsriJson = async (
     }
   }
 
-  console.log(
-    `Pagination complete. Total features: ${combinedJson.features.length}`
-  );
-
-  // Return combined response in same format as non-paginated
   return combinedJson;
 };
 

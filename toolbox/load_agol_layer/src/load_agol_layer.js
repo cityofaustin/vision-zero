@@ -45,7 +45,7 @@ const main = async ({ layer: layerName, save }) => {
   const pkField = layerConfig.fields.find((field) => field.isPrimaryKey);
 
   if (!pkField) {
-    throw new Error(`No primary key field fond in layer settings :(`);
+    throw new Error(`No primary key field found in layer settings :(`);
   }
 
   console.log("Getting AGOL token...");
@@ -63,14 +63,15 @@ const main = async ({ layer: layerName, save }) => {
    * The issue is discussed in the Esri community, here:
    * https://community.esri.com/t5/arcgis-online-questions/agol-export-to-geojson-holes-not-represented-as/td-p/1008140
    */
+  console.log("Converting Esri JSON to geojson...");
   let geojson = arcgisToGeoJSON(esriJson);
 
-  //   coerceBooleanFields(geojson.features, layerConfig.booleanFields);
-
   if (esriJson.geometryType.toLowerCase().includes("polygon")) {
+    console.log("Handling multipolygons...");
     makeUniformMultiPoly(geojson.features);
   }
 
+  console.log("Doing field and geometry transforms...");
   handleFields(geojson.features, layerConfig.fields);
 
   reduceGeomPrecision(geojson.features);
@@ -80,7 +81,9 @@ const main = async ({ layer: layerName, save }) => {
   }
 
   if (save) {
-    saveJSONFile(`./data/${layerName}.geojson`, geojson);
+    const name = `./data/${layerName}.geojson`;
+    console.log(`Saving geojson to: ${name}`);
+    saveJSONFile(name, geojson);
   }
 
   objects = geojson.features.map(({ properties, geometry }) => ({
