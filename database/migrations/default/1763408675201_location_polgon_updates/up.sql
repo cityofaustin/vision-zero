@@ -30,3 +30,8 @@ ALTER TABLE atd_txdot_locations
     add column signal_type text,
     add column signal_status text,
     add column is_deleted boolean not null default false;
+
+-- add pk column to non-coa roadways
+alter table geo.non_coa_roadways add column objectid integer;
+update geo.non_coa_roadways set objectid = 1;
+alter table geo.non_coa_roadways add primary key (objectid);

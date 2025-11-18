@@ -21,3 +21,5 @@ ALTER TABLE atd_txdot_locations
     drop column signal_type,
     drop column signal_status,
     drop column is_deleted;
+
+alter table geo.non_coa_roadways drop column objectid;

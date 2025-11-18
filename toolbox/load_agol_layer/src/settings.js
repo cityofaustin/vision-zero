@@ -120,7 +120,7 @@ const LAYERS = {
     service_name: "On_System_Polygon_Feature",
     layer_id: 0,
     query_params: { ...DEFAULT_ESRI_QUERY_PARAMS },
-    fields: [],
+    fields: [{ inputName: "OBJECTID", outputName: "objectid", isPrimaryKey: true}],
     tableName: "non_coa_roadways",
     tableSchema: "geo",
   },
