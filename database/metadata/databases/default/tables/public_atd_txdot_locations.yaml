@@ -38,21 +38,23 @@ select_permissions:
         - zip_codes
         - is_deleted
         - is_hin
+        - is_intersection
         - is_service_road
         - is_signalized
         - location_id
         - street_level
-        - last_update
         - latitude
         - longitude
-        - scale_factor
         - council_district
-        - is_intersection
         - signal_id
         - location_group
+        - created_by
         - location_name
         - signal_status
         - signal_type
+        - updated_by
+        - created_at
+        - updated_at
         - geometry
       filter: {}
       allow_aggregations: true
@@ -68,21 +70,23 @@ select_permissions:
         - zip_codes
         - is_deleted
         - is_hin
+        - is_intersection
         - is_service_road
         - is_signalized
         - location_id
         - street_level
-        - last_update
         - latitude
         - longitude
-        - scale_factor
         - council_district
-        - is_intersection
         - signal_id
         - location_group
+        - created_by
         - location_name
         - signal_status
         - signal_type
+        - updated_by
+        - created_at
+        - updated_at
         - geometry
       filter: {}
       allow_aggregations: true
@@ -98,21 +102,23 @@ select_permissions:
         - zip_codes
         - is_deleted
         - is_hin
+        - is_intersection
         - is_service_road
         - is_signalized
         - location_id
         - street_level
-        - last_update
         - latitude
         - longitude
-        - scale_factor
         - council_district
-        - is_intersection
         - signal_id
         - location_group
+        - created_by
         - location_name
         - signal_status
         - signal_type
+        - updated_by
+        - created_at
+        - updated_at
         - geometry
       filter: {}
       allow_aggregations: true
