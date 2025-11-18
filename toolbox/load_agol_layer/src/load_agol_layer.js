@@ -128,15 +128,16 @@ const main = async ({ layer: layerName, save }) => {
   const totalChunks = Math.ceil(objects.length / chunkSize);
 
   for (let i = 0; i < objects.length; i += chunkSize) {
+    const currentChunk = objects.slice(i, i + chunkSize);
     console.log(
       `(${i / chunkSize + 1}/${totalChunks}) ${
         isUpsert ? "Upserting" : "Inserting"
-      } ${objects.length} features...`
+      } ${currentChunk.length} features...`
     );
 
     result = await makeHasuraRequest({
       query: mutation,
-      variables: { objects: objects.slice(i, i + chunkSize) },
+      variables: { objects: currentChunk },
     });
     results.push(result);
   }
