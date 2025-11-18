@@ -1,6 +1,6 @@
 # ArcGIS Online Layer Helper
 
-This tool is used to load an ArcGIS Online (AGOL) layer into the Vision Zero database. It completely replaces all rows in the target database table with data downloaded from AGOL.
+This tool is used to load an ArcGIS Online (AGOL) layer into the Vision Zero database.
 
 ## Quick start
 
@@ -30,6 +30,8 @@ node --env-file=local.env src/load_agol_layer.js --layer signal_engineer_areas
 ## Layer configuration
 
 Each layer must be configured in the `LAYERS` object in [`settings.js`](/toolbox/load_agol_layer/src/settings.js). See the docstring in the settings file for specifics.
+
+Layers can be configured to be completely replaced each time the script runs (the default behavior) or to be upserted based on the layer's primary key field. See the [`settings.js`](/toolbox/load_agol_layer/src/settings.js) docstrings for details.
 
 When creating a new database table to hold feature data, polygon geometries should always be stored in a `Multipolygon` column type called `geometry` to avoid future issues. As well, any columns that will be populated with AGOL feature attribute data should exactly match the column names used in AGOL, except they should be lowercase.
 
