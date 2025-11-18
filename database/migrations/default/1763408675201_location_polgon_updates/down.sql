@@ -7,8 +7,6 @@ ALTER TABLE atd_txdot_locations ALTER COLUMN is_intersection TYPE integer
 
 ALTER TABLE atd_txdot_locations ALTER COLUMN is_intersection SET DEFAULT 0;
 
-ALTER TABLE atd_txdot_locations rename column location_name to description;
-
 ALTER TABLE atd_txdot_locations
     drop column is_signalized,
     drop column is_hin,
