@@ -21,7 +21,13 @@ AGOL_PASSWORD=<use AGOL Scripts Publisher item in 1pass>
 nvm use
 ```
 
-4. Run `load_agol_layer` by passing your environment file and layer name
+4. Install dependencies
+
+```
+npm. install
+```
+
+5. Run `load_agol_layer` by passing your environment file and layer name
 
 ```shell
 node --env-file=local.env src/load_agol_layer.js --layer signal_engineer_areas
