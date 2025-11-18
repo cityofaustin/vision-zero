@@ -6,6 +6,13 @@ DROP INDEX atd_txdot_locations_unique_id_uindex;
 
 ALTER TABLE atd_txdot_locations rename column description to location_name;
 
+ALTER TABLE atd_txdot_locations ALTER COLUMN is_intersection DROP DEFAULT;
+
+ALTER TABLE atd_txdot_locations ALTER COLUMN is_intersection TYPE bool
+    USING CASE WHEN is_intersection = 0 THEN FALSE ELSE TRUE END;
+
+ALTER TABLE atd_txdot_locations ALTER COLUMN is_intersection SET DEFAULT FALSE;
+
 ALTER TABLE atd_txdot_locations
     add column is_signalized boolean,
     add column is_hin boolean,

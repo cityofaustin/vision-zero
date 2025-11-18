@@ -1,10 +1,7 @@
 /**
  * TODO!
  * add in all update columns correct
- * delete with deletes
  * deal with audit fields, which need cleanup in db
- * 
- * 
  */
 
 const { program, Option } = require("commander");
@@ -20,6 +17,7 @@ const {
   makeUniformMultiPoly,
   reduceGeomPrecision,
   saveJSONFile,
+  coerceBooleanFields,
 } = require("./utils");
 const { LAYERS } = require("./settings");
 
@@ -63,6 +61,8 @@ const main = async ({ layer: layerName, save }) => {
    * https://community.esri.com/t5/arcgis-online-questions/agol-export-to-geojson-holes-not-represented-as/td-p/1008140
    */
   let geojson = arcgisToGeoJSON(esriJson);
+
+  coerceBooleanFields(geojson.features, layerConfig.booleanFields);
 
   if (esriJson.geometryType.toLowerCase().includes("polygon")) {
     makeUniformMultiPoly(geojson.features);

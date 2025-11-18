@@ -346,6 +346,7 @@ const csvToArray = (csvString, valueHandler) => {
 
 const locationPolygonsTransformer = (geojson) => {
   const csvFieldsToHandle = [
+    { name: "apd_sectors", valueHandler: String },
     { name: "area_eng_areas", valueHandler: String },
     { name: "council_districts", valueHandler: Number },
     { name: "signal_eng_areas", valueHandler: String },
@@ -363,6 +364,24 @@ const locationPolygonsTransformer = (geojson) => {
   });
 };
 
+/**
+ * Coerce integer fields to boolean values — necessary because ArcGIS does not support
+ * boolean fields, and Hasura does not coearce integers to bools.
+ * @param {Feature[]} features - array of geojson features
+ * @param {string[]} booleanFields - array of field names to be
+ * @returns
+ */
+const coerceBooleanFields = (features, booleanFields) => {
+  if (!booleanFields?.length > 0) {
+    return;
+  }
+  features.forEach((feature) => {
+    booleanFields.forEach((fieldName) => {
+      feature.properties[fieldName] = Boolean(feature.properties[fieldName]);
+    });
+  });
+};
+
 module.exports = {
   combineDistrictTenFeatures,
   ESRI_MAX_RECORD_COUNT,
@@ -373,6 +392,7 @@ module.exports = {
   getTruncateMutation,
   getUpsertMutation,
   handleFields,
+  coerceBooleanFields,
   loadJSONFile,
   locationPolygonsTransformer,
   makeHasuraRequest,
