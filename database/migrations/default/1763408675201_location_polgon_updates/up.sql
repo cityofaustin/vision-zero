@@ -36,6 +36,9 @@ ALTER TABLE atd_txdot_locations
     add column created_by text not null default 'system',
     add column updated_by text not null default 'system';
 
+-- index the new is_deleted column
+CREATE INDEX locations_is_deleted_idx on atd_txdot_locations (is_deleted);
+
 -- copy the values from `last_update` into the new audit fields
 UPDATE atd_txdot_locations
     SET created_at = (last_update || ' 00:00:00')::timestamp AT TIME ZONE 'America/Chicago',
@@ -178,6 +181,7 @@ begin
                 where
                     location_group = 1 -- not level 5
                     and st_contains(geometry, new.position)
+                    and is_deleted = false
                 limit 1);
         end if;
 
