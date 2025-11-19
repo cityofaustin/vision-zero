@@ -68,13 +68,15 @@ export default function FatalityVictimsCard({
                       </div>
                       <div className="mb-1 d-flex w-100 flex-column">
                         <span className="mb-2">
-                          {victim.prsn_age} YEARS OLD -{" "}
+                          {victim.prsn_age
+                            ? `${victim.prsn_age} YEARS OLD`
+                            : ""}
                           {victim.drvr_ethncty?.label} {victim.gndr?.label}
                         </span>
                         {victim.rest?.label &&
                           // Only show restraint field for cars
                           unit.unit_desc_id === 1 && // motor vehicle
-                          unit.veh_body_styl_id !== 71 && // motorycle
+                          unit.veh_body_styl_id !== 71 && // motorcycle
                           unit.veh_body_styl_id !== 90 && ( // police motorcycle
                             <span>Restraint used: {victim.rest.label}</span>
                           )}
