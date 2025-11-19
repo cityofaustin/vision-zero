@@ -350,7 +350,7 @@ ELSE
         FROM
             locations AS atl
         WHERE atl.location_group = 1
-            AND atd.is_deleted = false
+            AND atl.is_deleted = false
             AND atl.geometry && NEW.position
             AND ST_Contains(atl.geometry, NEW.position)
     );
