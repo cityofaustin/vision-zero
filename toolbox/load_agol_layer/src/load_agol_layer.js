@@ -1,8 +1,3 @@
-/**
- * TODO!
- * deal with audit fields, which need cleanup in db
- */
-
 const { program, Option } = require("commander");
 const { arcgisToGeoJSON } = require("@terraformer/arcgis");
 const {

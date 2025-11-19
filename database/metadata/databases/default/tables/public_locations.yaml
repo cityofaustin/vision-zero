@@ -1,5 +1,5 @@
 table:
-  name: atd_txdot_locations
+  name: locations
   schema: public
 object_relationships:
   - name: locations_list_view

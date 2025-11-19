@@ -24,7 +24,7 @@ import {
 } from "@/queries/locationNotes";
 import { useDocumentTitle } from "@/utils/documentTitle";
 
-const typename = "atd_txdot_locations";
+const typename = "locations";
 
 /**
  * Hook which returns a Filter array with the `location_id` param.
