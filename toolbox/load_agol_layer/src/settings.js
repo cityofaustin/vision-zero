@@ -42,7 +42,7 @@ const DEFAULT_ESRI_QUERY_PARAMS = {
  * @property {string} tableName - The name of the layer's table in the Vision Zero database
  * @property {string} tableSchema - The db schema in which the layer resides
  * @property {boolean} upsert - If the layer should be processed as an upsert rather than a
- * truncate and replace. This flag was added for `atd_txdot_location` polygons.
+ * truncate and replace. This flag was added for locations polygons.
  * @property {string} [onConflictConstraintName] - required when upserting. the db constraint
  * name to be used in the upsert mutation's `on conflict` argument.
  */
@@ -228,10 +228,10 @@ const LAYERS = {
         valueHandler: Boolean,
       },
     ],
-    tableName: "atd_txdot_locations",
+    tableName: "locations",
     tableSchema: "public",
     upsert: true,
-    onConflictConstraintName: "atd_txdot_locations_pk",
+    onConflictConstraintName: "locations_pk",
   },
 };
 
