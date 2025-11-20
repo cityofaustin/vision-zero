@@ -204,7 +204,7 @@ const getEsriJson = async (
       `Fetched ${features.length} features (total: ${combinedJson.features.length})`
     );
 
-    if (combinedJson.features.length > 2000 || features.length < pageSize) {
+    if (features.length < pageSize) {
       hasMore = false;
     } else {
       offset += pageSize;
