@@ -349,4 +349,8 @@ to make sure it renders on top is a common fix */
   margin-top: 2.5rem;
 }
 
+.offset-header-scroll-top {
+  scroll-margin-top: 55px;
+}
+
 @import "bootstrap/scss/bootstrap.scss";

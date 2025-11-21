@@ -168,7 +168,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="units" style={{ scrollMarginTop: "55px" }}>
+      <Row id="units" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="U" />
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
@@ -184,7 +184,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="people" style={{ scrollMarginTop: "55px" }}>
+      <Row id="people" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="P" />
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
@@ -200,7 +200,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="ems" style={{ scrollMarginTop: "55px" }}>
+      <Row id="ems" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="E" />
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
@@ -216,7 +216,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="charges" style={{ scrollMarginTop: "55px" }}>
+      <Row id="charges" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="C" />
         <Col sm={12} className="mb-3">
           <RelatedRecordTable
@@ -230,7 +230,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="notes" style={{ scrollMarginTop: "55px" }}>
+      <Row id="notes" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="N" />
         <Col sm={12} className="mb-3">
           <NotesCard
@@ -244,7 +244,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="fatality" style={{ scrollMarginTop: "55px" }}>
+      <Row id="fatality" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="F" />
         <Col sm={12} md={6} className="mb-3">
           <CrashRecommendationCard
