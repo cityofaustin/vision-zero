@@ -1,7 +1,7 @@
 "use client";
 
 import { notFound } from "next/navigation";
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import { MapRef } from "react-map-gl";
@@ -28,7 +28,7 @@ export default function FatalCrashDetailsPage({
 
   const typename = "crashes";
 
-  const { data, error } = useQuery<Crash>({
+  const { data, error, refetch } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
     variables: { recordLocator },
     typename,
@@ -37,6 +37,9 @@ export default function FatalCrashDetailsPage({
   if (error) {
     console.error(error);
   }
+  const onSaveCallback = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   // Set document title based on loaded data
   useDocumentTitle(
@@ -124,7 +127,10 @@ export default function FatalCrashDetailsPage({
       </Row>
       <Row className="mb-3">
         <Col>
-          <FatalityCrashNarrative crash={crash}></FatalityCrashNarrative>
+          <FatalityCrashNarrative
+            crash={crash}
+            onSaveCallback={onSaveCallback}
+          />
         </Col>
         <Col></Col>
         <Col></Col>
