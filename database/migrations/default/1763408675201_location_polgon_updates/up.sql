@@ -114,37 +114,49 @@ CREATE VIEW locations_list_view AS
 CREATE OR REPLACE FUNCTION public.afd_incidents_trigger() RETURNS trigger
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    v_location_id text;
 BEGIN
+    -- Set geometry
     NEW.geometry = ST_SetSRID(ST_MakePoint(NEW.longitude, NEW.latitude), 4326);
 
-    SELECT 
-        COALESCE(EXISTS (
-            SELECT 1 
-            FROM geo.jurisdictions 
-            WHERE jurisdiction_label = 'AUSTIN FULL PURPOSE'
-            AND ST_Contains(geometry, NEW.geometry)
-        ), FALSE),
-        locations.location_id,
-        (NEW.ems_incident_numbers)[1],
-        (NEW.ems_incident_numbers)[2]
-    INTO 
-        NEW.austin_full_purpose,
-        NEW.location_id,
-        NEW.ems_incident_number_1,
-        NEW.ems_incident_number_2
-    FROM (SELECT 1) AS dummy_select
-    LEFT JOIN locations ON (
-        locations.location_group = 1 
-        AND NEW.geometry && locations.geometry 
-        AND ST_Contains(locations.geometry, NEW.geometry)
-        AND locations.is_deleted = FALSE
-    );
+    -- Check Austin Full Purpose jurisdiction
+    NEW.austin_full_purpose = COALESCE(EXISTS (
+        SELECT 1 
+        FROM geo.jurisdictions 
+        WHERE jurisdiction_label = 'AUSTIN FULL PURPOSE'
+        AND ST_Contains(geometry, NEW.geometry)
+    ), FALSE);
 
-  RETURN NEW;
+    -- Extract EMS incident numbers
+    NEW.ems_incident_number_1 = (NEW.ems_incident_numbers)[1];
+    NEW.ems_incident_number_2 = (NEW.ems_incident_numbers)[2];
+
+    -- Find location_id with group priority (1 first, then 2)
+    SELECT location_id INTO v_location_id
+    FROM locations
+    WHERE location_group = 1 
+        AND NEW.geometry && geometry 
+        AND ST_Contains(geometry, NEW.geometry)
+        AND is_deleted = FALSE
+    LIMIT 1;
+
+    -- If no group 1 location found, try group 2
+    IF v_location_id IS NULL THEN
+        SELECT location_id INTO v_location_id
+        FROM locations
+        WHERE location_group = 2 
+            AND NEW.geometry && geometry 
+            AND ST_Contains(geometry, NEW.geometry)
+            AND is_deleted = FALSE
+        LIMIT 1;
+    END IF;
+
+    NEW.location_id = v_location_id;
+
+    RETURN NEW;
 END;
 $$;
-
-
 
 --
 -- crashes_set_spatial_attributes
@@ -152,38 +164,50 @@ $$;
 CREATE OR REPLACE FUNCTION public.crashes_set_spatial_attributes() RETURNS trigger
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    v_location_group integer;
 begin
     if (new.latitude is not null and new.longitude is not null) then
         -- save lat/lon into geometry col
         new.position = st_setsrid(st_makepoint(new.longitude, new.latitude), 4326);
+        
         --
-        -- get location polygon id
+        -- determin location group for assigning location_id
         --
-        if (new.rpt_road_part_id != 2 and upper(ltrim(new.rpt_hwy_num)) in ('35', '183','183A','1','290','71','360','620','45','130')) then
-            -- use level 5 polygon
-            new.location_id = (
-                select
-                    location_id
-                from
-                    public.locations
-                where
-                    location_group = 2 -- level 5
-                    and st_contains(geometry, new.position)
-                    and is_deleted = false
-                limit 1);
-        else
-            -- use the other polygons
-            new.location_id = (
-                select
-                    location_id
-                from
-                    public.locations
-                where
-                    location_group = 1 -- not level 5
-                    and st_contains(geometry, new.position)
-                    and is_deleted = false
-                limit 1);
-        end if;
+        v_location_group :=  CASE
+            -- Southeast Austin
+            WHEN ( new.latitude < 30.221891 AND UPPER(LTRIM(new.rpt_hwy_num)) ='183' )
+                THEN 1 
+            -- West Austin
+            WHEN ( new.longitude < -97.733692 AND UPPER(LTRIM(new.rpt_hwy_num)) ='360' )
+                THEN 1 
+            -- Northwest Austin
+            WHEN ( new.longitude < -97.802658 AND UPPER(LTRIM(new.rpt_hwy_num)) ='620' )
+                THEN 1 
+            -- Southwest Austin
+            WHEN ( new.longitude < -97.888114 AND UPPER(LTRIM(new.rpt_hwy_num)) ='45' )
+                THEN 1 
+            -- Southwest Austin
+            WHEN ( new.longitude < -97.873420 AND UPPER(LTRIM(new.rpt_hwy_num)) = '71' )
+                THEN 1
+            WHEN ( new.rpt_road_part_id != 2 AND UPPER(LTRIM(new.rpt_hwy_num)) IN ('35','1','45','130','183', '71','290') )
+                THEN 2
+            ELSE 1
+        END;
+
+        --
+        -- get intersection location polyogn
+        --
+        new.location_id = (
+            select
+                location_id
+            from
+                public.locations
+            where
+                location_group = v_location_group
+                and st_contains(geometry, new.position)
+                and is_deleted = false
+            limit 1);
 
         raise debug 'found location: % compared to previous location: %', new.location_id, old.location_id;
         --
@@ -296,28 +320,43 @@ $$;
 CREATE OR REPLACE FUNCTION public.ems_incidents_trigger() RETURNS trigger
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    v_location_id text;
 BEGIN
-  NEW.geometry = ST_SetSRID(ST_MakePoint(NEW.longitude, NEW.latitude), 4326);
+    -- Set geometry
+    NEW.geometry = ST_SetSRID(ST_MakePoint(NEW.longitude, NEW.latitude), 4326);
 
-  SELECT 
-    COALESCE(EXISTS (
-      SELECT 1 
-      FROM geo.jurisdictions 
-      WHERE jurisdiction_label = 'AUSTIN FULL PURPOSE'
-      AND ST_Contains(geometry, NEW.geometry)
-    ), FALSE),
-    locations.location_id
-  INTO 
-    NEW.austin_full_purpose,
-    NEW.location_id
-  FROM (SELECT 1) AS dummy
-  LEFT JOIN locations ON (
-    locations.location_group = 1 
-    AND NEW.geometry && locations.geometry 
-    AND ST_Contains(locations.geometry, NEW.geometry)
-    AND locations.is_deleted = FALSE 
-  );
-  RETURN NEW;
+    -- Check Austin Full Purpose jurisdiction
+    NEW.austin_full_purpose = COALESCE(EXISTS (
+        SELECT 1 
+        FROM geo.jurisdictions 
+        WHERE jurisdiction_label = 'AUSTIN FULL PURPOSE'
+        AND ST_Contains(geometry, NEW.geometry)
+    ), FALSE);
+
+    -- Find location_id with group priority (1 first, then 2)
+    SELECT location_id INTO v_location_id
+    FROM locations
+    WHERE location_group = 1 
+        AND NEW.geometry && geometry 
+        AND ST_Contains(geometry, NEW.geometry)
+        AND is_deleted = FALSE
+    LIMIT 1;
+
+    -- If no group 1 location found, try group 2
+    IF v_location_id IS NULL THEN
+        SELECT location_id INTO v_location_id
+        FROM locations
+        WHERE location_group = 2 
+            AND NEW.geometry && geometry 
+            AND ST_Contains(geometry, NEW.geometry)
+            AND is_deleted = FALSE
+        LIMIT 1;
+    END IF;
+
+    NEW.location_id = v_location_id;
+
+    RETURN NEW;
 END;
 $$;
 
@@ -327,34 +366,31 @@ $$;
 CREATE OR REPLACE FUNCTION public.update_noncr3_location() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
+DECLARE
+    v_location_id text;
 BEGIN
-    -- Check if crash is on a major road and of concern to TxDOT.
-    -- NEW.position is recalculated in a trigger called
-    -- atd_txdot_blueform_update_position which runs before this trigger.
-    IF EXISTS (
-        SELECT
-            ncr3m.*
-        FROM
-            non_cr3_mainlanes AS ncr3m
-        WHERE ((NEW.position && ncr3m.geometry)
-            AND ST_Contains(ST_Transform(ST_Buffer(ST_Transform(ncr3m.geometry, 2277), 1, 'endcap=flat join=round'), 4326),
-                /* transform into 2277 to buffer by a foot, not a degree */
-                NEW.position))) THEN
-    -- If it is, then set the location_id to None
-    NEW.location_id = NULL;
-ELSE
-    -- If it isn't on a major road and is of concern to Vision Zero, try to find a location_id for it.
-    NEW.location_id = (
-        SELECT
-            location_id
-        FROM
-            locations AS atl
-        WHERE atl.location_group = 1
-            AND atl.is_deleted = false
-            AND atl.geometry && NEW.position
-            AND ST_Contains(atl.geometry, NEW.position)
-    );
-END IF;
+    -- Try to find a location_id with group priority (1 first, then 2)
+    SELECT location_id INTO v_location_id
+    FROM locations
+    WHERE location_group = 1
+        AND is_deleted = FALSE
+        AND geometry && NEW.position
+        AND ST_Contains(geometry, NEW.position)
+    LIMIT 1;
+
+    -- If no group 1 location found, try group 2
+    IF v_location_id IS NULL THEN
+        SELECT location_id INTO v_location_id
+        FROM locations
+        WHERE location_group = 2
+            AND is_deleted = FALSE
+            AND geometry && NEW.position
+            AND ST_Contains(geometry, NEW.position)
+        LIMIT 1;
+    END IF;
+
+    NEW.location_id = v_location_id;
+
     RETURN NEW;
 END;
 $$;
