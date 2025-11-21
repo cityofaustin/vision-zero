@@ -49,8 +49,8 @@ const shortcutKeyLookup: ShortcutKeyLookup[] = [
 
 function ShortcutHelperText({ shortcutKey }: { shortcutKey: string }) {
   return (
-    <div className="text-secondary fw-light text-end">
-      Press <span className="font-monospace">shift</span> +{" "}
+    <div className="text-secondary fw-light text-end" style={{"fontSize": ".9rem"}}>
+      <span className="font-monospace">shift</span> +{" "}
       <span className="font-monospace">{shortcutKey}</span> to scroll here
     </div>
   );
