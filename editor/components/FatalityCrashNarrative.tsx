@@ -98,12 +98,11 @@ export default function FatalityCrashNarrative({
             <Nav.Item>
               <Nav.Link eventKey="narrative">Narrative</Nav.Link>
             </Nav.Item>
-            {hasSummary ||
-              (isEditingSummary && (
-                <Nav.Item>
-                  <Nav.Link eventKey="summary">Summary</Nav.Link>
-                </Nav.Item>
-              ))}
+            {(hasSummary || isEditingSummary) && (
+              <Nav.Item>
+                <Nav.Link eventKey="summary">Summary</Nav.Link>
+              </Nav.Item>
+            )}
           </Nav>
           <Button size="sm" onClick={onDownloadCR3} disabled={!isCr3Stored}>
             <AlignedLabel>
