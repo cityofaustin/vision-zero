@@ -32,6 +32,16 @@ export const formatIsoDateTime = (value: unknown): string => {
 };
 
 /**
+ * Format date as: 08/24/2025 8:57 PM — Sun
+ */
+export const formatIsoDateTimeWithDay = (value: unknown): string => {
+  if (!value || typeof value !== "string") {
+    return "";
+  }
+  return format(parseISO(value), "MM/dd/yyyy h:mm a — E") || "";
+};
+
+/**
  * Format date as: 2024-01-01
  */
 export const formatDate = (value: unknown): string => {
