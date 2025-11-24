@@ -57,13 +57,15 @@ export default function FatalityVictimsCard({
                               </small>
                             )}
                         </div>
+
                         {victim.injry_sev?.label && (
-                          <span
-                            className={`${getInjuryColorClass(victim.injry_sev.label)} d-inline-flex align-items-center justify-content-center px-2 py-1 rounded `}
-                            style={{ minWidth: "fit-content" }}
-                          >
-                            <small>{victim.injry_sev?.label}</small>
-                          </span>
+                          <div>
+                            <span
+                              className={`${getInjuryColorClass(victim.injry_sev.label)} px-2 py-1 rounded `}
+                            >
+                              {victim.injry_sev?.label}
+                            </span>
+                          </div>
                         )}
                       </div>
                       <div className="mb-1 d-flex w-100 flex-column">
