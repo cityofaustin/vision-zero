@@ -98,11 +98,12 @@ export default function FatalityCrashNarrative({
             <Nav.Item>
               <Nav.Link eventKey="narrative">Narrative</Nav.Link>
             </Nav.Item>
-            {hasSummary && (
-              <Nav.Item>
-                <Nav.Link eventKey="summary">Summary</Nav.Link>
-              </Nav.Item>
-            )}
+            {hasSummary ||
+              (isEditingSummary && (
+                <Nav.Item>
+                  <Nav.Link eventKey="summary">Summary</Nav.Link>
+                </Nav.Item>
+              ))}
           </Nav>
           <Button size="sm" onClick={onDownloadCR3} disabled={!isCr3Stored}>
             <AlignedLabel>
@@ -161,6 +162,7 @@ export default function FatalityCrashNarrative({
                 variant="secondary"
                 onClick={() => {
                   setIsEditingSummary(false);
+                  setActiveTab(hasSummary ? "summary" : "narrative");
                   reset();
                 }}
               >
