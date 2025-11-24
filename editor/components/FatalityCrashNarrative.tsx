@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useMutation } from "@/utils/graphql";
 import { UPDATE_CRASH } from "@/queries/crash";
+import { onDownloadCR3 } from "@/components/CrashNarrativeCard";
 
 interface FatalityCrashNarrativeProps {
   crash: Crash;
@@ -47,35 +48,6 @@ export default function FatalityCrashNarrative({
   const isCr3Stored = crash.cr3_stored_fl;
 
   /**
-   * Downloads pdf from the CR3 API and opens it in a new tab
-   */
-  const onDownloadCR3 = async () => {
-    const requestUrl = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/cr3/download/${crash.record_locator}`;
-
-    try {
-      const token = await getToken();
-      const response = await fetch(requestUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        const responseText = await response.text();
-        console.error(responseText);
-        window.alert(`Failed to download CR3: ${String(responseText)}`);
-      } else {
-        const responseJson = await response.json();
-        const win = window.open(responseJson.message, "_blank");
-        win?.focus();
-      }
-    } catch (error) {
-      console.error(error);
-      window.alert(`Failed to download CR3: An unknown error has occured`);
-    }
-  };
-
-  /**
    * Submits mutation to database on save button click
    */
   const onSubmit: SubmitHandler<FatalityNarrativeSummaryInputs> = async (
@@ -106,7 +78,11 @@ export default function FatalityCrashNarrative({
               </Nav.Item>
             )}
           </Nav>
-          <Button size="sm" onClick={onDownloadCR3} disabled={!isCr3Stored}>
+          <Button
+            size="sm"
+            onClick={() => onDownloadCR3({ crash, getToken })}
+            disabled={!isCr3Stored}
+          >
             <AlignedLabel>
               <FaFilePdf className="me-2" />
               <span>Download CR3</span>
