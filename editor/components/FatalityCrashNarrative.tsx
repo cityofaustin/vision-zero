@@ -26,8 +26,12 @@ export default function FatalityCrashNarrative({
   crash,
   onSaveCallback,
 }: FatalityCrashNarrativeProps) {
+  const hasSummary = !!crash.narrative_summary;
+
   const [isEditingSummary, setIsEditingSummary] = useState(false);
-  const [activeTab, setActiveTab] = useState("narrative");
+  const [activeTab, setActiveTab] = useState(
+    hasSummary ? "summary" : "narrative"
+  );
 
   const { mutate, loading: isSubmitting } = useMutation(UPDATE_CRASH);
 
@@ -85,8 +89,6 @@ export default function FatalityCrashNarrative({
     setIsEditingSummary(false);
   };
 
-  const hasSummary = !!crash.narrative_summary;
-
   return (
     <Card>
       <Tab.Container
@@ -111,7 +113,7 @@ export default function FatalityCrashNarrative({
             </AlignedLabel>
           </Button>
         </Card.Header>
-        <Card.Body>
+        <Card.Body className="crash-header-card-body">
           <Tab.Content>
             <Tab.Pane eventKey="narrative">
               {crash.investigator_narrative || ""}

@@ -74,8 +74,8 @@ export default function FatalCrashDetailsPage({
           </span>
         </div>
       </Row>
-      <Row className="mb-3">
-        <Col>
+      <Row>
+        <Col className="mb-3" sm={12} md={6}>
           <Card>
             <Card.Body>
               <Table>
@@ -121,12 +121,12 @@ export default function FatalCrashDetailsPage({
             </Card.Body>
           </Card>
         </Col>
-        <Col>
+        <Col className="mb-3" sm={12} md={6}>
           <FatalityVictimsCard crash={crash} />
         </Col>
       </Row>
-      <Row className="mb-3">
-        <Col>
+      <Row>
+        <Col className="mb-3" sm={12} md={6} lg={4}>
           <FatalityCrashNarrative
             crash={crash}
             onSaveCallback={onSaveCallback}
