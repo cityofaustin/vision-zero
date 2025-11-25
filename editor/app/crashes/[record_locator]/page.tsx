@@ -14,6 +14,7 @@ import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 import DataCard from "@/components/DataCard";
 import NotesCard from "@/components/NotesCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
+import ShortcutHelperText from "@/components/ShortcutHelperText";
 import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { crashNotesColumns } from "@/configs/notesColumns";
@@ -47,14 +48,6 @@ const shortcutKeyLookup: ShortcutKeyLookup[] = [
   { key: "F", elementId: "fatality" },
 ];
 
-function ShortcutHelperText({ shortcutKey }: { shortcutKey: string }) {
-  return (
-    <div className="text-secondary fw-light text-end" style={{"fontSize": ".9rem"}}>
-      <span className="font-monospace">shift</span> +{" "}
-      <span className="font-monospace">{shortcutKey}</span> to scroll here
-    </div>
-  );
-}
 
 export default function CrashDetailsPage({
   params,
@@ -169,8 +162,8 @@ export default function CrashDetailsPage({
         </Col>
       </Row>
       <Row id="units" className="offset-header-scroll-top">
-        <ShortcutHelperText shortcutKey="U" />
-        <Col sm={12} className="mb-3">
+        <Col sm={12} className="mb-1">
+          <ShortcutHelperText shortcutKey="U" />
           <RelatedRecordTable
             records={crash.units || []}
             isValidating={isValidating}
@@ -186,7 +179,7 @@ export default function CrashDetailsPage({
       </Row>
       <Row id="people" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="P" />
-        <Col sm={12} className="mb-3">
+        <Col sm={12} className="mb-1">
           <RelatedRecordTable
             records={crash.people_list_view || []}
             isValidating={isValidating}
@@ -202,7 +195,7 @@ export default function CrashDetailsPage({
       </Row>
       <Row id="ems" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="E" />
-        <Col sm={12} className="mb-3">
+        <Col sm={12} className="mb-1">
           <RelatedRecordTable
             records={crash.ems__incidents || []}
             isValidating={isValidating}
@@ -218,7 +211,7 @@ export default function CrashDetailsPage({
       </Row>
       <Row id="charges" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="C" />
-        <Col sm={12} className="mb-3">
+        <Col sm={12} className="mb-1">
           <RelatedRecordTable
             records={crash.charges_cris || []}
             isValidating={isValidating}
@@ -232,7 +225,7 @@ export default function CrashDetailsPage({
       </Row>
       <Row id="notes" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="N" />
-        <Col sm={12} className="mb-3">
+        <Col sm={12} className="mb-1">
           <NotesCard
             notes={crash.crash_notes || []}
             notesColumns={crashNotesColumns}
@@ -246,7 +239,7 @@ export default function CrashDetailsPage({
       </Row>
       <Row id="fatality" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="F" />
-        <Col sm={12} md={6} className="mb-3">
+        <Col sm={12} md={6} className="mb-1">
           <CrashRecommendationCard
             recommendation={crash.recommendation}
             crash_pk={crash.id}
