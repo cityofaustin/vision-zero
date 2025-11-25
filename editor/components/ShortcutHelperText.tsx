@@ -7,7 +7,7 @@ export default function ShortcutHelperText({
 }) {
   return (
     <div
-      className="show-on-hover text-secondary fw-light mb-1"
+      className="show-on-hover text-secondary text-end fw-light mb-1"
       style={{ fontSize: ".9rem" }}
     >
       <span className="font-monospace rounded border px-1 bg-light">shift</span>{" "}
