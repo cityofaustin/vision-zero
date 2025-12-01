@@ -4,12 +4,13 @@ import { Tab, Nav, Form } from "react-bootstrap";
 import { FaFilePdf } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
 import { Crash } from "@/types/crashes";
-import { useGetToken } from "@/utils/auth";
+import { useGetToken, hasRole } from "@/utils/auth";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useMutation } from "@/utils/graphql";
 import { UPDATE_CRASH } from "@/queries/crash";
 import { onDownloadCR3 } from "@/components/CrashNarrativeCard";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface FatalityCrashNarrativeProps {
   crash: Crash;
@@ -33,6 +34,10 @@ export default function FatalityCrashNarrative({
   const [activeTab, setActiveTab] = useState(
     hasSummary ? "summary" : "narrative"
   );
+
+  const { user } = useAuth0();
+
+  const isReadOnlyUser = user && hasRole(["readonly"], user);
 
   const { mutate, loading: isSubmitting } = useMutation(UPDATE_CRASH);
 
@@ -103,7 +108,7 @@ export default function FatalityCrashNarrative({
                           ? crash.narrative_summary
                           : crash.investigator_narrative) || ""
                       }
-                      rows={20}
+                      rows={17}
                       autoFocus
                       {...register("narrative_summary", {
                         setValueAs: (value) => value || null, // save empty string as null
@@ -141,15 +146,17 @@ export default function FatalityCrashNarrative({
               </Button>
             </>
           ) : (
-            <Button
-              size="sm"
-              onClick={() => {
-                setIsEditingSummary(true);
-                setActiveTab("summary");
-              }}
-            >
-              {hasSummary ? "Edit summary" : "Add summary"}
-            </Button>
+            !isReadOnlyUser && (
+              <Button
+                size="sm"
+                onClick={() => {
+                  setIsEditingSummary(true);
+                  setActiveTab("summary");
+                }}
+              >
+                {hasSummary ? "Edit summary" : "Add summary"}
+              </Button>
+            )
           )}
         </Card.Footer>
       </Tab.Container>
