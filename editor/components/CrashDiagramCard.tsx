@@ -130,6 +130,8 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             onZoom={(e) => {
               setValue("scale", e.state.scale, { shouldDirty: true });
             }}
+            onTransformed={(e)=> console.log(e.state)}
+            panning={{disabled:true}}
           >
             <ZoomResetSaveControls
               setValue={setValue}
