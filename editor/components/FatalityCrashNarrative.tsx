@@ -36,12 +36,8 @@ export default function FatalityCrashNarrative({
 
   const { mutate, loading: isSubmitting } = useMutation(UPDATE_CRASH);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<FatalityNarrativeSummaryInputs>();
+  const { register, handleSubmit, reset } =
+    useForm<FatalityNarrativeSummaryInputs>();
 
   const getToken = useGetToken();
 
@@ -59,6 +55,8 @@ export default function FatalityCrashNarrative({
     });
     await onSaveCallback();
     setIsEditingSummary(false);
+    // change back to narrative tab if user cleared out the summary
+    setActiveTab(data.narrative_summary === null ? "narrative" : "summary");
   };
 
   return (
@@ -106,15 +104,11 @@ export default function FatalityCrashNarrative({
                           : crash.investigator_narrative) || ""
                       }
                       rows={20}
-                      isInvalid={Boolean(errors.narrative_summary)}
                       autoFocus
-                      {...register("narrative_summary", { required: true })}
+                      {...register("narrative_summary", {
+                        setValueAs: (value) => value || null, // save empty string as null
+                      })}
                     />
-                    {errors.narrative_summary && (
-                      <Form.Control.Feedback type="invalid">
-                        Summary text is required
-                      </Form.Control.Feedback>
-                    )}
                   </Form.Group>
                 </Form>
               ) : (
