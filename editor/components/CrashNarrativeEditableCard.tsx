@@ -12,22 +12,23 @@ import { UPDATE_CRASH } from "@/queries/crash";
 import { onDownloadCR3 } from "@/components/CrashNarrativeCard";
 import { useAuth0 } from "@auth0/auth0-react";
 
-interface FatalityCrashNarrativeProps {
+interface CrashNarrativeEditableCardProps {
   crash: Crash;
   onSaveCallback: () => Promise<void>;
 }
 
-type FatalityNarrativeSummaryInputs = {
+type CrashNarrativeSummaryInputs = {
   narrative_summary: string;
 };
 
 /**
- * Card component that renders the crash narrative and a download CR3 button
+ * Card component that renders the crash narrative and a download CR3 button, along with editing capabilities
+ * that allows users to save a summary of the narrative.
  */
-export default function FatalityCrashNarrative({
+export default function CrashNarrativeEditableCard({
   crash,
   onSaveCallback,
-}: FatalityCrashNarrativeProps) {
+}: CrashNarrativeEditableCardProps) {
   const hasSummary = !!crash.narrative_summary;
 
   const [isEditingSummary, setIsEditingSummary] = useState(false);
@@ -42,7 +43,7 @@ export default function FatalityCrashNarrative({
   const { mutate, loading: isSubmitting } = useMutation(UPDATE_CRASH);
 
   const { register, handleSubmit, reset } =
-    useForm<FatalityNarrativeSummaryInputs>();
+    useForm<CrashNarrativeSummaryInputs>();
 
   const getToken = useGetToken();
 
@@ -51,9 +52,7 @@ export default function FatalityCrashNarrative({
   /**
    * Submits mutation to database on save button click
    */
-  const onSubmit: SubmitHandler<FatalityNarrativeSummaryInputs> = async (
-    data
-  ) => {
+  const onSubmit: SubmitHandler<CrashNarrativeSummaryInputs> = async (data) => {
     await mutate({
       id: crash.id,
       updates: data,
