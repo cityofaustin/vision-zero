@@ -2,39 +2,23 @@ import React, { useState, useRef, useMemo } from "react";
 import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
-import {
-  FaMagnifyingGlassPlus,
-  FaMagnifyingGlassMinus,
-  FaRotate,
-  FaFloppyDisk,
-} from "react-icons/fa6";
-import { FaCheckCircle } from "react-icons/fa";
-import { SlActionUndo } from "react-icons/sl";
+import { FaRotate } from "react-icons/fa6";
 import {
   TransformWrapper,
   TransformComponent,
   ReactZoomPanPinchRef,
-  useControls,
 } from "react-zoom-pan-pinch";
-import {
-  useForm,
-  UseFormRegister,
-  UseFormSetValue,
-  UseFormHandleSubmit,
-  SubmitHandler,
-} from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { Crash } from "@/types/crashes";
 import { CrashDiagramOrientation } from "@/types/crashDiagramOrientation";
 import { UPDATE_CRASH } from "@/queries/crash";
 import { useMutation } from "@/utils/graphql";
-import PermissionsRequired from "@/components/PermissionsRequired";
-import AlignedLabel from "@/components/AlignedLabel";
+import {
+  RotateControls,
+  ZoomResetSaveControls,
+} from "@/components/CrashDiagramControls";
 
 const CR3_DIAGRAM_BASE_URL = process.env.NEXT_PUBLIC_CR3_DIAGRAM_BASE_URL!;
-const allowedUserSaveDiagramRoles = ["vz-admin", "editor"];
 
 interface DiagramAlertProps {
   variant: "info" | "danger" | "success" | "warning";
@@ -64,130 +48,6 @@ const DiagramAlert: React.FC<DiagramAlertProps> = ({
     )}
   </Alert>
 );
-
-const ZoomResetSaveControls = ({
-  setValue,
-  resetZoomToImage,
-  isDirty,
-  onSave,
-  handleSubmit,
-  isSaved,
-}: {
-  setValue: UseFormSetValue<CrashDiagramOrientation>;
-  resetZoomToImage: () => void;
-  isDirty: boolean;
-  onSave: SubmitHandler<CrashDiagramOrientation>;
-  handleSubmit: UseFormHandleSubmit<CrashDiagramOrientation>;
-  isSaved: boolean;
-}) => {
-  const { zoomIn, zoomOut, resetTransform, instance } = useControls();
-
-  const handleReset = () => {
-    resetTransform();
-    setValue("rotation", 0);
-    setValue("scale", undefined);
-    resetZoomToImage();
-  };
-
-  return (
-    <div className="d-flex justify-content-between w-100 mb-1">
-      <ButtonGroup>
-        <Button
-          size="sm"
-          variant="outline-primary"
-          onClick={() => {
-            const newScale = instance.transformState.scale + 0.25;
-            zoomIn(0.25);
-            setValue("scale", newScale, {
-              shouldDirty: true,
-            });
-          }}
-          title="Zoom In"
-        >
-          <AlignedLabel>
-            <FaMagnifyingGlassPlus />
-          </AlignedLabel>
-        </Button>
-        <Button
-          size="sm"
-          variant="outline-primary"
-          onClick={() => {
-            const newScale = instance.transformState.scale - 0.25;
-            zoomOut(0.25);
-            setValue("scale", newScale, {
-              shouldDirty: true,
-            });
-          }}
-          title="Zoom Out"
-        >
-          <AlignedLabel>
-            <FaMagnifyingGlassMinus />
-          </AlignedLabel>
-        </Button>
-        <Button
-          size="sm"
-          variant="outline-primary"
-          onClick={handleReset}
-          title="Reset"
-        >
-          <AlignedLabel>
-            <SlActionUndo className="me-2" />
-            Reset
-          </AlignedLabel>
-        </Button>
-      </ButtonGroup>
-      <PermissionsRequired allowedRoles={allowedUserSaveDiagramRoles}>
-        <AlignedLabel>
-          <Button
-            size="sm"
-            variant={"primary"}
-            onClick={handleSubmit(onSave)}
-            title={"save"}
-            disabled={!isDirty}
-          >
-            <AlignedLabel>
-              {(isDirty || (!isDirty && !isSaved)) && (
-                <>
-                  <FaFloppyDisk className="me-2" />
-                  Save
-                </>
-              )}
-              {isSaved && !isDirty && (
-                <>
-                  <FaCheckCircle className="me-2" />
-                  Saved
-                </>
-              )}
-            </AlignedLabel>
-          </Button>
-        </AlignedLabel>
-      </PermissionsRequired>
-    </div>
-  );
-};
-
-const RotateControls = ({
-  setValue,
-  register,
-}: {
-  setValue: UseFormSetValue<CrashDiagramOrientation>;
-  register: UseFormRegister<CrashDiagramOrientation>;
-}) => {
-  return (
-    <div className="mt-2">
-      <Form.Range
-        {...register("rotation")}
-        min="-180"
-        max="180"
-        id="formControlRange"
-        onChange={(e) =>
-          setValue("rotation", Number(e.target.value), { shouldDirty: true })
-        }
-        title="Rotate Diagram"
-      />
-    </div>
-  );
-};
 
 export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [diagramError, setDiagramError] = useState(false);
