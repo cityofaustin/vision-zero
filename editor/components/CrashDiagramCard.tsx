@@ -54,16 +54,22 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [isSaved, setIsSaved] = useState(!!crash.diagram_zoom_rotate);
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
 
+  console.log(crash.diagram_zoom_rotate)
+
   const defaultValues = useMemo(() => {
     return crash.diagram_zoom_rotate
       ? {
           scale: crash.diagram_zoom_rotate.scale,
           rotation: crash.diagram_zoom_rotate.rotation,
+          positionX: crash.diagram_zoom_rotate.positionX,
+          positionY: crash.diagram_zoom_rotate.positionY
         }
       : {
           // scaled undefined zooms to fit whole image in frame
           scale: undefined,
           rotation: 0,
+          positionX: undefined,
+          positionY: undefined
         };
   }, [crash]);
 
@@ -110,6 +116,19 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
     }
   };
 
+    // zoom to the scale saved in database, or default
+  const initPositionImage = (defaultValues) => {
+    if (transformComponentRef.current) {
+      const { zoomToElement, setTransform } = transformComponentRef.current;
+      if (defaultValues.positionX && defaultValues.positionY) {
+        console.log("transform")
+        setTransform(defaultValues.positionX, defaultValues.positionY, defaultValues.scale)
+      } else {
+      zoomToElement("crashDiagramImage", defaultValues.scale, 1);
+      }
+    }
+  };
+
   return (
     <Card className="h-100">
       <Card.Header>
@@ -130,7 +149,11 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             onZoom={(e) => {
               setValue("scale", e.state.scale, { shouldDirty: true });
             }}
-            onTransformed={(e) => console.log(e.state)}
+            onTransformed={(e) => {
+              setValue("positionX", e.state.positionX, {shouldDirty:true});
+              setValue("positionY", e.state.positionY, {shouldDirty:true});
+              setValue("scale", e.state.scale)
+              console.log(e.state)}}
           >
             <ZoomResetSaveControls
               setValue={setValue}
@@ -151,7 +174,10 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
                 alt="crash diagram"
                 id="crashDiagramImage"
                 onLoad={() => {
-                  initZoomToImage(defaultValues.scale);
+                  if (defaultValues.positionX) {
+                    initPositionImage(defaultValues)
+                  } else {
+                  initZoomToImage(defaultValues.scale); }
                 }}
                 onError={() => {
                   console.error("Error loading CR3 diagram image");

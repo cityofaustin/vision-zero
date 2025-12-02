@@ -3,4 +3,6 @@ export type CrashDiagramOrientation = {
   scale: number | undefined;
   /** image rotation in degrees, -180 to 180*/
   rotation: number;
+  positionX: number | undefined;
+  positionY: number | undefined;
 };
