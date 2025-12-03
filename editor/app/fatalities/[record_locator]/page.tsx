@@ -1,12 +1,13 @@
 "use client";
 
 import { notFound } from "next/navigation";
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import { MapRef } from "react-map-gl";
 import { PointMap } from "@/components/PointMap";
 import FatalityVictimsCard from "@/components/FatalityVictimsCard";
+import CrashNarrativeEditableCard from "@/components/CrashNarrativeEditableCard";
 import { GET_CRASH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
 import { useDocumentTitle } from "@/utils/documentTitle";
@@ -27,7 +28,7 @@ export default function FatalCrashDetailsPage({
 
   const typename = "crashes";
 
-  const { data, error } = useQuery<Crash>({
+  const { data, error, refetch } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
     variables: { recordLocator },
     typename,
@@ -36,6 +37,9 @@ export default function FatalCrashDetailsPage({
   if (error) {
     console.error(error);
   }
+  const onSaveCallback = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   // Set document title based on loaded data
   useDocumentTitle(
@@ -71,7 +75,7 @@ export default function FatalCrashDetailsPage({
         </div>
       </Row>
       <Row>
-        <Col>
+        <Col className="mb-3" sm={12} md={6}>
           <Card>
             <Card.Body>
               <Table>
@@ -117,9 +121,19 @@ export default function FatalCrashDetailsPage({
             </Card.Body>
           </Card>
         </Col>
-        <Col>
+        <Col className="mb-3" sm={12} md={6}>
           <FatalityVictimsCard crash={crash} />
         </Col>
+      </Row>
+      <Row>
+        <Col className="mb-3" sm={12} md={6} lg={4}>
+          <CrashNarrativeEditableCard
+            crash={crash}
+            onSaveCallback={onSaveCallback}
+          />
+        </Col>
+        <Col></Col>
+        <Col></Col>
       </Row>
     </>
   );
