@@ -7,16 +7,16 @@ export type PeopleListRow = {
   crash_pk: number;
   crash_timestamp: string;
   drvr_city_name: string;
-  drvr_ethncty: LookupTableOption;
-  prsn_ethnicity_id: number;
+  drvr_ethncty?: LookupTableOption;
+  prsn_ethnicity_id: number | null;
   drvr_zip: string;
-  gndr: LookupTableOption;
-  prsn_gndr_id: number;
+  gndr?: LookupTableOption;
+  prsn_gndr_id: number | null;
   id: number;
   injry_sev?: LookupTableOption;
   prsn_injry_sev_id: number;
   is_primary_person: boolean;
-  prsn_age: number;
+  prsn_age: number | null;
   prsn_exp_homelessness: boolean;
   prsn_first_name: string | null;
   prsn_last_name: string | null;
@@ -33,4 +33,5 @@ export type PeopleListRow = {
   ems_pcr?: Omit<EMSPatientCareRecord, "person">;
   occpnt_pos: LookupTableOption;
   prsn_occpnt_pos_id: number;
+  rest?: LookupTableOption;
 };
