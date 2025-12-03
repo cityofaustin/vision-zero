@@ -51,16 +51,16 @@ const DiagramAlert: React.FC<DiagramAlertProps> = ({
 
 export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [diagramError, setDiagramError] = useState(false);
-  const [isSaved, setIsSaved] = useState(!!crash.diagram_zoom_rotate);
+  const [isSaved, setIsSaved] = useState(!!crash.diagram_transform);
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
 
   const defaultValues = useMemo(() => {
-    return crash.diagram_zoom_rotate
+    return crash.diagram_transform
       ? {
-          scale: crash.diagram_zoom_rotate.scale,
-          rotation: crash.diagram_zoom_rotate.rotation,
-          positionX: crash.diagram_zoom_rotate.positionX,
-          positionY: crash.diagram_zoom_rotate.positionY,
+          scale: crash.diagram_transform.scale,
+          rotation: crash.diagram_transform.rotation,
+          positionX: crash.diagram_transform.positionX,
+          positionY: crash.diagram_transform.positionY,
         }
       : {
           // scaled undefined zooms to fit whole image in frame
@@ -87,7 +87,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const onSave: SubmitHandler<CrashDiagramOrientation> = async (data) => {
     await mutate({
       id: crash.id,
-      updates: { diagram_zoom_rotate: data },
+      updates: { diagram_transform: data },
     });
 
     // do not clear values from form, but clear dirty state to hide saved button
@@ -111,7 +111,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
       const { zoomToElement, setTransform } = transformComponentRef.current;
       const { positionX, positionY, scale } = defaultValues;
       if (positionX && positionY && scale) {
-        setTransform(positionX, positionY, scale, 100);
+        setTransform(positionX, positionY, scale, 1);
       } else {
         // if x/y position is not saved, zoom to image and let the centering dictate x/y position
         zoomToElement("crashDiagramImage", defaultValues.scale, 1);

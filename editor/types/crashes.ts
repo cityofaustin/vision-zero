@@ -23,7 +23,7 @@ export type Crash = {
   crash_timestamp: string | null;
   cris_crash_id: number | null;
   collsn: LookupTableOption | null;
-  diagram_zoom_rotate: CrashDiagramOrientation | null;
+  diagram_transform: CrashDiagramOrientation | null;
   ems__incidents: EMSPatientCareRecord[] | null;
   fhe_collsn_id: number | null;
   id: number;
