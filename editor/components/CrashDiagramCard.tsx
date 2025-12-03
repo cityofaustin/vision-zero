@@ -54,22 +54,20 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [isSaved, setIsSaved] = useState(!!crash.diagram_zoom_rotate);
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
 
-  console.log(crash.diagram_zoom_rotate)
-
   const defaultValues = useMemo(() => {
     return crash.diagram_zoom_rotate
       ? {
           scale: crash.diagram_zoom_rotate.scale,
           rotation: crash.diagram_zoom_rotate.rotation,
           positionX: crash.diagram_zoom_rotate.positionX,
-          positionY: crash.diagram_zoom_rotate.positionY
+          positionY: crash.diagram_zoom_rotate.positionY,
         }
       : {
           // scaled undefined zooms to fit whole image in frame
           scale: undefined,
           rotation: 0,
           positionX: undefined,
-          positionY: undefined
+          positionY: undefined,
         };
   }, [crash]);
 
@@ -108,23 +106,15 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
     }
   };
 
-  // zoom to the scale saved in database, or default
-  const initZoomToImage = (initScale: number | undefined) => {
-    if (transformComponentRef.current) {
-      const { zoomToElement } = transformComponentRef.current;
-      zoomToElement("crashDiagramImage", initScale, 1);
-    }
-  };
-
-    // zoom to the scale saved in database, or default
-  const initPositionImage = (defaultValues) => {
+  const initPositionImage = (defaultValues: CrashDiagramOrientation) => {
     if (transformComponentRef.current) {
       const { zoomToElement, setTransform } = transformComponentRef.current;
-      if (defaultValues.positionX && defaultValues.positionY) {
-        console.log("transform")
-        setTransform(defaultValues.positionX, defaultValues.positionY, defaultValues.scale)
+      const { positionX, positionY, scale } = defaultValues;
+      if (positionX && positionY && scale) {
+        setTransform(positionX, positionY, scale, 100);
       } else {
-      zoomToElement("crashDiagramImage", defaultValues.scale, 1);
+        // if x/y position is not saved, zoom to image and let the centering dictate x/y position
+        zoomToElement("crashDiagramImage", defaultValues.scale, 1);
       }
     }
   };
@@ -149,11 +139,10 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             onZoom={(e) => {
               setValue("scale", e.state.scale, { shouldDirty: true });
             }}
-            onTransformed={(e) => {
-              setValue("positionX", e.state.positionX, {shouldDirty:true});
-              setValue("positionY", e.state.positionY, {shouldDirty:true});
-              setValue("scale", e.state.scale)
-              console.log(e.state)}}
+            onPanning={(e) => {
+              setValue("positionX", e.state.positionX, { shouldDirty: true });
+              setValue("positionY", e.state.positionY, { shouldDirty: true });
+            }}
           >
             <ZoomResetSaveControls
               setValue={setValue}
@@ -174,10 +163,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
                 alt="crash diagram"
                 id="crashDiagramImage"
                 onLoad={() => {
-                  if (defaultValues.positionX) {
-                    initPositionImage(defaultValues)
-                  } else {
-                  initZoomToImage(defaultValues.scale); }
+                  initPositionImage(defaultValues);
                 }}
                 onError={() => {
                   console.error("Error loading CR3 diagram image");

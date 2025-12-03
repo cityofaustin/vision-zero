@@ -59,20 +59,12 @@ export const ZoomResetSaveControls = ({
   handleSubmit: UseFormHandleSubmit<CrashDiagramOrientation>;
   isSaved: boolean;
 }) => {
-  const {
-    zoomIn,
-    zoomOut,
-    resetTransform,
-    instance,
-    setTransform,
-    zoomToElement,
-  } = useControls();
+  const { zoomIn, zoomOut, instance } = useControls();
 
   const handleReset = () => {
-    console.log(instance.transformState);
-    // reset rotåtion
+    // reset rotation
     setValue("rotation", 0);
-    // reset zoom
+    // wait for rotation to be reset before resetting zoom, to avoid trying to zoom while image is transforming
     setTimeout(() => {
       resetZoomToImage();
     }, 10);
