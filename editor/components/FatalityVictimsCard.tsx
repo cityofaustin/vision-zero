@@ -14,6 +14,10 @@ export default function FatalityVictimsCard({
   );
   const units = crash.units;
 
+  const isValidLabel = (label: string | undefined) =>
+    // Lookup table values that we don't want to render
+    label !== "UNKNOWN" && label !== "OTHER" && label !== "AUTONOMOUS";
+
   return (
     <Card>
       <Card.Header>
@@ -31,9 +35,9 @@ export default function FatalityVictimsCard({
               return (
                 <ListGroupItem key={unit.id}>
                   <div className="d-flex w-100 justify-content-start align-items-center">
-                    <h5 className="mb-1 me-2">
-                      <span className="fw-bold"> Unit {unit.unit_nbr}</span>
-                    </h5>
+                    <span className="fs-5 me-2 fw-bold">
+                      Unit {unit.unit_nbr}
+                    </span>
                     <div className="d-flex flex-grow-1 justify-content-start text-secondary">
                       <span>
                         {unit.unit_desc?.label}
@@ -42,7 +46,11 @@ export default function FatalityVictimsCard({
                     </div>
                   </div>
                   {unitVictims?.map((victim) => (
-                    <ListGroupItem key={victim.id} style={{ border: "none" }}>
+                    <ListGroup
+                      variant="flush"
+                      key={victim.id}
+                      style={{ border: "none" }}
+                    >
                       <div className="d-flex w-100 justify-content-between">
                         <div className="d-flex align-items-center">
                           <span className="fw-bold me-2">
@@ -50,7 +58,7 @@ export default function FatalityVictimsCard({
                             {victim.prsn_last_name}
                           </span>
                           {victim.prsn_type_id !== 3 && // pedalcyclist
-                            // Dont show person type for cyclists or pedestrians bc its redundant
+                            // Don't show person type for cyclists or pedestrians bc its redundant
                             victim.prsn_type_id !== 4 && ( // pedestrian
                               <small className="text-secondary">
                                 {victim.prsn_type.label}
@@ -70,8 +78,13 @@ export default function FatalityVictimsCard({
                         <span className="mb-2">
                           {victim.prsn_age
                             ? `${victim.prsn_age} YEARS OLD`
+                            : ""}{" "}
+                          {isValidLabel(victim.drvr_ethncty?.label)
+                            ? victim.drvr_ethncty?.label
+                            : ""}{" "}
+                          {isValidLabel(victim.gndr?.label)
+                            ? victim.gndr?.label
                             : ""}
-                          {victim.drvr_ethncty?.label} {victim.gndr?.label}
                         </span>
                         {victim.rest?.label &&
                           // Only show restraint field for cars
@@ -84,7 +97,7 @@ export default function FatalityVictimsCard({
                           <span>{victim.prsn_exp_homelessness}</span>
                         )}
                       </div>
-                    </ListGroupItem>
+                    </ListGroup>
                   ))}
                 </ListGroupItem>
               );
