@@ -60,6 +60,7 @@
 - "!include public_atd_txdot_locations.yaml"
 - "!include public_change_log_crashes.yaml"
 - "!include public_change_log_crashes_cris.yaml"
+- "!include public_change_log_ems__incidents.yaml"
 - "!include public_change_log_people.yaml"
 - "!include public_change_log_people_cris.yaml"
 - "!include public_change_log_units.yaml"
