@@ -4,7 +4,7 @@ import { LocationNote } from "@/types/locationNote";
 
 export type Location = {
   location_id: string;
-  description: string | null;
+  location_name: string | null;
   latitude: number | null;
   longitude: number | null;
   geometry: MultiPolygon | null;

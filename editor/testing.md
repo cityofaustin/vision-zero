@@ -152,7 +152,7 @@ The below features should be tested with each role. Features with role-based acc
 
 ### Location details `/locations/[location_id]`
 
-- Verify page `<title>` element is formatted as `<location-ID> - <location-description>` (check how the title is rendered in your browser tab)
+- Verify page `<title>` element is formatted as `<location-ID> - <location-name>` (check how the title is rendered in your browser tab)
 - Location polygon map
 - Location data card displays the location ID, crash counts and comp costs
 - combined cr3 and noncr3 crashes list
