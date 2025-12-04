@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
-import { useQuery } from "@/utils/graphql";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useQuery, useMutation } from "@/utils/graphql";
+import { INSERT_USER_EVENT } from "@/queries/userEvents";
 import { unparse } from "papaparse";
 import AlignedLabel from "./AlignedLabel";
 import { FaCircleInfo, FaDownload } from "react-icons/fa6";
@@ -48,6 +50,10 @@ interface TableExportModalProps<T extends Record<string, unknown>> {
    * The typename of the query root that will be used to access the rows returned by the query
    */
   typename: string;
+  /**
+   * Optional event name to log when download modal is opened
+   */
+  eventName?: string;
 }
 
 /**
@@ -76,18 +82,46 @@ export default function TableExportModal<T extends Record<string, unknown>>({
   totalRecordCount,
   show,
   typename,
+  eventName,
 }: TableExportModalProps<T>) {
   /**
    * TODO: exclude aggregations from export
    * https://github.com/cityofaustin/atd-data-tech/issues/20481
    */
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const { user, isAuthenticated } = useAuth0();
+  const { mutate: insertUserEvent } = useMutation(INSERT_USER_EVENT);
+  const hasLoggedEvent = useRef(false);
+
   const { data, isLoading, error } = useQuery<T>({
     // don't fetch until this modal is visible
     query: show ? query : null,
     typename,
     hasAggregates: false,
   });
+
+  /**
+   * Hook which logs the download event when the modal is opened
+   */
+  useEffect(() => {
+    if (show && eventName && isAuthenticated && user?.email && !hasLoggedEvent.current) {
+      hasLoggedEvent.current = true;
+      insertUserEvent({
+        event_name: eventName,
+        user_email: user.email,
+      }).catch((error) => {
+        console.error(
+          `Failed to log the '${eventName}' event for user ${user.email}.`,
+          error
+        );
+      });
+    }
+
+    // Reset the flag when modal is closed
+    if (!show) {
+      hasLoggedEvent.current = false;
+    }
+  }, [show, eventName, insertUserEvent, isAuthenticated, user?.email]);
 
   /**
    * Hook which creates the CSV download blob when data becomes available

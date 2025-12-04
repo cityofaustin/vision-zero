@@ -1,6 +1,7 @@
 "use client";
 import { useState, useCallback } from "react";
 import Button from "react-bootstrap/Button";
+import ActivityMetrics from "@/components/ActivityMetrics";
 import AlignedLabel from "@/components/AlignedLabel";
 import CreateCrashRecordModal from "@/components/CreateCrashRecordModal";
 import { FaCirclePlus } from "react-icons/fa6";
@@ -27,7 +28,7 @@ export default function Crashes() {
   }, [setRefetch]);
 
   return (
-    <>
+    <ActivityMetrics eventName="crashes_list">
       <div className="h-100 d-flex flex-column">
         <div className="d-flex justify-content-between">
           <span className="fs-3 fw-bold">Crashes</span>
@@ -48,6 +49,9 @@ export default function Crashes() {
           initialQueryConfig={crashesListViewQueryConfig}
           localStorageKey={localStorageKey}
           refetch={refetch}
+          filtersEventName="crashes_list_filters"
+          mapEventName="crashes_map"
+          downloadEventName="crashes_list_download"
         />
       </div>
       <CreateCrashRecordModal
@@ -55,6 +59,6 @@ export default function Crashes() {
         show={showNewUserModal}
         onSubmitCallback={onSaveCallback}
       />
-    </>
+    </ActivityMetrics>
   );
 }
