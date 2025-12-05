@@ -37,9 +37,6 @@ BEGIN
     when (lower(NEW.pcr_patient_acuity_initial) = 'emergent (yellow)' and lower(NEW.pcr_patient_acuity_final) is NULL and lower(NEW.pcr_outcome) in ('transported', 'care transferred')) then
         NEW.patient_injry_sev_id = 1;
         NEW.patient_injry_sev_reason = 'The patient acuity level was yellow and the patient was transported or had care transferred to another entity';
-    when (right(NEW.pcr_transport_priority, 1) = '3') then
-        NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'The transport priority was listed as "' || NEW.pcr_transport_priority || '"';
     when (lower(NEW.pcr_transport_priority) like 'charlie%') then
         NEW.patient_injry_sev_id = 1;
         NEW.patient_injry_sev_reason = 'The transport priority was listed as "' || NEW.pcr_transport_priority || '"';
@@ -64,6 +61,9 @@ BEGIN
     when (lower(NEW.pcr_provider_impression_secondary) in ('burn', 'cardiac - cardiac arrest', 'cardiac - cardiac arrest - traumatic', 'syncope', 'unconsciousness')) then
         NEW.patient_injry_sev_id = 1;
         NEW.patient_injry_sev_reason = 'The provider listed the impression: "' || NEW.pcr_provider_impression_secondary || '"';
+    when (right(NEW.pcr_transport_priority, 1) = '3') then
+        NEW.patient_injry_sev_id = 1;
+        NEW.patient_injry_sev_reason = 'The transport priority was listed as "' || NEW.pcr_transport_priority || '"';
     --
     -- minor injuries
     --
