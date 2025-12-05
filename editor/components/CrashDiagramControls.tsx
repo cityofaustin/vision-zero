@@ -77,11 +77,7 @@ export const ZoomResetSaveControls = ({
           size="sm"
           variant="outline-primary"
           onClick={() => {
-            const newScale = instance.transformState.scale + 0.25;
             zoomIn(0.25);
-            setValue("scale", newScale, {
-              shouldDirty: true,
-            });
           }}
           title="Zoom In"
         >
@@ -93,11 +89,7 @@ export const ZoomResetSaveControls = ({
           size="sm"
           variant="outline-primary"
           onClick={() => {
-            const newScale = instance.transformState.scale - 0.25;
             zoomOut(0.25);
-            setValue("scale", newScale, {
-              shouldDirty: true,
-            });
           }}
           title="Zoom Out"
         >

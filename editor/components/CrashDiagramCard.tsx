@@ -96,6 +96,9 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   };
 
   const rotation = watch("rotation");
+  // const scale = watch("scale")
+
+  // console.log(scale)
 
   // zoom image to scale "undefined" effectively zooming to fit entire image in frame
   const resetZoomToImage = () => {
@@ -136,10 +139,12 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             centerOnInit={true}
             ref={transformComponentRef}
             wheel={{ activationKeys: ["Meta", "Shift"] }}
-            onZoom={(e) => {
+            onZoomStop={(e) => {
               setValue("scale", e.state.scale, { shouldDirty: true });
             }}
-            onPanning={(e) => {
+            // onTransformed={(e) => {
+            //   console.log("TRANSFORM", e.state, e)}}
+            onPanningStop={(e) => {
               setValue("positionX", e.state.positionX, { shouldDirty: true });
               setValue("positionY", e.state.positionY, { shouldDirty: true });
             }}
