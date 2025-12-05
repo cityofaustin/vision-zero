@@ -3,6 +3,7 @@ import { ReactNode, useState, useCallback, useEffect } from "react";
 import { usePathname, useSelectedLayoutSegments } from "next/navigation";
 import { useAuth0 } from "@auth0/auth0-react";
 import ListGroup from "react-bootstrap/ListGroup";
+import ActivityMetrics from "@/components/ActivityMetrics";
 import AppNavBar from "@/components/AppNavBar";
 import SideBarListItem from "@/components/SideBarListItem";
 import LoginContainer from "@/components/LoginContainer";
@@ -97,34 +98,36 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
    * Render the app
    */
   return (
-    // Full-height outer div stacks children vertically
-    <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
-      <AppNavBar user={user} logout={logout} />
-      {/* Sidebar */}
-      <div
-        className={`app-sidebar d-flex flex-column h-100 app-sidebar-${
-          isCollapsed ? "collapsed" : "expanded"
-        }`}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        <div className="flex-grow-1 overflow-y-auto">
-          <ListGroup variant="flush">
-            {routes.map((route) => (
-              <PermissionsRequired
-                allowedRoles={route.allowedRoles}
-                key={route.path}
-              >
-                <SideBarListItem
-                  isCollapsed={isCollapsed}
-                  isCurrentPage={segments.includes(route.path)}
-                  Icon={route.icon}
-                  label={route.label}
-                  href={`/${route.path}`}
-                />
-              </PermissionsRequired>
-            ))}
-          </ListGroup>
+    <ActivityMetrics eventName="app_load">
+      {/* Full-height outer div stacks children vertically */}
+      <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
+        <AppNavBar user={user} logout={logout} />
+        {/* Sidebar */}
+        <div
+          className={`app-sidebar d-flex flex-column h-100 app-sidebar-${
+            isCollapsed ? "collapsed" : "expanded"
+          }`}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <div className="flex-grow-1 overflow-y-auto">
+            <ListGroup variant="flush">
+              {routes.map((route) => (
+                <PermissionsRequired
+                  allowedRoles={route.allowedRoles}
+                  key={route.path}
+                >
+                  <SideBarListItem
+                    isCollapsed={isCollapsed}
+                    isCurrentPage={segments.includes(route.path)}
+                    Icon={route.icon}
+                    label={route.label}
+                    href={`/${route.path}`}
+                  />
+                </PermissionsRequired>
+              ))}
+            </ListGroup>
+          </div>
         </div>
       </div>
       {/* Main content - essentially a bootstrap "row" — horizontal */}
@@ -140,6 +143,6 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
           </main>
         </div>
       </div>
-    </div>
+    </ActivityMetrics>
   );
 }

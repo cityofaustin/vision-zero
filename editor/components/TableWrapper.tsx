@@ -45,6 +45,18 @@ interface TableProps<T extends Record<string, unknown>> {
    * will be called anytime this prop changes
    */
   refetch?: boolean;
+  /**
+   * Optional event name to log when filters menu is opened
+   */
+  filtersEventName?: string;
+  /**
+   * Optional event name to log when map view is activated
+   */
+  mapEventName?: string;
+  /**
+   * Optional event name to log when download modal is opened
+   */
+  downloadEventName?: string;
 }
 
 /**
@@ -57,6 +69,9 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   localStorageKey,
   contextFilters,
   refetch: _refetch,
+  filtersEventName,
+  mapEventName,
+  downloadEventName,
 }: TableProps<T>) {
   const [areFiltersDirty, setAreFiltersDirty] = useState(false);
   const [isQueryConfigLocalStorageLoaded, setIsQueryConfigLocalStorageLoaded] =
@@ -324,6 +339,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
               activeFilterCount={activeFilterCount}
               queryConfig={queryConfig}
               setQueryConfig={setQueryConfig}
+              eventName={filtersEventName}
             />
           )}
           <TableSearch
@@ -338,6 +354,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
             <TableMapToggle
               queryConfig={queryConfig}
               setQueryConfig={setQueryConfig}
+              eventName={mapEventName}
             />
           </Col>
         )}
@@ -396,6 +413,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           show={showExportModal}
           totalRecordCount={aggregateData?.aggregate?.count || 0}
           typename={queryConfig.tableName}
+          eventName={downloadEventName}
         />
       )}
     </>
