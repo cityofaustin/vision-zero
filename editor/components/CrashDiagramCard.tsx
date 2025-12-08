@@ -143,7 +143,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               setValue("positionY", e.state.positionY);
               setValue("scale", e.state.scale);
             }}
-            onPanningStop={(e) => {
+            onPanningStop={() => {
               setIsTouched(true);
             }}
           >
