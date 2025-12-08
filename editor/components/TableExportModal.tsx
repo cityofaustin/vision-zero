@@ -3,9 +3,8 @@ import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useQuery, useMutation } from "@/utils/graphql";
-import { INSERT_USER_EVENT } from "@/queries/userEvents";
+import { useQuery } from "@/utils/graphql";
+import { useLogUserEvent } from "@/utils/userEvents";
 import { unparse } from "papaparse";
 import AlignedLabel from "./AlignedLabel";
 import { FaCircleInfo, FaDownload } from "react-icons/fa6";
@@ -89,8 +88,7 @@ export default function TableExportModal<T extends Record<string, unknown>>({
    * https://github.com/cityofaustin/atd-data-tech/issues/20481
    */
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
-  const { user, isAuthenticated } = useAuth0();
-  const { mutate: insertUserEvent } = useMutation(INSERT_USER_EVENT);
+  const logUserEvent = useLogUserEvent();
   const hasLoggedEvent = useRef(false);
 
   const { data, isLoading, error } = useQuery<T>({
@@ -104,24 +102,16 @@ export default function TableExportModal<T extends Record<string, unknown>>({
    * Hook which logs the download event when the modal is opened
    */
   useEffect(() => {
-    if (show && eventName && isAuthenticated && user?.email && !hasLoggedEvent.current) {
+    if (show && eventName && !hasLoggedEvent.current) {
       hasLoggedEvent.current = true;
-      insertUserEvent({
-        event_name: eventName,
-        user_email: user.email,
-      }).catch((error) => {
-        console.error(
-          `Failed to log the '${eventName}' event for user ${user.email}.`,
-          error
-        );
-      });
+      logUserEvent(eventName);
     }
 
     // Reset the flag when modal is closed
     if (!show) {
       hasLoggedEvent.current = false;
     }
-  }, [show, eventName, insertUserEvent, isAuthenticated, user?.email]);
+  }, [show, eventName, logUserEvent]);
 
   /**
    * Hook which creates the CSV download blob when data becomes available

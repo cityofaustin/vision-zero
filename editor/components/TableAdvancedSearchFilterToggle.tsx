@@ -1,10 +1,8 @@
 import { Dispatch, SetStateAction, useMemo, useCallback } from "react";
 import Badge from "react-bootstrap/Badge";
 import Dropdown from "react-bootstrap/Dropdown";
-import { useAuth0 } from "@auth0/auth0-react";
 import TableAdvancedSearchFilterMenu from "@/components/TableAdvancedSearchFilterMenu";
-import { useMutation } from "@/utils/graphql";
-import { INSERT_USER_EVENT } from "@/queries/userEvents";
+import { useLogUserEvent } from "@/utils/userEvents";
 import { FaSliders } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/types/queryBuilder";
@@ -50,25 +48,16 @@ export default function TableAdvancedSearchFilterToggle({
   activeFilterCount,
   eventName,
 }: TableAdvancedSearchFilterToggleProps) {
-  const { user, isAuthenticated } = useAuth0();
-  const { mutate: insertUserEvent } = useMutation(INSERT_USER_EVENT);
+  const logUserEvent = useLogUserEvent();
 
   const handleToggle = useCallback(
     (isOpen: boolean) => {
       // Log event when the dropdown is opened (not when closed)
-      if (isOpen && eventName && isAuthenticated && user?.email) {
-        insertUserEvent({
-          event_name: eventName,
-          user_email: user.email,
-        }).catch((error) => {
-          console.error(
-            `Failed to log the '${eventName}' event for user ${user.email}.`,
-            error
-          );
-        });
+      if (isOpen && eventName) {
+        logUserEvent(eventName);
       }
     },
-    [eventName, insertUserEvent, isAuthenticated, user?.email]
+    [eventName, logUserEvent]
   );
 
   return (

@@ -1,7 +1,5 @@
 import { ReactNode, useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useMutation } from "@/utils/graphql";
-import { INSERT_USER_EVENT } from "@/queries/userEvents";
+import { useLogUserEvent } from "@/utils/userEvents";
 
 interface ActivityMetricsProps {
   /**
@@ -31,26 +29,11 @@ export default function ActivityMetrics({
   eventName,
   children,
 }: ActivityMetricsProps) {
-  const { user, isAuthenticated } = useAuth0();
-  const { mutate: insertUserEvent } = useMutation(INSERT_USER_EVENT);
+  const logUserEvent = useLogUserEvent();
 
   useEffect(() => {
-    if (!isAuthenticated || !user?.email) {
-      return;
-    }
-
-    insertUserEvent({
-      event_name: eventName,
-      user_email: user.email,
-    }).catch((error) => {
-      console.error(
-        `Failed to log the '${eventName}' event for user ${user.email}.`,
-        error
-      );
-    });
-  }, [insertUserEvent, isAuthenticated, user?.email, eventName]);
+    logUserEvent(eventName);
+  }, [logUserEvent, eventName]);
 
   return <>{children}</>;
 }
-
-

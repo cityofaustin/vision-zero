@@ -1,13 +1,11 @@
 import { Dispatch, SetStateAction } from "react";
 import Button from "react-bootstrap/Button";
-import { useAuth0 } from "@auth0/auth0-react";
 import { FaMapPin, FaTableCells } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/types/queryBuilder";
 import { ButtonGroup } from "react-bootstrap";
 import { produce } from "immer";
-import { useMutation } from "@/utils/graphql";
-import { INSERT_USER_EVENT } from "@/queries/userEvents";
+import { useLogUserEvent } from "@/utils/userEvents";
 
 export interface TableMapToggleProps {
   queryConfig: QueryConfig;
@@ -26,8 +24,7 @@ export default function TableMapToggle({
   setQueryConfig,
   eventName,
 }: TableMapToggleProps) {
-  const { user, isAuthenticated } = useAuth0();
-  const { mutate: insertUserEvent } = useMutation(INSERT_USER_EVENT);
+  const logUserEvent = useLogUserEvent();
 
   const handleMapClick = () => {
     if (queryConfig.mapConfig?.isActive) {
@@ -36,16 +33,8 @@ export default function TableMapToggle({
     }
 
     // Log the event when map is activated
-    if (eventName && isAuthenticated && user?.email) {
-      insertUserEvent({
-        event_name: eventName,
-        user_email: user.email,
-      }).catch((error) => {
-        console.error(
-          `Failed to log the '${eventName}' event for user ${user.email}.`,
-          error
-        );
-      });
+    if (eventName) {
+      logUserEvent(eventName);
     }
 
     const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
