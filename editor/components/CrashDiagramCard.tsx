@@ -52,6 +52,7 @@ const DiagramAlert: React.FC<DiagramAlertProps> = ({
 export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [diagramError, setDiagramError] = useState(false);
   const [isSaved, setIsSaved] = useState(!!crash.diagram_transform);
+  const [isTouched, setIsTouched] = useState(false)
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
 
   const defaultValues = useMemo(() => {
@@ -92,13 +93,11 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
 
     // do not clear values from form, but clear dirty state to hide saved button
     reset(data, { keepDirty: false });
+    setIsTouched(false);
     setIsSaved(true);
   };
 
   const rotation = watch("rotation");
-  // const scale = watch("scale")
-
-  // console.log(scale)
 
   // zoom image to scale "undefined" effectively zooming to fit entire image in frame
   const resetZoomToImage = () => {
@@ -144,14 +143,16 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               setValue("positionY", e.state.positionY);
               setValue("scale", e.state.scale);
             }}
+            onPanningStop={(e)=> {setIsTouched(true)}}
           >
             <ZoomResetSaveControls
               setValue={setValue}
               resetZoomToImage={resetZoomToImage}
-              isDirty={isDirty}
+              isDirty={isDirty || isTouched}
               onSave={onSave}
               handleSubmit={handleSubmit}
               isSaved={isSaved}
+              setIsTouched={setIsTouched}
             />
             <TransformComponent
               wrapperStyle={{ width: "100%" }}

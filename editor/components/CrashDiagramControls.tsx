@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
@@ -51,6 +52,7 @@ export const ZoomResetSaveControls = ({
   onSave,
   handleSubmit,
   isSaved,
+  setIsTouched,
 }: {
   setValue: UseFormSetValue<CrashDiagramOrientation>;
   resetZoomToImage: () => void;
@@ -58,6 +60,7 @@ export const ZoomResetSaveControls = ({
   onSave: SubmitHandler<CrashDiagramOrientation>;
   handleSubmit: UseFormHandleSubmit<CrashDiagramOrientation>;
   isSaved: boolean;
+  setIsTouched: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { zoomIn, zoomOut } = useControls();
 
@@ -78,6 +81,7 @@ export const ZoomResetSaveControls = ({
           variant="outline-primary"
           onClick={() => {
             zoomIn(0.25);
+            setIsTouched(true);
           }}
           title="Zoom In"
         >
@@ -90,6 +94,7 @@ export const ZoomResetSaveControls = ({
           variant="outline-primary"
           onClick={() => {
             zoomOut(0.25);
+            setIsTouched(true);
           }}
           title="Zoom Out"
         >
