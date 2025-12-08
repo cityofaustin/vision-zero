@@ -129,18 +129,18 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
             </ListGroup>
           </div>
         </div>
-      </div>
-      {/* Main content - essentially a bootstrap "row" — horizontal */}
-      <div className="main-content-pane d-flex flex-grow-1">
-        <div className="flex-grow-1 d-flex flex-column w-100 ">
-          {/* vertical container */}
-          <main className="flex-grow-1 d-flex flex-column">
-            <div className="d-flex flex-grow-1 flex-column p-3">
-              <AppBreadCrumb />
-              {children}
-            </div>
-            <AppFooter />
-          </main>
+        {/* Main content - essentially a bootstrap "row" — horizontal */}
+        <div className="main-content-pane d-flex flex-grow-1">
+          <div className="flex-grow-1 d-flex flex-column w-100 ">
+            {/* vertical container */}
+            <main className="flex-grow-1 d-flex flex-column">
+              <div className="d-flex flex-grow-1 flex-column p-3">
+                <AppBreadCrumb />
+                {children}
+              </div>
+              <AppFooter />
+            </main>
+          </div>
         </div>
       </div>
     </ActivityMetrics>
