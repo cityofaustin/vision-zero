@@ -139,14 +139,10 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             centerOnInit={true}
             ref={transformComponentRef}
             wheel={{ activationKeys: ["Meta", "Shift"] }}
-            onZoomStop={(e) => {
-              setValue("scale", e.state.scale, { shouldDirty: true });
-            }}
-            // onTransformed={(e) => {
-            //   console.log("TRANSFORM", e.state, e)}}
-            onPanningStop={(e) => {
-              setValue("positionX", e.state.positionX, { shouldDirty: true });
-              setValue("positionY", e.state.positionY, { shouldDirty: true });
+            onTransformed={(e) => {
+              setValue("positionX", e.state.positionX);
+              setValue("positionY", e.state.positionY);
+              setValue("scale", e.state.scale);
             }}
           >
             <ZoomResetSaveControls
