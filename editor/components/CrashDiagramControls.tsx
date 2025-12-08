@@ -59,7 +59,7 @@ export const ZoomResetSaveControls = ({
   handleSubmit: UseFormHandleSubmit<CrashDiagramOrientation>;
   isSaved: boolean;
 }) => {
-  const { zoomIn, zoomOut, instance } = useControls();
+  const { zoomIn, zoomOut } = useControls();
 
   const handleReset = () => {
     // reset rotation
