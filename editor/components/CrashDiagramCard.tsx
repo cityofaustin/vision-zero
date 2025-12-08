@@ -52,7 +52,7 @@ const DiagramAlert: React.FC<DiagramAlertProps> = ({
 export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [diagramError, setDiagramError] = useState(false);
   const [isSaved, setIsSaved] = useState(!!crash.diagram_transform);
-  const [isTouched, setIsTouched] = useState(false)
+  const [isTouched, setIsTouched] = useState(false);
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
 
   const defaultValues = useMemo(() => {
@@ -143,7 +143,9 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               setValue("positionY", e.state.positionY);
               setValue("scale", e.state.scale);
             }}
-            onPanningStop={(e)=> {setIsTouched(true)}}
+            onPanningStop={(e) => {
+              setIsTouched(true);
+            }}
           >
             <ZoomResetSaveControls
               setValue={setValue}
