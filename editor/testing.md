@@ -128,13 +128,13 @@ The below features should be tested with each role. Features with role-based acc
 - FRB Recommendations
   - [role: Admin, editor] Create and edit all recommendation fields
 - Keyboard shortcuts to scroll instantly to various cards:
-  - `shift` + `a`: Primary address
   - `shift` + `u`: Units
   - `shift` + `p`: People
   - `shift` + `3`: EMS patient care
   - `shift` + `c`: Charges
   - `shift` + `n`: Notes
   - `shift` + `f`: Fatality Review Board recommendations
+- Hover your mouse over each card that has a shortcut key and verify that the shortcut key helper text appears above the right edge of the card. 
 
 ### Sidebar
 
