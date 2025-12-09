@@ -3,7 +3,6 @@ import { Button } from "react-bootstrap";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Crash } from "@/types/crashes";
 import CrashInjuryIndicators from "@/components/CrashInjuryIndicators";
-import { formatAddresses } from "@/utils/formatters";
 import { FaPenToSquare } from "react-icons/fa6";
 import EditCrashAddressModal from "@/components/EditCrashAddressModal";
 import { hasRole } from "@/utils/auth";
@@ -32,7 +31,7 @@ export default function CrashHeader({ crash, refetch }: CrashHeaderProps) {
     <div className="d-flex justify-content-between mb-3">
       {isReadOnlyUser ? (
         <span className="fs-3 fw-bold text-uppercase">
-          {formatAddresses(crash)}
+          {crash.address_display}
         </span>
       ) : (
         <Button
@@ -40,7 +39,7 @@ export default function CrashHeader({ crash, refetch }: CrashHeaderProps) {
           className="d-flex align-items-baseline edit-address-button"
         >
           <span className="fs-3 fw-bold text-uppercase me-2">
-            {formatAddresses(crash)}
+            {crash.address_display}
           </span>
           <FaPenToSquare className="text-muted" />
         </Button>

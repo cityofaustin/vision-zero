@@ -276,12 +276,12 @@ export const crashesListViewQueryConfig: QueryConfig = {
   searchFilter: {
     id: "search",
     value: "",
-    column: "address_primary",
+    column: "address_display",
     operator: "_ilike",
     wildcard: true,
   },
   searchFields: [
-    { label: "Address", value: "address_primary" },
+    { label: "Address", value: "address_display" },
     { label: "Crash ID", value: "record_locator" },
     { label: "Case ID", value: "case_id" },
   ],
