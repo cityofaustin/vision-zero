@@ -3,7 +3,6 @@ import { ReactNode, useState, useCallback, useEffect } from "react";
 import { usePathname, useSelectedLayoutSegments } from "next/navigation";
 import { useAuth0 } from "@auth0/auth0-react";
 import ListGroup from "react-bootstrap/ListGroup";
-import ActivityMetrics from "@/components/ActivityMetrics";
 import AppNavBar from "@/components/AppNavBar";
 import SideBarListItem from "@/components/SideBarListItem";
 import LoginContainer from "@/components/LoginContainer";

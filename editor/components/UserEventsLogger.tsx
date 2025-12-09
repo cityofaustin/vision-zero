@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from "react";
 import { useLogUserEvent } from "@/utils/userEvents";
 
-interface ActivityMetricsProps {
+interface UserEventsLoggerProps {
   /**
    * The name of the event to log
    */
@@ -20,15 +20,15 @@ interface ActivityMetricsProps {
  *
  * @example
  * ```tsx
- * <ActivityMetrics eventName="crashes_list">
+ * <UserEventsLogger eventName="crashes_list">
  *   <CrashesList />
- * </ActivityMetrics>
+ * </UserEventsLogger>
  * ```
  */
-export default function ActivityMetrics({
+export default function UserEventsLogger({
   eventName,
   children,
-}: ActivityMetricsProps) {
+}: UserEventsLoggerProps) {
   const logUserEvent = useLogUserEvent();
 
   useEffect(() => {
