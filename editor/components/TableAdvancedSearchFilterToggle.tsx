@@ -33,7 +33,7 @@ export interface TableAdvancedSearchFilterToggleProps {
   setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
   activeFilterCount: number;
   /**
-   * Optional event name to log when filters are opened
+   * If provided, enables logging a user event when filters are opened
    * (e.g., "crashes_list_filters", "fatalities_list_filters")
    */
   eventName?: string;

@@ -50,7 +50,7 @@ interface TableExportModalProps<T extends Record<string, unknown>> {
    */
   typename: string;
   /**
-   * Optional event name to log when download modal is opened
+   * If provided, enables logging a user event when download modal is opened
    */
   eventName?: string;
 }

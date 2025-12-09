@@ -46,15 +46,15 @@ interface TableProps<T extends Record<string, unknown>> {
    */
   refetch?: boolean;
   /**
-   * Optional event name to log when filters menu is opened
+   * If provided, enables logging a user event when filters menu is opened
    */
   filtersEventName?: string;
   /**
-   * Optional event name to log when map view is activated
+   * If provided, enables logging a user event when map view is activated
    */
   mapEventName?: string;
   /**
-   * Optional event name to log when download modal is opened
+   * If provided, enables logging a user event when download modal is opened
    */
   downloadEventName?: string;
 }

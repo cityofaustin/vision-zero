@@ -11,7 +11,7 @@ export interface TableMapToggleProps {
   queryConfig: QueryConfig;
   setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
   /**
-   * Optional event name to log when map view is activated
+   * If provided, enables logging a user event when map view is activated
    */
   eventName?: string;
 }
