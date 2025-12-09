@@ -1,6 +1,33 @@
 table:
   name: locations_list_view
   schema: public
+insert_permissions:
+  - role: readonly
+    permission:
+      check: {}
+      columns:
+        - cr3_crash_count
+        - crash_count
+        - non_cr3_crash_count
+        - total_est_comp_cost
+        - location_id
+        - council_district
+        - location_group
+        - description
+    comment: ""
+  - role: vz-admin
+    permission:
+      check: {}
+      columns:
+        - cr3_crash_count
+        - crash_count
+        - non_cr3_crash_count
+        - total_est_comp_cost
+        - location_id
+        - council_district
+        - location_group
+        - description
+    comment: ""
 select_permissions:
   - role: editor
     permission:
@@ -43,4 +70,42 @@ select_permissions:
         - description
       filter: {}
       allow_aggregations: true
+    comment: ""
+update_permissions:
+  - role: readonly
+    permission:
+      columns:
+        - cr3_crash_count
+        - crash_count
+        - non_cr3_crash_count
+        - total_est_comp_cost
+        - location_id
+        - council_district
+        - location_group
+        - description
+      filter: {}
+      check: {}
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - cr3_crash_count
+        - crash_count
+        - non_cr3_crash_count
+        - total_est_comp_cost
+        - location_id
+        - council_district
+        - location_group
+        - description
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: readonly
+    permission:
+      filter: {}
+    comment: ""
+  - role: vz-admin
+    permission:
+      filter: {}
     comment: ""
