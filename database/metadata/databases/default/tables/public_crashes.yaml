@@ -129,6 +129,7 @@ select_permissions:
         - crash_timestamp
         - created_at
         - created_by
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - id
@@ -200,6 +201,7 @@ select_permissions:
         - crash_timestamp
         - created_at
         - created_by
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - id
@@ -227,6 +229,7 @@ select_permissions:
         - council_district
         - cris_crash_id
         - crash_speed_limit
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - id
@@ -290,6 +293,7 @@ select_permissions:
         - crash_timestamp
         - created_at
         - created_by
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - id
@@ -316,6 +320,7 @@ select_permissions:
         - txdot_rptable_fl
         - council_district
         - crash_speed_limit
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - id
@@ -377,6 +382,7 @@ update_permissions:
         - crash_timestamp
         - created_by
         - cris_crash_id
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - intrsct_relat_id
@@ -440,6 +446,7 @@ update_permissions:
         - council_district
         - crash_speed_limit
         - crash_timestamp
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - intrsct_relat_id
