@@ -6,12 +6,6 @@ CREATE TABLE IF NOT EXISTS public.user_events (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Add index on created_at for faster queries by date range
-CREATE INDEX IF NOT EXISTS idx_user_events_created_at ON public.user_events(created_at);
-
--- Add index on user_email for faster queries by user
-CREATE INDEX IF NOT EXISTS idx_user_events_user_email ON public.user_events(user_email);
-
 -- Add index on event_name for faster queries by event type
 CREATE INDEX IF NOT EXISTS idx_user_events_event_name ON public.user_events(event_name);
 
