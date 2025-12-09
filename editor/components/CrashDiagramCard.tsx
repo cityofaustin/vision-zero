@@ -126,7 +126,11 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
       <Card.Header>
         <Card.Title>Diagram</Card.Title>
         <div className="text-secondary fw-light">
-          Use shift + scroll to zoom
+          Use{" "}
+          <span className="font-monospace rounded border px-1 bg-light">
+            shift
+          </span>{" "}
+          + scroll to zoom
         </div>
       </Card.Header>
       <Card.Body className="crash-header-card-body text-center d-flex flex-column">
