@@ -11,8 +11,6 @@ import { EMSPatientCareRecord } from "@/types/ems";
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
-  address_primary: string | null;
-  address_secondary: string | null;
   at_intrsct_fl: boolean | null;
   case_id: string | null;
   crash_injury_metrics_view: CrashInjuryMetric | null;
@@ -77,4 +75,5 @@ export type Crash = {
   charges_cris: Charge[] | null;
   people_list_view: PeopleListRow[] | null;
   crashes_list_view: CrashesListRow;
+  address_display: string | null;
 };
