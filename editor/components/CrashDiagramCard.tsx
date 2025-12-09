@@ -138,6 +138,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             centerOnInit={true}
             ref={transformComponentRef}
             wheel={{ activationKeys: ["Meta", "Shift"] }}
+            onWheel={() => setIsTouched(true)}
             onTransformed={(e) => {
               setValue("positionX", e.state.positionX);
               setValue("positionY", e.state.positionY);
