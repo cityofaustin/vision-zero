@@ -8,6 +8,7 @@ import { Recommendation } from "@/types/recommendation";
 import { CrashesListRow } from "@/types/crashesList";
 import { CrashNote } from "./crashNote";
 import { EMSPatientCareRecord } from "@/types/ems";
+import { CrashDiagramOrientation } from "./crashDiagramOrientation";
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
@@ -22,6 +23,7 @@ export type Crash = {
   crash_timestamp: string | null;
   cris_crash_id: number | null;
   collsn: LookupTableOption | null;
+  diagram_transform: CrashDiagramOrientation | null;
   ems__incidents: EMSPatientCareRecord[] | null;
   fhe_collsn_id: number | null;
   id: number;

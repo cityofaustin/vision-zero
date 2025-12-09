@@ -349,4 +349,18 @@ to make sure it renders on top is a common fix */
   margin-top: 2.5rem;
 }
 
+.offset-header-scroll-top {
+  scroll-margin-top: 55px;
+}
+
+/* enable row child elements to appear on hover over row */
+.row .show-on-hover {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.row:hover .show-on-hover {
+  opacity: 1;
+}
+
 @import "bootstrap/scss/bootstrap.scss";

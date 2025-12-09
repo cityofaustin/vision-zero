@@ -87,6 +87,9 @@ The below features should be tested with each role. Features with role-based acc
 - Crash diagram: the diagram card does not capture scroll unless shift is pressed
 - Crash diagram: info alert shows when no diagram is available and is temp record
 - Crash diagram: danger alert shows when no diagram is available and is not temp record
+- Crash diagram: [role: admin, editor] **Save** button with disk icon shows as disabled if diagram x/y/z/rotate is not edited and diagram is initial loaded position
+- Crash diagram: [role: admin, editor] Change diagram x, y, z, and rotate. Confirm that **Save** button enables when any of these properties are adjusted
+- Crash diagram: [role: admin, editor] Use **Save** button to save current x/y/z/rotate. Refresh the page and confirm the diagram initializes at the expected transform state. On load, confirm that **Save** button is disabled and says **Saved** with a checkmark icon.
 - Crash narrative: loads normally and is scrollable for long narratives
 - Crash narrative: download CR3 pdf
 - Crash data card: **Flags** card. Edit set **Private drive** to **No** and verify that warning banner appears with notification that the crash is not included in VZ statistical reporting
@@ -128,13 +131,13 @@ The below features should be tested with each role. Features with role-based acc
 - FRB Recommendations
   - [role: Admin, editor] Create and edit all recommendation fields
 - Keyboard shortcuts to scroll instantly to various cards:
-  - `shift` + `a`: Primary address
   - `shift` + `u`: Units
   - `shift` + `p`: People
   - `shift` + `3`: EMS patient care
   - `shift` + `c`: Charges
   - `shift` + `n`: Notes
   - `shift` + `f`: Fatality Review Board recommendations
+- Hover your mouse over each card that has a shortcut key and verify that the shortcut key helper text appears above the right edge of the card. 
 
 ### Sidebar
 
