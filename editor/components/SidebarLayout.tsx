@@ -98,51 +98,46 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
    * Render the app
    */
   return (
-    <ActivityMetrics eventName="app_load">
-      {/* Full-height outer div stacks children vertically */}
-      <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
-        <AppNavBar user={user} logout={logout} />
-        {/* Sidebar */}
-        <div
-          className={`app-sidebar d-flex flex-column h-100 app-sidebar-${
-            isCollapsed ? "collapsed" : "expanded"
-          }`}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <div className="flex-grow-1 overflow-y-auto">
-            <ListGroup variant="flush">
-              {routes.map((route) => (
-                <PermissionsRequired
-                  allowedRoles={route.allowedRoles}
-                  key={route.path}
-                >
-                  <SideBarListItem
-                    isCollapsed={isCollapsed}
-                    isCurrentPage={segments.includes(route.path)}
-                    Icon={route.icon}
-                    label={route.label}
-                    href={`/${route.path}`}
-                  />
-                </PermissionsRequired>
-              ))}
-            </ListGroup>
-          </div>
-        </div>
-        {/* Main content - essentially a bootstrap "row" — horizontal */}
-        <div className="main-content-pane d-flex flex-grow-1">
-          <div className="flex-grow-1 d-flex flex-column w-100 ">
-            {/* vertical container */}
-            <main className="flex-grow-1 d-flex flex-column">
-              <div className="d-flex flex-grow-1 flex-column p-3">
-                <AppBreadCrumb />
-                {children}
-              </div>
-              <AppFooter />
-            </main>
-          </div>
+    <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
+      <AppNavBar user={user} logout={logout} />
+      {/* Sidebar */}
+      <div
+        className={`app-sidebar d-flex flex-column h-100 app-sidebar-${isCollapsed ? "collapsed" : "expanded"}`}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className="flex-grow-1 overflow-y-auto">
+          <ListGroup variant="flush">
+            {routes.map((route) => (
+              <PermissionsRequired
+                allowedRoles={route.allowedRoles}
+                key={route.path}
+              >
+                <SideBarListItem
+                  isCollapsed={isCollapsed}
+                  isCurrentPage={segments.includes(route.path)}
+                  Icon={route.icon}
+                  label={route.label}
+                  href={`/${route.path}`}
+                />
+              </PermissionsRequired>
+            ))}
+          </ListGroup>
         </div>
       </div>
-    </ActivityMetrics>
+      {/* Main content - essentially a bootstrap "row" — horizontal */}
+      <div className="main-content-pane d-flex flex-grow-1">
+        <div className="flex-grow-1 d-flex flex-column w-100 ">
+          {/* vertical container */}
+          <main className="flex-grow-1 d-flex flex-column">
+            <div className="d-flex flex-grow-1 flex-column p-3">
+              <AppBreadCrumb />
+              {children}
+            </div>
+            <AppFooter />
+          </main>
+        </div>
+      </div>
+    </div>
   );
 }
