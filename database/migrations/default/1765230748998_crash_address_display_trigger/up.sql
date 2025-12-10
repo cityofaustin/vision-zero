@@ -285,6 +285,6 @@ EXECUTE FUNCTION update_crash_address_display();
 
 -- Drop old columns
 
-ALTER TABLE crashes DROP COLUMN address_primary TEXT;
+ALTER TABLE crashes DROP COLUMN address_primary CASCADE;
 
-ALTER TABLE crashes ADD COLUMN address_secondary TEXT;
+ALTER TABLE crashes DROP COLUMN address_secondary CASCADE;

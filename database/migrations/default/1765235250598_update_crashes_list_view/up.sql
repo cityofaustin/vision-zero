@@ -1,4 +1,4 @@
-drop view "public"."crashes_list_view" cascade;
+drop view if exists "public"."crashes_list_view" cascade;
 
 CREATE OR REPLACE VIEW "public"."crashes_list_view" AS 
  WITH geocode_status AS (

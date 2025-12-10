@@ -1,4 +1,4 @@
-DROP MATERIALIZED VIEW "public"."location_crashes_view";
+DROP MATERIALIZED VIEW IF EXISTS "public"."location_crashes_view";
 CREATE MATERIALIZED VIEW "public"."location_crashes_view" AS 
  SELECT crashes.record_locator,
     crashes.cris_crash_id,
