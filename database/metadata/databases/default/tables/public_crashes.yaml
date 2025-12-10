@@ -118,8 +118,6 @@ select_permissions:
       columns:
         - active_school_zone_fl
         - address_display
-        - address_primary
-        - address_secondary
         - at_intrsct_fl
         - case_id
         - council_district
@@ -192,8 +190,6 @@ select_permissions:
       columns:
         - active_school_zone_fl
         - address_display
-        - address_primary
-        - address_secondary
         - at_intrsct_fl
         - case_id
         - case_id
@@ -283,8 +279,6 @@ select_permissions:
       columns:
         - active_school_zone_fl
         - address_display
-        - address_primary
-        - address_secondary
         - at_intrsct_fl
         - case_id
         - case_id
