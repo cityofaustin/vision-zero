@@ -10,9 +10,9 @@ export default function ShortcutHelperText({
       className="show-on-hover text-secondary text-end fw-light mb-1"
       style={{ fontSize: ".9rem" }}
     >
-      <span className="font-monospace rounded border px-1 bg-light">shift</span>{" "}
+      <span className="font-monospace rounded border px-1 bg-light-use-theme">shift</span>{" "}
       +{" "}
-      <span className="font-monospace rounded border px-1 bg-light">
+      <span className="font-monospace rounded border px-1 bg-light-use-theme">
         {shortcutKey.toLowerCase()}
       </span>{" "}
       to scroll here
