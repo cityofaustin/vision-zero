@@ -28,13 +28,16 @@ BEGIN
     
     -- Convert roadway system label to shorthand
     IF rwy_sys_label IS NOT NULL THEN
-        rwy_sys_short := CASE UPPER(rwy_sys_label)
-            WHEN 'US HIGHWAY' THEN 'US'
-            WHEN 'STATE LOOP' THEN 'LOOP'
-            WHEN 'INTERSTATE' THEN 'IH'
-            WHEN 'FARM TO MARKET' THEN 'FM'
-            WHEN 'RANCH ROAD' THEN 'RR'
-            WHEN 'RANCH TO MARKET' THEN 'RM'
+        rwy_sys_short := CASE
+            -- Exact matches
+            WHEN UPPER(rwy_sys_label) = 'US HIGHWAY' THEN 'US'
+            WHEN UPPER(rwy_sys_label) = 'STATE LOOP' THEN 'LOOP'
+            WHEN UPPER(rwy_sys_label) = 'INTERSTATE' THEN 'IH'
+            WHEN UPPER(rwy_sys_label) = 'FARM TO MARKET' THEN 'FM'
+            WHEN UPPER(rwy_sys_label) = 'RANCH ROAD' THEN 'RR'
+            WHEN UPPER(rwy_sys_label) = 'RANCH TO MARKET' THEN 'RM'
+            -- If label contains LOCAL ROAD bc this label is really long
+            WHEN UPPER(rwy_sys_label) LIKE '%LOCAL ROAD%' THEN 'LOCAL ROAD'
             ELSE UPPER(rwy_sys_label)
         END;
         
