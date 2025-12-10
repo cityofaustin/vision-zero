@@ -42,9 +42,16 @@ $sidebarWidth: 4.6rem;
 }
 
 [data-bs-theme="dark"] .app-navbar,
-.app-sidebar,
-.crash-injury-indicator {
+.app-sidebar {
   background-color: $dark-mode-background !important;
+}
+
+[data-bs-theme="dark"] .bg-light-use-theme {
+  background-color: $dark-mode-background !important;
+}
+
+[data-bs-theme="light"] .bg-light-use-theme {
+  background-color: $light !important;
 }
 
 [data-bs-theme="dark"] .mapboxgl-popup-tip {
@@ -66,10 +73,6 @@ $sidebarWidth: 4.6rem;
 
 [data-bs-theme="dark"] .app-sidebar {
   border-right: 1px solid #495057;
-}
-
-[data-bs-theme="light"] .crash-injury-indicator {
-  background-color: $light !important;
 }
 
 [data-bs-theme="dark"] .react-datepicker__calendar-icon {
