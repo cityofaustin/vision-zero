@@ -128,6 +128,7 @@ select_permissions:
         - created_at
         - created_by
         - cris_crash_id
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - id
@@ -208,6 +209,7 @@ select_permissions:
         - cris_crash_id
         - cris_crash_id
         - engineering_area_id
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - fhe_collsn_id
@@ -240,6 +242,22 @@ select_permissions:
         - road_constr_zone_fl
         - road_constr_zone_wrkr_fl
         - rpt_block_num
+        - rr_relat_fl
+        - schl_bus_fl
+        - thousand_damage_fl
+        - toll_road_fl
+        - txdot_rptable_fl
+        - council_district
+        - cris_crash_id
+        - crash_speed_limit
+        - diagram_transform
+        - engineering_area_id
+        - fhe_collsn_id
+        - id
+        - intrsct_relat_id
+        - investigat_agency_id
+        - light_cond_id
+        - obj_struck_id
         - rpt_city_id
         - rpt_cris_cnty_id
         - rpt_hwy_num
@@ -295,6 +313,7 @@ select_permissions:
         - created_by
         - created_by
         - cris_crash_id
+        - diagram_transform
         - engineering_area_id
         - engineering_area_id
         - fhe_collsn_id
@@ -328,6 +347,21 @@ select_permissions:
         - road_constr_zone_fl
         - road_constr_zone_wrkr_fl
         - rpt_block_num
+        - rr_relat_fl
+        - schl_bus_fl
+        - thousand_damage_fl
+        - toll_road_fl
+        - txdot_rptable_fl
+        - council_district
+        - crash_speed_limit
+        - diagram_transform
+        - engineering_area_id
+        - fhe_collsn_id
+        - id
+        - intrsct_relat_id
+        - investigat_agency_id
+        - light_cond_id
+        - obj_struck_id
         - rpt_city_id
         - rpt_cris_cnty_id
         - rpt_hwy_num
@@ -374,6 +408,7 @@ update_permissions:
         - crash_timestamp
         - created_by
         - cris_crash_id
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - intrsct_relat_id
@@ -437,6 +472,7 @@ update_permissions:
         - council_district
         - crash_speed_limit
         - crash_timestamp
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - intrsct_relat_id
