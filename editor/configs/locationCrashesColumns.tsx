@@ -34,13 +34,8 @@ export const locationCrashesColumns: ColDataCardDef<LocationCrashRow>[] = [
     valueFormatter: formatDate,
   },
   {
-    path: "address_primary",
-    label: "Primary address",
-    sortable: true,
-  },
-  {
-    path: "address_secondary",
-    label: "Secondary address",
+    path: "address_display",
+    label: "Address",
     sortable: true,
   },
   {

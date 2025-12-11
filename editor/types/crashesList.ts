@@ -1,5 +1,4 @@
 export type CrashesListRow = {
-  address_primary: string | null;
   case_id: string | null;
   collsn_desc: string | null;
   council_district: number | null;
@@ -39,4 +38,5 @@ export type CrashesListRow = {
   vz_fatality_count: number | null;
   wthr_cond_id: number | null;
   is_manual_geocode: boolean | null;
+  address_display: string | null;
 };

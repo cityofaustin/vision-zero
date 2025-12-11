@@ -122,8 +122,6 @@ export const GET_MATCHING_PEOPLE = gql`
           id
           label
         }
-        address_primary
-        address_secondary
         latitude
         longitude
         location_id

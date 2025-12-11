@@ -61,8 +61,7 @@ export const locationCrashesQueryConfig: QueryConfig = {
   searchFields: [
     { label: "Case ID", value: "case_id" },
     { label: "Crash ID", value: "record_locator" },
-    { label: "Primary address", value: "address_primary" },
-    { label: "Secondary address", value: "address_secondary" },
+    { label: "Address", value: "address_display" },
     { label: "Collision type", value: "collsn_desc" },
   ],
   dateFilter: {

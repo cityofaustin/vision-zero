@@ -231,7 +231,7 @@ const getQueryStringComponent = (
  *      record_locator
  *      case_id
  *      crash_timestamp
- *      address_primary
+ *      address_display
  *      collsn_desc
  *    }
  *  }
