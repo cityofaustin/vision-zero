@@ -491,11 +491,6 @@ UNION ALL
     0 AS unkn_injry_count,
     0 AS vz_fatality_count,
     aab.est_comp_cost_crash_based,
-    commitLayoutEffectOnFiber webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:13164
-    recursivelyTraverseLayoutEffects webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:14121
-    commitLayoutEffectOnFiber webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:13048
-    recursivelyTraverseLayoutEffects webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:14121
-    commitLayoutEffectOnFiber webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.j
     ''::text AS collsn_desc,
     ''::text AS movement_desc,
     ''::text AS travel_direction,
