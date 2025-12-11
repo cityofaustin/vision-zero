@@ -12,7 +12,7 @@ ADD COLUMN address_primary TEXT,
 ADD COLUMN address_secondary TEXT;
 
 -- Drop the new address_display column
-ALTER TABLE crashes DROP COLUMN IF EXISTS address_display;
+ALTER TABLE crashes DROP COLUMN IF EXISTS address_display CASCADE;
 
 -- Drop the index on address_display (if it still exists)
 DROP INDEX IF EXISTS idx_crashes_address_display;
