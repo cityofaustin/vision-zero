@@ -665,8 +665,9 @@ AS WITH cr3_comp_costs AS (
 
 -- Recreate this materialized view with new address_display column
 DROP MATERIALIZED VIEW IF EXISTS "public"."location_crashes_view";
-CREATE MATERIALIZED VIEW "public"."location_crashes_view" AS 
- SELECT crashes.record_locator,
+CREATE MATERIALIZED VIEW public.location_crashes_view
+TABLESPACE pg_default
+AS SELECT crashes.record_locator,
     crashes.cris_crash_id,
     'CR3'::text AS type,
     crashes.location_id,
@@ -692,19 +693,19 @@ CREATE MATERIALIZED VIEW "public"."location_crashes_view" AS
     crash_units.travel_direction,
     crash_units.veh_body_styl_desc,
     crash_units.veh_unit_desc
-   FROM (((crashes
+   FROM crashes
      LEFT JOIN LATERAL ( SELECT units.crash_pk,
             string_agg(movt.label, ','::text) AS movement_desc,
             string_agg(trvl_dir.label, ','::text) AS travel_direction,
             string_agg(veh_body_styl.label, ','::text) AS veh_body_styl_desc,
             string_agg(unit_desc.label, ','::text) AS veh_unit_desc
-           FROM ((((units
-             LEFT JOIN lookups.movt movt ON ((units.movement_id = movt.id)))
-             LEFT JOIN lookups.trvl_dir trvl_dir ON ((units.veh_trvl_dir_id = trvl_dir.id)))
-             LEFT JOIN lookups.veh_body_styl veh_body_styl ON ((units.veh_body_styl_id = veh_body_styl.id)))
-             LEFT JOIN lookups.unit_desc unit_desc ON ((units.unit_desc_id = unit_desc.id)))
-          WHERE (crashes.id = units.crash_pk)
-          GROUP BY units.crash_pk) crash_units ON (true))
+           FROM units
+             LEFT JOIN lookups.movt movt ON units.movement_id = movt.id
+             LEFT JOIN lookups.trvl_dir trvl_dir ON units.veh_trvl_dir_id = trvl_dir.id
+             LEFT JOIN lookups.veh_body_styl veh_body_styl ON units.veh_body_styl_id = veh_body_styl.id
+             LEFT JOIN lookups.unit_desc unit_desc ON units.unit_desc_id = unit_desc.id
+          WHERE crashes.id = units.crash_pk
+          GROUP BY units.crash_pk) crash_units ON true
      LEFT JOIN LATERAL ( SELECT crash_injury_metrics_view_1.id,
             crash_injury_metrics_view_1.cris_crash_id,
             crash_injury_metrics_view_1.unkn_injry_count,
@@ -734,16 +735,16 @@ CREATE MATERIALIZED VIEW "public"."location_crashes_view" AS
             crash_injury_metrics_view_1.est_comp_cost_crash_based,
             crash_injury_metrics_view_1.est_total_person_comp_cost
            FROM crash_injury_metrics_view crash_injury_metrics_view_1
-          WHERE (crashes.id = crash_injury_metrics_view_1.id)
-         LIMIT 1) crash_injury_metrics_view ON (true))
-     LEFT JOIN lookups.collsn ON ((crashes.fhe_collsn_id = collsn.id)))
-  WHERE (crashes.is_deleted = false)
+          WHERE crashes.id = crash_injury_metrics_view_1.id
+         LIMIT 1) crash_injury_metrics_view ON true
+     LEFT JOIN lookups.collsn ON crashes.fhe_collsn_id = collsn.id
+  WHERE crashes.is_deleted = false
 UNION ALL
  SELECT NULL::text AS record_locator,
     aab.form_id AS cris_crash_id,
     'NON-CR3'::text AS type,
     aab.location_id,
-    (aab.case_id)::text AS case_id,
+    aab.case_id::text AS case_id,
     aab.case_timestamp AS crash_timestamp,
     to_char((aab.case_timestamp AT TIME ZONE 'US/Central'::text), 'YYYY-MM-DD'::text) AS crash_date,
     to_char((aab.case_timestamp AT TIME ZONE 'US/Central'::text), 'HH24:MI:SS'::text) AS crash_time,
@@ -751,7 +752,7 @@ UNION ALL
     0 AS crash_sev_id,
     aab.latitude,
     aab.longitude,
-    ''::text AS address_display,
+    aab.address AS address_display,
     0 AS non_injry_count,
     0 AS nonincap_injry_count,
     0 AS poss_injry_count,
@@ -766,4 +767,10 @@ UNION ALL
     ''::text AS veh_body_styl_desc,
     ''::text AS veh_unit_desc
    FROM atd_apd_blueform aab
-  WHERE (aab.is_deleted = false);
+  WHERE aab.is_deleted = false
+WITH DATA;
+
+-- View indexes:
+CREATE INDEX location_crashes_view_crash_timestamp_idx ON public.location_crashes_view USING btree (crash_timestamp);
+CREATE INDEX location_crashes_view_location_id_idx ON public.location_crashes_view USING btree (location_id);
+CREATE INDEX location_crashes_view_record_locator_idx ON public.location_crashes_view USING btree (record_locator);
