@@ -2,6 +2,7 @@
 import { fatalitiesListViewColumns } from "@/configs/fatalitiesListViewColumns";
 import { fatalitiesListViewQueryConfig } from "@/configs/fatalitiesListViewTable";
 import TableWrapper from "@/components/TableWrapper";
+import UserEventsLogger from "@/components/UserEventsLogger";
 import { useDocumentTitle } from "@/utils/documentTitle";
 
 const localStorageKey = "fatalitiesListViewQueryConfig";
@@ -9,15 +10,18 @@ const localStorageKey = "fatalitiesListViewQueryConfig";
 export default function Fatalities() {
   useDocumentTitle("Fatalities");
   return (
-    <div className="h-100 d-flex flex-column">
-      <div>
-        <span className="fs-3 fw-bold">Fatalities</span>
+    <UserEventsLogger eventName="fatalities_list">
+      <div className="h-100 d-flex flex-column">
+        <div>
+          <span className="fs-3 fw-bold">Fatalities</span>
+        </div>
+        <TableWrapper
+          columns={fatalitiesListViewColumns}
+          initialQueryConfig={fatalitiesListViewQueryConfig}
+          localStorageKey={localStorageKey}
+          filtersEventName="fatalities_list_filters"
+        />
       </div>
-      <TableWrapper
-        columns={fatalitiesListViewColumns}
-        initialQueryConfig={fatalitiesListViewQueryConfig}
-        localStorageKey={localStorageKey}
-      />
-    </div>
+    </UserEventsLogger>
   );
 }

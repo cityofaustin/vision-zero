@@ -5,6 +5,7 @@ import { FaMap, FaChartPie } from "react-icons/fa6";
 import DashboardLinkCard, {
   DashboardLinkCardProps,
 } from "@/components/DashboardLinkCard";
+import UserEventsLogger from "@/components/UserEventsLogger";
 import { useDocumentTitle } from "@/utils/documentTitle";
 
 const VZV_ENDPOINT = process.env.NEXT_PUBLIC_VZV_ENDPOINT || "";
@@ -53,7 +54,7 @@ const dashboardLinks: DashboardLinkCardProps[] = [
 export default function Dashboard() {
   useDocumentTitle("Dashboard");
   return (
-    <>
+    <UserEventsLogger eventName="dashboard">
       <Row className="mt-3">
         <Col md={9}>
           <p>
@@ -91,6 +92,6 @@ export default function Dashboard() {
           </Col>
         ))}
       </Row>
-    </>
+    </UserEventsLogger>
   );
 }
