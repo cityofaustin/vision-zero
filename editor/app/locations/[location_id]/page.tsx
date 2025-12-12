@@ -7,6 +7,7 @@ import Row from "react-bootstrap/Row";
 import DataCard from "@/components/DataCard";
 import LocationMapCard from "@/components/LocationMapCard";
 import TableWrapper from "@/components/TableWrapper";
+import UserEventsLogger from "@/components/UserEventsLogger";
 import { useQuery } from "@/utils/graphql";
 import { GET_LOCATION } from "@/queries/location";
 import { Location } from "@/types/locations";
@@ -90,7 +91,7 @@ export default function LocationDetailsPage({
   const location = data[0];
 
   return (
-    <>
+    <UserEventsLogger eventName="location_details">
       <span className="fs-2">{location.description}</span>
       <Row>
         <Col sm={12} md={6} lg={7} className="mb-3">
@@ -150,6 +151,6 @@ export default function LocationDetailsPage({
           />
         </Col>
       </Row>
-    </>
+    </UserEventsLogger>
   );
 }
