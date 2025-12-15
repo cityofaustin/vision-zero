@@ -1,7 +1,7 @@
 "use client";
 
 import { notFound } from "next/navigation";
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, use } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import { MapRef } from "react-map-gl";
@@ -21,10 +21,10 @@ import { useQuery } from "@/utils/graphql";
 export default function FatalCrashDetailsPage({
   params,
 }: {
-  params: { record_locator: string };
+  params: Promise<{ record_locator: string }>;
 }) {
   const mapRef = useRef<MapRef | null>(null);
-  const recordLocator = params.record_locator;
+  const { record_locator: recordLocator } = use(params);
 
   const typename = "crashes";
 
