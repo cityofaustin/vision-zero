@@ -110,7 +110,7 @@ export default function CrashNarrativeEditableCard({
                       rows={17}
                       autoFocus
                       {...register("narrative_summary", {
-                        setValueAs: (value) => value || null, // save empty string as null
+                        setValueAs: (value) => value.trim() || null, // save empty strings as null
                       })}
                     />
                   </Form.Group>
