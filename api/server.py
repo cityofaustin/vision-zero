@@ -41,7 +41,10 @@ API_CLIENT_SECRET = os.getenv("API_CLIENT_SECRET", "")
 AWS_DEFAULT_REGION = os.getenv("AWS_DEFAULT_REGION", "us-east-1")
 AWS_S3_KEY = os.getenv("AWS_S3_KEY", "")
 AWS_S3_SECRET = os.getenv("AWS_S3_SECRET", "")
-AWS_S3_CR3_LOCATION = os.getenv("AWS_S3_CR3_LOCATION", "")
+# todo: new env var
+AWS_S3_BUCKET_ENV = "local"
+AWS_S3_CR3_LOCATION = f"/{AWS_S3_BUCKET_ENV}/cr3s/pdfs"
+AWS_S3_PERSON_IMAGE_LOCATION = f"/{AWS_S3_BUCKET_ENV}/images/person"
 AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
 
 ADMIN_ROLE_NAME = "vz-admin"
@@ -49,6 +52,14 @@ ADMIN_ROLE_NAME = "vz-admin"
 CORS_URL = "*"
 ALGORITHMS = ["RS256"]
 APP = Flask(__name__)
+
+
+s3 = boto3.client(
+    "s3",
+    region_name=AWS_DEFAULT_REGION,
+    aws_access_key_id=AWS_S3_KEY,
+    aws_secret_access_key=AWS_S3_SECRET,
+)
 
 
 def get_secure_password(num_chars=16):
@@ -356,13 +367,6 @@ def download_crash_id(crash_id):
     # We only care for an integer string, anything else is not safe:
     safe_crash_id = re.sub("[^0-9]", "", crash_id)
 
-    s3 = boto3.client(
-        "s3",
-        region_name=AWS_DEFAULT_REGION,
-        aws_access_key_id=AWS_S3_KEY,
-        aws_secret_access_key=AWS_S3_SECRET,
-    )
-
     url = s3.generate_presigned_url(
         ExpiresIn=60,  # seconds
         ClientMethod="get_object",
@@ -376,6 +380,65 @@ def download_crash_id(crash_id):
     # response = "Private Download, CrashID: %s , %s" % (safe_crash_id, url)
     # return redirect(url, code=302)
     return jsonify(message=url)
+
+
+@APP.route("/images/person/<person_id>", methods=["GET", "POST"])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
+@requires_auth
+def person_image(person_id):
+    """GET: retrieve image URL, POST: upload image"""
+    safe_person_id = re.sub("[^0-9]", "", person_id)
+
+    if request.method == "GET":
+        url = s3.generate_presigned_url(
+            ExpiresIn=3600,
+            ClientMethod="get_object",
+            Params={
+                "Bucket": AWS_S3_BUCKET,
+                "Key": f"{AWS_S3_PERSON_IMAGE_LOCATION}/{safe_person_id}.jpg",
+            },
+        )
+        return jsonify(url=url)
+
+    elif request.method == "POST":
+        # Check if image file is in request
+        if "file" not in request.files:
+            return jsonify(error="No file provided"), 400
+
+        file = request.files["file"]
+
+        if file.filename == "":
+            return jsonify(error="No file selected"), 400
+
+        # Validate file type
+        allowed_extensions = {"jpg", "jpeg", "png"}
+        ext = file.filename.rsplit(".", 1)[1].lower() if "." in file.filename else ""
+
+        if ext not in allowed_extensions:
+            return jsonify(error="Invalid file type"), 400
+
+        # Upload to S3
+        try:
+            s3.upload_fileobj(
+                file,
+                AWS_S3_BUCKET,
+                f"{AWS_S3_PERSON_IMAGE_LOCATION}/{safe_person_id}.jpg",
+                ExtraArgs={
+                    "ContentType": file.content_type or "image/jpeg",
+                    "ACL": "private",  # Keep it private
+                },
+            )
+            return jsonify(message="Image uploaded successfully"), 201
+
+        except Exception as e:
+            return jsonify(error=f"Upload failed: {str(e)}"), 500
 
 
 def hasUserRole(role, user_dict):
