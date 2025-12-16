@@ -1,8 +1,10 @@
 #!/usr/bin/env python
-#
-# ATD - CR3 Download API
-#
-
+"""
+API which handles
+- Auth0 user management
+- CR3 PDF downloads
+- Person image uploads and downloads
+"""
 import datetime
 import json
 from os import getenv, getpid, sysconf_names, sysconf
@@ -11,48 +13,43 @@ import secrets
 import string
 
 import boto3
-import requests
-
 from dotenv import load_dotenv, find_dotenv
-from functools import wraps
-from six.moves.urllib.request import urlopen
-
 from flask import Flask, request, jsonify, g
 from flask_cors import cross_origin
-from werkzeug.local import LocalProxy
+from functools import wraps
 from jose import jwt
+from PIL import Image
+import requests
+from six.moves.urllib.request import urlopen
+from werkzeug.local import LocalProxy
 
-from utils.graphql import make_hasura_request, UPDATE_PERSON_IMAGE_METADATA
+from utils.graphql import (
+    make_hasura_request,
+    GET_PERSON_IMAGE_METADATA,
+    UPDATE_PERSON_IMAGE_METADATA,
+)
 
-#
-# Environment
-#
 ENV_FILE = find_dotenv()
 if ENV_FILE:
     load_dotenv(ENV_FILE, verbose=True)
 
-# We need the Auth0 domain, Client ID and current api environment.
 AUTH0_DOMAIN = getenv("AUTH0_DOMAIN", "")
 CLIENT_ID = getenv("CLIENT_ID", "")
 API_CLIENT_ID = getenv("API_CLIENT_ID", "")
 API_CLIENT_SECRET = getenv("API_CLIENT_SECRET", "")
-
-# AWS Configuration
 AWS_DEFAULT_REGION = getenv("AWS_DEFAULT_REGION", "us-east-1")
 AWS_S3_KEY = getenv("AWS_S3_KEY", "")
 AWS_S3_SECRET = getenv("AWS_S3_SECRET", "")
-# todo: new env var
-AWS_S3_BUCKET_ENV = "local"
-AWS_S3_CR3_LOCATION = f"/{AWS_S3_BUCKET_ENV}/cr3s/pdfs"
-AWS_S3_PERSON_IMAGE_LOCATION = f"/{AWS_S3_BUCKET_ENV}/images/person"
+AWS_S3_BUCKET_ENV = getenv("AWS_S3_BUCKET_ENV", "")
+AWS_S3_CR3_LOCATION = f"{AWS_S3_BUCKET_ENV}/cr3s/pdfs"
+AWS_S3_PERSON_IMAGE_LOCATION = f"{AWS_S3_BUCKET_ENV}/images/person"
 AWS_S3_BUCKET = getenv("AWS_S3_BUCKET", "")
 
 ADMIN_ROLE_NAME = "vz-admin"
-
+MAX_IMAGE_PIXELS = 10000
 CORS_URL = "*"
-ALGORITHMS = ["RS256"]
-APP = Flask(__name__)
 
+app = Flask(__name__)
 
 s3 = boto3.client(
     "s3",
@@ -120,7 +117,7 @@ def notAuthorizedError():
 
 # Add the appropriate security headers to all responses
 # These headers may be overwritten in prod and staging by the API gateway!
-@APP.after_request
+@app.after_request
 def add_custom_headers(response):
     # Cache-Control to manage caching behavior
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
@@ -170,7 +167,7 @@ class AuthError(Exception):
         self.status_code = status_code
 
 
-@APP.errorhandler(AuthError)
+@app.errorhandler(AuthError)
 def handle_auth_error(ex):
     response = jsonify(ex.error)
     response.status_code = ex.status_code
@@ -272,7 +269,7 @@ def requires_auth(f):
                 payload = jwt.decode(
                     token,
                     rsa_key,
-                    algorithms=ALGORITHMS,
+                    algorithms=["RS256"],
                     issuer="https://" + AUTH0_DOMAIN + "/",
                     audience=CLIENT_ID,
                     options=dataConfig,
@@ -289,11 +286,11 @@ def requires_auth(f):
                     },
                     401,
                 )
-            except Exception as e:
+            except Exception:
                 raise AuthError(
                     {
                         "code": "invalid_header",
-                        "description": f"{e}: Unable to parse authentication token.",
+                        "description": f"Unable to parse authentication token.",
                     },
                     401,
                 )
@@ -314,7 +311,7 @@ current_user = LocalProxy(lambda: getattr(g, "current_user", None))
 # Controllers API
 
 
-@APP.route("/")
+@app.route("/")
 @cross_origin(headers=["Content-Type", "Authorization"])
 def healthcheck():
     """No access token required to access this route"""
@@ -352,7 +349,7 @@ def healthcheck():
     return jsonify(message=response)
 
 
-@APP.route("/cr3/download/<crash_id>")
+@app.route("/cr3/download/<crash_id>")
 @cross_origin(
     headers=[
         "Content-Type",
@@ -382,7 +379,7 @@ def download_crash_id(crash_id):
     return jsonify(message=url)
 
 
-@APP.route("/images/person/<person_id>", methods=["GET", "POST"])
+@app.route("/images/person/<person_id>", methods=["GET", "POST"])
 @cross_origin(
     headers=[
         "Content-Type",
@@ -393,22 +390,35 @@ def download_crash_id(crash_id):
 )
 @requires_auth
 def person_image(person_id):
-    """GET: retrieve image URL, POST: upload image"""
+    """Handles person images. Expects a jpeg or png sent in the `file` property"""
+
     safe_person_id = re.sub("[^0-9]", "", person_id)
 
+    if not safe_person_id:
+        return jsonify(error="Missing or invalid person_id"), 400
+
     if request.method == "GET":
+        # get filename from DB
+        res = make_hasura_request(
+            query=GET_PERSON_IMAGE_METADATA, variables={"person_id": safe_person_id}
+        )
+        app.logger.info(res)
+        filename = res["people_by_pk"]["image_filename"]
+
+        if not filename:
+            return jsonify(error=f"No image found for person ID: {safe_person_id}"), 404
+
         url = s3.generate_presigned_url(
             ExpiresIn=3600,
             ClientMethod="get_object",
             Params={
                 "Bucket": AWS_S3_BUCKET,
-                "Key": f"{AWS_S3_PERSON_IMAGE_LOCATION}/{safe_person_id}.jpg",
+                "Key": f"{AWS_S3_PERSON_IMAGE_LOCATION}/{filename}",
             },
         )
         return jsonify(url=url)
 
     elif request.method == "POST":
-        # Check if image file is in request
         if "file" not in request.files:
             return jsonify(error="No file provided"), 400
 
@@ -417,49 +427,77 @@ def person_image(person_id):
         if file.filename == "":
             return jsonify(error="No file selected"), 400
 
-        # Validate file type
-        allowed_extensions = {"jpg", "jpeg", "png"}
-        ext = file.filename.rsplit(".", 1)[1].lower() if "." in file.filename else ""
+        try:
+            # validate image file
+            file.seek(0)
+            img = Image.open(file)
+            img.verify()
 
-        if ext not in allowed_extensions:
-            return jsonify(error="Invalid file type"), 400
+            # get actual image format
+            file.seek(0)
+            img = Image.open(file)
+            actual_format = img.format.lower()
+
+            allowed_formats = ["jpeg", "png"]
+            if actual_format not in allowed_formats:
+                return jsonify(error=f"Image format must be JPEG or PNG"), 400
+
+            app.logger.info(f"Validated image format: {actual_format}")
+
+            # todo: do we want this?
+            width, height = img.size
+            if width > MAX_IMAGE_PIXELS or height > MAX_IMAGE_PIXELS:
+                return jsonify(error="Image dimensions too large"), 400
+
+            # reset file position for upload
+            file.seek(0)
+
+            ext = "jpg" if actual_format == "jpeg" else actual_format
+
+        except Exception as e:
+            app.logger.error(f"Image validation failed: {e}")
+            return jsonify(error="Invalid or corrupted image file"), 400
+
+        # prepare for S3 upload
+        filename = f"{safe_person_id}.{ext}"
+        obj_key = f"{AWS_S3_PERSON_IMAGE_LOCATION}/{filename}"
+        app.logger.info(f"Uploading image: {AWS_S3_BUCKET}/{obj_key}")
 
         try:
-            # Upload to S3
             s3.upload_fileobj(
                 file,
                 AWS_S3_BUCKET,
-                f"{AWS_S3_PERSON_IMAGE_LOCATION}/{safe_person_id}.jpg",
+                obj_key,
                 ExtraArgs={
                     "ContentType": file.content_type or "image/jpeg",
                 },
             )
 
         except Exception as e:
-            return jsonify(error=f"Upload failed: {str(e)}"), 500
+            app.logger.exception(str(e))
+            return jsonify(error=f"Upload failed"), 500
 
-        # Update DB with metadata
         try:
-            filename = f"{person_id}.{ext}"
-            user_dict = current_user._get_current_object()
-            make_hasura_request(
+            res = make_hasura_request(
                 query=UPDATE_PERSON_IMAGE_METADATA,
                 variables={
-                    "person_id": 1,
+                    "person_id": safe_person_id,
                     "image_filename": filename,
-                    "updated_by": user_dict["email"],
+                    "updated_by": get_user_email(),
                 },
             )
 
+            app.logger.info(res)
             return (
-                jsonify(message="Image uploaded successfully", filename=filename),
+                jsonify(success=True, filename=filename),
                 201,
             )
 
         except Exception as e:
-            return jsonify(error=f"Upload failed: {str(e)}"), 500
+            app.logger.exception(str(e))
+            return jsonify(error=f"Upload failed"), 500
 
-    return json(message="Bad Request"), 400
+    return jsonify(message="Bad Request"), 400
 
 
 def has_user_role(role, user_dict):
@@ -471,7 +509,12 @@ def has_user_role(role, user_dict):
     return False
 
 
-@APP.route("/user/test")
+def get_user_email():
+    user_dict = current_user._get_current_object()
+    return user_dict["https://hasura.io/jwt/claims"]["x-hasura-user-email"]
+
+
+@app.route("/user/test")
 @cross_origin(
     headers=[
         "Content-Type",
@@ -485,7 +528,7 @@ def user_test():
     return jsonify(message=current_user._get_current_object())
 
 
-@APP.route("/user/list_users")
+@app.route("/user/list_users")
 @cross_origin(
     headers=[
         "Content-Type",
@@ -510,7 +553,7 @@ def user_list_users():
     return jsonify(response.json()), response.status_code
 
 
-@APP.route("/user/get_user/<id>")
+@app.route("/user/get_user/<id>")
 @cross_origin(
     headers=[
         "Content-Type",
@@ -527,7 +570,7 @@ def user_get_user(id):
     return jsonify(response.json()), response.status_code
 
 
-@APP.route("/user/create_user", methods=["POST"])
+@app.route("/user/create_user", methods=["POST"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
@@ -549,7 +592,7 @@ def user_create_user():
         return notAuthorizedError()
 
 
-@APP.route("/user/update_user/<id>", methods=["PUT"])
+@app.route("/user/update_user/<id>", methods=["PUT"])
 @cross_origin(
     headers=[
         "Content-Type",
@@ -571,7 +614,7 @@ def user_update_user(id):
         return notAuthorizedError()
 
 
-@APP.route("/user/unblock_user/<id>", methods=["DELETE"])
+@app.route("/user/unblock_user/<id>", methods=["DELETE"])
 @cross_origin(
     headers=[
         "Content-Type",
@@ -592,7 +635,7 @@ def user_unblock_user(id):
         return notAuthorizedError()
 
 
-@APP.route("/user/delete_user/<id>", methods=["DELETE"])
+@app.route("/user/delete_user/<id>", methods=["DELETE"])
 @cross_origin(
     headers=[
         "Content-Type",
@@ -617,4 +660,4 @@ def user_delete_user(id):
 
 
 if __name__ == "__main__":
-    APP.run(host="0.0.0.0", port=getenv("PORT", 3010))
+    app.run(host="0.0.0.0", port=getenv("PORT", 3010), debug=True)
