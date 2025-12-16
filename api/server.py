@@ -403,9 +403,9 @@ def person_image(person_id):
             query=GET_PERSON_IMAGE_METADATA, variables={"person_id": safe_person_id}
         )
         app.logger.info(res)
-        filename = res["people_by_pk"]["image_filename"]
+        obj_key = res["people_by_pk"]["image_s3_object_key"]
 
-        if not filename:
+        if not obj_key:
             return jsonify(error=f"No image found for person ID: {safe_person_id}"), 404
 
         url = s3.generate_presigned_url(
@@ -413,7 +413,7 @@ def person_image(person_id):
             ClientMethod="get_object",
             Params={
                 "Bucket": AWS_S3_BUCKET,
-                "Key": f"{AWS_S3_PERSON_IMAGE_LOCATION}/{filename}",
+                "Key": obj_key,
             },
         )
         return jsonify(url=url)
@@ -482,14 +482,14 @@ def person_image(person_id):
                 query=UPDATE_PERSON_IMAGE_METADATA,
                 variables={
                     "person_id": safe_person_id,
-                    "image_filename": filename,
+                    "image_s3_object_key": obj_key,
                     "updated_by": get_user_email(),
                 },
             )
 
             app.logger.info(res)
             return (
-                jsonify(success=True, filename=filename),
+                jsonify(success=True),
                 201,
             )
 

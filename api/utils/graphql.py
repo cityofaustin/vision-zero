@@ -10,17 +10,17 @@ ADMIN_SECRET = os.getenv("HASURA_GRAPHQL_ADMIN_SECRET")
 GET_PERSON_IMAGE_METADATA = """
 query GetPersonImage($person_id: Int!) {
   people_by_pk(id: $person_id) {
-    image_filename
+    image_s3_object_key
   }
 }
 """
 
 
 UPDATE_PERSON_IMAGE_METADATA = """
-mutation UpdatePersonImage($image_filename: String!, $person_id: Int!, $updated_by: String!) {
-  update_people(_set: {image_filename: $image_filename, updated_by: $updated_by}, where: {id: {_eq: $person_id}}) {
+mutation UpdatePersonImage($image_s3_object_key: String!, $person_id: Int!, $updated_by: String!) {
+  update_people(_set: {image_s3_object_key: $image_s3_object_key, updated_by: $updated_by}, where: {id: {_eq: $person_id}}) {
     returning {
-      image_filename
+      image_s3_object_key
       id
     }
   }
