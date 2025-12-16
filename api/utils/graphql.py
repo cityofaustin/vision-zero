@@ -7,9 +7,17 @@ from utils.exceptions import HasuraAPIError
 ENDPOINT = os.getenv("HASURA_GRAPHQL_ENDPOINT")
 ADMIN_SECRET = os.getenv("HASURA_GRAPHQL_ADMIN_SECRET")
 
+GET_PERSON_IMAGE_METADATA = """
+query GetPersonImage($person_id: Int!) {
+  people_by_pk(id: $person_id) {
+    image_filename
+  }
+}
+"""
+
 
 UPDATE_PERSON_IMAGE_METADATA = """
-mutation UpdateImage($image_filename: String!, $person_id: Int!, $updated_by: String!) {
+mutation UpdatePersonImage($image_filename: String!, $person_id: Int!, $updated_by: String!) {
   update_people(_set: {image_filename: $image_filename, updated_by: $updated_by}, where: {id: {_eq: $person_id}}) {
     returning {
       image_filename
@@ -18,7 +26,6 @@ mutation UpdateImage($image_filename: String!, $person_id: Int!, $updated_by: St
   }
 }
 """
-
 
 
 def make_hasura_request(*, query, variables=None):
