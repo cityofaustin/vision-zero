@@ -5,17 +5,15 @@
 
 import datetime
 import json
-import os
+from os import getenv, getpid, sysconf_names, sysconf
 import re
 import secrets
 import string
-import sys
 
 import boto3
 import requests
 
 from dotenv import load_dotenv, find_dotenv
-from os import environ as env
 from functools import wraps
 from six.moves.urllib.request import urlopen
 
@@ -23,6 +21,8 @@ from flask import Flask, request, jsonify, g
 from flask_cors import cross_origin
 from werkzeug.local import LocalProxy
 from jose import jwt
+
+from utils.graphql import make_hasura_request, UPDATE_PERSON_IMAGE_METADATA
 
 #
 # Environment
@@ -32,20 +32,20 @@ if ENV_FILE:
     load_dotenv(ENV_FILE, verbose=True)
 
 # We need the Auth0 domain, Client ID and current api environment.
-AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "")
-CLIENT_ID = os.getenv("CLIENT_ID", "")
-API_CLIENT_ID = os.getenv("API_CLIENT_ID", "")
-API_CLIENT_SECRET = os.getenv("API_CLIENT_SECRET", "")
+AUTH0_DOMAIN = getenv("AUTH0_DOMAIN", "")
+CLIENT_ID = getenv("CLIENT_ID", "")
+API_CLIENT_ID = getenv("API_CLIENT_ID", "")
+API_CLIENT_SECRET = getenv("API_CLIENT_SECRET", "")
 
 # AWS Configuration
-AWS_DEFAULT_REGION = os.getenv("AWS_DEFAULT_REGION", "us-east-1")
-AWS_S3_KEY = os.getenv("AWS_S3_KEY", "")
-AWS_S3_SECRET = os.getenv("AWS_S3_SECRET", "")
+AWS_DEFAULT_REGION = getenv("AWS_DEFAULT_REGION", "us-east-1")
+AWS_S3_KEY = getenv("AWS_S3_KEY", "")
+AWS_S3_SECRET = getenv("AWS_S3_SECRET", "")
 # todo: new env var
 AWS_S3_BUCKET_ENV = "local"
 AWS_S3_CR3_LOCATION = f"/{AWS_S3_BUCKET_ENV}/cr3s/pdfs"
 AWS_S3_PERSON_IMAGE_LOCATION = f"/{AWS_S3_BUCKET_ENV}/images/person"
-AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
+AWS_S3_BUCKET = getenv("AWS_S3_BUCKET", "")
 
 ADMIN_ROLE_NAME = "vz-admin"
 
@@ -328,11 +328,11 @@ def healthcheck():
         ]  # Remove microseconds for a terse format
 
     # Get the process start time
-    pid = os.getpid()
+    pid = getpid()
     with open(f"/proc/{pid}/stat", "r") as f:
         proc_start_time_ticks = int(f.readline().split()[21])
-        proc_start_time_seconds = proc_start_time_ticks / os.sysconf(
-            os.sysconf_names["SC_CLK_TCK"]
+        proc_start_time_seconds = proc_start_time_ticks / sysconf(
+            sysconf_names["SC_CLK_TCK"]
         )
         proc_uptime_seconds = uptime_seconds - proc_start_time_seconds
         proc_uptime_str = str(datetime.timedelta(seconds=proc_uptime_seconds)).split(
@@ -424,24 +424,45 @@ def person_image(person_id):
         if ext not in allowed_extensions:
             return jsonify(error="Invalid file type"), 400
 
-        # Upload to S3
         try:
+            # Upload to S3
             s3.upload_fileobj(
                 file,
                 AWS_S3_BUCKET,
                 f"{AWS_S3_PERSON_IMAGE_LOCATION}/{safe_person_id}.jpg",
                 ExtraArgs={
                     "ContentType": file.content_type or "image/jpeg",
-                    "ACL": "private",  # Keep it private
                 },
             )
-            return jsonify(message="Image uploaded successfully"), 201
 
         except Exception as e:
             return jsonify(error=f"Upload failed: {str(e)}"), 500
 
+        # Update DB with metadata
+        try:
+            filename = f"{person_id}.{ext}"
+            user_dict = current_user._get_current_object()
+            make_hasura_request(
+                query=UPDATE_PERSON_IMAGE_METADATA,
+                variables={
+                    "person_id": 1,
+                    "image_filename": filename,
+                    "updated_by": user_dict["email"],
+                },
+            )
 
-def hasUserRole(role, user_dict):
+            return (
+                jsonify(message="Image uploaded successfully", filename=filename),
+                201,
+            )
+
+        except Exception as e:
+            return jsonify(error=f"Upload failed: {str(e)}"), 500
+
+    return json(message="Bad Request"), 400
+
+
+def has_user_role(role, user_dict):
     claims = user_dict.get("https://hasura.io/jwt/claims", False)
     if claims != False:
         roles = claims.get("x-hasura-allowed-roles")
@@ -512,7 +533,7 @@ def user_get_user(id):
 @requires_auth
 def user_create_user():
     user_dict = current_user._get_current_object()
-    if hasUserRole(ADMIN_ROLE_NAME, user_dict):
+    if has_user_role(ADMIN_ROLE_NAME, user_dict):
         json_data = request.json
         # set the user's password - user will have to reset it for access
         json_data["password"] = get_secure_password()
@@ -540,7 +561,7 @@ def user_create_user():
 @requires_auth
 def user_update_user(id):
     user_dict = current_user._get_current_object()
-    if hasUserRole(ADMIN_ROLE_NAME, user_dict):
+    if has_user_role(ADMIN_ROLE_NAME, user_dict):
         json_data = request.json
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
@@ -562,7 +583,7 @@ def user_update_user(id):
 @requires_auth
 def user_unblock_user(id):
     user_dict = current_user._get_current_object()
-    if hasUserRole(ADMIN_ROLE_NAME, user_dict):
+    if has_user_role(ADMIN_ROLE_NAME, user_dict):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/user_blocks/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.delete(endpoint, headers=headers)
@@ -583,7 +604,7 @@ def user_unblock_user(id):
 @requires_auth
 def user_delete_user(id):
     user_dict = current_user._get_current_object()
-    if hasUserRole(ADMIN_ROLE_NAME, user_dict):
+    if has_user_role(ADMIN_ROLE_NAME, user_dict):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.delete(endpoint, headers=headers)
@@ -596,4 +617,4 @@ def user_delete_user(id):
 
 
 if __name__ == "__main__":
-    APP.run(host="0.0.0.0", port=env.get("PORT", 3010))
+    APP.run(host="0.0.0.0", port=getenv("PORT", 3010))

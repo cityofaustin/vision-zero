@@ -8,9 +8,9 @@ ENDPOINT = os.getenv("HASURA_GRAPHQL_ENDPOINT")
 ADMIN_SECRET = os.getenv("HASURA_GRAPHQL_ADMIN_SECRET")
 
 
-UPDATE_IMAGE_FILENAME = """
-mutation UpdateImage($image_filename: String!, $id: Int!) {
-  update_people(_set: {image_filename: $image_filename}, where: {id: {_eq: $id}}) {
+UPDATE_PERSON_IMAGE_METADATA = """
+mutation UpdateImage($image_filename: String!, $person_id: Int!, $updated_by: String!) {
+  update_people(_set: {image_filename: $image_filename, updated_by: $updated_by}, where: {id: {_eq: $person_id}}) {
     returning {
       image_filename
       id
