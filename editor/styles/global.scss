@@ -115,6 +115,15 @@ $sidebarWidth: 4.6rem;
   }
 }
 
+// Sets the style of card headers in the fatalities victims card components
+[data-bs-theme="dark"] .victim-card-header {
+  background-color: $dark-grey !important;
+}
+
+[data-bs-theme="light"] .victim-card-header {
+  background-color: $light !important;
+}
+
 // Custom tooltip styles prevent the y-scrollbar from briefly flashing
 // and causing a layout shift
 .tooltip {
@@ -292,7 +301,7 @@ to make sure it renders on top is a common fix */
 }
 
 /* Push the top-right mapbox control container down to accomodate our custom control */
-.table-map-container > .mapboxgl-ctrl-top-right {
+.table-map-container>.mapboxgl-ctrl-top-right {
   right: 0;
   top: 35px !important;
 }
@@ -303,7 +312,7 @@ to make sure it renders on top is a common fix */
 }
 
 /* Push the top-right mapbox control container down to accomodate our custom control */
-.crash-header-card-body > .mapboxgl-ctrl-top-right {
+.crash-header-card-body>.mapboxgl-ctrl-top-right {
   right: 0;
   top: 35px !important;
 }
