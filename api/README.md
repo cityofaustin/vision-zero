@@ -20,7 +20,7 @@ The API requires certain environment variables to be set. Copy the `.env.example
 
 ## Local usage
 
-Update your VZE environment (`/app/.env.local`) to use the local API:
+Copy the `.env.example` file in this directory to `.env`. To fill in the missing secret values, use the `Vision Zero (VZ) User & CR3 API Secrets`....
 
 ```
 NEXT_PUBLIC_CR3_API_DOMAIN=http://localhost:8085
