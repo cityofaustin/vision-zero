@@ -6,7 +6,7 @@ import { Card, Col, Row } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import { MapRef } from "react-map-gl";
 import { PointMap } from "@/components/PointMap";
-import FatalityVictimsCard from "@/components/FatalityVictimsCard";
+import FatalityUnitsCards from "@/components/FatalityUnitsCards";
 import CrashNarrativeEditableCard from "@/components/CrashNarrativeEditableCard";
 import { GET_CRASH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
@@ -122,7 +122,7 @@ export default function FatalCrashDetailsPage({
           </Card>
         </Col>
         <Col className="mb-3" sm={12} md={6}>
-          <FatalityVictimsCard crash={crash} />
+          <FatalityUnitsCards crash={crash} />
         </Col>
       </Row>
       <Row>

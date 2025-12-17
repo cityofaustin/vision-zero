@@ -115,12 +115,12 @@ $sidebarWidth: 4.6rem;
   }
 }
 
-// Sets the style of card headers in the fatalities victims card components
-[data-bs-theme="dark"] .victim-card-header {
+// Sets the style of card headers & footers in the fatalities victims card components
+[data-bs-theme="dark"] .victim-card-header-footer {
   background-color: $dark-grey !important;
 }
 
-[data-bs-theme="light"] .victim-card-header {
+[data-bs-theme="light"] .victim-card-header-footer {
   background-color: $light !important;
 }
 
