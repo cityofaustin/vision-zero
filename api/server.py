@@ -46,7 +46,7 @@ AWS_S3_PERSON_IMAGE_LOCATION = f"{AWS_S3_BUCKET_ENV}/images/person"
 AWS_S3_BUCKET = getenv("AWS_S3_BUCKET", "")
 
 ADMIN_ROLE_NAME = "vz-admin"
-MAX_IMAGE_PIXELS = 10000
+MAX_IMAGE_PIXELS = 5000
 CORS_URL = "*"
 
 app = Flask(__name__)
@@ -438,16 +438,13 @@ def person_image(person_id):
             img = Image.open(file)
             actual_format = img.format.lower()
 
-            allowed_formats = ["jpeg", "png"]
-            if actual_format not in allowed_formats:
+            if actual_format not in ["jpeg", "png"]:
                 return jsonify(error=f"Image format must be JPEG or PNG"), 400
-
-            app.logger.info(f"Validated image format: {actual_format}")
 
             # todo: do we want this?
             width, height = img.size
             if width > MAX_IMAGE_PIXELS or height > MAX_IMAGE_PIXELS:
-                return jsonify(error="Image dimensions too large"), 400
+                return jsonify(error=f"Image deimensions must not exceed {MAX_IMAGE_PIXELS}x{MAX_IMAGE_PIXELS}px "), 400
 
             # reset file position for upload
             file.seek(0)
