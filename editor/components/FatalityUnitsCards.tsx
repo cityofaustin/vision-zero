@@ -71,7 +71,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                 <Card.Body>
                   {unitVictims?.map((victim) => (
                     <ListGroupItem
-                      className="d-flex align-items-center justify-content-between"
+                      className="d-flex align-items-center justify-content-between pb-3"
                       key={victim.id}
                       style={{ border: "none" }}
                     >
