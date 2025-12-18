@@ -142,7 +142,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                     </div>
                   )}
                   {hasContribFactors && (
-                    <div className="pb-1">
+                    <div>
                       <div className="fw-bold">Contributing factors</div>
                       {primaryContribFactors.map((factor) => (
                         <div className="ms-2" key={factor?.id}>
