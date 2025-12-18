@@ -73,7 +73,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                       key={victim.id}
                       style={{ border: "none" }}
                     >
-                      <div className="d-flex align-items-center min-width-0">
+                      <div className="d-flex align-items-center">
                         <Image
                           alt="placeholder"
                           className="me-3"
@@ -90,7 +90,9 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                               // Dont show person type for cyclists or pedestrians bc its redundant
                               victim.prsn_type_id !== 4 && ( // pedestrian
                                 <small className="text-secondary">
-                                  {victim.prsn_type.label}
+                                  {victim.prsn_type_id === 5
+                                    ? "DRIVER OF MOTORCYCLE" // Reformat this person type bc its really long
+                                    : victim.prsn_type.label}
                                 </small>
                               )}
                           </div>
