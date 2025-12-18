@@ -130,9 +130,9 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                 </Card.Body>
               )}
               {(hasCharges || hasContribFactors) && (
-                <Card.Footer className="victim-card-header-footer">
+                <Card.Footer className="victim-card-header-footer pt-0">
                   {hasCharges && (
-                    <div>
+                    <div className="pb-1">
                       <div className="fw-bold">Charges</div>
                       {unitCharges.map((charge) => (
                         <div className="ms-2" key={charge.citation_nbr}>
@@ -142,7 +142,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                     </div>
                   )}
                   {hasContribFactors && (
-                    <div className="mt-2">
+                    <div className="pb-1">
                       <div className="fw-bold">Contributing factors</div>
                       {primaryContribFactors.map((factor) => (
                         <div className="ms-2" key={factor?.id}>
