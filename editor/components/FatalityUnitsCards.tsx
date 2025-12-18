@@ -59,7 +59,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                   <span className="fs-5 fw-bold me-2">
                     Unit {unit.unit_nbr}
                   </span>
-                  <div className="d-flex flex-grow-1 justify-content-start text-secondary">
+                  <div className="d-flex flex-grow-1 justify-content-start">
                     <span>
                       {unit.unit_desc?.label}
                       {unitYearMakeModel ? ` | ${unitYearMakeModel}` : ""}
