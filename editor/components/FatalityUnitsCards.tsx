@@ -59,7 +59,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                   <h5 className="mb-1 me-2">
                     <span className="fw-bold"> Unit {unit.unit_nbr}</span>
                   </h5>
-                  <div className="d-flex flex-grow-1 justify-content-start text-">
+                  <div className="d-flex flex-grow-1 justify-content-start">
                     <span>
                       {unit.unit_desc?.label}
                       {unitYearMakeModel ? ` | ${unitYearMakeModel}` : ""}
@@ -84,7 +84,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                         ></Image>
                         <div className="flex-grow-1">
                           <div className="w-100">
-                            <div className="">
+                            <div>
                               <span className="fw-bold me-2">
                                 {victim.prsn_first_name} {victim.prsn_mid_name}{" "}
                                 {victim.prsn_last_name}
