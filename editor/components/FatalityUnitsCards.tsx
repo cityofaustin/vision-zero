@@ -59,12 +59,10 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                   <span className="fs-5 fw-bold me-2">
                     Unit {unit.unit_nbr}
                   </span>
-                  <div className="d-flex flex-grow-1 justify-content-start">
-                    <span>
-                      {unit.unit_desc?.label}
-                      {unitYearMakeModel ? ` | ${unitYearMakeModel}` : ""}
-                    </span>
-                  </div>
+                  <span>
+                    {unit.unit_desc?.label}
+                    {unitYearMakeModel ? ` | ${unitYearMakeModel}` : ""}
+                  </span>
                 </div>
               </Card.Header>
               {hasVictim && (
@@ -75,49 +73,47 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                       key={victim.id}
                       style={{ border: "none" }}
                     >
-                      <div className="d-flex align-items-center flex-grow-1">
+                      <div className="d-flex align-items-center min-width-0">
                         <Image
                           alt="placeholder"
                           className="me-3"
                           src={`${BASE_PATH}/assets/img/avatars/placeholder.png`}
                           height="100px"
                         ></Image>
-                        <div className="flex-grow-1">
-                          <div className="w-100">
-                            <div>
-                              <span className="fw-bold me-2">
-                                {victim.prsn_first_name} {victim.prsn_mid_name}{" "}
-                                {victim.prsn_last_name}
-                              </span>
-                              {victim.prsn_type_id !== 3 && // pedalcyclist
-                                // Dont show person type for cyclists or pedestrians bc its redundant
-                                victim.prsn_type_id !== 4 && ( // pedestrian
-                                  <small className="text-secondary">
-                                    {victim.prsn_type.label}
-                                  </small>
-                                )}
-                            </div>
-                          </div>
-                          <div className="mb-1 d-flex w-100 flex-column">
-                            <span className="mb-2">
-                              {victim.prsn_age} YEARS OLD -{" "}
-                              {victim.drvr_ethncty?.label} {victim.gndr?.label}
+                        <div className="d-flex w-100 flex-column">
+                          <div className="pb-1">
+                            <span className="fw-bold me-2">
+                              {victim.prsn_first_name} {victim.prsn_mid_name}{" "}
+                              {victim.prsn_last_name}
                             </span>
-                            {victim.rest?.label &&
-                              // Only show restraint field for cars
-                              unit.unit_desc_id === 1 && // motor vehicle
-                              unit.veh_body_styl_id !== 71 && // motorycle
-                              unit.veh_body_styl_id !== 90 && ( // police motorcycle
-                                <span>Restraint used: {victim.rest.label}</span>
+                            {victim.prsn_type_id !== 3 && // pedalcyclist
+                              // Dont show person type for cyclists or pedestrians bc its redundant
+                              victim.prsn_type_id !== 4 && ( // pedestrian
+                                <small className="text-secondary">
+                                  {victim.prsn_type.label}
+                                </small>
                               )}
-                            {victim.prsn_exp_homelessness && (
-                              <span>{victim.prsn_exp_homelessness}</span>
-                            )}
                           </div>
+                          <span className="pb-1">
+                            {victim.prsn_age} YEARS OLD -{" "}
+                            {victim.drvr_ethncty?.label} {victim.gndr?.label}
+                          </span>
+                          {victim.rest?.label &&
+                            // Only show restraint field for cars
+                            unit.unit_desc_id === 1 && // motor vehicle
+                            unit.veh_body_styl_id !== 71 && // motorycle
+                            unit.veh_body_styl_id !== 90 && ( // police motorcycle
+                              <span className="pb-1">
+                                Restraint used: {victim.rest.label}
+                              </span>
+                            )}
+                          {victim.prsn_exp_homelessness && (
+                            <span>{victim.prsn_exp_homelessness}</span>
+                          )}
                         </div>
                       </div>
                       {victim.injry_sev?.label && (
-                        <div className="ms-3 flex-shrink-0">
+                        <div className="ms-2 flex-shrink-0">
                           <span
                             className={`${getInjuryColorClass(victim.injry_sev.label)} px-2 py-1 rounded`}
                           >
@@ -131,7 +127,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
               )}
               {(hasCharges || hasContribFactors) && (
                 <Card.Footer
-                  // if theres no card body remove extra padding
+                  // If theres no card body remove extra padding
                   className={
                     "victim-card-header-footer " + (!hasVictim ? "pt-0" : "")
                   }
