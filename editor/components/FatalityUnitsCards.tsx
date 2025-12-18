@@ -56,10 +56,10 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
             <Card key={unit.id} className="mb-3">
               <Card.Header className="victim-card-header-footer">
                 <div className="d-flex w-100 justify-content-start align-items-center">
-                  <h5 className="mb-1 me-2">
-                    <span className="fw-bold"> Unit {unit.unit_nbr}</span>
-                  </h5>
-                  <div className="d-flex flex-grow-1 justify-content-start">
+                  <span className="fs-5 fw-bold me-2">
+                    Unit {unit.unit_nbr}
+                  </span>
+                  <div className="d-flex flex-grow-1 justify-content-start text-secondary">
                     <span>
                       {unit.unit_desc?.label}
                       {unitYearMakeModel ? ` | ${unitYearMakeModel}` : ""}
@@ -130,7 +130,12 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                 </Card.Body>
               )}
               {(hasCharges || hasContribFactors) && (
-                <Card.Footer className="victim-card-header-footer pt-1">
+                <Card.Footer
+                  // if theres no card body remove extra padding
+                  className={
+                    "victim-card-header-footer " + (!hasVictim ? "pt-0" : "")
+                  }
+                >
                   {hasCharges && (
                     <div className="pb-1">
                       <div className="fw-bold">Charges</div>
