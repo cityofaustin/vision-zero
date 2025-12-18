@@ -130,7 +130,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                 </Card.Body>
               )}
               {(hasCharges || hasContribFactors) && (
-                <Card.Footer className="victim-card-header-footer pt-0">
+                <Card.Footer className="victim-card-header-footer pt-1">
                   {hasCharges && (
                     <div className="pb-1">
                       <div className="fw-bold">Charges</div>
