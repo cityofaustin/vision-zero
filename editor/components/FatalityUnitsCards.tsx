@@ -54,7 +54,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
             `${unit.veh_mod_year || ""} ${unit.veh_make?.label || ""} ${unit.veh_mod?.label || ""}`.trim();
           return (
             <Card key={unit.id} className="mb-3">
-              <Card.Header className="victim-card-header-footer">
+              <Card.Header className="fatality-units-card-header-footer">
                 <div className="d-flex w-100 justify-content-start align-items-center">
                   <span className="fs-5 fw-bold me-2">
                     Unit {unit.unit_nbr}
@@ -131,7 +131,8 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                 <Card.Footer
                   // If theres no card body remove extra padding
                   className={
-                    "victim-card-header-footer " + (!hasVictim ? "pt-0" : "")
+                    "fatality-units-card-header-footer " +
+                    (!hasVictim ? "pt-0" : "")
                   }
                 >
                   {hasCharges && (
