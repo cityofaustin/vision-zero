@@ -17,8 +17,8 @@ query GetPersonImage($person_id: Int!) {
 
 
 UPDATE_PERSON_IMAGE_METADATA = """
-mutation UpdatePersonImage($image_s3_object_key: String!, $person_id: Int!, $updated_by: String!) {
-  update_people(_set: {image_s3_object_key: $image_s3_object_key, updated_by: $updated_by}, where: {id: {_eq: $person_id}}) {
+mutation UpdatePersonImage($person_id: Int!, $object: people_set_input!) {
+  update_people(_set: $object, where: {id: {_eq: $person_id}}) {
     returning {
       image_s3_object_key
       id

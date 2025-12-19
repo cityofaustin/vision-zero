@@ -6,6 +6,7 @@ API which handles
 - Person image uploads and downloads
 """
 import datetime
+import io
 import json
 from os import getenv, getpid, sysconf_names, sysconf
 import re
@@ -379,7 +380,7 @@ def download_crash_id(crash_id):
     return jsonify(message=url)
 
 
-@app.route("/images/person/<person_id>", methods=["GET", "POST"])
+@app.route("/images/person/<person_id>", methods=["GET", "POST", "DELETE"])
 @cross_origin(
     headers=[
         "Content-Type",
@@ -424,8 +425,17 @@ def person_image(person_id):
 
         file = request.files["file"]
 
-        if file.filename == "":
-            return jsonify(error="No file selected"), 400
+        if not file.filename:
+            return jsonify(error="File is required"), 400
+
+        image_original_filename = file.filename
+        image_source = request.form.get("image_source")
+
+        if not image_source:
+            return (
+                jsonify(error="image_source is required"),
+                400,
+            )
 
         try:
             # validate image file
@@ -444,25 +454,36 @@ def person_image(person_id):
             # todo: do we want this?
             width, height = img.size
             if width > MAX_IMAGE_PIXELS or height > MAX_IMAGE_PIXELS:
-                return jsonify(error=f"Image deimensions must not exceed {MAX_IMAGE_PIXELS}x{MAX_IMAGE_PIXELS}px "), 400
+                return (
+                    jsonify(
+                        error=f"Image deimensions must not exceed {MAX_IMAGE_PIXELS}x{MAX_IMAGE_PIXELS}px "
+                    ),
+                    400,
+                )
 
-            # reset file position for upload
+            # Strip EXIF data from image
             file.seek(0)
-
-            ext = "jpg" if actual_format == "jpeg" else actual_format
+            img = Image.open(file)
+            img_without_exif = Image.new(img.mode, img.size)
+            img_without_exif.putdata(list(img.getdata()))
+            img_buffer = io.BytesIO()
+            img_without_exif.save(img_buffer, format=actual_format.upper())
+            img_buffer.seek(0)
 
         except Exception as e:
             app.logger.error(f"Image validation failed: {e}")
             return jsonify(error="Invalid or corrupted image file"), 400
 
         # prepare for S3 upload
+        ext = "jpg" if actual_format == "jpeg" else actual_format
         filename = f"{safe_person_id}.{ext}"
         obj_key = f"{AWS_S3_PERSON_IMAGE_LOCATION}/{filename}"
         app.logger.info(f"Uploading image: {AWS_S3_BUCKET}/{obj_key}")
 
         try:
+            # todo: strip exif data?
             s3.upload_fileobj(
-                file,
+                img_buffer,
                 AWS_S3_BUCKET,
                 obj_key,
                 ExtraArgs={
@@ -479,11 +500,14 @@ def person_image(person_id):
                 query=UPDATE_PERSON_IMAGE_METADATA,
                 variables={
                     "person_id": safe_person_id,
-                    "image_s3_object_key": obj_key,
-                    "updated_by": get_user_email(),
+                    "object": {
+                        "image_s3_object_key": obj_key,
+                        "image_source": image_source,
+                        "image_original_filename": image_original_filename,
+                        "updated_by": get_user_email(),
+                    },
                 },
             )
-
             app.logger.info(res)
             return (
                 jsonify(success=True),
@@ -493,6 +517,39 @@ def person_image(person_id):
         except Exception as e:
             app.logger.exception(str(e))
             return jsonify(error=f"Upload failed"), 500
+
+    elif request.method == "DELETE":
+        res = make_hasura_request(
+            query=GET_PERSON_IMAGE_METADATA, variables={"person_id": safe_person_id}
+        )
+
+        obj_key = res["people_by_pk"]["image_s3_object_key"]
+
+        if not obj_key:
+            return jsonify(error=f"No image found for person ID: {safe_person_id}"), 404
+
+        try:
+            # delete object in S3
+            s3.delete_object(Bucket=AWS_S3_BUCKET, Key=obj_key)
+
+            # clear metadata in Hasura
+            make_hasura_request(
+                query=UPDATE_PERSON_IMAGE_METADATA,
+                variables={
+                    "person_id": safe_person_id,
+                    "object": {
+                        "image_s3_object_key": None,
+                        "image_source": None,
+                        "image_original_filename": None,
+                        "updated_by": get_user_email(),
+                    },
+                },
+            )
+            return jsonify(success=True), 200
+
+        except Exception as e:
+            app.logger.exception(str(e))
+            return jsonify(error="Delete failed"), 500
 
     return jsonify(message="Bad Request"), 400
 
