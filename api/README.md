@@ -22,14 +22,14 @@ The API requires certain environment variables to be set. Copy the `.env.example
 
 Copy the `env_template` file in this directory to `.env`. To fill in the missing secret values, see the `DEVELOPMENT` section of the **Vision Zero (VZ) User & CR3 API Secrets** item in 1pass.
 
-You can start the API using either the project wide `docker compose` file with `docker compose up cr3-user-api`.
+You can start the API using the project wide `docker compose` file with `docker compose up cr3-user-api`.
+
+Additionally, you can use the `vision-zero` orchestration tool to `vision-zero api-up` and `vision-zero api-down` to start and stop the API.
 
 The docker compose enables local development by:
 
 - mounting your local `/api` directory into the container
 - using the `--debug` command so that the web server restarts when it detects code changes
-
-Additionally, you can use the `vision-zero` orchestration tool to `vision-zero api-up` and `vision-zero api-down` to start and stop the API.
 
 ```
 NEXT_PUBLIC_CR3_API_DOMAIN=http://localhost:8085

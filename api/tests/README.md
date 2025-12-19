@@ -2,28 +2,37 @@
 
 The API currently has test coverage for the `/images/person/<person_id>` endpoint. Follow this readme to run the tests.
 
+## Run tests
 
-### Create and activate a virtual environment
+### Start your local stack
 
- docker exec -it vision-zero-cr3-user-api-1 /bin/bash
- 
-```bash
-# Create virtual environment
-python3 -m venv venv
+From the root of the repo, start the VZ stack
 
-# Activate (Linux/macOS)
-source venv/bin/activate
+```shell
+./vision-zero local-stack-up
 ```
 
-### Install dependencies
+From the `./editor` directory, start the VZE:
 
-```bash
-pip install -r requirements.txt
+```shell
+npm run dev
 ```
 
+### Set up test env
 
-### Deactivate when done
+Use the VZE to login to the app, and copy your JWT from a network request to the API. These are typically listed under the name `graphql` in your dev console.
 
-```bash
-deactivate
+In the `./api` directory, create a file called `.env.test` and save your bearer token to `TEST_AUTH_TOKEN`.
+
+```shell
+# .env.test
+TEST_AUTH_TOKEN="Bearer ...."
+```
+
+### Run the tests
+
+From the root of the repo, use docker compose to run the tests:
+
+```
+docker compose run --rm cr3-user-api-test
 ```
