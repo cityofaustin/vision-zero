@@ -30,6 +30,7 @@ services:
 
   cr3-user-api:
     build: api
+    image: cr3-user-api
     # image: atddocker/vz-user-cr3-api
     env_file:
       - api/.env
@@ -40,10 +41,13 @@ services:
     command: flask run --host=0.0.0.0 --port=5000 --debug
 
   cr3-user-api-test:
-    build: api
+    image: cr3-user-api
+    depends_on:
+      - cr3-user-api
     env_file:
       - api/.env.test
     volumes:
       - ./api:/usr/src/app
+    # this profile prevents this service from running on typical startup
     profiles: ["test"] 
-    command: pytest -x --trace
+    command: pytest -x
