@@ -6,7 +6,6 @@ API which handles
 - Person image uploads and downloads
 """
 import datetime
-import io
 import json
 from os import getenv, getpid, sysconf_names, sysconf
 import re
@@ -19,16 +18,19 @@ from flask import Flask, request, jsonify, g
 from flask_cors import cross_origin
 from functools import wraps
 from jose import jwt
-from PIL import Image
+
 import requests
 from six.moves.urllib.request import urlopen
 from werkzeug.local import LocalProxy
 
-from utils.graphql import (
-    make_hasura_request,
-    GET_PERSON_IMAGE_METADATA,
-    UPDATE_PERSON_IMAGE_METADATA,
+
+from utils.images import (
+    _create_person_image,
+    _delete_person_image,
+    _get_person_image,
+    _update_person_image,
 )
+
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:
@@ -47,7 +49,7 @@ AWS_S3_PERSON_IMAGE_LOCATION = f"{AWS_S3_BUCKET_ENV}/images/person"
 AWS_S3_BUCKET = getenv("AWS_S3_BUCKET", "")
 
 ADMIN_ROLE_NAME = "vz-admin"
-MAX_IMAGE_PIXELS = 5000
+
 CORS_URL = "*"
 
 app = Flask(__name__)
@@ -380,7 +382,7 @@ def download_crash_id(crash_id):
     return jsonify(message=url)
 
 
-@app.route("/images/person/<person_id>", methods=["GET", "POST", "DELETE"])
+@app.route("/images/person/<int:person_id>", methods=["GET", "DELETE", "POST", "PUT"])
 @cross_origin(
     headers=[
         "Content-Type",
@@ -393,179 +395,32 @@ def download_crash_id(crash_id):
 def person_image(person_id):
     """Handles person images. Expects a jpeg or png sent in the `file` property"""
 
-    safe_person_id = re.sub("[^0-9]", "", person_id)
-
-    if not safe_person_id:
-        return jsonify(error="Missing or invalid person_id"), 400
+    if not person_id:
+        # todo: can this even happen?
+        return jsonify(error="Missing person_id"), 400
 
     if request.method == "GET":
-        # get filename from DB
-        res = make_hasura_request(
-            query=GET_PERSON_IMAGE_METADATA, variables={"person_id": safe_person_id}
-        )
-        app.logger.info(res)
-        obj_key = res["people_by_pk"]["image_s3_object_key"]
-
-        if not obj_key:
-            return jsonify(error=f"No image found for person ID: {safe_person_id}"), 404
-
-        url = s3.generate_presigned_url(
-            ExpiresIn=3600,
-            ClientMethod="get_object",
-            Params={
-                "Bucket": AWS_S3_BUCKET,
-                "Key": obj_key,
-            },
-        )
-        return jsonify(url=url)
+        return _get_person_image(person_id, s3)
 
     elif request.method == "POST":
-        if "file" not in request.files:
-            return jsonify(error="No file provided"), 400
+        return _create_person_image(person_id, s3)
 
-        file = request.files["file"]
-
-        if not file.filename:
-            return jsonify(error="File is required"), 400
-
-        image_original_filename = file.filename
-        image_source = request.form.get("image_source")
-
-        if not image_source:
-            return (
-                jsonify(error="image_source is required"),
-                400,
-            )
-
-        try:
-            # validate image file
-            file.seek(0)
-            img = Image.open(file)
-            img.verify()
-
-            # get actual image format
-            file.seek(0)
-            img = Image.open(file)
-            actual_format = img.format.lower()
-
-            if actual_format not in ["jpeg", "png"]:
-                return jsonify(error=f"Image format must be JPEG or PNG"), 400
-
-            # todo: do we want this?
-            width, height = img.size
-            if width > MAX_IMAGE_PIXELS or height > MAX_IMAGE_PIXELS:
-                return (
-                    jsonify(
-                        error=f"Image deimensions must not exceed {MAX_IMAGE_PIXELS}x{MAX_IMAGE_PIXELS}px "
-                    ),
-                    400,
-                )
-
-            # Strip EXIF data from image
-            file.seek(0)
-            img = Image.open(file)
-            img_without_exif = Image.new(img.mode, img.size)
-            img_without_exif.putdata(list(img.getdata()))
-            img_buffer = io.BytesIO()
-            img_without_exif.save(img_buffer, format=actual_format.upper())
-            img_buffer.seek(0)
-
-        except Exception as e:
-            app.logger.error(f"Image validation failed: {e}")
-            return jsonify(error="Invalid or corrupted image file"), 400
-
-        # prepare for S3 upload
-        ext = "jpg" if actual_format == "jpeg" else actual_format
-        filename = f"{safe_person_id}.{ext}"
-        obj_key = f"{AWS_S3_PERSON_IMAGE_LOCATION}/{filename}"
-        app.logger.info(f"Uploading image: {AWS_S3_BUCKET}/{obj_key}")
-
-        try:
-            # todo: strip exif data?
-            s3.upload_fileobj(
-                img_buffer,
-                AWS_S3_BUCKET,
-                obj_key,
-                ExtraArgs={
-                    "ContentType": file.content_type or "image/jpeg",
-                },
-            )
-
-        except Exception as e:
-            app.logger.exception(str(e))
-            return jsonify(error=f"Upload failed"), 500
-
-        try:
-            res = make_hasura_request(
-                query=UPDATE_PERSON_IMAGE_METADATA,
-                variables={
-                    "person_id": safe_person_id,
-                    "object": {
-                        "image_s3_object_key": obj_key,
-                        "image_source": image_source,
-                        "image_original_filename": image_original_filename,
-                        "updated_by": get_user_email(),
-                    },
-                },
-            )
-            app.logger.info(res)
-            return (
-                jsonify(success=True),
-                201,
-            )
-
-        except Exception as e:
-            app.logger.exception(str(e))
-            return jsonify(error=f"Upload failed"), 500
+    elif request.method == "PUT":
+        return _update_person_image(person_id, s3)
 
     elif request.method == "DELETE":
-        res = make_hasura_request(
-            query=GET_PERSON_IMAGE_METADATA, variables={"person_id": safe_person_id}
-        )
-
-        obj_key = res["people_by_pk"]["image_s3_object_key"]
-
-        if not obj_key:
-            return jsonify(error=f"No image found for person ID: {safe_person_id}"), 404
-
-        try:
-            # delete object in S3
-            s3.delete_object(Bucket=AWS_S3_BUCKET, Key=obj_key)
-
-            # clear metadata in Hasura
-            make_hasura_request(
-                query=UPDATE_PERSON_IMAGE_METADATA,
-                variables={
-                    "person_id": safe_person_id,
-                    "object": {
-                        "image_s3_object_key": None,
-                        "image_source": None,
-                        "image_original_filename": None,
-                        "updated_by": get_user_email(),
-                    },
-                },
-            )
-            return jsonify(success=True), 200
-
-        except Exception as e:
-            app.logger.exception(str(e))
-            return jsonify(error="Delete failed"), 500
+        return _delete_person_image(person_id, s3)
 
     return jsonify(message="Bad Request"), 400
 
 
-def has_user_role(role, user_dict):
-    claims = user_dict.get("https://hasura.io/jwt/claims", False)
+def has_user_role(role):
+    claims = current_user.get("https://hasura.io/jwt/claims", False)
     if claims != False:
         roles = claims.get("x-hasura-allowed-roles")
         if role in roles:
             return True
     return False
-
-
-def get_user_email():
-    user_dict = current_user._get_current_object()
-    return user_dict["https://hasura.io/jwt/claims"]["x-hasura-user-email"]
 
 
 @app.route("/user/test")
@@ -579,7 +434,7 @@ def get_user_email():
 )
 @requires_auth
 def user_test():
-    return jsonify(message=current_user._get_current_object())
+    return jsonify(message=current_user)
 
 
 @app.route("/user/list_users")
@@ -629,8 +484,7 @@ def user_get_user(id):
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
 def user_create_user():
-    user_dict = current_user._get_current_object()
-    if has_user_role(ADMIN_ROLE_NAME, user_dict):
+    if has_user_role(ADMIN_ROLE_NAME):
         json_data = request.json
         # set the user's password - user will have to reset it for access
         json_data["password"] = get_secure_password()
@@ -657,8 +511,7 @@ def user_create_user():
 )
 @requires_auth
 def user_update_user(id):
-    user_dict = current_user._get_current_object()
-    if has_user_role(ADMIN_ROLE_NAME, user_dict):
+    if has_user_role(ADMIN_ROLE_NAME):
         json_data = request.json
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
@@ -679,8 +532,7 @@ def user_update_user(id):
 )
 @requires_auth
 def user_unblock_user(id):
-    user_dict = current_user._get_current_object()
-    if has_user_role(ADMIN_ROLE_NAME, user_dict):
+    if has_user_role(ADMIN_ROLE_NAME):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/user_blocks/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.delete(endpoint, headers=headers)
@@ -700,8 +552,7 @@ def user_unblock_user(id):
 )
 @requires_auth
 def user_delete_user(id):
-    user_dict = current_user._get_current_object()
-    if has_user_role(ADMIN_ROLE_NAME, user_dict):
+    if has_user_role(ADMIN_ROLE_NAME):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.delete(endpoint, headers=headers)
