@@ -27,6 +27,7 @@ services:
       -c 'max_wal_size=5GB'
       -c 'shared_buffers=2GB'
       -c 'work_mem=64MB'
+
   cr3-user-api:
     build: api
     # image: atddocker/vz-user-cr3-api
@@ -37,3 +38,12 @@ services:
     volumes:
       - ./api:/usr/src/app
     command: flask run --host=0.0.0.0 --port=5000 --debug
+
+  cr3-user-api-test:
+    build: api
+    env_file:
+      - api/.env.test
+    volumes:
+      - ./api:/usr/src/app
+    profiles: ["test"] 
+    command: pytest -x --trace
