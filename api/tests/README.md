@@ -20,7 +20,7 @@ npm run dev
 
 ### Set up test env
 
-Use the VZE to login to the app, and copy your JWT from a network request to the API. These are typically listed under the name `graphql` in your dev console.
+Use the VZE to login to the app. Copy your JWT from a graphql request. These are typically listed under the name `graphql` in your dev console.
 
 In the `./api` directory, create a file called `.env.test` and save your bearer token to `TEST_AUTH_TOKEN`.
 
@@ -29,9 +29,11 @@ In the `./api` directory, create a file called `.env.test` and save your bearer 
 TEST_AUTH_TOKEN="Bearer ...."
 ```
 
+This token will expire in 5 minutes. You'll need to grab a fresh token your token expires. You'll know your token is invalid if you hit a `401` error.
+
 ### Run the tests
 
-From the root of the repo, use docker compose to run the tests:
+From the root of the repo, use docker compose to run the tests.
 
 ```
 docker compose run --rm cr3-user-api-test
