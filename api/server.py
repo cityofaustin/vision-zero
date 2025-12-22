@@ -29,6 +29,7 @@ from utils.images import (
     _upsert_person_image,
     _delete_person_image,
     _get_person_image_url,
+    validate_file_size,
 )
 
 
@@ -49,7 +50,7 @@ AWS_S3_PERSON_IMAGE_LOCATION = f"{AWS_S3_BUCKET_ENV}/images/person"
 AWS_S3_BUCKET = getenv("AWS_S3_BUCKET", "")
 
 ADMIN_ROLE_NAME = "vz-admin"
-
+MAX_IMAGE_SIZE_MEGABYTES = 5
 CORS_URL = "*"
 
 app = Flask(__name__)
@@ -401,6 +402,7 @@ def download_crash_id(crash_id):
     ],
 )
 @requires_auth
+@validate_file_size(MAX_IMAGE_SIZE_MEGABYTES)
 def person_image(person_id):
     """Handles person images. Expects a jpeg or png sent in the `file` property"""
 

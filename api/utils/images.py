@@ -1,3 +1,4 @@
+from functools import wraps
 import io
 from os import getenv
 
@@ -12,11 +13,34 @@ from utils.graphql import (
 
 from utils.user import get_user_email
 
-MAX_IMAGE_PIXELS = 5000
-
 AWS_S3_BUCKET_ENV = getenv("AWS_S3_BUCKET_ENV", "")
 AWS_S3_BUCKET = getenv("AWS_S3_BUCKET", "")
 AWS_S3_PERSON_IMAGE_LOCATION = f"{AWS_S3_BUCKET_ENV}/images/person"
+
+
+def validate_file_size(max_size_mb):
+    """Decorator to limit file size for specific routes
+
+    Args:
+        max_size_mb (int): Maximum file size in megabytes
+    """
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if "file" in request.files:
+                file = request.files["file"]
+                file.seek(0, 2)
+                size = file.tell()
+                file.seek(0)  # reset file pointer
+
+                max_size_bytes = max_size_mb * 1024 * 1024
+                if size > max_size_bytes:
+                    abort(413, description=f"File must be smaller than {max_size_mb}MB")
+            return f(*args, **kwargs)
+
+        return decorated_function
+
+    return decorator
 
 
 def get_valid_image(file):
@@ -38,14 +62,6 @@ def get_valid_image(file):
 
         if actual_format not in ["jpeg", "png"]:
             abort(400, description="Image format must be JPEG or PNG")
-
-        # validate size limit
-        width, height = img.size
-        if width > MAX_IMAGE_PIXELS or height > MAX_IMAGE_PIXELS:
-            abort(
-                400,
-                description="Image dimensions must not exceed {MAX_IMAGE_PIXELS}x{MAX_IMAGE_PIXELS}px",
-            )
 
     except Exception as e:
         current_app.logger.error(e)
