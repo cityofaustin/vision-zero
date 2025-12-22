@@ -23,13 +23,24 @@ def headers():
 
 
 @pytest.fixture
-def test_image():
-    """Create a 500x500 test image."""
+def test_image_jpg():
+    """Create a 500x500 JPEG test image."""
     img = Image.new("RGB", (500, 500), color="blue")
     buf = io.BytesIO()
     img.save(buf, format="JPEG")
     buf.seek(0)
     buf.name = "test.jpg"
+    return buf
+
+
+@pytest.fixture
+def test_image_png():
+    """Create a 500x500 PNG test image."""
+    img = Image.new("RGB", (500, 500), color="green")
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    buf.seek(0)
+    buf.name = "test.png"
     return buf
 
 
@@ -43,12 +54,12 @@ def cleanup(api_url, headers):
         pass
 
 
-def test_upload_get_delete_flow(api_url, headers, test_image):
+def test_upload_get_delete_flow(api_url, headers, test_image_jpg):
     """Test the complete upload -> get -> delete flow."""
 
-    # Upload
-    files = {"file": test_image}
-    data = {"image_source": "test_source", "image_original_filename": "test.jpg"}
+    # Upload (create new)
+    files = {"file": test_image_jpg}
+    data = {"image_source": "test_source"}
     res = requests.post(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 201
     assert res.json()["success"] is True
@@ -74,36 +85,127 @@ def test_upload_get_delete_flow(api_url, headers, test_image):
     assert res.status_code == 404
 
 
-def test_upload_png(api_url, headers):
+def test_upload_png(api_url, headers, test_image_png):
     """Test uploading a PNG image."""
-    img = Image.new("RGB", (500, 500), color="green")
-    buf = io.BytesIO()
-    img.save(buf, format="PNG")
-    buf.seek(0)
-    buf.name = "test.png"
-
-    files = {"file": buf}
-    data = {"image_source": "test_source", "image_original_filename": "test.png"}
+    files = {"file": test_image_png}
+    data = {"image_source": "test_source"}
     res = requests.post(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 201
 
 
-def test_upload_no_file(api_url, headers):
-    """Test error when no file provided."""
-    data = {
-        "image_source": "test_source",
-    }
+def test_upsert_update_source_only(api_url, headers, test_image_jpg):
+    """Test updating only the image_source without uploading a new file."""
+    # First, create an image
+    files = {"file": test_image_jpg}
+    data = {"image_source": "original_source"}
+    res = requests.post(api_url, files=files, headers=headers, data=data)
+    assert res.status_code == 201
+
+    # Update only the source
+    data = {"image_source": "updated_source"}
+    res = requests.post(api_url, headers=headers, data=data)
+    assert res.status_code == 200
+    assert res.json()["success"] is True
+
+
+def test_upsert_update_file(api_url, headers, test_image_jpg):
+    """Test updating an existing image file."""
+    # First, create an image
+    files = {"file": test_image_jpg}
+    data = {"image_source": "original_source"}
+    res = requests.post(api_url, files=files, headers=headers, data=data)
+    assert res.status_code == 201
+
+    # Create a new image with different dimensions
+    img = Image.new("RGB", (300, 300), color="red")
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG")
+    buf.seek(0)
+    buf.name = "updated.jpg"
+
+    # Update the image file
+    files = {"file": buf}
+    data = {"image_source": "updated_source"}
+    res = requests.post(api_url, files=files, headers=headers, data=data)
+    assert res.status_code == 200
+    assert res.json()["success"] is True
+
+    # Verify the new image
+    res = requests.get(api_url, headers=headers)
+    presigned_url = res.json()["url"]
+    s3_res = requests.get(presigned_url)
+    img = Image.open(io.BytesIO(s3_res.content))
+    assert img.size == (300, 300)
+
+
+def test_upsert_change_format(api_url, headers, test_image_jpg, test_image_png):
+    """Test changing image format from JPEG to PNG."""
+    # Upload JPEG
+    files = {"file": test_image_jpg}
+    data = {"image_source": "jpeg_source"}
+    res = requests.post(api_url, files=files, headers=headers, data=data)
+    assert res.status_code == 201
+
+    # Update to PNG
+    files = {"file": test_image_png}
+    data = {"image_source": "png_source"}
+    res = requests.post(api_url, files=files, headers=headers, data=data)
+    assert res.status_code == 200
+    assert res.json()["success"] is True
+
+    # Verify it's accessible
+    res = requests.get(api_url, headers=headers)
+    assert res.status_code == 200
+
+
+def test_upload_no_file_no_source(api_url, headers):
+    """Test error when neither file nor source provided."""
+    res = requests.post(api_url, headers=headers)
+    assert res.status_code == 400
+    assert "Image file and/or image_source are required" in res.json()["error"]
+
+
+def test_upload_new_no_file(api_url, headers):
+    """Test error when creating new image without file."""
+    data = {"image_source": "test_source"}
     res = requests.post(api_url, headers=headers, data=data)
     assert res.status_code == 400
-    assert "No file provided" in res.json()["error"]
+    assert (
+        "File and image_source are required for new image uploads"
+        in res.json()["error"]
+    )
 
 
-def test_upload_missing_metadata(api_url, headers, test_image):
-    """Test error when metadata is missing."""
-    files = {"file": test_image}
+def test_upload_new_no_source(api_url, headers, test_image_jpg):
+    """Test error when creating new image without source."""
+    files = {"file": test_image_jpg}
     res = requests.post(api_url, files=files, headers=headers)
     assert res.status_code == 400
-    assert "image_source is required" in res.json()["error"]
+    assert (
+        "File and image_source are required for new image uploads"
+        in res.json()["error"]
+    )
+
+
+def test_update_file_without_source(api_url, headers, test_image_jpg):
+    """Test error when updating file without providing source."""
+    # First, create an image
+    files = {"file": test_image_jpg}
+    data = {"image_source": "original_source"}
+    res = requests.post(api_url, files=files, headers=headers, data=data)
+    assert res.status_code == 201
+
+    # Try to update file without source
+    img = Image.new("RGB", (300, 300), color="red")
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG")
+    buf.seek(0)
+    buf.name = "updated.jpg"
+
+    files = {"file": buf}
+    res = requests.post(api_url, files=files, headers=headers)
+    assert res.status_code == 400
+    assert "Image source is required when updating an image" in res.json()["error"]
 
 
 def test_upload_invalid_file(api_url, headers):
@@ -112,7 +214,7 @@ def test_upload_invalid_file(api_url, headers):
     fake.name = "fake.jpg"
 
     files = {"file": fake}
-    data = {"image_source": "test_source", "image_original_filename": "fake.jpg"}
+    data = {"image_source": "test_source"}
     res = requests.post(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 400
     assert "Invalid or corrupted image file" in res.json()["error"]
