@@ -24,6 +24,7 @@ def validate_file_size(max_size_mb):
     Args:
         max_size_mb (int): Maximum file size in megabytes
     """
+
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -85,7 +86,7 @@ def strip_exif(img):
 
 
 def _get_person_image_metadata(person_id):
-    # get filename from DB
+    """Get the person record image metadata for a given person record ID"""
     res = make_hasura_request(
         query=GET_PERSON_IMAGE_METADATA, variables={"person_id": person_id}
     )
@@ -96,6 +97,7 @@ def _get_person_image_metadata(person_id):
 
 
 def _get_person_image_url(person_id, s3):
+    """Get a presigned S3 download URL for the given person record ID"""
     # get filename from DB
     image_obj_key, image_original_filename = _get_person_image_metadata(person_id)
 
@@ -179,18 +181,18 @@ def _upsert_person_image(person_id, s3):
 
 
 def _handle_image_upload(person_id, file, s3, old_image_obj_key=None):
-    """Uploads an image to S3, deleting a previous image to s3
+    """Uploads an image to S3 after validating the image and removing EXIF data
 
     Args:
         person_id (Int): The person ID of the image
+        file (flask.Request.files): the file object from the request
         s3 (boto3.S3.client): The boto3 S3 client
-        todo: update these docs
+        old_image_obj_key (str, optional): The s3 object key of the image being
+            replaced. This file will be deleted before the new file is uploaded.
 
     Returns:
         flask.Response: Response object
     """
-
-    # todo: delete old image file if it has a diff extension!
     img = get_valid_image(file)
 
     img_without_exif = strip_exif(img)
@@ -232,6 +234,7 @@ def _handle_image_upload(person_id, file, s3, old_image_obj_key=None):
 
 
 def _delete_person_image(person_id, s3):
+    """Delete an image from S3 and nullify its metadata in the db"""
     image_obj_key, image_original_filename = _get_person_image_metadata(person_id)
 
     if not image_obj_key:
