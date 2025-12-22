@@ -363,7 +363,7 @@ def healthcheck():
     return jsonify(message=response)
 
 
-@app.route("/cr3/download/<crash_id>")
+@app.route("/cr3/download/<int:crash_id>")
 @cross_origin(
     headers=[
         "Content-Type",
@@ -376,14 +376,12 @@ def healthcheck():
 def download_crash_id(crash_id):
     """A valid access token is required to access this route"""
     # We only care for an integer string, anything else is not safe:
-    safe_crash_id = re.sub("[^0-9]", "", crash_id)
-
     url = s3.generate_presigned_url(
         ExpiresIn=60,  # seconds
         ClientMethod="get_object",
         Params={
             "Bucket": AWS_S3_BUCKET,
-            "Key": AWS_S3_CR3_LOCATION + "/" + safe_crash_id + ".pdf",
+            "Key": AWS_S3_CR3_LOCATION + "/" + crash_id + ".pdf",
         },
     )
 
@@ -544,7 +542,7 @@ def user_unblock_user(id):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/user_blocks/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.delete(endpoint, headers=headers)
-        return f"{response.status_code}"
+        return jsonify(response.json()), response.status_code
     else:
         return notAuthorizedError()
 

@@ -44,7 +44,7 @@ def get_valid_image(file):
         if width > MAX_IMAGE_PIXELS or height > MAX_IMAGE_PIXELS:
             abort(
                 400,
-                description="Image deimensions must not exceed {MAX_IMAGE_PIXELS}x{MAX_IMAGE_PIXELS}px",
+                description="Image dimensions must not exceed {MAX_IMAGE_PIXELS}x{MAX_IMAGE_PIXELS}px",
             )
 
     except Exception as e:
@@ -98,6 +98,22 @@ def _get_person_image_url(person_id, s3):
 
 
 def _upsert_person_image(person_id, s3):
+    """Handle a person image upsert.
+
+    If the person record does not have any image metadata in the DB, the image is
+    handled as new. Both the image file and `image_source` form data are required.
+
+    If the person record has an existing image, the image file is optional and
+    `image_source` is still required. If a file is provided, it will overwrite the
+    previous image in S3.
+
+    Args:
+        person_id (int): The person record ID
+        s3 (boto3.S3.client): The S3 client
+
+    Returns:
+        flask.Response: the request response
+    """
     has_file = "file" in request.files
     image_source = request.form.get("image_source")
     image_obj_key, image_original_filename = _get_person_image_metadata(person_id)
