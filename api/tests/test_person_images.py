@@ -6,12 +6,14 @@ import requests
 from PIL import Image
 import io
 
+TEST_PERSON_ID = 102580  # must be a person record ID available in your local DB
+
 
 @pytest.fixture
 def api_url():
+    # this host URL will only work within the docker compose setup
     base = os.getenv("API_BASE_URL", "http://cr3-user-api:5000")
-    person_id = os.getenv("TEST_PERSON_ID", "102580")
-    return f"{base}/images/person/{person_id}"
+    return f"{base}/images/person/{TEST_PERSON_ID}"
 
 
 @pytest.fixture
@@ -54,8 +56,8 @@ def cleanup(api_url, headers):
         pass
 
 
-def test_upload_get_delete_flow(api_url, headers, test_image_jpg):
-    """Test the complete upload -> get -> delete flow."""
+def test_new_image_upload_get_delete_flow(api_url, headers, test_image_jpg):
+    """Test the complete upload -> get -> delete flow for a new image"""
 
     # Upload (create new)
     files = {"file": test_image_jpg}
@@ -109,7 +111,7 @@ def test_upsert_update_source_only(api_url, headers, test_image_jpg):
 
 
 def test_upsert_update_file(api_url, headers, test_image_jpg):
-    """Test updating an existing image file."""
+    """Test updating an existing image file with a new image and source"""
     # First, create an image
     files = {"file": test_image_jpg}
     data = {"image_source": "original_source"}
@@ -212,12 +214,23 @@ def test_upload_invalid_file(api_url, headers):
     """Test error with non-image file."""
     fake = io.BytesIO(b"not an image")
     fake.name = "fake.jpg"
-
     files = {"file": fake}
     data = {"image_source": "test_source"}
     res = requests.post(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 400
     assert "Invalid or corrupted image file" in res.json()["error"]
+
+
+def test_upload_file_too_large(api_url, headers):
+    """Test error when file exceeds size limit."""
+    # Create a buffer with 6MB of data
+    buf = io.BytesIO(b"x" * (6 * 1024 * 1024))
+    buf.name = "large.jpg"
+
+    files = {"file": buf}
+    data = {"image_source": "test_source"}
+    res = requests.post(api_url, files=files, headers=headers, data=data)
+    assert res.status_code == 413
 
 
 def test_get_nonexistent(api_url, headers):
@@ -226,6 +239,14 @@ def test_get_nonexistent(api_url, headers):
     requests.delete(api_url, headers=headers)
 
     res = requests.get(api_url, headers=headers)
+    assert res.status_code == 404
+
+
+def test_get_invalid_person_id(api_url, headers):
+    """Test getting an image that with a person ID that contains alpha chars"""
+    base = os.getenv("API_BASE_URL", "http://cr3-user-api:5000")
+    bad_url = f"{base}/images/person/unsafe_id.png"
+    res = requests.get(bad_url, headers=headers)
     assert res.status_code == 404
 
 
