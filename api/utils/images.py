@@ -1,7 +1,7 @@
 import io
 from os import getenv
 
-from flask import jsonify, request, current_app
+from flask import abort, jsonify, request, current_app
 from PIL import Image
 
 from utils.graphql import (
@@ -20,11 +20,10 @@ AWS_S3_PERSON_IMAGE_LOCATION = f"{AWS_S3_BUCKET_ENV}/images/person"
 
 
 def get_valid_image(file):
-    """Validate if a file blob is a valid image
+    """Validate if a file blob is a valid image and return it as a PIL Image.
 
-    returns tuple:
-        - the PIL.Image or False if invalid
-        - None if valid else an error message Str
+    Returns:
+        PIL.Image: an image object
     """
     try:
         # validate image file
@@ -38,21 +37,21 @@ def get_valid_image(file):
         actual_format = img.format.lower()
 
         if actual_format not in ["jpeg", "png"]:
-            return False, "Image format must be JPEG or PNG"
+            abort(400, description="Image format must be JPEG or PNG")
 
         # validate size limit
         width, height = img.size
         if width > MAX_IMAGE_PIXELS or height > MAX_IMAGE_PIXELS:
-            return (
-                False,
-                "Image deimensions must not exceed {MAX_IMAGE_PIXELS}x{MAX_IMAGE_PIXELS}px",
+            abort(
+                400,
+                description="Image deimensions must not exceed {MAX_IMAGE_PIXELS}x{MAX_IMAGE_PIXELS}px",
             )
 
     except Exception as e:
         current_app.logger.error(e)
-        return False, "Invalid or corrupted image file"
+        abort(400, description="Invalid or corrupted image file")
 
-    return img, None
+    return img
 
 
 def strip_exif(img):
@@ -69,14 +68,22 @@ def strip_exif(img):
     return img_without_exif
 
 
-def _get_person_image(person_id, s3):
+def _get_person_image_metadata(person_id):
     # get filename from DB
     res = make_hasura_request(
         query=GET_PERSON_IMAGE_METADATA, variables={"person_id": person_id}
     )
-    obj_key = res["people_by_pk"]["image_s3_object_key"]
+    return (
+        res["people_by_pk"]["image_s3_object_key"],
+        res["people_by_pk"]["image_original_filename"],
+    )
 
-    if not obj_key:
+
+def _get_person_image_url(person_id, s3):
+    # get filename from DB
+    image_obj_key, image_original_filename = _get_person_image_metadata(person_id)
+
+    if not image_obj_key:
         return jsonify(error=f"No image found for person ID: {person_id}"), 404
 
     url = s3.generate_presigned_url(
@@ -84,89 +91,102 @@ def _get_person_image(person_id, s3):
         ClientMethod="get_object",
         Params={
             "Bucket": AWS_S3_BUCKET,
-            "Key": obj_key,
+            "Key": image_obj_key,
         },
     )
     return jsonify(url=url)
 
 
-def _create_person_image(person_id, s3):
-    """Create new image - in s3 and DB - fails if an image
-    already exists for the given person_id"""
-    # Check if image already exists
-    res = make_hasura_request(
-        query=GET_PERSON_IMAGE_METADATA, variables={"person_id": person_id}
-    )
-
-    if res["people_by_pk"]["image_s3_object_key"]:
-        return jsonify(error="Image already exists. Use PUT to update."), 409
-
-    return _handle_image_upload(person_id, s3, is_create=True)
-
-
-def _update_person_image(person_id, s3):
-    """Update existing image and/or metadata"""
+def _upsert_person_image(person_id, s3):
     has_file = "file" in request.files
-    has_metadata = any(
-        key in request.form for key in ["image_source", "image_original_filename"]
-    )
-
-    if not has_file and not has_metadata:
-        return jsonify(error="Provide file and/or metadata to update"), 400
-
-    # Check if image exists
-    res = make_hasura_request(
-        query=GET_PERSON_IMAGE_METADATA, variables={"person_id": person_id}
-    )
-
-    if not res["people_by_pk"]["image_s3_object_key"]:
-        return jsonify(error="No image exists. Use POST to create."), 404
-
-    if has_file:
-        return _handle_image_upload(person_id, s3, is_create=False)
-    else:
-        # Just update metadata
-        return _update_metadata_only(person_id)
-
-
-def _handle_image_upload(safe_person_id, s3, is_create=True):
-    if "file" not in request.files:
-        return jsonify(error="No file provided"), 400
-
-    file = request.files["file"]
-
-    image_original_filename = file.filename
     image_source = request.form.get("image_source")
+    image_obj_key, image_original_filename = _get_person_image_metadata(person_id)
+    is_new = not image_obj_key
 
-    if not image_source:
+    if not image_source and not has_file:
         return (
-            jsonify(error="image_source is required"),
+            jsonify(error="Image file and/or image_source are required"),
             400,
         )
 
-    img, error_msg = get_valid_image(file)
+    if is_new and not (has_file and image_source):
+        return (
+            jsonify(error="File and image_source are required for new image uploads"),
+            400,
+        )
 
-    if not img:
-        return jsonify(error=error_msg), 400
+    if not is_new and has_file and not image_source:
+        return jsonify(error="Image source is required when updating an image"), 400
+
+    if has_file:
+        # save/update image in S3
+        file = request.files["file"]
+        image_obj_key = _handle_image_upload(
+            person_id,
+            file,
+            s3,
+            old_image_obj_key=None if is_new else image_obj_key,
+        )
+        image_original_filename = file.filename
+
+    # update hasura file metadata
+    make_hasura_request(
+        query=UPDATE_PERSON_IMAGE_METADATA,
+        variables={
+            "person_id": person_id,
+            "object": {
+                "image_s3_object_key": image_obj_key,
+                "image_source": image_source,
+                "image_original_filename": image_original_filename,
+                "updated_by": get_user_email(),
+            },
+        },
+    )
+    status_code = 201 if is_new else 200
+    return jsonify(success=True), status_code
+
+
+def _handle_image_upload(person_id, file, s3, old_image_obj_key=None):
+    """Uploads an image to S3, deleting a previous image to s3
+
+    Args:
+        person_id (Int): The person ID of the image
+        s3 (boto3.S3.client): The boto3 S3 client
+        todo: update these docs
+
+    Returns:
+        flask.Response: Response object
+    """
+
+    # todo: delete old image file if it has a diff extension!
+    img = get_valid_image(file)
 
     img_without_exif = strip_exif(img)
 
-    # convert image back to a file blob
+    # save clean image to buffer
     img_buffer = io.BytesIO()
     img_without_exif.save(img_buffer, format=img.format)
     img_buffer.seek(0)
 
     # prepare image metadata
     ext = "jpg" if img.format.lower() == "jpeg" else img.format.lower()
-    filename = f"{safe_person_id}.{ext}"
-    obj_key = f"{AWS_S3_PERSON_IMAGE_LOCATION}/{filename}"
-    current_app.logger.info(f"Uploading image: {AWS_S3_BUCKET}/{obj_key}")
+    filename = f"{person_id}.{ext}"
+    new_image_obj_key = f"{AWS_S3_PERSON_IMAGE_LOCATION}/{filename}"
+
+    if old_image_obj_key and new_image_obj_key != old_image_obj_key:
+        # this will only happen if an image is being updated and its file extension has changed
+        current_app.logger.info(
+            f"Deleting old image: {AWS_S3_BUCKET}/{old_image_obj_key}"
+        )
+        s3.delete_object(Bucket=AWS_S3_BUCKET, Key=old_image_obj_key)
+
+    current_app.logger.info(f"Uploading image: {AWS_S3_BUCKET}/{new_image_obj_key}")
 
     try:
         s3.upload_fileobj(
             img_buffer,
             AWS_S3_BUCKET,
-            obj_key,
+            new_image_obj_key,
             ExtraArgs={
                 "ContentType": file.content_type or "image/jpeg",
             },
@@ -174,60 +194,20 @@ def _handle_image_upload(safe_person_id, s3, is_create=True):
 
     except Exception as e:
         current_app.logger.exception(str(e))
-        return jsonify(error=f"Upload failed"), 500
+        abort(500, description="Upload failed")
 
-    try:
-        make_hasura_request(
-            query=UPDATE_PERSON_IMAGE_METADATA,
-            variables={
-                "person_id": safe_person_id,
-                "object": {
-                    "image_s3_object_key": obj_key,
-                    "image_source": image_source,
-                    "image_original_filename": image_original_filename,
-                    "updated_by": get_user_email(),
-                },
-            },
-        )
-        status_code = 201 if is_create else 200
-        return jsonify(success=True), status_code
-
-    except Exception as e:
-        current_app.logger.exception(str(e))
-        return jsonify(error=f"Upload failed"), 500
-
-
-def _update_metadata_only(person_id):
-    """Update only image_source without touching the image"""
-
-    image_source = request.form["image_source"]
-    if not image_source:
-        return jsonify(error="Image source is missing"), 400
-
-    make_hasura_request(
-        query=UPDATE_PERSON_IMAGE_METADATA,
-        variables={
-            "person_id": person_id,
-            "object": {"image_source": image_source, "updated_by": get_user_email()},
-        },
-    )
-
-    return jsonify(success=True), 200
+    return new_image_obj_key
 
 
 def _delete_person_image(person_id, s3):
-    res = make_hasura_request(
-        query=GET_PERSON_IMAGE_METADATA, variables={"person_id": person_id}
-    )
+    image_obj_key, image_original_filename = _get_person_image_metadata(person_id)
 
-    obj_key = res["people_by_pk"]["image_s3_object_key"]
-
-    if not obj_key:
-        return jsonify(error=f"No image found for person ID: {person_id}"), 404
+    if not image_obj_key:
+        abort(404, description=f"No image found for person ID: {person_id}")
 
     try:
         # delete object in S3
-        s3.delete_object(Bucket=AWS_S3_BUCKET, Key=obj_key)
+        s3.delete_object(Bucket=AWS_S3_BUCKET, Key=image_obj_key)
 
         # clear metadata in Hasura
         make_hasura_request(
@@ -246,4 +226,4 @@ def _delete_person_image(person_id, s3):
 
     except Exception as e:
         current_app.logger.exception(str(e))
-        return jsonify(error="Delete failed"), 500
+        abort(500, description="Delete failed")

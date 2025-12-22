@@ -18,6 +18,7 @@ from flask import Flask, request, jsonify, g
 from flask_cors import cross_origin
 from functools import wraps
 from jose import jwt
+from werkzeug.exceptions import HTTPException
 
 import requests
 from six.moves.urllib.request import urlopen
@@ -25,10 +26,9 @@ from werkzeug.local import LocalProxy
 
 
 from utils.images import (
-    _create_person_image,
+    _upsert_person_image,
     _delete_person_image,
-    _get_person_image,
-    _update_person_image,
+    _get_person_image_url,
 )
 
 
@@ -170,11 +170,22 @@ class AuthError(Exception):
         self.status_code = status_code
 
 
+# These custom error handlers enable us to return JSON-ified error messages
 @app.errorhandler(AuthError)
 def handle_auth_error(ex):
     response = jsonify(ex.error)
     response.status_code = ex.status_code
     return response
+
+
+@app.errorhandler(HTTPException)
+def handle_http_exception(error):
+    """Handle exceptions raised via flask.abort()
+    Usage:
+        from flask import abort
+        abort(400, description="Email is required")
+    """
+    return jsonify({"error": error.description, "status": error.code}), error.code
 
 
 def get_token_auth_header():
@@ -382,7 +393,7 @@ def download_crash_id(crash_id):
     return jsonify(message=url)
 
 
-@app.route("/images/person/<int:person_id>", methods=["GET", "DELETE", "POST", "PUT"])
+@app.route("/images/person/<int:person_id>", methods=["GET", "DELETE", "POST"])
 @cross_origin(
     headers=[
         "Content-Type",
@@ -400,13 +411,10 @@ def person_image(person_id):
         return jsonify(error="Missing person_id"), 400
 
     if request.method == "GET":
-        return _get_person_image(person_id, s3)
+        return _get_person_image_url(person_id, s3)
 
     elif request.method == "POST":
-        return _create_person_image(person_id, s3)
-
-    elif request.method == "PUT":
-        return _update_person_image(person_id, s3)
+        return _upsert_person_image(person_id, s3)
 
     elif request.method == "DELETE":
         return _delete_person_image(person_id, s3)

@@ -11,6 +11,7 @@ GET_PERSON_IMAGE_METADATA = """
 query GetPersonImage($person_id: Int!) {
   people_by_pk(id: $person_id) {
     image_s3_object_key
+    image_original_filename
   }
 }
 """
