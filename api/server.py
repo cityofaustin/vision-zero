@@ -382,7 +382,7 @@ def download_crash_id(crash_id):
         ClientMethod="get_object",
         Params={
             "Bucket": AWS_S3_BUCKET,
-            "Key": AWS_S3_CR3_LOCATION + "/" + crash_id + ".pdf",
+            "Key": AWS_S3_CR3_LOCATION + "/" + str(crash_id) + ".pdf",
         },
     )
 
