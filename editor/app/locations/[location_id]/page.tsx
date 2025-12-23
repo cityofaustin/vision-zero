@@ -133,6 +133,8 @@ export default function LocationDetailsPage({
                  * that it is not saved in the local storage config
                  */
                 contextFilters={locationIdFilter}
+                filtersEventName="location_crashes_list_filters"
+                mapEventName="location_crashes_list_map"
               />
             </Card.Body>
           </Card>
