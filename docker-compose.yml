@@ -39,3 +39,7 @@ services:
     volumes:
       - ./api:/usr/src/app
     command: flask run --host=0.0.0.0 --port=5000 --debug
+
+networks:
+  default:
+    name: vision-zero_default
