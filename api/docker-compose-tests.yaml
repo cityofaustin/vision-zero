@@ -8,6 +8,8 @@ services:
     # this profile prevents this service from running on typical startup
     profiles: ["test"] 
     command: pytest -x
+    networks:
+      - vision-zero_default
 
 networks:
   vision-zero_default:
