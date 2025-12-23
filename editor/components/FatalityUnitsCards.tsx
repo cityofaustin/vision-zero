@@ -109,8 +109,8 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                                 Restraint used: {victim.rest.label}
                               </span>
                             )}
-                          {victim.prsn_exp_homelessness && (
-                            <span>{victim.prsn_exp_homelessness}</span>
+                          {!!victim.prsn_exp_homelessness && (
+                            <span>{"Suspected unhoused"}</span>
                           )}
                         </div>
                       </div>
