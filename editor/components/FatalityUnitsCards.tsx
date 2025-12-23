@@ -139,7 +139,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                     <div className="pb-1">
                       <div className="fw-bold">Charges</div>
                       {unitCharges.map((charge) => (
-                        <div className="ms-2" key={charge.citation_nbr}>
+                        <div className="ms-2" key={charge.id}>
                           {charge.charge}
                         </div>
                       ))}
