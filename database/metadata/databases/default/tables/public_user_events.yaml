@@ -6,24 +6,18 @@ insert_permissions:
     permission:
       check: {}
       columns:
-        - created_at
         - event_name
-        - id
         - user_email
   - role: readonly
     permission:
       check: {}
       columns:
-        - id
         - event_name
         - user_email
-        - created_at
     comment: ""
   - role: vz-admin
     permission:
       check: {}
       columns:
-        - id
         - event_name
         - user_email
-        - created_at
