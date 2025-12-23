@@ -39,15 +39,3 @@ services:
     volumes:
       - ./api:/usr/src/app
     command: flask run --host=0.0.0.0 --port=5000 --debug
-
-  cr3-user-api-test:
-    image: cr3-user-api
-    depends_on:
-      - cr3-user-api
-    env_file:
-      - api/.env.test
-    volumes:
-      - ./api:/usr/src/app
-    # this profile prevents this service from running on typical startup
-    profiles: ["test"] 
-    command: pytest -x
