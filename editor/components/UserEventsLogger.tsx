@@ -20,7 +20,7 @@ interface UserEventsLoggerProps {
  *
  * @example
  * ```tsx
- * <UserEventsLogger eventName="crashes_list">
+ * <UserEventsLogger eventName="crashes_list_view">
  *   <CrashesList />
  * </UserEventsLogger>
  * ```

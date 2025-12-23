@@ -245,7 +245,7 @@ export default function EMSDetailsPage({
   }
 
   return (
-    <UserEventsLogger eventName="ems_details">
+    <UserEventsLogger eventName="ems_details_view">
       <Row>
         <Col className="d-flex fs-3 align-items-center mb-3">
           <FaTruckMedical className="me-2" />

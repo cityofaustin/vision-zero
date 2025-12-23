@@ -10,7 +10,7 @@ const localStorageKey = "fatalitiesListViewQueryConfig";
 export default function Fatalities() {
   useDocumentTitle("Fatalities");
   return (
-    <UserEventsLogger eventName="fatalities_list">
+    <UserEventsLogger eventName="fatalities_list_view">
       <div className="h-100 d-flex flex-column">
         <div>
           <span className="fs-3 fw-bold">Fatalities</span>
@@ -19,7 +19,7 @@ export default function Fatalities() {
           columns={fatalitiesListViewColumns}
           initialQueryConfig={fatalitiesListViewQueryConfig}
           localStorageKey={localStorageKey}
-          filtersEventName="fatalities_list_filters"
+          filtersEventName="fatalities_list_filters_toggle"
         />
       </div>
     </UserEventsLogger>

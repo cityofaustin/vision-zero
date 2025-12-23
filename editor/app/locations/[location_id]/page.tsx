@@ -91,7 +91,7 @@ export default function LocationDetailsPage({
   const location = data[0];
 
   return (
-    <UserEventsLogger eventName="location_details">
+    <UserEventsLogger eventName="location_details_view">
       <span className="fs-2">{location.description}</span>
       <Row>
         <Col sm={12} md={6} lg={7} className="mb-3">
@@ -133,8 +133,8 @@ export default function LocationDetailsPage({
                  * that it is not saved in the local storage config
                  */
                 contextFilters={locationIdFilter}
-                filtersEventName="location_crashes_list_filters"
-                mapEventName="location_crashes_list_map"
+                filtersEventName="location_crashes_list_filters_toggle"
+                mapEventName="location_crashes_list_map_toggle"
               />
             </Card.Body>
           </Card>

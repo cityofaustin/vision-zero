@@ -23,7 +23,7 @@ const isDeletedFilter: Filter[] = [
 export default function EMS() {
   useDocumentTitle("EMS");
   return (
-    <UserEventsLogger eventName="ems_list">
+    <UserEventsLogger eventName="ems_list_view">
       <div className="h-100 d-flex flex-column">
         <div className="d-flex">
           <div className="fs-3 fw-bold me-2">EMS Patient care</div>
@@ -48,7 +48,7 @@ export default function EMS() {
            * Filters out records that have been soft deleted
            */
           contextFilters={isDeletedFilter}
-          filtersEventName="ems_list_filters"
+          filtersEventName="ems_list_filters_toggle"
         />
       </div>
     </UserEventsLogger>

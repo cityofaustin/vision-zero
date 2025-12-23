@@ -54,7 +54,7 @@ const dashboardLinks: DashboardLinkCardProps[] = [
 export default function Dashboard() {
   useDocumentTitle("Dashboard");
   return (
-    <UserEventsLogger eventName="dashboard">
+    <UserEventsLogger eventName="dashboard_view">
       <Row className="mt-3">
         <Col md={9}>
           <p>

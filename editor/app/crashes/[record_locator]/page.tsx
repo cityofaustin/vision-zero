@@ -95,7 +95,7 @@ export default function CrashDetailsPage({
   const crash = data[0];
 
   return (
-    <UserEventsLogger eventName="crash_details">
+    <UserEventsLogger eventName="crash_details_view">
       <CrashHeader crash={crash} refetch={refetch} />
       {
         // show alert if crash on private drive or outside of Austin full purpose

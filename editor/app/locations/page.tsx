@@ -10,7 +10,7 @@ const localStorageKey = "locationsListViewQueryConfig";
 export default function Locations() {
   useDocumentTitle("Locations");
   return (
-    <UserEventsLogger eventName="locations_list">
+    <UserEventsLogger eventName="locations_list_view">
       <div className="h-100 d-flex flex-column">
         <div>
           <span className="fs-3 fw-bold">Locations</span>
@@ -19,7 +19,7 @@ export default function Locations() {
           columns={locationsListViewColumns}
           initialQueryConfig={locationsListViewQueryConfig}
           localStorageKey={localStorageKey}
-          filtersEventName="locations_list_filters"
+          filtersEventName="locations_list_filters_toggle"
         />
       </div>
     </UserEventsLogger>
