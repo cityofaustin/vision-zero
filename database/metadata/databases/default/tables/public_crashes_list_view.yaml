@@ -1,31 +1,12 @@
 table:
   name: crashes_list_view
   schema: public
-object_relationships:
-  - name: recommendation
-    using:
-      manual_configuration:
-        column_mapping:
-          id: crash_pk
-        insertion_order: null
-        remote_table:
-          name: recommendations
-          schema: public
-array_relationships:
-  - name: units
-    using:
-      manual_configuration:
-        column_mapping:
-          id: crash_pk
-        insertion_order: null
-        remote_table:
-          name: units
-          schema: public
 select_permissions:
   - role: editor
     permission:
       columns:
         - cris_fatality_count
+        - est_total_person_comp_cost
         - fatality_count
         - law_enf_fatality_count
         - nonincap_injry_count
@@ -53,7 +34,6 @@ select_permissions:
         - crash_speed_limit
         - cris_crash_id
         - est_comp_cost_crash_based
-        - est_total_person_comp_cost
         - id
         - intrsct_relat_id
         - light_cond_id
@@ -62,8 +42,7 @@ select_permissions:
         - wthr_cond_id
         - latitude
         - longitude
-        - address_primary
-        - address_secondary
+        - address_display
         - case_id
         - collsn_desc
         - crash_date_ct
@@ -88,6 +67,7 @@ select_permissions:
     permission:
       columns:
         - cris_fatality_count
+        - est_total_person_comp_cost
         - fatality_count
         - law_enf_fatality_count
         - nonincap_injry_count
@@ -115,7 +95,6 @@ select_permissions:
         - crash_speed_limit
         - cris_crash_id
         - est_comp_cost_crash_based
-        - est_total_person_comp_cost
         - id
         - intrsct_relat_id
         - light_cond_id
@@ -124,8 +103,7 @@ select_permissions:
         - wthr_cond_id
         - latitude
         - longitude
-        - address_primary
-        - address_secondary
+        - address_display
         - case_id
         - collsn_desc
         - crash_date_ct
@@ -150,6 +128,7 @@ select_permissions:
     permission:
       columns:
         - cris_fatality_count
+        - est_total_person_comp_cost
         - fatality_count
         - law_enf_fatality_count
         - nonincap_injry_count
@@ -177,7 +156,6 @@ select_permissions:
         - crash_speed_limit
         - cris_crash_id
         - est_comp_cost_crash_based
-        - est_total_person_comp_cost
         - id
         - intrsct_relat_id
         - light_cond_id
@@ -186,8 +164,7 @@ select_permissions:
         - wthr_cond_id
         - latitude
         - longitude
-        - address_primary
-        - address_secondary
+        - address_display
         - case_id
         - collsn_desc
         - crash_date_ct

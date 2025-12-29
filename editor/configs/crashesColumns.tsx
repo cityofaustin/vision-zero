@@ -14,13 +14,9 @@ export const crashesColumns = {
     path: "record_locator",
     label: "Crash ID",
   },
-  address_primary: {
-    path: "address_primary",
+  address_display: {
+    path: "address_display",
     label: "Address",
-  },
-  address_secondary: {
-    path: "address_secondary",
-    label: "Secondary address",
   },
   at_intrsct_fl: {
     path: "at_intrsct_fl",

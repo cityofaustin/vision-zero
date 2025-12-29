@@ -47,7 +47,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     exportOnly: true,
   },
   {
-    path: "address_primary",
+    path: "address_display",
     label: "Address",
     sortable: true,
     fetchAlways: true,
