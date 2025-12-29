@@ -184,6 +184,10 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           delete queryConfigFromStorage[key as keyof QueryConfig];
         });
       }
+
+      // completely replace the searchFields object with the latest config
+      queryConfigFromStorage.searchFields = initialQueryConfig.searchFields;
+
       // we're now on the latest config version ✨
       queryConfigFromStorage._version = initialQueryConfig._version;
     }
