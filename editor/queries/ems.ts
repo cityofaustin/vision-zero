@@ -164,12 +164,17 @@ export const GET_NON_CR3_CRASHES = gql`
 `;
 
 export const UPDATE_EMS_PCR_CRASH_AND_PERSON = gql`
-  mutation UpdateEMSPersonCrashStatus($id: Int!, $person_id: Int!) {
+  mutation UpdateEMSPersonCrashStatus(
+    $id: Int!
+    $person_id: Int!
+    $updated_by: String!
+  ) {
     update_ems__incidents(
       where: { id: { _eq: $id } }
       _set: {
         person_id: $person_id
         _match_event_name: "match_person_by_manual_qa"
+        updated_by: $updated_by
       }
     ) {
       affected_rows

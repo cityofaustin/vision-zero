@@ -32,6 +32,7 @@ import { parseISO, subHours, addHours } from "date-fns";
 import { Crash } from "@/types/crashes";
 import EMSMapCard from "@/components/EMSMapCard";
 import { NonCR3Record } from "@/types/nonCr3";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function EMSDetailsPage({
   params,
@@ -58,6 +59,9 @@ export default function EMSDetailsPage({
     },
     typename: "ems__incidents",
   });
+
+  const { user } = useAuth0();
+  const userEmail = user?.email;
 
   const { mutate: updateEmsPcr } = useMutation(UPDATE_EMS_PCR_CRASH_AND_PERSON);
 
@@ -205,6 +209,7 @@ export default function EMSDetailsPage({
         updateEmsPcr({
           id: emsId,
           person_id: personId,
+          updated_by: userEmail,
         })
           .then(() => refetchEMS())
           .then(() => refetchPeople())
@@ -214,7 +219,7 @@ export default function EMSDetailsPage({
       },
       selectedEmsPcr: selectedEmsPcr,
     }),
-    [updateEmsPcr, selectedEmsPcr, refetchEMS, refetchPeople]
+    [updateEmsPcr, selectedEmsPcr, refetchEMS, refetchPeople, userEmail]
   );
 
   if (error) {
