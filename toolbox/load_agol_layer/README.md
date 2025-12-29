@@ -24,7 +24,7 @@ nvm use
 4. Install dependencies
 
 ```
-npm. install
+npm install
 ```
 
 5. Run `load_agol_layer` by passing your environment file and layer name
