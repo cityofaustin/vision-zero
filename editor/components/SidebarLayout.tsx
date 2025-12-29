@@ -97,14 +97,11 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
    * Render the app
    */
   return (
-    // Full-height outer div stacks children vertically
     <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
       <AppNavBar user={user} logout={logout} />
       {/* Sidebar */}
       <div
-        className={`app-sidebar d-flex flex-column h-100 app-sidebar-${
-          isCollapsed ? "collapsed" : "expanded"
-        }`}
+        className={`app-sidebar d-flex flex-column h-100 app-sidebar-${isCollapsed ? "collapsed" : "expanded"}`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
