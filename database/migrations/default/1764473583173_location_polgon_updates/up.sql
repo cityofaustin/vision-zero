@@ -36,6 +36,10 @@ ALTER TABLE atd_txdot_locations
     add column created_by text not null default 'system',
     add column updated_by text not null default 'system';
 
+
+-- mark all polygons deleted: we will run the toolbox helper to refresh this status
+update atd_txdot_locations set is_deleted = TRUE where 1=1;
+
 -- index the new is_deleted column
 CREATE INDEX locations_is_deleted_idx on atd_txdot_locations (is_deleted);
 
