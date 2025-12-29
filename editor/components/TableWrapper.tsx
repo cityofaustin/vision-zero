@@ -185,8 +185,13 @@ export default function TableWrapper<T extends Record<string, unknown>>({
         });
       }
 
-      // completely replace the searchFields object with the latest config
+      // completely replace searchFields with the latest config
       queryConfigFromStorage.searchFields = initialQueryConfig.searchFields;
+      queryConfigFromStorage.searchFilter = initialQueryConfig.searchFilter;
+
+      // reset the sort settings as well
+      queryConfigFromStorage.sortColName = initialQueryConfig.sortColName;
+      queryConfigFromStorage.sortAsc = initialQueryConfig.sortAsc;
 
       // we're now on the latest config version ✨
       queryConfigFromStorage._version = initialQueryConfig._version;
