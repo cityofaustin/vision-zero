@@ -14,7 +14,7 @@ export const locationsListViewColumns: ColDataCardDef<LocationsListRow>[] = [
     ),
   },
   {
-    path: "description",
+    path: "location_name",
     label: "Location",
     sortable: true,
   },
