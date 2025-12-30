@@ -45,7 +45,7 @@ See the [database documentation](/database#geospatial-layers) about geospatial l
 
 ## Post-layer update tasks
 
-After a geospatial layer is updated, you must re-process any records which reference the layer. For example, after update the `location` polygons layer, you should re-process the `location_id` associations for `crashes`, `atd_apd_blueform`, `ems__incidents`, and `afd__incdents`. See [#26112](https://github.com/cityofaustin/atd-data-tech/issues/26112) for example.
+After a geospatial layer is updated, you must re-process any records which reference the layer. For example, after updating the `location` polygons layer, you should re-process the `location_id` associations for `crashes`, `atd_apd_blueform`, `ems__incidents`, and `afd__incdents`. See [#26112](https://github.com/cityofaustin/atd-data-tech/issues/26112) for example.
 
 ## CLI
 
