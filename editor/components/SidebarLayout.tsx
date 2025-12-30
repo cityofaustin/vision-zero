@@ -16,7 +16,7 @@ import { darkModeLocalStorageKey } from "@/components/DarkModeToggle";
  * The app sidebar component
  */
 export default function SidebarLayout({ children }: { children: ReactNode }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
   const { loginWithRedirect, logout, isAuthenticated, isLoading, user } =
     useAuth0();
