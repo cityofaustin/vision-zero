@@ -43,6 +43,10 @@ When creating a new database table to hold feature data, polygon geometries shou
 
 See the [database documentation](/database#geospatial-layers) about geospatial layers for additional details.
 
+## Post-layer update tasks
+
+After a geospatial layer is updated, you'll likely want to re-process any records which reference the layer. For example, after update the `location` polygons layer, you should re-process the `location_id` associations for `crashes`, `atd_apd_blueform`, `ems__incidents`, and `afd__incdents`. See [#26112](https://github.com/cityofaustin/atd-data-tech/issues/26112) for example.
+
 ## CLI
 
 - The `-l/--layer` arg is required to specify which layer will be processed.
