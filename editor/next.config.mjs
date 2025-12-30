@@ -48,6 +48,7 @@ const nextConfig = {
       "global-builtin",
       "import",
       "legacy-js-api",
+      "if-function"
     ],
   },
 };
