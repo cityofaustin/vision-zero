@@ -37,7 +37,7 @@ export default function SideBarListItem({
       <div
         className={`
             rounded d-flex align-items-center justify-items-between py-1
-            sidebar-list-item-content ${isCurrentPage ? "sidebar-list-item-current" : ""}
+            sidebar-list-item-content ${isCurrentPage ? "sidebar-list-item-current fw-semibold" : ""}
         `}
       >
         {/* This span is load-bearing - it prevents icon rezing when label span unhides */}
