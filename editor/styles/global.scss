@@ -1,6 +1,4 @@
-/*
-* current palette 
-*/
+/* our custom palette */
 $baby-powder: #fbfef9;
 $night: #131515;
 $moped-blue: #1276d1;
@@ -10,9 +8,8 @@ $sea-green: #09814a;
 $rojo: #dd0426;
 $jonquil: #ffd22f;
 $dark-grey: rgb(42.5, 47.5, 52.5);
-$dark-mode-background: #212529;
 
-/* override bootstrap with our palette */
+/* override bootstrap palette with our palette */
 $white: #ffffff;
 $primary: $moped-blue;
 $secondary: $dim-gray;
@@ -23,31 +20,145 @@ $danger: $rojo;
 $light: $anti-flash-white;
 $dark: $night;
 
-$sidebarWidth: 4.6rem;
+/* override bootstrap dark mode palette */
+$body-bg-dark: #0d1117;
+$border-color-dark: #495057;
+
+/* our custom vars */
+$body-bg-dark-inset: #010409;
+$sidebarWidth: 66px;
+
+/* github */
+
+// dark mode
+$gh-dark-mode-muted-text: #9198a1; // like secondary color in dark mode and icon color in menu
+$gh-dark-mode-list-item-bg-hover: #656c7633; // active and hovered list item
+$gh-dark-mode-light-header: #151b23; // card headers
+
+// light mode
+$gh-light-mode-light-header: #f7f8fa; // card header (less than 1 deltaE from our anti-flash-white
+$gh-light-mode-light-badge-bg: #dde1e5; // rendered on issue count badges over light header
+$gh-light-mode-list-item-bg-hover: #818b981a; // active and hovered list item
+$gh-light-mode-muted-text: #59636e; // secondary color in header and icon color in menu
 
 // https://isotropic.co/tool/hex-color-to-css-filter/
 .app-brand-img {
   filter: sepia(10%) contrast(130%);
 }
 
-/* dark mode overrides */
 [data-bs-theme="dark"] .app-brand-img {
   filter: invert(100%);
 }
 
+[data-bs-theme="light"] .app-footer {
+  background-color: $light;
+  color: $secondary;
+}
+
+[data-bs-theme="dark"] .app-footer {
+  border: none !important;
+}
+
+.main-content-pane {
+  margin-left: $sidebarWidth;
+}
+
+/* Navbar */
 .app-navbar {
-  position: fixed !important;
-  z-index: 1050;
-  top: 0;
+  [data-bs-theme="light"] & {
+    background-color: $light;
+  }
+  [data-bs-theme="dark"] & {
+    background-color: $body-bg-dark-inset;
+  }
 }
 
-[data-bs-theme="dark"] .app-navbar,
+/* Sidebar */
 .app-sidebar {
-  background-color: $dark-mode-background !important;
+  position: fixed !important;
+  margin-top: 3.85rem;
+  z-index: 1040;
+  left: 0;
+  top: 0;
+  height: 100%;
+  transition:
+    width 0.2s ease-out,
+    box-shadow 0.3s ease-out;
+  overflow-x: hidden;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  [data-bs-theme="light"] & {
+    background-color: $light;
+    border-right: 1px solid var(--bs-border-color);
+  }
+  [data-bs-theme="dark"] & {
+    border-right: 1px solid $border-color-dark;
+    background-color: $body-bg-dark-inset;
+  }
 }
 
+.app-sidebar-expanded {
+  width: 15.5rem !important;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.app-sidebar-collapsed {
+  width: $sidebarWidth !important;
+}
+
+.app-sidebar .list-group-item,
+.app-sidebar .list-group-item:active,
+.app-sidebar .list-group-item.active,
+.app-sidebar .list-group-item:focus {
+  // no background color on sidebar list items
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.sidebar-list-item-current,
+.sidebar-list-item-content:hover {
+  [data-bs-theme="light"] & {
+    background-color: $gh-light-mode-list-item-bg-hover;
+  }
+  [data-bs-theme="dark"] & {
+    background-color: $gh-dark-mode-list-item-bg-hover;
+  }
+}
+
+.list-group-item .sidebar-list-item-label {
+  [data-bs-theme="light"] & {
+    color: var(--bs-body-color);
+  }
+  [data-bs-theme="dark"] & {
+    color: $white;
+  }
+}
+
+.sidebar-list-item-icon {
+  [data-bs-theme="light"] & {
+    color: $gh-light-mode-muted-text;
+  }
+  [data-bs-theme="dark"] & {
+    color: $gh-dark-mode-muted-text;
+  }
+}
+
+/* sidebar animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.flex-grow-1 {
+  transition: margin-left 0.3s ease-out;
+}
+
+// todo: revist this to use a lighter dark mode color?
 [data-bs-theme="dark"] .bg-light-use-theme {
-  background-color: $dark-mode-background !important;
+  background-color: $gh-dark-mode-light-header !important;
 }
 
 [data-bs-theme="light"] .bg-light-use-theme {
@@ -67,40 +178,21 @@ $sidebarWidth: 4.6rem;
   background-color: $white !important;
 }
 
-[data-bs-theme="light"] .app-sidebar {
-  background-color: $light !important;
-}
-
-[data-bs-theme="dark"] .app-sidebar {
-  border-right: 1px solid #495057;
-}
-
 [data-bs-theme="dark"] .react-datepicker__calendar-icon {
   fill: $light;
 }
 
-[data-bs-theme="light"] .app-footer {
-  background-color: $light;
-  color: $secondary;
-}
-
-[data-bs-theme="dark"] .app-footer {
-  border: none !important;
-}
-
 [data-bs-theme="dark"] .date-preset-button {
   color: $white;
-  // bs border-color
-  border-color: #495057 !important;
-  // bs tertiary background
-  background-color: $dark-grey;
-
+  border-color: $gh-dark-mode-light-header !important;
+  background-color: $gh-dark-mode-light-header;
   &:hover,
   &:active,
   &:focus,
   &.active {
-    background-color: $secondary !important;
-    border-color: $secondary !important;
+    background-color: $primary !important;
+    border-color: $primary !important;
+    color: $white !important;
   }
 }
 
@@ -113,13 +205,14 @@ $sidebarWidth: 4.6rem;
   &:active,
   &:focus,
   &.active {
-    background-color: $secondary !important;
-    border-color: $secondary !important;
+    background-color: $primary !important;
+    border-color: $primary !important;
+    color: $white !important;
   }
 }
 
-// Custom tooltip styles prevent the y-scrollbar from briefly flashing
-// and causing a layout shift
+/* Custom tooltip styles prevent the y-scrollbar from briefly flashing and causing a
+layout shift */
 .tooltip {
   position: fixed !important;
   /* Override Bootstrap's absolute positioning */
@@ -140,87 +233,14 @@ $sidebarWidth: 4.6rem;
 }
 
 [data-bs-theme="dark"] .edit-address-button {
-  background-color: $dark-mode-background !important;
-  border-color: $dark-mode-background !important;
+  background-color: $body-bg-dark !important;
+  border-color: $body-bg-dark !important;
   color: $white;
 
   &:hover {
     background-color: $dark-grey !important;
     border-color: $dark-grey !important;
   }
-}
-
-.app-sidebar {
-  position: fixed !important;
-  margin-top: 3.9rem;
-  z-index: 1040;
-  left: 0;
-  top: 0;
-  height: 100%;
-  transition:
-    width 0.2s ease-out,
-    box-shadow 0.3s ease-out;
-  overflow-x: hidden;
-  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-}
-
-.app-sidebar-expanded {
-  width: 15.5rem !important;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
-}
-
-.app-sidebar-collapsed {
-  width: $sidebarWidth !important;
-}
-
-.main-content-pane {
-  margin-top: 3.9rem;
-  margin-left: $sidebarWidth;
-}
-
-[data-bs-theme="light"] .sidebar-list-item,
-[data-bs-theme="light"] .sidebar-list-item:active,
-[data-bs-theme="light"] .sidebar-list-item:focus {
-  background-color: $light;
-}
-
-[data-bs-theme="dark"] .sidebar-list-item,
-[data-bs-theme="dark"] .sidebar-list-item:active,
-[data-bs-theme="dark"] .sidebar-list-item:focus {
-  background-color: #212529;
-}
-
-[data-bs-theme="light"] .sidebar-list-item-current {
-  //   color: $light !important;
-  background-color: #fff !important;
-}
-
-[data-bs-theme="dark"] .sidebar-list-item-current {
-  color: #fff !important;
-  background-color: #495057 !important;
-}
-
-[data-bs-theme="light"] .sidebar-list-item:hover {
-  color: #000 !important;
-}
-
-[data-bs-theme="dark"] .sidebar-list-item:hover {
-  color: #fff !important;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-// Add transition for main content margin
-.flex-grow-1 {
-  transition: margin-left 0.3s ease-out;
 }
 
 .mapboxgl-map {
@@ -245,6 +265,9 @@ $sidebarWidth: 4.6rem;
   line-height: 1.5rem;
   font-weight: bold;
   color: $white;
+  [data-bs-theme="dark"] & {
+    outline: 1px solid white;
+  }
 }
 
 .react-datepicker__calendar-icon {

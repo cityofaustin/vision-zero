@@ -16,7 +16,7 @@ import { darkModeLocalStorageKey } from "@/components/DarkModeToggle";
  * The app sidebar component
  */
 export default function SidebarLayout({ children }: { children: ReactNode }) {
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
   const { loginWithRedirect, logout, isAuthenticated, isLoading, user } =
     useAuth0();
@@ -108,7 +108,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <div className="flex-grow-1 overflow-y-auto">
+        <div className="flex-grow-1 overflow-y-auto mt-1">
           <ListGroup variant="flush">
             {routes.map((route) => (
               <PermissionsRequired
@@ -128,7 +128,10 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
         </div>
       </div>
       {/* Main content - essentially a bootstrap "row" — horizontal */}
-      <div className="main-content-pane d-flex flex-grow-1">
+      <div
+        className="main-content-pane d-flex flex-grow-1"
+        style={{ marginTop: "3.9rem" }}
+      >
         <div className="flex-grow-1 d-flex flex-column w-100 ">
           {/* vertical container */}
           <main className="flex-grow-1 d-flex flex-column">
