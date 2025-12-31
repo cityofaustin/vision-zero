@@ -1,5 +1,5 @@
 table:
-  name: atd_txdot_locations
+  name: locations
   schema: public
 object_relationships:
   - name: locations_list_view
@@ -30,16 +30,31 @@ select_permissions:
   - role: editor
     permission:
       columns:
+        - apd_sectors
+        - area_eng_areas
+        - council_districts
+        - signal_eng_areas
+        - street_levels
+        - zip_codes
+        - is_deleted
+        - is_hin
+        - is_intersection
+        - is_service_road
+        - is_signalized
         - location_id
         - street_level
-        - last_update
         - latitude
         - longitude
-        - scale_factor
         - council_district
-        - is_intersection
+        - signal_id
         - location_group
-        - description
+        - created_by
+        - location_name
+        - signal_status
+        - signal_type
+        - updated_by
+        - created_at
+        - updated_at
         - geometry
       filter: {}
       allow_aggregations: true
@@ -47,16 +62,31 @@ select_permissions:
   - role: readonly
     permission:
       columns:
+        - apd_sectors
+        - area_eng_areas
+        - council_districts
+        - signal_eng_areas
+        - street_levels
+        - zip_codes
+        - is_deleted
+        - is_hin
+        - is_intersection
+        - is_service_road
+        - is_signalized
         - location_id
         - street_level
-        - last_update
         - latitude
         - longitude
-        - scale_factor
         - council_district
-        - is_intersection
+        - signal_id
         - location_group
-        - description
+        - created_by
+        - location_name
+        - signal_status
+        - signal_type
+        - updated_by
+        - created_at
+        - updated_at
         - geometry
       filter: {}
       allow_aggregations: true
@@ -64,16 +94,31 @@ select_permissions:
   - role: vz-admin
     permission:
       columns:
+        - apd_sectors
+        - area_eng_areas
+        - council_districts
+        - signal_eng_areas
+        - street_levels
+        - zip_codes
+        - is_deleted
+        - is_hin
+        - is_intersection
+        - is_service_road
+        - is_signalized
         - location_id
         - street_level
-        - last_update
         - latitude
         - longitude
-        - scale_factor
         - council_district
-        - is_intersection
+        - signal_id
         - location_group
-        - description
+        - created_by
+        - location_name
+        - signal_status
+        - signal_type
+        - updated_by
+        - created_at
+        - updated_at
         - geometry
       filter: {}
       allow_aggregations: true

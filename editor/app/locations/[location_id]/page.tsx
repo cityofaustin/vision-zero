@@ -25,7 +25,7 @@ import {
 } from "@/queries/locationNotes";
 import { useDocumentTitle } from "@/utils/documentTitle";
 
-const typename = "atd_txdot_locations";
+const typename = "locations";
 
 /**
  * Hook which returns a Filter array with the `location_id` param.
@@ -73,7 +73,7 @@ export default function LocationDetailsPage({
   // Set document title based on loaded location data
   useDocumentTitle(
     data && data.length > 0
-      ? `${data[0].location_id} - ${data[0].description}`
+      ? `${data[0].location_id} - ${data[0].location_name}`
       : "Vision Zero Editor",
     true // exclude the suffix
   );
@@ -92,7 +92,7 @@ export default function LocationDetailsPage({
 
   return (
     <UserEventsLogger eventName="location_details_view">
-      <span className="fs-2">{location.description}</span>
+      <span className="fs-2">{location.location_name}</span>
       <Row>
         <Col sm={12} md={6} lg={7} className="mb-3">
           <LocationMapCard location={location} />
