@@ -28,7 +28,7 @@ export default function Crashes() {
   }, [setRefetch]);
 
   return (
-    <UserEventsLogger eventName="crashes_list">
+    <UserEventsLogger eventName="crashes_list_view">
       <div className="h-100 d-flex flex-column">
         <div className="d-flex justify-content-between">
           <span className="fs-3 fw-bold">Crashes</span>
@@ -49,9 +49,9 @@ export default function Crashes() {
           initialQueryConfig={crashesListViewQueryConfig}
           localStorageKey={localStorageKey}
           refetch={refetch}
-          filtersEventName="crashes_list_filters"
-          mapEventName="crashes_map"
-          downloadEventName="crashes_list_download"
+          filtersEventName="crashes_list_filters_toggle"
+          mapEventName="crashes_map_toggle"
+          downloadEventName="crashes_list_download_toggle"
         />
       </div>
       <CreateCrashRecordModal

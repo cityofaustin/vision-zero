@@ -15,7 +15,7 @@ import { INSERT_USER_EVENT } from "@/queries/userEvents";
  * const logUserEvent = useLogUserEvent();
  *
  * // Log an event
- * logUserEvent("crashes_list_filters");
+ * logUserEvent("crashes_list_filters_toggle");
  * ```
  */
 export function useLogUserEvent() {

@@ -33,6 +33,7 @@ import { Crash } from "@/types/crashes";
 import EMSMapCard from "@/components/EMSMapCard";
 import { NonCR3Record } from "@/types/nonCr3";
 import { useAuth0 } from "@auth0/auth0-react";
+import UserEventsLogger from "@/components/UserEventsLogger";
 
 export default function EMSDetailsPage({
   params,
@@ -244,7 +245,7 @@ export default function EMSDetailsPage({
   }
 
   return (
-    <>
+    <UserEventsLogger eventName="ems_details_view">
       <Row>
         <Col className="d-flex fs-3 align-items-center mb-3">
           <FaTruckMedical className="me-2" />
@@ -317,6 +318,6 @@ export default function EMSDetailsPage({
           />
         </Col>
       </Row>
-    </>
+    </UserEventsLogger>
   );
 }

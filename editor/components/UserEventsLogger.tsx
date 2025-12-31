@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import { useLogUserEvent } from "@/utils/userEvents";
 
 interface UserEventsLoggerProps {
@@ -20,7 +20,7 @@ interface UserEventsLoggerProps {
  *
  * @example
  * ```tsx
- * <UserEventsLogger eventName="crashes_list">
+ * <UserEventsLogger eventName="crashes_list_view">
  *   <CrashesList />
  * </UserEventsLogger>
  * ```
@@ -30,9 +30,13 @@ export default function UserEventsLogger({
   children,
 }: UserEventsLoggerProps) {
   const logUserEvent = useLogUserEvent();
+  const hasLoggedEvent = useRef(false);
 
   useEffect(() => {
-    logUserEvent(eventName);
+    if (!hasLoggedEvent.current) {
+      hasLoggedEvent.current = true;
+      logUserEvent(eventName);
+    }
   }, [logUserEvent, eventName]);
 
   return <>{children}</>;

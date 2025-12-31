@@ -2,10 +2,12 @@ import { gql } from "graphql-request";
 
 export const GET_LOCATION = gql`
   query GetLocation($locationId: String!) {
-    atd_txdot_locations(where: { location_id: { _eq: $locationId } }) {
+    locations(
+      where: { location_id: { _eq: $locationId }, is_deleted: { _eq: false } }
+    ) {
       location_id
       street_level
-      description
+      location_name
       geometry
       latitude
       longitude
