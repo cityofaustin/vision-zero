@@ -11,7 +11,7 @@ from utils.graphql import (
     CHARGES_DELETE_MUTATION,
 )
 from utils.logging import get_logger
-from utils.settings import CSV_UPLOAD_BATCH_SIZE
+from utils.settings import CSV_UPLOAD_BATCH_SIZE, CRIS_MIN_MAX_SCHEMA_YEARS
 
 logger = get_logger()
 
@@ -115,7 +115,7 @@ def get_csvs_todo(extract_dir):
         if table_name not in ("crash", "unit", "person", "primaryperson", "charges"):
             continue
 
-        if not int(schema_year) > 2000 or not int(schema_year) <= 2026:
+        if not int(schema_year) >= CRIS_MIN_MAX_SCHEMA_YEARS[0] or not int(schema_year) <= CRIS_MIN_MAX_SCHEMA_YEARS[1]:
             raise ValueError(f"Unexpected CRIS schema year provided: {schema_year}")
 
         file = {
