@@ -115,7 +115,7 @@ def get_csvs_todo(extract_dir):
         if table_name not in ("crash", "unit", "person", "primaryperson", "charges"):
             continue
 
-        if not int(schema_year) > 2000 or not int(schema_year) < 2024:
+        if not int(schema_year) > 2000 or not int(schema_year) <= 2026:
             raise ValueError(f"Unexpected CRIS schema year provided: {schema_year}")
 
         file = {
