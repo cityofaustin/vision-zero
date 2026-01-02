@@ -32,6 +32,9 @@ CR3_FORM_V2_TEST_PIXELS = {
     ],
 }
 
+# Schema years known to our ETL/DB. This will need to be incremented periodically
+# as CRIS releases new versions
+CRIS_MIN_MAX_SCHEMA_YEARS = (2001, 2026)
 
 CSV_UPLOAD_BATCH_SIZE = 1000
 
