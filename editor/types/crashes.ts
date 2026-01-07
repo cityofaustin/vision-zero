@@ -73,7 +73,6 @@ export type Crash = {
   traffic_cntl_id: number | null;
   updated_at: string | null;
   updated_by: string | null;
-  veh_hnr_fl: boolean | null;
   wthr_cond_id: number | null;
   change_logs: ChangeLogEntry[] | null;
   units: Unit[] | null;

@@ -308,10 +308,6 @@ export const crashesColumns = {
     path: "updated_by",
     label: "updated_by",
   },
-  veh_hnr_fl: {
-    path: "veh_hnr_fl",
-    label: "Hit and run",
-  },
   wthr_cond_id: {
     path: "wthr_cond_id",
     label: "wthr_cond_id",

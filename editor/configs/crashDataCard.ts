@@ -16,7 +16,6 @@ export const crashDataCards = {
     crashesColumns.road_constr_zone_fl,
     crashesColumns.schl_bus_fl,
     crashesColumns.toll_road_fl,
-    crashesColumns.veh_hnr_fl,
   ],
   other: [
     crashesColumns.light_cond,

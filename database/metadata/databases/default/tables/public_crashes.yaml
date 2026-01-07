@@ -183,7 +183,6 @@ select_permissions:
         - txdot_rptable_fl
         - updated_at
         - updated_by
-        - veh_hnr_fl
         - wthr_cond_id
       filter: {}
       allow_aggregations: true
@@ -276,7 +275,6 @@ select_permissions:
         - crash_timestamp
         - created_at
         - updated_at
-        - veh_hnr_fl
         - position
       filter: {}
       allow_aggregations: true
@@ -368,7 +366,6 @@ select_permissions:
         - crash_timestamp
         - created_at
         - updated_at
-        - veh_hnr_fl
         - position
       filter: {}
       allow_aggregations: true
