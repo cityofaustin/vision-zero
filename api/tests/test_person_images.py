@@ -149,6 +149,11 @@ def test_upsert_change_format(api_url, headers, test_image_jpg, test_image_png):
     res = requests.put(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 201
 
+    # Get the JPEG
+    res = requests.get(api_url, headers=headers)
+    assert res.status_code == 200
+    presigned_url_jpg = res.json()["url"]
+
     # Update to PNG
     files = {"file": test_image_png}
     data = {"image_source": "png_source"}
@@ -156,9 +161,13 @@ def test_upsert_change_format(api_url, headers, test_image_jpg, test_image_png):
     assert res.status_code == 200
     assert res.json()["success"] is True
 
-    # Verify it's accessible
+    # Verify the PNG is accessible
     res = requests.get(api_url, headers=headers)
     assert res.status_code == 200
+
+    # Verify the old PNG is no longer found
+    s3_res = requests.get(presigned_url_jpg)
+    assert s3_res.status_code == 404
 
 
 def test_upload_no_file_no_source(api_url, headers):

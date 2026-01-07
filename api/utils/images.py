@@ -134,8 +134,10 @@ def _upsert_person_image(person_id, s3):
     """
     has_file = "file" in request.files
     image_source = request.form.get("image_source")
-    image_obj_key, image_original_filename = _get_person_image_metadata(person_id)
-    is_new = not image_obj_key
+    image_original_obj_key, image_original_filename = _get_person_image_metadata(
+        person_id
+    )
+    is_new = not image_original_obj_key
 
     if not image_source and not has_file:
         return (
@@ -152,15 +154,12 @@ def _upsert_person_image(person_id, s3):
     if not is_new and has_file and not image_source:
         return jsonify(error="Image source is required when updating an image"), 400
 
+    image_new_obj_key = None
+
     if has_file:
         # save/update image in S3
         file = request.files["file"]
-        image_obj_key = _handle_image_upload(
-            person_id,
-            file,
-            s3,
-            old_image_obj_key=None if is_new else image_obj_key,
-        )
+        image_new_obj_key = _handle_image_upload(person_id, file, s3)
         image_original_filename = file.filename
 
     # update hasura file metadata
@@ -169,26 +168,33 @@ def _upsert_person_image(person_id, s3):
         variables={
             "person_id": person_id,
             "object": {
-                "image_s3_object_key": image_obj_key,
+                "image_s3_object_key": image_new_obj_key or image_original_obj_key,
                 "image_source": image_source,
                 "image_original_filename": image_original_filename,
                 "updated_by": get_user_email(),
             },
         },
     )
+
+    # delete old image of different file ext
+    if image_original_obj_key and image_new_obj_key and image_new_obj_key != image_original_obj_key:
+        # this will only happen if an image is being updated and its file extension has changed
+        current_app.logger.info(
+            f"Deleting old image: {AWS_S3_BUCKET}/{image_original_obj_key}"
+        )
+        s3.delete_object(Bucket=AWS_S3_BUCKET, Key=image_original_obj_key)
+
     status_code = 201 if is_new else 200
     return jsonify(success=True), status_code
 
 
-def _handle_image_upload(person_id, file, s3, old_image_obj_key=None):
+def _handle_image_upload(person_id, file, s3):
     """Uploads an image to S3 after validating the image and removing EXIF data
 
     Args:
         person_id (Int): The person ID of the image
         file (flask.Request.files): the file object from the request
         s3 (boto3.S3.client): The boto3 S3 client
-        old_image_obj_key (str, optional): The s3 object key of the image being
-            replaced. This file will be deleted before the new file is uploaded.
 
     Returns:
         flask.Response: Response object
@@ -206,13 +212,6 @@ def _handle_image_upload(person_id, file, s3, old_image_obj_key=None):
     ext = "jpg" if img.format.lower() == "jpeg" else img.format.lower()
     filename = f"{person_id}.{ext}"
     new_image_obj_key = f"{AWS_S3_PERSON_IMAGE_LOCATION}/{filename}"
-
-    if old_image_obj_key and new_image_obj_key != old_image_obj_key:
-        # this will only happen if an image is being updated and its file extension has changed
-        current_app.logger.info(
-            f"Deleting old image: {AWS_S3_BUCKET}/{old_image_obj_key}"
-        )
-        s3.delete_object(Bucket=AWS_S3_BUCKET, Key=old_image_obj_key)
 
     current_app.logger.info(f"Uploading image: {AWS_S3_BUCKET}/{new_image_obj_key}")
 
