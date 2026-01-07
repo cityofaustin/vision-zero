@@ -18,7 +18,7 @@ export default function TableMapWrapper<T extends Record<string, unknown>>({
   data,
 }: TableMapWrapperProps<T>) {
   const mapRef = useRef<MapRef | null>(null);
-  console.log(mapConfig, data);
+
   /**
    * Trigger resize() when the map container size changes - this ensures that
    * the map repaints when the sidebar is collapsed/expanded.
