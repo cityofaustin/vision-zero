@@ -4,7 +4,8 @@ ADD COLUMN sort_order integer;
 
 -- Drop the sequence to avoid conflicts with explicit ID inserts
 -- Lookup tables don't need auto-increment since values are inserted via migrations
-DROP SEQUENCE public.atd__recommendation_status_lkp_id_seq;
+-- CASCADE removes the default value dependency on the id column
+DROP SEQUENCE public.atd__recommendation_status_lkp_id_seq CASCADE;
 
 -- Insert new status options: Open - Immediate and Open - Medium Term
 INSERT INTO public.atd__recommendation_status_lkp (id, rec_status_desc, sort_order)
