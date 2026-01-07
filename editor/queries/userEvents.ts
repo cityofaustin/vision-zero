@@ -5,10 +5,7 @@ export const INSERT_USER_EVENT = gql`
     insert_user_events_one(
       object: { event_name: $event_name, user_email: $user_email }
     ) {
-      id
-      created_at
+      __typename
     }
   }
 `;
-
-

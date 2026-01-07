@@ -7,6 +7,7 @@ import Row from "react-bootstrap/Row";
 import DataCard from "@/components/DataCard";
 import LocationMapCard from "@/components/LocationMapCard";
 import TableWrapper from "@/components/TableWrapper";
+import UserEventsLogger from "@/components/UserEventsLogger";
 import { useQuery } from "@/utils/graphql";
 import { GET_LOCATION } from "@/queries/location";
 import { Location } from "@/types/locations";
@@ -24,7 +25,7 @@ import {
 } from "@/queries/locationNotes";
 import { useDocumentTitle } from "@/utils/documentTitle";
 
-const typename = "atd_txdot_locations";
+const typename = "locations";
 
 /**
  * Hook which returns a Filter array with the `location_id` param.
@@ -72,7 +73,7 @@ export default function LocationDetailsPage({
   // Set document title based on loaded location data
   useDocumentTitle(
     data && data.length > 0
-      ? `${data[0].location_id} - ${data[0].description}`
+      ? `${data[0].location_id} - ${data[0].location_name}`
       : "Vision Zero Editor",
     true // exclude the suffix
   );
@@ -90,8 +91,8 @@ export default function LocationDetailsPage({
   const location = data[0];
 
   return (
-    <>
-      <span className="fs-2">{location.description}</span>
+    <UserEventsLogger eventName="location_details_view">
+      <span className="fs-2">{location.location_name}</span>
       <Row>
         <Col sm={12} md={6} lg={7} className="mb-3">
           <LocationMapCard location={location} />
@@ -132,6 +133,8 @@ export default function LocationDetailsPage({
                  * that it is not saved in the local storage config
                  */
                 contextFilters={locationIdFilter}
+                filtersEventName="location_crashes_list_filters_toggle"
+                mapEventName="location_crashes_list_map_toggle"
               />
             </Card.Body>
           </Card>
@@ -150,6 +153,6 @@ export default function LocationDetailsPage({
           />
         </Col>
       </Row>
-    </>
+    </UserEventsLogger>
   );
 }
