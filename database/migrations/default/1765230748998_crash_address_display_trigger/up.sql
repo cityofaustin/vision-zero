@@ -538,7 +538,6 @@ where
     and crashes.crash_timestamp < (now() - '14 days'::interval)
 order by crashes.id;
 
-
 -- Drop and recreate this view with new address_display column
 drop view if exists "public"."crashes_list_view" cascade;
 
