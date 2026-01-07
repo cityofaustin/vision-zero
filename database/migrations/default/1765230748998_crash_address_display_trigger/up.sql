@@ -10,7 +10,7 @@ CREATE OR REPLACE FUNCTION format_highway_address(
     street_pfx TEXT,
     rwy_sys_label TEXT,
     hwy_num TEXT,
-    road_part_label TEXT
+    road_part_id INTEGER
 ) RETURNS TEXT AS $$
 DECLARE
     formatted_address TEXT := '';
@@ -36,7 +36,7 @@ BEGIN
             WHEN UPPER(rwy_sys_label) = 'FARM TO MARKET' THEN 'FM'
             WHEN UPPER(rwy_sys_label) = 'RANCH ROAD' THEN 'RR'
             WHEN UPPER(rwy_sys_label) = 'RANCH TO MARKET' THEN 'RM'
-            -- If label contains LOCAL ROAD bc this label is really long
+            -- If label contains LOCAL ROAD then format to just be LOCAL ROAD otherwise its too long
             WHEN UPPER(rwy_sys_label) LIKE '%LOCAL ROAD%' THEN 'LOCAL ROAD'
             ELSE UPPER(rwy_sys_label)
         END;
@@ -45,12 +45,10 @@ BEGIN
     END IF;
     
     -- Add highway number if provided and not empty
-    IF hwy_num IS NOT NULL AND hwy_num != '' AND hwy_num != 'NOT REPORTED' THEN
-        formatted_address := formatted_address || hwy_num || ' ';
-    END IF;
+    formatted_address := formatted_address || hwy_num || ' ';
     
     -- Add SVRD if road part is 2 (service road)
-    IF road_part_label = 'SVRD' THEN
+    IF road_part_id = 2 THEN
         formatted_address := formatted_address || 'SVRD ';
     END IF;
     
@@ -170,13 +168,6 @@ BEGIN
     SELECT label INTO rwy_sys_secondary_label 
     FROM lookups.rwy_sys WHERE id = rpt_sec_rdwy_sys_id;
     
-    SELECT label INTO road_part_primary_label 
-    FROM lookups.road_part WHERE id = rpt_road_part_id;
-    
-    SELECT label INTO road_part_secondary_label 
-    FROM lookups.road_part WHERE id = rpt_sec_road_part_id;
-    
-
     -- FORMAT PRIMARY ADDRESS
     IF rpt_hwy_num IS NOT NULL AND rpt_hwy_num != '' AND rpt_hwy_num != 'NOT REPORTED' THEN
         -- Use highway formatting for primary
@@ -186,7 +177,7 @@ BEGIN
             rpt_street_pfx,
             rwy_sys_primary_label,
             rpt_hwy_num,
-            road_part_primary_label
+            rpt_road_part_id
         );
     ELSIF rpt_street_name IS NOT NULL AND rpt_street_name != '' AND rpt_street_name != 'NOT REPORTED' THEN
         -- Use local street formatting for primary
@@ -209,7 +200,7 @@ BEGIN
                 rpt_sec_street_pfx,
                 rwy_sys_secondary_label,
                 rpt_sec_hwy_num,
-                road_part_secondary_label
+                rpt_sec_road_part_id
             );
         ELSIF rpt_sec_street_name IS NOT NULL AND rpt_sec_street_name != '' AND rpt_sec_street_name != 'NOT REPORTED' THEN
             -- Use local street formatting for secondary
@@ -277,10 +268,35 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create trigger
-CREATE TRIGGER update_crash_address_display
-BEFORE INSERT OR UPDATE ON crashes
+-- Trigger on insert always fires
+CREATE OR REPLACE TRIGGER insert_crash_address_display
+BEFORE INSERT ON crashes
 FOR EACH ROW
+EXECUTE FUNCTION update_crash_address_display();
+
+-- Trigger on update only fires when address parts change
+CREATE OR REPLACE TRIGGER update_crash_address_display
+BEFORE UPDATE ON crashes
+FOR EACH ROW
+WHEN (
+    NEW.at_intrsct_fl IS DISTINCT FROM OLD.at_intrsct_fl
+    OR NEW.rpt_block_num IS DISTINCT FROM OLD.rpt_block_num
+    OR NEW.rpt_street_pfx IS DISTINCT FROM OLD.rpt_street_pfx
+    OR NEW.rpt_street_name IS DISTINCT FROM OLD.rpt_street_name
+    OR NEW.rpt_street_sfx IS DISTINCT FROM OLD.rpt_street_sfx
+    OR NEW.rpt_hwy_num IS DISTINCT FROM OLD.rpt_hwy_num
+    OR NEW.rpt_hwy_sfx IS DISTINCT FROM OLD.rpt_hwy_sfx
+    OR NEW.rpt_rdwy_sys_id IS DISTINCT FROM OLD.rpt_rdwy_sys_id
+    OR NEW.rpt_road_part_id IS DISTINCT FROM OLD.rpt_road_part_id
+    OR NEW.rpt_sec_block_num IS DISTINCT FROM OLD.rpt_sec_block_num
+    OR NEW.rpt_sec_street_pfx IS DISTINCT FROM OLD.rpt_sec_street_pfx
+    OR NEW.rpt_sec_street_name IS DISTINCT FROM OLD.rpt_sec_street_name
+    OR NEW.rpt_sec_street_sfx IS DISTINCT FROM OLD.rpt_street_sfx
+    OR NEW.rpt_sec_hwy_num IS DISTINCT FROM OLD.rpt_sec_hwy_num
+    OR NEW.rpt_sec_hwy_sfx IS DISTINCT FROM OLD.rpt_sec_hwy_sfx
+    OR NEW.rpt_sec_rdwy_sys_id IS DISTINCT FROM OLD.rpt_sec_rdwy_sys_id
+    OR NEW.rpt_sec_road_part_id IS DISTINCT FROM OLD.rpt_sec_road_part_id
+)
 EXECUTE FUNCTION update_crash_address_display();
 
 -- Drop old columns
