@@ -1,6 +1,26 @@
 table:
   name: crashes_list_view
   schema: public
+object_relationships:
+  - name: recommendation
+    using:
+      manual_configuration:
+        column_mapping:
+          id: crash_pk
+        insertion_order: null
+        remote_table:
+          name: recommendations
+          schema: public
+array_relationships:
+  - name: units
+    using:
+      manual_configuration:
+        column_mapping:
+          id: crash_pk
+        insertion_order: null
+        remote_table:
+          name: units
+          schema: public
 select_permissions:
   - role: editor
     permission:
