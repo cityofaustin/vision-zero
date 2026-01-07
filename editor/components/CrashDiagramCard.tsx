@@ -127,7 +127,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
         <Card.Title>Diagram</Card.Title>
         <div className="text-secondary fw-light">
           Use{" "}
-          <span className="font-monospace rounded border px-1 bg-light">
+          <span className="font-monospace rounded border px-1 bg-light-use-theme">
             shift
           </span>{" "}
           + scroll to zoom
