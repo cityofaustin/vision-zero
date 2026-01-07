@@ -392,7 +392,7 @@ def download_crash_id(crash_id):
     return jsonify(message=url)
 
 
-@app.route("/images/person/<int:person_id>", methods=["GET", "DELETE", "POST"])
+@app.route("/images/person/<int:person_id>", methods=["GET", "DELETE", "PUT"])
 @cross_origin(
     headers=[
         "Content-Type",
@@ -413,7 +413,7 @@ def person_image(person_id):
     if request.method == "GET":
         return _get_person_image_url(person_id, s3)
 
-    elif request.method == "POST":
+    elif request.method == "PUT":
         return _upsert_person_image(person_id, s3)
 
     elif request.method == "DELETE":

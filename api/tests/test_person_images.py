@@ -62,7 +62,7 @@ def test_new_image_upload_get_delete_flow(api_url, headers, test_image_jpg):
     # Upload (create new)
     files = {"file": test_image_jpg}
     data = {"image_source": "test_source"}
-    res = requests.post(api_url, files=files, headers=headers, data=data)
+    res = requests.put(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 201
     assert res.json()["success"] is True
 
@@ -91,7 +91,7 @@ def test_upload_png(api_url, headers, test_image_png):
     """Test uploading a PNG image."""
     files = {"file": test_image_png}
     data = {"image_source": "test_source"}
-    res = requests.post(api_url, files=files, headers=headers, data=data)
+    res = requests.put(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 201
 
 
@@ -100,12 +100,12 @@ def test_upsert_update_source_only(api_url, headers, test_image_jpg):
     # First, create an image
     files = {"file": test_image_jpg}
     data = {"image_source": "original_source"}
-    res = requests.post(api_url, files=files, headers=headers, data=data)
+    res = requests.put(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 201
 
     # Update only the source
     data = {"image_source": "updated_source"}
-    res = requests.post(api_url, headers=headers, data=data)
+    res = requests.put(api_url, headers=headers, data=data)
     assert res.status_code == 200
     assert res.json()["success"] is True
 
@@ -115,7 +115,7 @@ def test_upsert_update_file(api_url, headers, test_image_jpg):
     # First, create an image
     files = {"file": test_image_jpg}
     data = {"image_source": "original_source"}
-    res = requests.post(api_url, files=files, headers=headers, data=data)
+    res = requests.put(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 201
 
     # Create a new image with different dimensions
@@ -128,7 +128,7 @@ def test_upsert_update_file(api_url, headers, test_image_jpg):
     # Update the image file
     files = {"file": buf}
     data = {"image_source": "updated_source"}
-    res = requests.post(api_url, files=files, headers=headers, data=data)
+    res = requests.put(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 200
     assert res.json()["success"] is True
 
@@ -145,13 +145,13 @@ def test_upsert_change_format(api_url, headers, test_image_jpg, test_image_png):
     # Upload JPEG
     files = {"file": test_image_jpg}
     data = {"image_source": "jpeg_source"}
-    res = requests.post(api_url, files=files, headers=headers, data=data)
+    res = requests.put(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 201
 
     # Update to PNG
     files = {"file": test_image_png}
     data = {"image_source": "png_source"}
-    res = requests.post(api_url, files=files, headers=headers, data=data)
+    res = requests.put(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 200
     assert res.json()["success"] is True
 
@@ -162,7 +162,7 @@ def test_upsert_change_format(api_url, headers, test_image_jpg, test_image_png):
 
 def test_upload_no_file_no_source(api_url, headers):
     """Test error when neither file nor source provided."""
-    res = requests.post(api_url, headers=headers)
+    res = requests.put(api_url, headers=headers)
     assert res.status_code == 400
     assert "Image file and/or image_source are required" in res.json()["error"]
 
@@ -170,7 +170,7 @@ def test_upload_no_file_no_source(api_url, headers):
 def test_upload_new_no_file(api_url, headers):
     """Test error when creating new image without file."""
     data = {"image_source": "test_source"}
-    res = requests.post(api_url, headers=headers, data=data)
+    res = requests.put(api_url, headers=headers, data=data)
     assert res.status_code == 400
     assert (
         "File and image_source are required for new image uploads"
@@ -181,7 +181,7 @@ def test_upload_new_no_file(api_url, headers):
 def test_upload_new_no_source(api_url, headers, test_image_jpg):
     """Test error when creating new image without source."""
     files = {"file": test_image_jpg}
-    res = requests.post(api_url, files=files, headers=headers)
+    res = requests.put(api_url, files=files, headers=headers)
     assert res.status_code == 400
     assert (
         "File and image_source are required for new image uploads"
@@ -194,7 +194,7 @@ def test_update_file_without_source(api_url, headers, test_image_jpg):
     # First, create an image
     files = {"file": test_image_jpg}
     data = {"image_source": "original_source"}
-    res = requests.post(api_url, files=files, headers=headers, data=data)
+    res = requests.put(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 201
 
     # Try to update file without source
@@ -205,7 +205,7 @@ def test_update_file_without_source(api_url, headers, test_image_jpg):
     buf.name = "updated.jpg"
 
     files = {"file": buf}
-    res = requests.post(api_url, files=files, headers=headers)
+    res = requests.put(api_url, files=files, headers=headers)
     assert res.status_code == 400
     assert "Image source is required when updating an image" in res.json()["error"]
 
@@ -216,7 +216,7 @@ def test_upload_invalid_file(api_url, headers):
     fake.name = "fake.jpg"
     files = {"file": fake}
     data = {"image_source": "test_source"}
-    res = requests.post(api_url, files=files, headers=headers, data=data)
+    res = requests.put(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 400
     assert "Invalid or corrupted image file" in res.json()["error"]
 
@@ -229,7 +229,7 @@ def test_upload_file_too_large(api_url, headers):
 
     files = {"file": buf}
     data = {"image_source": "test_source"}
-    res = requests.post(api_url, files=files, headers=headers, data=data)
+    res = requests.put(api_url, files=files, headers=headers, data=data)
     assert res.status_code == 413
 
 
