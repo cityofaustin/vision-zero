@@ -573,4 +573,4 @@ def user_delete_user(id):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=getenv("PORT", 3010), debug=True)
+    app.run(host="0.0.0.0", port=getenv("PORT", 3010), debug=AWS_S3_BUCKET_ENV == "dev")
