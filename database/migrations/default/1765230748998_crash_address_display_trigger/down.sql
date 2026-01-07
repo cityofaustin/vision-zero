@@ -1,5 +1,6 @@
 -- Drop the triggers and trigger functions
 DROP TRIGGER IF EXISTS update_crash_address_display ON crashes;
+DROP TRIGGER IF EXISTS insert_crash_address_display ON crashes;
 DROP FUNCTION IF EXISTS update_crash_address_display();
 DROP FUNCTION IF EXISTS generate_crash_address();
 DROP FUNCTION IF EXISTS deduplicate_address_parts();
