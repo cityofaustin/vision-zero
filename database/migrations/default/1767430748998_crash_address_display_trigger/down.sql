@@ -1,313 +1,24 @@
-ALTER TABLE crashes ADD COLUMN address_display TEXT;
+-- Drop the triggers and trigger functions
+DROP TRIGGER IF EXISTS update_crash_address_display ON crashes;
+DROP TRIGGER IF EXISTS insert_crash_address_display ON crashes;
+DROP FUNCTION IF EXISTS update_crash_address_display();
+DROP FUNCTION IF EXISTS generate_crash_address();
+DROP FUNCTION IF EXISTS deduplicate_address_parts();
+DROP FUNCTION IF EXISTS format_street_address();
+DROP FUNCTION IF EXISTS format_highway_address();
 
--- Create an index on the new column
-CREATE INDEX idx_crashes_address_display ON crashes(address_display);
+-- Recreate the old address_primary and address_secondary columns
+ALTER TABLE crashes 
+ADD COLUMN address_primary TEXT,
+ADD COLUMN address_secondary TEXT;
 
--- Function to format highway addresses
-CREATE OR REPLACE FUNCTION format_highway_address(
-    at_intrsct_fl BOOLEAN,
-    block_num TEXT,
-    street_pfx TEXT,
-    rwy_sys_label TEXT,
-    hwy_num TEXT,
-    road_part_id INTEGER
-) RETURNS TEXT AS $$
-DECLARE
-    formatted_address TEXT := '';
-    rwy_sys_short TEXT;
-BEGIN
-    -- Add block number only if not at intersection
-    IF NOT at_intrsct_fl AND block_num IS NOT NULL AND block_num != '' THEN
-        formatted_address := formatted_address || block_num || ' ';
-    END IF;
-    
-    -- Add street prefix if provided and not empty
-    IF street_pfx IS NOT NULL AND street_pfx != '' THEN
-        formatted_address := formatted_address || street_pfx || ' ';
-    END IF;
-    
-    -- Convert roadway system label to shorthand
-    IF rwy_sys_label IS NOT NULL THEN
-        rwy_sys_short := CASE
-            -- Exact matches
-            WHEN UPPER(rwy_sys_label) = 'US HIGHWAY' THEN 'US'
-            WHEN UPPER(rwy_sys_label) = 'STATE LOOP' THEN 'LOOP'
-            WHEN UPPER(rwy_sys_label) = 'INTERSTATE' THEN 'IH'
-            WHEN UPPER(rwy_sys_label) = 'FARM TO MARKET' THEN 'FM'
-            WHEN UPPER(rwy_sys_label) = 'RANCH ROAD' THEN 'RR'
-            WHEN UPPER(rwy_sys_label) = 'RANCH TO MARKET' THEN 'RM'
-            -- If label contains LOCAL ROAD then format to just be LOCAL ROAD otherwise its too long
-            WHEN UPPER(rwy_sys_label) LIKE '%LOCAL ROAD%' THEN 'LOCAL ROAD'
-            ELSE UPPER(rwy_sys_label)
-        END;
-        
-        formatted_address := formatted_address || rwy_sys_short || ' ';
-    END IF;
-    
-    -- Add highway number if provided and not empty
-    formatted_address := formatted_address || hwy_num || ' ';
-    
-    -- Add SVRD if road part is 2 (service road)
-    IF road_part_id = 2 THEN
-        formatted_address := formatted_address || 'SVRD ';
-    END IF;
-    
-    -- Remove trailing spaces
-    RETURN TRIM(formatted_address);
-END;
-$$ LANGUAGE plpgsql;
+-- Drop the new address_display column
+ALTER TABLE crashes DROP COLUMN IF EXISTS address_display CASCADE;
 
--- Function to format local street address
-CREATE OR REPLACE FUNCTION format_street_address(
-    at_intrsct_fl BOOLEAN,
-    block_num TEXT,
-    street_pfx TEXT,
-    street_name TEXT,
-    street_sfx TEXT
-) RETURNS TEXT AS $$
-DECLARE
-    formatted_address TEXT := '';
-BEGIN
-    -- Add block number only if not at intersection
-    IF NOT at_intrsct_fl AND block_num IS NOT NULL AND block_num != '' THEN
-        formatted_address := formatted_address || block_num || ' ';
-    END IF;
-    
-    -- Add street prefix if provided and not empty
-    IF street_pfx IS NOT NULL AND street_pfx != '' THEN
-        formatted_address := formatted_address || street_pfx || ' ';
-    END IF;
-    
-    -- Add street name if provided and not empty
-    IF street_name IS NOT NULL AND street_name != '' THEN
-        formatted_address := formatted_address || street_name || ' ';
-    END IF;
-    
-    -- Add street suffix if provided and not empty
-    IF street_sfx IS NOT NULL AND street_sfx != '' THEN
-        formatted_address := formatted_address || street_sfx || ' ';
-    END IF;
-    
-    -- Remove trailing space
-    RETURN TRIM(formatted_address);
-END;
-$$ LANGUAGE plpgsql;
+-- Drop the index on address_display (if it still exists)
+DROP INDEX IF EXISTS idx_crashes_address_display;
 
-
-
--- Function to remove duplicate parts of address
-CREATE OR REPLACE FUNCTION deduplicate_address_parts(address TEXT) RETURNS TEXT AS $$
-DECLARE
-    parts TEXT[];
-    deduped_parts TEXT[] := '{}';
-    i INT;
-    current_part TEXT;
-    prev_part TEXT;
-    prev_upper TEXT;
-BEGIN
-    -- Split address by spaces
-    parts := string_to_array(address, ' ');
-    
-    FOR i IN 1..array_length(parts, 1) LOOP
-        current_part := parts[i];
-        
-    IF i = 1 THEN
-            -- First word of address always included
-            deduped_parts := array_append(deduped_parts, current_part);
-        ELSE
-            prev_part := parts[i-1];
-            
-            -- Only add if not a duplicate of previous (case-insensitive)
-            IF UPPER(current_part) != UPPER(prev_part) THEN
-                deduped_parts := array_append(deduped_parts, current_part);
-            END IF;
-        END IF;
-    END LOOP;
-    
-    -- Reconstruct address
-    RETURN array_to_string(deduped_parts, ' ');
-END;
-$$ LANGUAGE plpgsql;
-
-
--- Main function to generate complete crash address
-CREATE OR REPLACE FUNCTION generate_crash_address(
-    at_intrsct_fl BOOLEAN,
-    -- Primary address parts
-    rpt_block_num TEXT,
-    rpt_street_pfx TEXT,
-    rpt_street_name TEXT,
-    rpt_street_sfx TEXT,
-    rpt_hwy_num TEXT,
-    rpt_hwy_sfx TEXT,
-    rpt_rdwy_sys_id INTEGER,
-    rpt_road_part_id INTEGER,
-    -- Secondary address parts
-    rpt_sec_block_num TEXT,
-    rpt_sec_street_pfx TEXT,
-    rpt_sec_street_name TEXT,
-    rpt_sec_street_sfx TEXT,
-    rpt_sec_hwy_num TEXT,
-    rpt_sec_hwy_sfx TEXT,
-    rpt_sec_rdwy_sys_id INTEGER,
-    rpt_sec_road_part_id INTEGER
-) RETURNS TEXT AS $$
-DECLARE
-    primary_address TEXT := '';
-    secondary_address TEXT := '';
-    rwy_sys_primary_label TEXT;
-    rwy_sys_secondary_label TEXT;
-    road_part_primary_label TEXT;
-    road_part_secondary_label TEXT;
-    formatted_address TEXT := '';
-BEGIN
-    -- Get lookup values
-    SELECT label INTO rwy_sys_primary_label 
-    FROM lookups.rwy_sys WHERE id = rpt_rdwy_sys_id;
-    
-    SELECT label INTO rwy_sys_secondary_label 
-    FROM lookups.rwy_sys WHERE id = rpt_sec_rdwy_sys_id;
-    
-    -- FORMAT PRIMARY ADDRESS
-    IF rpt_hwy_num IS NOT NULL AND rpt_hwy_num != '' AND rpt_hwy_num != 'NOT REPORTED' THEN
-        -- Use highway formatting for primary
-        primary_address := format_highway_address(
-            at_intrsct_fl,
-            rpt_block_num,
-            rpt_street_pfx,
-            rwy_sys_primary_label,
-            rpt_hwy_num,
-            rpt_road_part_id
-        );
-    ELSIF rpt_street_name IS NOT NULL AND rpt_street_name != '' AND rpt_street_name != 'NOT REPORTED' THEN
-        -- Use local street formatting for primary
-        primary_address := format_street_address(
-            at_intrsct_fl,
-            rpt_block_num,
-            rpt_street_pfx,
-            rpt_street_name,
-            rpt_street_sfx
-        );
-    END IF;
-    
-    -- FORMAT SECONDARY ADDRESS (only if at intersection)
-    IF at_intrsct_fl = true THEN
-        IF rpt_sec_hwy_num IS NOT NULL AND rpt_sec_hwy_num != '' AND rpt_sec_hwy_num != 'NOT REPORTED' THEN
-            -- Use highway formatting for secondary
-            secondary_address := format_highway_address(
-                at_intrsct_fl,
-                rpt_block_num,
-                rpt_sec_street_pfx,
-                rwy_sys_secondary_label,
-                rpt_sec_hwy_num,
-                rpt_sec_road_part_id
-            );
-        ELSIF rpt_sec_street_name IS NOT NULL AND rpt_sec_street_name != '' AND rpt_sec_street_name != 'NOT REPORTED' THEN
-            -- Use local street formatting for secondary
-            secondary_address := format_street_address(
-                at_intrsct_fl,
-                rpt_block_num,
-                rpt_sec_street_pfx,
-                rpt_sec_street_name,
-                rpt_sec_street_sfx
-            );
-        END IF;
-    END IF;
-    
-    -- Build final address
-    IF at_intrsct_fl = true THEN
-        -- Intersection: join primary and secondary with ' & '
-        IF primary_address != '' AND secondary_address != '' THEN
-            formatted_address := primary_address || ' & ' || secondary_address;
-        -- If either primary or secondary address is missing, just use the address that is available
-        ELSIF primary_address != '' THEN
-            formatted_address := primary_address;
-        ELSIF secondary_address != '' THEN
-            formatted_address := secondary_address;
-        END IF;
-    ELSE
-        -- Not at intersection, only use primary address
-        formatted_address := primary_address;
-    END IF;
-    
-    -- Remove duplicate address parts
-    IF formatted_address != '' THEN
-        formatted_address := deduplicate_address_parts(formatted_address);
-    END IF;
-    
-    RETURN formatted_address;
-END;
-$$ LANGUAGE plpgsql;
-
--- Create a trigger function
-CREATE OR REPLACE FUNCTION update_crash_address_display()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.address_display := (
-        SELECT generate_crash_address(
-            NEW.at_intrsct_fl,
-            NEW.rpt_block_num,
-            NEW.rpt_street_pfx,
-            NEW.rpt_street_name,
-            NEW.rpt_street_sfx,
-            NEW.rpt_hwy_num,
-            NEW.rpt_hwy_sfx,
-            NEW.rpt_rdwy_sys_id,
-            NEW.rpt_road_part_id,
-            NEW.rpt_sec_block_num,
-            NEW.rpt_sec_street_pfx,
-            NEW.rpt_sec_street_name,
-            NEW.rpt_sec_street_sfx,
-            NEW.rpt_sec_hwy_num,
-            NEW.rpt_sec_hwy_sfx,
-            NEW.rpt_sec_rdwy_sys_id,
-            NEW.rpt_sec_road_part_id
-        )
-    );
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Trigger on insert always fires
-CREATE OR REPLACE TRIGGER insert_crash_address_display
-BEFORE INSERT ON crashes
-FOR EACH ROW
-EXECUTE FUNCTION update_crash_address_display();
-
--- Trigger on update only fires when address parts change
-CREATE OR REPLACE TRIGGER update_crash_address_display
-BEFORE UPDATE ON crashes
-FOR EACH ROW
-WHEN (
-    NEW.at_intrsct_fl IS DISTINCT FROM OLD.at_intrsct_fl
-    OR NEW.rpt_block_num IS DISTINCT FROM OLD.rpt_block_num
-    OR NEW.rpt_street_pfx IS DISTINCT FROM OLD.rpt_street_pfx
-    OR NEW.rpt_street_name IS DISTINCT FROM OLD.rpt_street_name
-    OR NEW.rpt_street_sfx IS DISTINCT FROM OLD.rpt_street_sfx
-    OR NEW.rpt_hwy_num IS DISTINCT FROM OLD.rpt_hwy_num
-    OR NEW.rpt_hwy_sfx IS DISTINCT FROM OLD.rpt_hwy_sfx
-    OR NEW.rpt_rdwy_sys_id IS DISTINCT FROM OLD.rpt_rdwy_sys_id
-    OR NEW.rpt_road_part_id IS DISTINCT FROM OLD.rpt_road_part_id
-    OR NEW.rpt_sec_block_num IS DISTINCT FROM OLD.rpt_sec_block_num
-    OR NEW.rpt_sec_street_pfx IS DISTINCT FROM OLD.rpt_sec_street_pfx
-    OR NEW.rpt_sec_street_name IS DISTINCT FROM OLD.rpt_sec_street_name
-    OR NEW.rpt_sec_street_sfx IS DISTINCT FROM OLD.rpt_street_sfx
-    OR NEW.rpt_sec_hwy_num IS DISTINCT FROM OLD.rpt_sec_hwy_num
-    OR NEW.rpt_sec_hwy_sfx IS DISTINCT FROM OLD.rpt_sec_hwy_sfx
-    OR NEW.rpt_sec_rdwy_sys_id IS DISTINCT FROM OLD.rpt_sec_rdwy_sys_id
-    OR NEW.rpt_sec_road_part_id IS DISTINCT FROM OLD.rpt_sec_road_part_id
-)
-EXECUTE FUNCTION update_crash_address_display();
-
--- Drop old columns
-
-ALTER TABLE crashes DROP COLUMN address_primary CASCADE;
-
-ALTER TABLE crashes DROP COLUMN address_secondary CASCADE;
-
--- Recreate these views that were just dropped from the cascades above
--- and replace any mentions of address_primary or address_secondary with address_display
-
+-- Recreate fatalities_view with original address columns
 CREATE
 OR REPLACE VIEW "public"."fatalities_view" AS
 SELECT
@@ -317,7 +28,7 @@ SELECT
   crashes.record_locator,
   crashes.longitude,
   crashes.latitude,
-  crashes.address_display,
+  crashes.address_primary,
   units.id AS unit_id,
   concat_ws(
     ' ' :: text,
@@ -410,7 +121,7 @@ WHERE
   );
 
 
--- Recreate this view and remove address_primary and address_secondary
+-- Recreate socrata_export_crashes_view with original address columns
 create or replace view public.socrata_export_crashes_view as
 with unit_aggregates as (
     select
@@ -433,7 +144,8 @@ select
     crashes.is_deleted,
     crashes.latitude,
     crashes.longitude,
-    crashes.address_display,
+    crashes.address_primary,
+    crashes.address_secondary,
     crashes.rpt_block_num,
     crashes.rpt_street_name,
     crashes.rpt_street_pfx,
@@ -529,7 +241,7 @@ from unit_aggregates as unit_aggregates_1
 where crashes.id = unit_aggregates_1.id
 limit 1) as unit_aggregates on TRUE
 left join
-    atd_txdot_locations as location
+    locations as location
     on crashes.location_id = location.location_id
 where
     crashes.is_deleted = FALSE
@@ -538,7 +250,8 @@ where
     and crashes.crash_timestamp < (now() - '14 days'::interval)
 order by crashes.id;
 
--- Drop and recreate this view with new address_display column
+
+-- Recreate this with old address columns
 drop view if exists "public"."crashes_list_view" cascade;
 
 CREATE OR REPLACE VIEW "public"."crashes_list_view" AS 
@@ -553,7 +266,8 @@ CREATE OR REPLACE VIEW "public"."crashes_list_view" AS
     crashes.record_locator,
     crashes.case_id,
     crashes.crash_timestamp,
-    crashes.address_display,
+    crashes.address_primary,
+    crashes.address_secondary,
     crashes.private_dr_fl,
     crashes.in_austin_full_purpose,
     crashes.location_id,
@@ -642,7 +356,7 @@ CREATE OR REPLACE VIEW "public"."crashes_list_view" AS
   ORDER BY crashes.crash_timestamp DESC;
 
 
--- Recreate this view that was dropped 
+-- Recreate this view
 CREATE OR REPLACE VIEW public.locations_list_view
 AS WITH cr3_comp_costs AS (
          SELECT crashes_list_view.location_id,
@@ -665,20 +379,20 @@ AS WITH cr3_comp_costs AS (
           GROUP BY atd_apd_blueform.location_id
         )
  SELECT locations.location_id,
-    locations.description,
+    locations.location_name,
     locations.council_district,
     locations.location_group,
     COALESCE(cr3_comp_costs.cr3_comp_costs_total + non_cr3_crash_counts.noncr3_comp_costs_total, 0::bigint) AS total_est_comp_cost,
     COALESCE(cr3_crash_counts.crash_count, 0::bigint) AS cr3_crash_count,
     COALESCE(non_cr3_crash_counts.crash_count, 0::bigint) AS non_cr3_crash_count,
     COALESCE(cr3_crash_counts.crash_count, 0::bigint) + COALESCE(non_cr3_crash_counts.crash_count, 0::bigint) AS crash_count
-   FROM atd_txdot_locations locations
+   FROM locations
      LEFT JOIN cr3_crash_counts ON locations.location_id::text = cr3_crash_counts.location_id
      LEFT JOIN non_cr3_crash_counts ON locations.location_id::text = non_cr3_crash_counts.location_id::text
      LEFT JOIN cr3_comp_costs ON locations.location_id::text = cr3_comp_costs.location_id;
 
 
--- Recreate this materialized view with new address_display column
+-- Recreate this materialized view with old address columns
 DROP MATERIALIZED VIEW IF EXISTS "public"."location_crashes_view";
 CREATE MATERIALIZED VIEW public.location_crashes_view
 TABLESPACE pg_default
@@ -694,7 +408,8 @@ AS SELECT crashes.record_locator,
     crash_injury_metrics_view.crash_injry_sev_id AS crash_sev_id,
     crashes.latitude,
     crashes.longitude,
-    crashes.address_display,
+    crashes.address_primary,
+    crashes.address_secondary,
     crash_injury_metrics_view.non_injry_count,
     crash_injury_metrics_view.nonincap_injry_count,
     crash_injury_metrics_view.poss_injry_count,
@@ -767,7 +482,8 @@ UNION ALL
     0 AS crash_sev_id,
     aab.latitude,
     aab.longitude,
-    aab.address AS address_display,
+    aab.address AS address_primary,
+    ''::text AS address_secondary,
     0 AS non_injry_count,
     0 AS nonincap_injry_count,
     0 AS poss_injry_count,
