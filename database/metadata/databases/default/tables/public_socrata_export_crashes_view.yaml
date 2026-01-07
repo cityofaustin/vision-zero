@@ -5,6 +5,7 @@ select_permissions:
   - role: editor
     permission:
       columns:
+        - address_display
         - bicycle_death_count
         - bicycle_serious_injury_count
         - case_id
@@ -57,6 +58,7 @@ select_permissions:
   - role: readonly
     permission:
       columns:
+        - address_display
         - bicycle_death_count
         - bicycle_serious_injury_count
         - case_id
@@ -109,6 +111,7 @@ select_permissions:
   - role: vz-admin
     permission:
       columns:
+        - address_display
         - bicycle_death_count
         - bicycle_serious_injury_count
         - case_id
