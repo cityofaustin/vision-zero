@@ -6,7 +6,8 @@ import requests
 from PIL import Image
 import io
 
-TEST_PERSON_ID = 102580  # must be a person record ID available in your local DB
+# must be a person record ID available in your local DB
+TEST_PERSON_ID = os.getenv("TEST_PERSON_ID", 102580)
 
 
 @pytest.fixture
