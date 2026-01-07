@@ -7,7 +7,7 @@ services:
       - .:/usr/src/app
     # this profile prevents this service from running on typical startup
     profiles: ["test"] 
-    command: pytest -x
+    command: pytest
     networks:
       - vision-zero_default
 

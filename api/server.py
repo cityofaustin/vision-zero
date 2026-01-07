@@ -442,7 +442,7 @@ def has_user_role(role):
 )
 @requires_auth
 def user_test():
-    return jsonify(message=current_user)
+    return jsonify(message=dict(current_user))
 
 
 @app.route("/user/list_users")
@@ -494,6 +494,24 @@ def user_get_user(id):
 def user_create_user():
     if has_user_role(ADMIN_ROLE_NAME):
         json_data = request.json
+
+        # validate our custom user metadata
+        app_metadata = json_data.get("app_metadata")
+        if not app_metadata or type(app_metadata) != "dict":
+            return jsonify(error="Invalid app_metadta"), 400
+
+        roles = app_metadata.get("roles")
+        if not roles or type(roles) != "list" or len(roles) != 1:
+            return jsonify(error="Invalid app_metadata.roles"), 400
+
+        if roles[0] not in ["readonly", "editor", "vz-admin"]:
+            return (
+                jsonify(
+                    error="Role must be one of 'readonly', 'editor', or 'vz-admin'"
+                ),
+                400,
+            )
+
         # set the user's password - user will have to reset it for access
         json_data["password"] = get_secure_password()
         # set additional user properties
