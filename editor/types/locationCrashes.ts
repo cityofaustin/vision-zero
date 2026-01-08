@@ -3,8 +3,7 @@
  * CR3 and Non-CR3 crashes
  */
 export type LocationCrashRow = {
-  address_primary: string | null;
-  address_secondary: string | null;
+  address_display: string | null;
   case_id: string | null;
   collsn_desc: string | null;
   crash_date: string | null;

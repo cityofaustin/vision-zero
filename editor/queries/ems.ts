@@ -118,12 +118,11 @@ export const GET_MATCHING_PEOPLE = gql`
         case_id
         crash_timestamp
         fhe_collsn_id
+        address_display
         collsn {
           id
           label
         }
-        address_primary
-        address_secondary
         latitude
         longitude
         location_id

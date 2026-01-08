@@ -12,26 +12,25 @@ select_permissions:
         - tot_injry_count
         - unkn_injry_count
         - vz_fatality_count
-        - record_locator
-        - cris_crash_id
         - crash_sev_id
+        - cris_crash_id
         - est_comp_cost_crash_based
         - latitude
         - longitude
-        - address_primary
-        - address_secondary
+        - address_display
         - case_id
         - collsn_desc
         - crash_date
         - crash_time
-        - crash_timestamp
         - day_of_week
         - location_id
         - movement_desc
+        - record_locator
         - travel_direction
         - type
         - veh_body_styl_desc
         - veh_unit_desc
+        - crash_timestamp
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -45,26 +44,25 @@ select_permissions:
         - tot_injry_count
         - unkn_injry_count
         - vz_fatality_count
-        - record_locator
-        - cris_crash_id
         - crash_sev_id
+        - cris_crash_id
         - est_comp_cost_crash_based
         - latitude
         - longitude
-        - address_primary
-        - address_secondary
+        - address_display
         - case_id
         - collsn_desc
         - crash_date
         - crash_time
-        - crash_timestamp
         - day_of_week
         - location_id
         - movement_desc
+        - record_locator
         - travel_direction
         - type
         - veh_body_styl_desc
         - veh_unit_desc
+        - crash_timestamp
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -78,26 +76,25 @@ select_permissions:
         - tot_injry_count
         - unkn_injry_count
         - vz_fatality_count
-        - record_locator
-        - cris_crash_id
         - crash_sev_id
+        - cris_crash_id
         - est_comp_cost_crash_based
         - latitude
         - longitude
-        - address_primary
-        - address_secondary
+        - address_display
         - case_id
         - collsn_desc
         - crash_date
         - crash_time
-        - crash_timestamp
         - day_of_week
         - location_id
         - movement_desc
+        - record_locator
         - travel_direction
         - type
         - veh_body_styl_desc
         - veh_unit_desc
+        - crash_timestamp
       filter: {}
       allow_aggregations: true
     comment: ""
