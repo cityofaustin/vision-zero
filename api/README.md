@@ -8,9 +8,8 @@ The API consists of a flask app which is bundled into a docker image and pushed 
 
 Our endpoints can be found at:
 
-Staging: https://vision-zero-cr3-user-api-staging.austinmobility.io/
-
-Production: https://vision-zero-cr3-user-api.austinmobility.io/
+* Staging: https://vision-zero-cr3-user-api-staging.austinmobility.io/
+* Production: https://vision-zero-cr3-user-api.austinmobility.io/
 
 These flask apps are deployed as long-running tasks in ECS and are reverse proxy'd out to the internet by an AWS API gateway via a namespace / VPC link configuration. Specific deployment instructions for the COA deployment are contained in our internal documentation repositories.
 
