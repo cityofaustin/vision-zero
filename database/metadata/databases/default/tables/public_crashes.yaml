@@ -203,7 +203,6 @@ select_permissions:
         - cris_crash_id
         - engineering_area_id
         - diagram_transform
-        - engineering_area_id
         - fhe_collsn_id
         - id
         - in_austin_full_purpose
