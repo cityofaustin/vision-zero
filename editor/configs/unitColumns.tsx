@@ -85,6 +85,11 @@ export const ALL_UNIT_COLUMNS = {
       labelColumnName: "label",
     },
   },
+  veh_hnr_fl: {
+    path: "veh_hnr_fl",
+    label: "Hit and run",
+    inputType: "yes_no",
+  },
   contrib_factr: {
     path: "contrib_factr.label",
     label: "Contributing factors",
