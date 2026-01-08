@@ -135,6 +135,7 @@ export const GET_CRASH = gql`
           id
           label
         }
+        veh_hnr_fl
         movement_id
         movt {
           id
