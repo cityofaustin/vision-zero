@@ -71,7 +71,7 @@ build-iPhoneSimulator/
 # Let's not track any csv, env or log files
 *.csv
 *.env
-*.env.local
+*.env.*
 *.log
 *.xml
 

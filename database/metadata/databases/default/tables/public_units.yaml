@@ -109,6 +109,7 @@ select_permissions:
         - veh_damage_direction_of_force2_id
         - veh_damage_severity1_id
         - veh_damage_severity2_id
+        - veh_hnr_fl
         - veh_make_id
         - veh_mod_id
         - veh_mod_year
@@ -149,6 +150,7 @@ select_permissions:
         - veh_damage_direction_of_force2_id
         - veh_damage_severity1_id
         - veh_damage_severity2_id
+        - veh_hnr_fl
         - veh_make_id
         - veh_mod_id
         - veh_mod_year
@@ -189,6 +191,7 @@ select_permissions:
         - veh_damage_direction_of_force2_id
         - veh_damage_severity1_id
         - veh_damage_severity2_id
+        - veh_hnr_fl
         - veh_make_id
         - veh_mod_id
         - veh_mod_year
@@ -229,7 +232,6 @@ update_permissions:
         - veh_damage_direction_of_force2_id
         - veh_damage_severity1_id
         - veh_damage_severity2_id
-        - veh_hnr_fl
         - veh_make_id
         - veh_mod_id
         - veh_mod_year

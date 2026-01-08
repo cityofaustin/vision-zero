@@ -256,13 +256,21 @@ refresh materialized view location_crashes_view;
 - delete a user
 - copy user emails
 
+
+### User events tracking
+
+Insepct the the `user_events` table in the DB and verify that your recent activity was logged:
+
+```sql
+select * from user_events;
+```
+
 ### Misc
 
 - The route path ( `/editor`) redirects to `/editor/crashes`. Locally, `http://localhost:3002/` should also redirect to `/editor/crashes`
 - The page footer is stuck to the bottom of the oageon all pages and displays current version number
 - The app favicon appears in the browser tab
-- Locally, the environment banner shows at the top of the screen with a light yellow background. On staging/netlify, the banner shows with a light blue background
-- login page
-- location details
-  - crash charts and widgets
+- Locally, the environment banner shows in the top navigation bar with a light yellow background. On staging/netlify, the banner shows with a light blue background
+- login page looks good
 - upload non-cr3
+
