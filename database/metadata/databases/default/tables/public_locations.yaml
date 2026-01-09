@@ -42,7 +42,6 @@ select_permissions:
         - is_service_road
         - is_signalized
         - location_id
-        - street_level
         - latitude
         - longitude
         - council_district
@@ -74,7 +73,6 @@ select_permissions:
         - is_service_road
         - is_signalized
         - location_id
-        - street_level
         - latitude
         - longitude
         - council_district
@@ -106,7 +104,6 @@ select_permissions:
         - is_service_road
         - is_signalized
         - location_id
-        - street_level
         - latitude
         - longitude
         - council_district
