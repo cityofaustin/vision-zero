@@ -56,7 +56,7 @@ def checkDockerComposeAvailability():
         exit()
 
 
-def wait_for_hasura(max_attempts=3, delay=2):
+def wait_for_hasura(max_attempts=5, delay=2):
     """Wait for Hasura to be ready by polling health endpoint"""
     for attempt in range(max_attempts):
         print("⏳ Waiting for GraphQL Engine to be ready...")
