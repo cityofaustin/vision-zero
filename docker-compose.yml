@@ -19,6 +19,7 @@ services:
     env_file:
       - .env
     volumes:
+      - postgres_data:/var/lib/postgresql/data
       - ./database/snapshots:/snapshots
     ports:
       - 5431:5432
@@ -43,3 +44,6 @@ services:
 networks:
   default:
     name: vision-zero_default
+
+volumes:
+  postgres_data:
