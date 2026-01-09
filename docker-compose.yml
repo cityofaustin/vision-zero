@@ -1,8 +1,6 @@
 services:
   graphql-engine:
     image: hasura/graphql-engine:v2.48.9
-    volumes:
-      - ./viewer/graphql-engine-metadata:/metadata
     ports:
       - 8084:8080
     environment:
