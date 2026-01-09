@@ -56,3 +56,13 @@ export const formatTime = (value: unknown): string => {
 export const formatFileTimestamp = (date: Date): string => {
   return format(date, "yyyy-MM-dd h.mm.ss a");
 };
+
+/**
+ * Format an array of values to a comma-separated-string
+ */
+export const formatArrayToString = (value: unknown): string => {
+  if (value && Array.isArray(value)) {
+    return value.map((val) => String(val)).join(", ");
+  }
+  return "";
+};
