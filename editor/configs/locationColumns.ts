@@ -1,6 +1,7 @@
 import { ColDataCardDef } from "@/types/types";
 import { Location } from "@/types/locations";
-import { formatDollars } from "@/utils/formatters";
+import { formatArrayToString, formatDollars } from "@/utils/formatters";
+
 export const locationColumns = {
   location_id: {
     path: "location_id",
@@ -20,7 +21,8 @@ export const locationColumns = {
     valueFormatter: formatDollars,
   },
   street_level: {
-    path: "street_level",
-    label: "ASMP Street level",
+    path: "street_levels",
+    label: "ASMP Street level(s)",
+    valueFormatter: formatArrayToString,
   },
 } satisfies Record<string, ColDataCardDef<Location>>;

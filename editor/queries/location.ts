@@ -6,7 +6,7 @@ export const GET_LOCATION = gql`
       where: { location_id: { _eq: $locationId }, is_deleted: { _eq: false } }
     ) {
       location_id
-      street_level
+      street_levels
       location_name
       geometry
       latitude

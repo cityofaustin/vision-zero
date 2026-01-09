@@ -8,7 +8,7 @@ export type Location = {
   latitude: number | null;
   longitude: number | null;
   geometry: MultiPolygon | null;
-  street_level: string | null;
+  street_levels: string[] | null;
   locations_list_view: LocationsListRow | null;
   location_notes: LocationNote[]
 };
