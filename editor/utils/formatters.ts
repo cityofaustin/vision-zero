@@ -58,11 +58,15 @@ export const formatFileTimestamp = (date: Date): string => {
 };
 
 /**
- * Format an array of values to a comma-separated-string
+ * Format an array of values to a comma-separated-string, removing
+ * null, undefined, and empty strings
  */
 export const formatArrayToString = (value: unknown): string => {
   if (value && Array.isArray(value)) {
-    return value.map((val) => String(val)).join(", ");
+    return value
+      .filter((val) => val !== undefined && val !== null && val !== "")
+      .map((val) => String(val))
+      .join(", ");
   }
   return "";
 };
