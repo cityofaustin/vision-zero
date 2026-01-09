@@ -1,14 +1,16 @@
 #!/usr/bin/env python
-
-import time
 import argparse
-import subprocess
-import os
-import shtab
-import shutil
 from datetime import date, datetime
-import pprint
+import os
+import shutil
+import subprocess
+import time
+
 from dotenv import load_dotenv
+import requests
+import shtab
+
+GRAPHQL_ENGINE_PORT = 8084
 
 # check if the .env file exists
 if not os.path.exists(".env"):
@@ -54,12 +56,32 @@ def checkDockerComposeAvailability():
         exit()
 
 
+def wait_for_hasura(max_attempts=3, delay=2):
+    """Wait for Hasura to be ready by polling health endpoint"""
+    for attempt in range(max_attempts):
+        print("⏳ Waiting for GraphQL Engine to be ready...")
+        try:
+            response = requests.get(
+                f"http://localhost:{GRAPHQL_ENGINE_PORT}/healthz", timeout=1
+            )
+            if response.status_code == 200:
+                print("✅ GraphQL Engine is ready!")
+                return True
+        except requests.exceptions.RequestException:
+            pass
+        time.sleep(delay)
+
+    print("❌ GraphQL Engine failed to become ready")
+    return False
+
+
 def doCommand(args):
+    apply_migrations = args.apply
     if args.command == "build":
         buildTools()
     elif args.command == "local-stack-up":
         dbUp()
-        graphqlEngineUp()
+        graphqlEngineUp(apply_migrations)
         cr3UserApiUp()
     elif args.command == "local-stack-down":
         cr3UserApiDown()
@@ -71,7 +93,7 @@ def doCommand(args):
         dbDown()
     elif args.command == "graphql-engine-up":
         dbUp()
-        graphqlEngineUp()
+        graphqlEngineUp(apply_migrations)
     elif args.command == "graphql-engine-down":
         graphqlEngineDown()
     elif args.command == "api-up":
@@ -232,7 +254,7 @@ def replicateDb(args):
         print(f"Error output: {result.stderr}")
         exit(1)
 
-    graphqlEngineUp()
+    graphqlEngineUp(args.apply)
 
 
 def dumpLocalDb():
@@ -317,7 +339,6 @@ def dbUp():
         print(f"Error output: {result.stderr}")
         exit(1)
     subprocess.run(["docker", "ps"])
-    time.sleep(5)
 
 
 def dbDown():
@@ -333,10 +354,9 @@ def dbDown():
         ]
     )
     subprocess.run(["docker", "ps"])
-    time.sleep(5)
 
 
-def graphqlEngineUp():
+def graphqlEngineUp(apply_migrations=False):
     print("🚀  Starting GraphQL Engine")
     subprocess.run(
         docker_compose_invocation
@@ -348,6 +368,24 @@ def graphqlEngineUp():
             "graphql-engine",
         ]
     )
+
+    if apply_migrations:
+        if wait_for_hasura():
+            subprocess.call(
+                [
+                    "hasura",
+                    "migrate",
+                    "apply",
+                    "--all-databases",
+                    "--disable-interactive",
+                ],
+                cwd="./database",
+            )
+            subprocess.call(
+                ["hasura", "metadata", "apply"],
+                cwd="./database",
+            )
+
     subprocess.run(["docker", "ps"])
     print("🚀  GraphQL Engine started.")
     print("You can run './vision-zero hasura-console' to open the console.")
@@ -467,6 +505,12 @@ def get_main_parser():
         ],
     )
     parser.add_argument("-f", "--filename", required=False)
+    parser.add_argument(
+        "-a",
+        "--apply",
+        action="store_true",
+        help="Apply migrations and metadata after starting",
+    )
     return parser
 
 
