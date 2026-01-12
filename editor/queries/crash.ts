@@ -179,6 +179,11 @@ export const GET_CRASH = gql`
         prsn_mid_name
         prsn_last_name
         prsn_injry_sev_id
+        prsn_rest_id
+        rest {
+          id
+          label
+        }
         injry_sev {
           id
           label
