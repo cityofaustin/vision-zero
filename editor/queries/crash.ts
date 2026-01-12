@@ -18,6 +18,7 @@ export const GET_CRASH = gql`
       case_id
       crash_timestamp
       fhe_collsn_id
+      is_coa_roadway
       collsn {
         id
         label
