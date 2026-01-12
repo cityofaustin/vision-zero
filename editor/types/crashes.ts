@@ -78,4 +78,5 @@ export type Crash = {
   people_list_view: PeopleListRow[] | null;
   crashes_list_view: CrashesListRow;
   is_coa_roadway: boolean | null;
+  narrative_summary: string | null;
 };

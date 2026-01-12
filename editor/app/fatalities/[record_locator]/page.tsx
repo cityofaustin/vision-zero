@@ -1,12 +1,13 @@
 "use client";
 
 import { notFound } from "next/navigation";
-import { useRef } from "react";
+import { useRef, useCallback, use } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import { MapRef } from "react-map-gl";
 import { PointMap } from "@/components/PointMap";
 import FatalityVictimsCard from "@/components/FatalityVictimsCard";
+import CrashNarrativeEditableCard from "@/components/CrashNarrativeEditableCard";
 import { GET_CRASH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
 import { useDocumentTitle } from "@/utils/documentTitle";
@@ -20,14 +21,14 @@ import { useQuery } from "@/utils/graphql";
 export default function FatalCrashDetailsPage({
   params,
 }: {
-  params: { record_locator: string };
+  params: Promise<{ record_locator: string }>;
 }) {
   const mapRef = useRef<MapRef | null>(null);
-  const recordLocator = params.record_locator;
+  const { record_locator: recordLocator } = use(params);
 
   const typename = "crashes";
 
-  const { data, error } = useQuery<Crash>({
+  const { data, error, refetch } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
     variables: { recordLocator },
     typename,
@@ -36,6 +37,9 @@ export default function FatalCrashDetailsPage({
   if (error) {
     console.error(error);
   }
+  const onSaveCallback = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   // Set document title based on loaded data
   useDocumentTitle(
@@ -71,7 +75,7 @@ export default function FatalCrashDetailsPage({
         </div>
       </Row>
       <Row>
-        <Col>
+        <Col className="mb-3" sm={12} md={6}>
           <Card>
             <Card.Body>
               <Table>
@@ -116,9 +120,19 @@ export default function FatalCrashDetailsPage({
             </Card.Body>
           </Card>
         </Col>
-        <Col>
+        <Col className="mb-3" sm={12} md={6}>
           <FatalityVictimsCard crash={crash} />
         </Col>
+      </Row>
+      <Row>
+        <Col className="mb-3" sm={12} md={6} lg={4}>
+          <CrashNarrativeEditableCard
+            crash={crash}
+            onSaveCallback={onSaveCallback}
+          />
+        </Col>
+        <Col></Col>
+        <Col></Col>
       </Row>
     </>
   );
