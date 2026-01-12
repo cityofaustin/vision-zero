@@ -18,7 +18,7 @@ interface CrashNarrativeEditableCardProps {
 }
 
 type CrashNarrativeSummaryInputs = {
-  narrative_summary: string;
+  narrative_summary: string | null;
 };
 
 /**
@@ -110,7 +110,7 @@ export default function CrashNarrativeEditableCard({
                       rows={17}
                       autoFocus
                       {...register("narrative_summary", {
-                        setValueAs: (value) => value.trim() || null, // save empty strings as null
+                        setValueAs: (value) => value?.trim() || null, // save empty strings as null
                       })}
                     />
                   </Form.Group>
