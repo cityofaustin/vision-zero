@@ -1,1 +1,4 @@
-alter table locations drop column street_level;
+alter table locations
+    drop column street_level,
+    drop column latitude,
+    drop column longitude;
