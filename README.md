@@ -45,7 +45,7 @@ RR_DATABASE=""
 3. Start the DB + GraphQL API. You'll need to be on City of Austin VPN _or_ your IP address will need to be whitelisted to reach our read-replica host.
 
 ```shell
-./vision-zero replicate-db
+./vision-zero replicate
 ```
 
 This command will:
