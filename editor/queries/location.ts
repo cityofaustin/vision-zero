@@ -9,8 +9,6 @@ export const GET_LOCATION = gql`
       street_levels
       location_name
       geometry
-      latitude
-      longitude
       locations_list_view {
         cr3_crash_count
         non_cr3_crash_count
