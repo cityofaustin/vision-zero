@@ -103,9 +103,8 @@ export default function FatalCrashDetailsPage({
                       Roadway owner
                     </td>
                     <td>
-                      {crash.is_coa_roadway === true
-                        ? "City of Austin"
-                        : "TxDOT"}
+                      {crash.is_coa_roadway === true && "City of Austin"}
+                      {crash.is_coa_roadway === false && "TxDOT"}
                     </td>
                   </tr>
                 </tbody>
