@@ -18,7 +18,7 @@ interface CrashNarrativeEditableCardProps {
 }
 
 type CrashNarrativeSummaryInputs = {
-  narrative_summary: string;
+  narrative_summary: string | null;
 };
 
 /**
