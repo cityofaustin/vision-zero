@@ -34,7 +34,7 @@ export const ALL_PEOPLE_COLUMNS = {
     },
     valueRenderer: (record) => {
       const value = record.injry_sev?.label || "";
-      const className = `${getInjuryColorClass(value)} px-2 py-1 rounded text-center`;
+      const className = `${getInjuryColorClass(value)} px-2 py-1 rounded text-nowrap`;
       return <span className={className}>{value}</span>;
     },
   },
