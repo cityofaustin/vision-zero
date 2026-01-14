@@ -11,6 +11,10 @@ interface FatalityUnitCardFooterProps {
   hasContribFactors: boolean;
 }
 
+/**
+ * The footer component for the unit cards on the fatality details page
+ * Should only render if unit has charges or contrib factors
+ */
 export default function FatalityUnitCardFooter({
   hasCharges,
   hasVictim,
