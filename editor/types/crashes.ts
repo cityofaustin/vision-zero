@@ -8,11 +8,10 @@ import { Recommendation } from "@/types/recommendation";
 import { CrashesListRow } from "@/types/crashesList";
 import { CrashNote } from "./crashNote";
 import { EMSPatientCareRecord } from "@/types/ems";
+import { CrashDiagramOrientation } from "./crashDiagramOrientation";
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
-  address_primary: string | null;
-  address_secondary: string | null;
   at_intrsct_fl: boolean | null;
   case_id: string | null;
   crash_injury_metrics_view: CrashInjuryMetric | null;
@@ -22,6 +21,7 @@ export type Crash = {
   crash_timestamp: string | null;
   cris_crash_id: number | null;
   collsn: LookupTableOption | null;
+  diagram_transform: CrashDiagramOrientation | null;
   ems__incidents: EMSPatientCareRecord[] | null;
   fhe_collsn_id: number | null;
   id: number;
@@ -77,6 +77,7 @@ export type Crash = {
   charges_cris: Charge[] | null;
   people_list_view: PeopleListRow[] | null;
   crashes_list_view: CrashesListRow;
+  address_display: string | null;
   is_coa_roadway: boolean | null;
   narrative_summary: string | null;
 };

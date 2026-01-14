@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
 
-const formatCrashMatchStatus = (value: unknown) => {
+export const formatCrashMatchStatus = (value: unknown) => {
   switch (value) {
     case "unmatched":
       return (
@@ -48,8 +48,52 @@ const formatCrashMatchStatus = (value: unknown) => {
           <span>Unmatched by review/QA</span>
         </AlignedLabel>
       );
+    case "unmatched_by_automation":
+      return (
+        <AlignedLabel>
+          <FaTriangleExclamation className="text-secondary me-2" />
+          <span>Unmatched by automation</span>
+        </AlignedLabel>
+      );
     default:
       return "";
+  }
+};
+
+export const formatMatchScore = (value: unknown) => {
+  const score = Number(value);
+  if (!score) return "";
+  if (score >= 99) {
+    return (
+      <AlignedLabel>
+        <FaCircleCheck className="text-success me-2 fs-5" />
+        <span>High</span>
+      </AlignedLabel>
+    );
+  } else {
+    return (
+      <AlignedLabel>
+        <FaTriangleExclamation className="text-secondary me-2" />
+        <span>Low</span>
+      </AlignedLabel>
+    );
+  }
+};
+
+const formatMatchAttrName = (value: string) => {
+  switch (value) {
+    case "pos_in_vehicle":
+      return "position in vehicle";
+    case "travel_mode":
+      return "travel mode";
+    case "age_approx":
+      return "age (approx)";
+    case "transport_dest":
+      return "transport destination";
+    case "injury_severity":
+      return "injury severity";
+    default:
+      return value;
   }
 };
 
@@ -72,17 +116,36 @@ export const ALL_EMS_COLUMNS = {
     valueRenderer: (value) => formatCrashMatchStatus(value.person_match_status),
     sortable: true,
   },
+  person_match_attributes: {
+    path: "person_match_attributes",
+    label: "Person match attributes",
+    valueRenderer: (record) => {
+      if (!record.person_match_attributes) return "";
+      return record.person_match_attributes
+        .map((attr) => formatMatchAttrName(attr))
+        .join("\n");
+    },
+    defaultHidden: true,
+  },
+  person_match_score: {
+    path: "person_match_score",
+    label: "Person match quality",
+    valueRenderer: (record) => formatMatchScore(record.person_match_score),
+    defaultHidden: true,
+  },
   non_cr3_match_status: {
     path: "non_cr3_match_status",
     label: "Non-CR3 match status",
     valueRenderer: (value) =>
       formatCrashMatchStatus(value.non_cr3_match_status),
     sortable: true,
+    defaultHidden: true,
   },
   atd_apd_blueform_case_id: {
     path: "atd_apd_blueform_case_id",
     label: "Non-CR3 Case ID",
     sortable: true,
+    defaultHidden: true,
   },
   crash_pk: {
     path: "crash_pk",
@@ -133,6 +196,7 @@ export const ALL_EMS_COLUMNS = {
     path: "incident_problem",
     label: "Problem",
     sortable: true,
+    defaultHidden: true,
   },
   incident_received_datetime_with_timestamp: {
     path: "incident_received_datetime",
@@ -224,6 +288,8 @@ export const emsListViewColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
   ALL_EMS_COLUMNS.apd_incident_numbers,
   ALL_EMS_COLUMNS.crash_match_status,
   ALL_EMS_COLUMNS.person_match_status,
+  ALL_EMS_COLUMNS.person_match_attributes,
+  ALL_EMS_COLUMNS.person_match_score,
   ALL_EMS_COLUMNS.cris_crash_id,
   ALL_EMS_COLUMNS.non_cr3_match_status,
   ALL_EMS_COLUMNS.atd_apd_blueform_case_id,

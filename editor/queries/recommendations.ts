@@ -2,11 +2,10 @@ import { gql } from "graphql-request";
 
 export const RECOMMENDATION_STATUS_QUERY = gql`
   query GetRecStatuses {
-    statuses: atd__recommendation_status_lkp(
-      order_by: { rec_status_desc: desc }
-    ) {
+    statuses: atd__recommendation_status_lkp(order_by: { sort_order: asc }) {
       id
       rec_status_desc
+      sort_order
     }
   }
 `;

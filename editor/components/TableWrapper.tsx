@@ -45,6 +45,18 @@ interface TableProps<T extends Record<string, unknown>> {
    * will be called anytime this prop changes
    */
   refetch?: boolean;
+  /**
+   * If provided, enables logging a user event when filters menu is opened
+   */
+  filtersEventName?: string;
+  /**
+   * If provided, enables logging a user event when map view is activated
+   */
+  mapEventName?: string;
+  /**
+   * If provided, enables logging a user event when download modal is opened
+   */
+  downloadEventName?: string;
 }
 
 /**
@@ -57,6 +69,9 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   localStorageKey,
   contextFilters,
   refetch: _refetch,
+  filtersEventName,
+  mapEventName,
+  downloadEventName,
 }: TableProps<T>) {
   const [areFiltersDirty, setAreFiltersDirty] = useState(false);
   const [isQueryConfigLocalStorageLoaded, setIsQueryConfigLocalStorageLoaded] =
@@ -119,9 +134,12 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     hasAggregates: true,
   });
 
-  if (error) {
-    console.error(error);
-  }
+  // Log errors in an effect to avoid setState during render
+  useEffect(() => {
+    if (error) {
+      console.error(error);
+    }
+  }, [error]);
 
   const activeFilterCount = useActiveSwitchFilterCount(queryConfig);
 
@@ -146,43 +164,13 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       setIsQueryConfigLocalStorageLoaded(true);
       return;
     }
-    /**
-     * Check if stored config version is current and add/remove unknown
-     * properties if needed - this has the effect of bringing the old
-     * config in sync with the latest settings
-     *
-     * Todo: nested properties (e.g., mapConfig) are not handled
-     */
+
     if (
       queryConfigFromStorage &&
       queryConfigFromStorage?._version !== initialQueryConfig._version
     ) {
-      const initialQueryConfigKeys = Object.keys(initialQueryConfig);
-      const queryConfigFromStorageKeys = Object.keys(queryConfigFromStorage);
-
-      const missingKeys = initialQueryConfigKeys.filter(
-        (key) => !(key in queryConfigFromStorage)
-      ) as Array<keyof QueryConfig>;
-
-      const unknownKeys: string[] = queryConfigFromStorageKeys.filter(
-        (key) => !(key in initialQueryConfig)
-      );
-
-      // add missing prop/vals to old config
-      if (missingKeys.length > 0) {
-        const missingProps = Object.fromEntries(
-          missingKeys.map((key) => [key, initialQueryConfig[key]])
-        );
-        Object.assign(queryConfigFromStorage, missingProps);
-      }
-      // delete any unknown props
-      if (unknownKeys.length > 0) {
-        unknownKeys.forEach((key) => {
-          delete queryConfigFromStorage[key as keyof QueryConfig];
-        });
-      }
-      // we're now on the latest config version ✨
-      queryConfigFromStorage._version = initialQueryConfig._version;
+      // New config version found — wipe out the cached version from local storage
+      queryConfigFromStorage = initialQueryConfig;
     }
 
     /**
@@ -321,6 +309,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
               activeFilterCount={activeFilterCount}
               queryConfig={queryConfig}
               setQueryConfig={setQueryConfig}
+              eventName={filtersEventName}
             />
           )}
           <TableSearch
@@ -335,6 +324,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
             <TableMapToggle
               queryConfig={queryConfig}
               setQueryConfig={setQueryConfig}
+              eventName={mapEventName}
             />
           </Col>
         )}
@@ -393,6 +383,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           show={showExportModal}
           totalRecordCount={aggregateData?.aggregate?.count || 0}
           typename={queryConfig.tableName}
+          eventName={downloadEventName}
         />
       )}
     </>

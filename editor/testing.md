@@ -87,6 +87,9 @@ The below features should be tested with each role. Features with role-based acc
 - Crash diagram: the diagram card does not capture scroll unless shift is pressed
 - Crash diagram: info alert shows when no diagram is available and is temp record
 - Crash diagram: danger alert shows when no diagram is available and is not temp record
+- Crash diagram: [role: admin, editor] **Save** button with disk icon shows as disabled if diagram x/y/z/rotate is not edited and diagram is initial loaded position
+- Crash diagram: [role: admin, editor] Change diagram x, y, z, and rotate. Confirm that **Save** button enables when any of these properties are adjusted
+- Crash diagram: [role: admin, editor] Use **Save** button to save current x/y/z/rotate. Refresh the page and confirm the diagram initializes at the expected transform state. On load, confirm that **Save** button is disabled and says **Saved** with a checkmark icon.
 - Crash narrative: loads normally and is scrollable for long narratives
 - Crash narrative: download CR3 pdf
 - Crash data card: **Flags** card. Edit set **Private drive** to **No** and verify that warning banner appears with notification that the crash is not included in VZ statistical reporting
@@ -128,13 +131,13 @@ The below features should be tested with each role. Features with role-based acc
 - FRB Recommendations
   - [role: Admin, editor] Create and edit all recommendation fields
 - Keyboard shortcuts to scroll instantly to various cards:
-  - `shift` + `a`: Primary address
   - `shift` + `u`: Units
   - `shift` + `p`: People
   - `shift` + `3`: EMS patient care
   - `shift` + `c`: Charges
   - `shift` + `n`: Notes
   - `shift` + `f`: Fatality Review Board recommendations
+- Hover your mouse over each card that has a shortcut key and verify that the shortcut key helper text appears above the right edge of the card. 
 
 ### Sidebar
 
@@ -152,7 +155,7 @@ The below features should be tested with each role. Features with role-based acc
 
 ### Location details `/locations/[location_id]`
 
-- Verify page `<title>` element is formatted as `<location-ID> - <location-description>` (check how the title is rendered in your browser tab)
+- Verify page `<title>` element is formatted as `<location-ID> - <location-name>` (check how the title is rendered in your browser tab)
 - Location polygon map
 - Location data card displays the location ID, crash counts and comp costs
 - combined cr3 and noncr3 crashes list
@@ -175,11 +178,23 @@ refresh materialized view location_crashes_view;
 ### EMS incident details - `/ems/[incident-number]`
 
 - Page breadcrumb and title—which is the EMS record address—look normal
-- The incident map (top right of page) shows the incident location
+- Incident map (top right of page) 
+    - Use the EMS list page to filter/find an incident that has been matched automatically to a crash, person, and non-cr3 record
+    - The incident map should display a CR3 crash (blue circle with car icon) and non-cr3 (gray cricle with sticky note icon) on the map as well as the EMS incident (red circle with ambulence icon)
+    - Use the layer selector to toggle the CR3 and non-cr3 layers on/off
+    - Use the layer selector to switch beetween the satellite and streets basemap
 - Navigating to a bogus incident number such as `/ems/1abc` results in 404
-- The **EMS Patients** card displays EMS patients with the same incident number.
-- The **Select person** button is displayed for each EMS patient row
-- Click **Select person** to enable the **Select match** button to appear next to any unlinked person records in the **Associated people records** table
+
+#### EMS -> CR3 matching UI
+
+- Locate an incident with multiple EMS patients: sort the EMS list by incident number and find rows that have the same incident number—visit the details page for any of the rows.
+- The **EMS Patients** card displays multiple EMS patients with the same incident number.
+- Use the column visibility selector to enable all columns on the **EMS Patients**
+- Find an EMS patient record with a **person match status** of **Matched automatically**. Verify that the **Person match attributes** and **Match quality** fields are populated
+- If **any** of the EMS patient records are not matched to a crash, the **Possible CR3 people matches** table will display **people** records from crashes that occurred during a 12-hour window of the crash
+- The **Possible CR3 people matches** will also display **people** records from any crashes which are matched to any of the EMS patient records
+- To match an EMS patien to a crash, confirm that the **Select person** button is displayed for each EMS patient row
+- Click **Select person** to enable the **Select match** button to appear next to any unlinked person records in the **Possible CR3 people matches** table
 - Click the **Person ID** column for any **EMS Patients** row to manually edit a person ID value
 - Click the **Person ID** column and save an invalid person ID value and verify an error message is displayed
 - Locate an **unmatched** EMS record, then click the **Person ID** column and save a valid person ID value
@@ -241,13 +256,21 @@ refresh materialized view location_crashes_view;
 - delete a user
 - copy user emails
 
+
+### User events tracking
+
+Insepct the the `user_events` table in the DB and verify that your recent activity was logged:
+
+```sql
+select * from user_events;
+```
+
 ### Misc
 
 - The route path ( `/editor`) redirects to `/editor/crashes`. Locally, `http://localhost:3002/` should also redirect to `/editor/crashes`
 - The page footer is stuck to the bottom of the oageon all pages and displays current version number
 - The app favicon appears in the browser tab
-- Locally, the environment banner shows at the top of the screen with a light yellow background. On staging/netlify, the banner shows with a light blue background
-- login page
-- location details
-  - crash charts and widgets
+- Locally, the environment banner shows in the top navigation bar with a light yellow background. On staging/netlify, the banner shows with a light blue background
+- login page looks good
 - upload non-cr3
+

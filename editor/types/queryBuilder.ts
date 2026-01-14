@@ -23,6 +23,7 @@ export interface Filter {
   operator:
     | "_gte"
     | "_lte"
+    | "_lt"
     | "_gt"
     | "_eq"
     | "_neq"
@@ -114,8 +115,10 @@ export type DateFilterMode = "ytd" | "all" | "5y" | "1y" | "custom";
  */
 export interface QueryConfig {
   /**
-   * The current version of the config—is arbitrary and should be incremented when
-   * changes are made to the config so that earlier versions can be migrated to the latest version
+   * Arbitrary version number which, when incremented, will cause the user's locally-stored copy
+   * of the config to be replaced by the lateset default QueryConfig. The version number should
+   * always be incremented if any breaking changes are made to the config schema itself or to
+   * columns referenced by the config
    */
   _version: number;
   /**
