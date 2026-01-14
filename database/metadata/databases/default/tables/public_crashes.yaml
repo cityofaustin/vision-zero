@@ -276,8 +276,7 @@ select_permissions:
     permission:
       columns:
         - active_school_zone_fl
-        - address_primary
-        - address_secondary
+        - address_display
         - at_intrsct_fl
         - case_id
         - council_district
