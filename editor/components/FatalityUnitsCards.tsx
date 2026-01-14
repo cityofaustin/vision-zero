@@ -3,6 +3,7 @@ import { Unit } from "@/types/unit";
 import { Card, ListGroupItem, Image } from "react-bootstrap";
 import { getInjuryColorClass } from "@/utils/people";
 import FatalityUnitCardFooter from "@/components/FatalityUnitCardFooter";
+import { PeopleListRow } from "@/types/peopleList";
 
 interface FatalityUnitsCardsProps {
   crash: Crash;
@@ -11,16 +12,30 @@ interface FatalityUnitsCardsProps {
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 /** Builds the year make and model string */
-const getUnitYearMakeModel = (unit: Unit) =>
-  `${unit.veh_mod_year || ""} ${unit.veh_make?.label || ""} ${unit.veh_mod?.label || ""}`.trim() ||
-  "";
+const getUnitYearMakeModel = (unit: Unit) => {
+  const unitYearMakeModel =
+    `${unit.veh_mod_year || ""} ${unit.veh_make?.label || ""} ${unit.veh_mod?.label || ""}`.trim() ||
+    "";
+  return unitYearMakeModel ? ` | ${unitYearMakeModel}` : "";
+};
 
-/** Returns whether the restraint field should be rendered */
+/** Returns false if the unit is not a car
+ */
 const shouldShowRestraintField = (unit: Unit) =>
-  // Only show restraint field for cars
   unit.unit_desc_id === 1 && // motor vehicle
   unit.veh_body_styl_id !== 71 && // motorycle
   unit.veh_body_styl_id !== 90; // police motorcycle
+
+/** If person is a cyclist or pedestrian return null bc it would be redundant to render,
+ * otherwise return person type label with formatting if needed
+ */
+const getPersonType = (victim: PeopleListRow) =>
+  victim.prsn_type_id !== 3 && // pedalcyclist
+  victim.prsn_type_id !== 4 // pedestrian
+    ? victim.prsn_type_id === 5 //mot
+      ? "DRIVER OF MOTORCYCLE" // Reformat this person type bc its really long
+      : victim.prsn_type.label
+    : null;
 
 /** Process crash data and return an enriched list of unit objects to be rendered in the
  * unit cards. Filters out units that dont have any fatalities, charges, or contrib factors
@@ -94,8 +109,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
             <div className="d-flex w-100 justify-content-start align-items-center">
               <span className="fs-5 fw-bold me-2">Unit {unit.unit_nbr}</span>
               <span>
-                {unit.unit_desc?.label}
-                {unit.unitYearMakeModel}
+                {unit.unit_desc?.label} {unit.unitYearMakeModel}
               </span>
             </div>
           </Card.Header>
@@ -120,15 +134,9 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                           {victim.prsn_first_name} {victim.prsn_mid_name}{" "}
                           {victim.prsn_last_name}
                         </span>
-                        {victim.prsn_type_id !== 3 && // pedalcyclist
-                          // Dont show person type for cyclists or pedestrians bc its redundant
-                          victim.prsn_type_id !== 4 && ( // pedestrian
-                            <small className="text-secondary">
-                              {victim.prsn_type_id === 5
-                                ? "DRIVER OF MOTORCYCLE" // Reformat this person type bc its really long
-                                : victim.prsn_type.label}
-                            </small>
-                          )}
+                        <small className="text-secondary">
+                          {getPersonType(victim)}
+                        </small>
                       </div>
                       <span className="pb-1">
                         {victim.prsn_age} YEARS OLD -{" "}
