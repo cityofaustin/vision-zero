@@ -41,7 +41,7 @@ export const GET_CRASH = gql`
       obj_struck_id
       crash_speed_limit
       traffic_cntl_id
-      address_primary
+      address_display
       rpt_block_num
       rpt_street_name
       rpt_street_desc
@@ -59,7 +59,6 @@ export const GET_CRASH = gql`
       rpt_street_pfx
       rpt_street_name
       rpt_street_sfx
-      address_secondary
       rpt_sec_block_num
       rpt_sec_street_name
       rpt_sec_street_desc
@@ -93,6 +92,7 @@ export const GET_CRASH = gql`
       location_id
       is_temp_record
       in_austin_full_purpose
+      diagram_transform
       crash_injury_metrics_view {
         vz_fatality_count
         sus_serious_injry_count
@@ -136,6 +136,7 @@ export const GET_CRASH = gql`
           id
           label
         }
+        veh_hnr_fl
         movement_id
         movt {
           id

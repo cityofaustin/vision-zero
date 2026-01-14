@@ -126,18 +126,18 @@ select_permissions:
     permission:
       columns:
         - active_school_zone_fl
-        - address_primary
-        - address_secondary
+        - address_display
         - at_intrsct_fl
         - case_id
         - council_district
         - cr3_processed_at
         - cr3_stored_fl
-        - cris_crash_id
         - crash_speed_limit
         - crash_timestamp
         - created_at
         - created_by
+        - cris_crash_id
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - id
@@ -201,19 +201,19 @@ select_permissions:
     permission:
       columns:
         - active_school_zone_fl
-        - address_primary
-        - address_secondary
+        - address_display
         - at_intrsct_fl
         - case_id
         - council_district
         - cr3_processed_at
         - cr3_stored_fl
-        - cris_crash_id
         - crash_speed_limit
         - crash_timestamp
         - created_at
         - created_by
+        - cris_crash_id
         - engineering_area_id
+        - diagram_transform
         - fhe_collsn_id
         - id
         - in_austin_full_purpose
@@ -283,11 +283,12 @@ select_permissions:
         - council_district
         - cr3_processed_at
         - cr3_stored_fl
-        - cris_crash_id
         - crash_speed_limit
         - crash_timestamp
         - created_at
         - created_by
+        - cris_crash_id
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - id
@@ -359,6 +360,7 @@ update_permissions:
         - crash_timestamp
         - created_by
         - cris_crash_id
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - intrsct_relat_id
@@ -423,6 +425,7 @@ update_permissions:
         - council_district
         - crash_speed_limit
         - crash_timestamp
+        - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
         - intrsct_relat_id

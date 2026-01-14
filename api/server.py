@@ -1,54 +1,66 @@
 #!/usr/bin/env python
-#
-# ATD - CR3 Download API
-#
-
+"""
+API which handles
+- Auth0 user management
+- CR3 PDF downloads
+- Person image uploads and downloads
+"""
 import datetime
 import json
-import os
+from os import getenv, getpid, sysconf_names, sysconf
 import re
 import secrets
 import string
-import sys
 
 import boto3
-import requests
-
 from dotenv import load_dotenv, find_dotenv
-from os import environ as env
-from functools import wraps
-from six.moves.urllib.request import urlopen
-
 from flask import Flask, request, jsonify, g
 from flask_cors import cross_origin
-from werkzeug.local import LocalProxy
+from functools import wraps
 from jose import jwt
+from werkzeug.exceptions import HTTPException
 
-#
-# Environment
-#
+import requests
+from six.moves.urllib.request import urlopen
+from werkzeug.local import LocalProxy
+
+
+from utils.images import (
+    _upsert_person_image,
+    _delete_person_image,
+    _get_person_image_url,
+    validate_file_size,
+)
+
+
 ENV_FILE = find_dotenv()
 if ENV_FILE:
     load_dotenv(ENV_FILE, verbose=True)
 
-# We need the Auth0 domain, Client ID and current api environment.
-AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "")
-CLIENT_ID = os.getenv("CLIENT_ID", "")
-API_CLIENT_ID = os.getenv("API_CLIENT_ID", "")
-API_CLIENT_SECRET = os.getenv("API_CLIENT_SECRET", "")
-
-# AWS Configuration
-AWS_DEFAULT_REGION = os.getenv("AWS_DEFAULT_REGION", "us-east-1")
-AWS_S3_KEY = os.getenv("AWS_S3_KEY", "")
-AWS_S3_SECRET = os.getenv("AWS_S3_SECRET", "")
-AWS_S3_CR3_LOCATION = os.getenv("AWS_S3_CR3_LOCATION", "")
-AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "")
+AUTH0_DOMAIN = getenv("AUTH0_DOMAIN", "")
+CLIENT_ID = getenv("CLIENT_ID", "")
+API_CLIENT_ID = getenv("API_CLIENT_ID", "")
+API_CLIENT_SECRET = getenv("API_CLIENT_SECRET", "")
+AWS_DEFAULT_REGION = getenv("AWS_DEFAULT_REGION", "us-east-1")
+AWS_S3_KEY = getenv("AWS_S3_KEY", "")
+AWS_S3_SECRET = getenv("AWS_S3_SECRET", "")
+AWS_S3_BUCKET_ENV = getenv("AWS_S3_BUCKET_ENV", "")
+AWS_S3_CR3_LOCATION = f"{AWS_S3_BUCKET_ENV}/cr3s/pdfs"
+AWS_S3_PERSON_IMAGE_LOCATION = f"{AWS_S3_BUCKET_ENV}/images/person"
+AWS_S3_BUCKET = getenv("AWS_S3_BUCKET", "")
 
 ADMIN_ROLE_NAME = "vz-admin"
-
+MAX_IMAGE_SIZE_MEGABYTES = 5
 CORS_URL = "*"
-ALGORITHMS = ["RS256"]
-APP = Flask(__name__)
+
+app = Flask(__name__)
+
+s3 = boto3.client(
+    "s3",
+    region_name=AWS_DEFAULT_REGION,
+    aws_access_key_id=AWS_S3_KEY,
+    aws_secret_access_key=AWS_S3_SECRET,
+)
 
 
 def get_secure_password(num_chars=16):
@@ -109,7 +121,7 @@ def notAuthorizedError():
 
 # Add the appropriate security headers to all responses
 # These headers may be overwritten in prod and staging by the API gateway!
-@APP.after_request
+@app.after_request
 def add_custom_headers(response):
     # Cache-Control to manage caching behavior
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
@@ -159,11 +171,22 @@ class AuthError(Exception):
         self.status_code = status_code
 
 
-@APP.errorhandler(AuthError)
+# These custom error handlers enable us to return JSON-ified error messages
+@app.errorhandler(AuthError)
 def handle_auth_error(ex):
     response = jsonify(ex.error)
     response.status_code = ex.status_code
     return response
+
+
+@app.errorhandler(HTTPException)
+def handle_http_exception(error):
+    """Handle exceptions raised via flask.abort()
+    Usage:
+        from flask import abort
+        abort(400, description="Email is required")
+    """
+    return jsonify({"error": error.description, "status": error.code}), error.code
 
 
 def get_token_auth_header():
@@ -261,7 +284,7 @@ def requires_auth(f):
                 payload = jwt.decode(
                     token,
                     rsa_key,
-                    algorithms=ALGORITHMS,
+                    algorithms=["RS256"],
                     issuer="https://" + AUTH0_DOMAIN + "/",
                     audience=CLIENT_ID,
                     options=dataConfig,
@@ -278,11 +301,11 @@ def requires_auth(f):
                     },
                     401,
                 )
-            except Exception as e:
+            except Exception:
                 raise AuthError(
                     {
                         "code": "invalid_header",
-                        "description": f"{e}: Unable to parse authentication token.",
+                        "description": f"Unable to parse authentication token.",
                     },
                     401,
                 )
@@ -303,7 +326,7 @@ current_user = LocalProxy(lambda: getattr(g, "current_user", None))
 # Controllers API
 
 
-@APP.route("/")
+@app.route("/")
 @cross_origin(headers=["Content-Type", "Authorization"])
 def healthcheck():
     """No access token required to access this route"""
@@ -317,11 +340,11 @@ def healthcheck():
         ]  # Remove microseconds for a terse format
 
     # Get the process start time
-    pid = os.getpid()
+    pid = getpid()
     with open(f"/proc/{pid}/stat", "r") as f:
         proc_start_time_ticks = int(f.readline().split()[21])
-        proc_start_time_seconds = proc_start_time_ticks / os.sysconf(
-            os.sysconf_names["SC_CLK_TCK"]
+        proc_start_time_seconds = proc_start_time_ticks / sysconf(
+            sysconf_names["SC_CLK_TCK"]
         )
         proc_uptime_seconds = uptime_seconds - proc_start_time_seconds
         proc_uptime_str = str(datetime.timedelta(seconds=proc_uptime_seconds)).split(
@@ -341,7 +364,7 @@ def healthcheck():
     return jsonify(message=response)
 
 
-@APP.route("/cr3/download/<crash_id>")
+@app.route("/cr3/download/<int:crash_id>")
 @cross_origin(
     headers=[
         "Content-Type",
@@ -354,21 +377,12 @@ def healthcheck():
 def download_crash_id(crash_id):
     """A valid access token is required to access this route"""
     # We only care for an integer string, anything else is not safe:
-    safe_crash_id = re.sub("[^0-9]", "", crash_id)
-
-    s3 = boto3.client(
-        "s3",
-        region_name=AWS_DEFAULT_REGION,
-        aws_access_key_id=AWS_S3_KEY,
-        aws_secret_access_key=AWS_S3_SECRET,
-    )
-
     url = s3.generate_presigned_url(
         ExpiresIn=60,  # seconds
         ClientMethod="get_object",
         Params={
             "Bucket": AWS_S3_BUCKET,
-            "Key": AWS_S3_CR3_LOCATION + "/" + safe_crash_id + ".pdf",
+            "Key": AWS_S3_CR3_LOCATION + "/" + str(crash_id) + ".pdf",
         },
     )
 
@@ -378,8 +392,38 @@ def download_crash_id(crash_id):
     return jsonify(message=url)
 
 
-def hasUserRole(role, user_dict):
-    claims = user_dict.get("https://hasura.io/jwt/claims", False)
+@app.route("/images/person/<int:person_id>", methods=["GET", "DELETE", "PUT"])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
+@requires_auth
+@validate_file_size(MAX_IMAGE_SIZE_MEGABYTES)
+def person_image(person_id):
+    """Handles person images. Expects a jpeg or png sent in the `file` property"""
+
+    if not person_id:
+        # todo: can this even happen?
+        return jsonify(error="Missing person_id"), 400
+
+    if request.method == "GET":
+        return _get_person_image_url(person_id, s3)
+
+    elif request.method == "PUT":
+        return _upsert_person_image(person_id, s3)
+
+    elif request.method == "DELETE":
+        return _delete_person_image(person_id, s3)
+
+    return jsonify(message="Bad Request"), 400
+
+
+def has_user_role(role):
+    claims = current_user.get("https://hasura.io/jwt/claims", False)
     if claims != False:
         roles = claims.get("x-hasura-allowed-roles")
         if role in roles:
@@ -387,7 +431,7 @@ def hasUserRole(role, user_dict):
     return False
 
 
-@APP.route("/user/test")
+@app.route("/user/test")
 @cross_origin(
     headers=[
         "Content-Type",
@@ -398,10 +442,10 @@ def hasUserRole(role, user_dict):
 )
 @requires_auth
 def user_test():
-    return jsonify(message=current_user._get_current_object())
+    return jsonify(message=current_user)
 
 
-@APP.route("/user/list_users")
+@app.route("/user/list_users")
 @cross_origin(
     headers=[
         "Content-Type",
@@ -426,7 +470,7 @@ def user_list_users():
     return jsonify(response.json()), response.status_code
 
 
-@APP.route("/user/get_user/<id>")
+@app.route("/user/get_user/<id>")
 @cross_origin(
     headers=[
         "Content-Type",
@@ -443,13 +487,12 @@ def user_get_user(id):
     return jsonify(response.json()), response.status_code
 
 
-@APP.route("/user/create_user", methods=["POST"])
+@app.route("/user/create_user", methods=["POST"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
 def user_create_user():
-    user_dict = current_user._get_current_object()
-    if hasUserRole(ADMIN_ROLE_NAME, user_dict):
+    if has_user_role(ADMIN_ROLE_NAME):
         json_data = request.json
         # set the user's password - user will have to reset it for access
         json_data["password"] = get_secure_password()
@@ -465,7 +508,7 @@ def user_create_user():
         return notAuthorizedError()
 
 
-@APP.route("/user/update_user/<id>", methods=["PUT"])
+@app.route("/user/update_user/<id>", methods=["PUT"])
 @cross_origin(
     headers=[
         "Content-Type",
@@ -476,8 +519,7 @@ def user_create_user():
 )
 @requires_auth
 def user_update_user(id):
-    user_dict = current_user._get_current_object()
-    if hasUserRole(ADMIN_ROLE_NAME, user_dict):
+    if has_user_role(ADMIN_ROLE_NAME):
         json_data = request.json
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
@@ -487,7 +529,7 @@ def user_update_user(id):
         return notAuthorizedError()
 
 
-@APP.route("/user/unblock_user/<id>", methods=["DELETE"])
+@app.route("/user/unblock_user/<id>", methods=["DELETE"])
 @cross_origin(
     headers=[
         "Content-Type",
@@ -498,17 +540,16 @@ def user_update_user(id):
 )
 @requires_auth
 def user_unblock_user(id):
-    user_dict = current_user._get_current_object()
-    if hasUserRole(ADMIN_ROLE_NAME, user_dict):
+    if has_user_role(ADMIN_ROLE_NAME):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/user_blocks/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.delete(endpoint, headers=headers)
-        return f"{response.status_code}"
+        return jsonify(response.json()), response.status_code
     else:
         return notAuthorizedError()
 
 
-@APP.route("/user/delete_user/<id>", methods=["DELETE"])
+@app.route("/user/delete_user/<id>", methods=["DELETE"])
 @cross_origin(
     headers=[
         "Content-Type",
@@ -519,8 +560,7 @@ def user_unblock_user(id):
 )
 @requires_auth
 def user_delete_user(id):
-    user_dict = current_user._get_current_object()
-    if hasUserRole(ADMIN_ROLE_NAME, user_dict):
+    if has_user_role(ADMIN_ROLE_NAME):
         endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
         headers = {"Authorization": f"Bearer {get_api_token()}"}
         response = requests.delete(endpoint, headers=headers)
@@ -533,4 +573,4 @@ def user_delete_user(id):
 
 
 if __name__ == "__main__":
-    APP.run(host="0.0.0.0", port=env.get("PORT", 3010))
+    app.run(host="0.0.0.0", port=getenv("PORT", 3010), debug=AWS_S3_BUCKET_ENV == "dev")

@@ -42,9 +42,16 @@ $sidebarWidth: 4.6rem;
 }
 
 [data-bs-theme="dark"] .app-navbar,
-.app-sidebar,
-.crash-injury-indicator {
+.app-sidebar {
   background-color: $dark-mode-background !important;
+}
+
+[data-bs-theme="dark"] .bg-light-use-theme {
+  background-color: $dark-mode-background !important;
+}
+
+[data-bs-theme="light"] .bg-light-use-theme {
+  background-color: $light !important;
 }
 
 [data-bs-theme="dark"] .mapboxgl-popup-tip {
@@ -66,10 +73,6 @@ $sidebarWidth: 4.6rem;
 
 [data-bs-theme="dark"] .app-sidebar {
   border-right: 1px solid #495057;
-}
-
-[data-bs-theme="light"] .crash-injury-indicator {
-  background-color: $light !important;
 }
 
 [data-bs-theme="dark"] .react-datepicker__calendar-icon {
@@ -356,6 +359,20 @@ to make sure it renders on top is a common fix */
 /* Pushes the mapbox control area down to make room for our custom button */
 .table-map-container .mapboxgl-ctrl-top-right {
   margin-top: 2.5rem;
+}
+
+.offset-header-scroll-top {
+  scroll-margin-top: 55px;
+}
+
+/* enable row child elements to appear on hover over row */
+.row .show-on-hover {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.row:hover .show-on-hover {
+  opacity: 1;
 }
 
 @import "bootstrap/scss/bootstrap.scss";

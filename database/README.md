@@ -259,7 +259,7 @@ The view `crashes_change_log_view` provides a unioned view of the unified table 
 
 We have a number of tables which function as geospatial layers which are referenced by crashes and various other records. At the Vision Zero team's request, our team is actively working to expand the number of layers available in the database as well as add new attribute columns to crash records which will be populated based on their intersection with these layers.
 
-See also the guidance for creating a new geospatial layer in the common maintance tasks section, below.
+These layers can be updated with our [ArcGIS Online helper utility](/toolbox/load_agol_layer). See also the guidance for creating and updating geospatial layers in the common maintance tasks section, below.
 
 | Table                   | Geometry type  | description                                                                                                      | owner/source                                                         |
 | ----------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
@@ -267,7 +267,7 @@ See also the guidance for creating a new geospatial layer in the common maintanc
 | `jurisdictions`         | `MultiPolygon` | City of Austin jurisdictions                                                                                     | ArcGIS Online authoritative layer owned by CTM GIS                   |
 | `engineering_areas`     | `MultiPolygon` | TPW traffic engineering areas                                                                                    | ArcGIS Online authoritative layer owned by DTS GIS                   |
 | `non_coa_roadways`      | `MultiPolygon` | Polygon layer covering roadways which are not maintained by the City of Austin                                   | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
-| `atd_txdot_locations`   | `MultiPolygon` | Aka, "location polygons", these shapes are used to group crashes based on an intersection or road segment        | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
+| `locations`             | `MultiPolygon` | Aka, "location polygons", these shapes are used to group crashes based on an intersection or road segment        | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
 | `signal_engineer_areas` | `MultiPolygon` | Polygon zones assigned to traffic signal engineers                                                               | ArcGIS Online authoritative layer owned by DTS GIS                   |
 | `zip_codes`             | `MultiPolygon` | Polygons which represent the Zone Improvement Plan (ZIP) postal code areas in the Austin metro area              | ArcGIS Online authoritative layer owned by DTS GIS                   |
 | `apd_sectors`           | `MultiPolygon` | Polygons which represent Austin Police Department (APD) sectors and districts used for dispatching and reporting | ArcGIS Online authoritative layer owned by APD                       |
@@ -391,6 +391,12 @@ When creating a new database table to hold feature data, polygon geometries shou
 As a best practice, tables should always be configured with `created_at` of type `timestamptz` with default `now()`. Layers should make use of the [ArcGIS Online Layer Helper](/toolbox/load_agol_layer) tool so that they can be easily refreshed.
 
 Typically, any foreign key constraint that references the layer should use the `ON UPDATE SET NULL` directive to ensure that the rows in the layer table can be deleted and re-inserted without being blocked by foreign references.
+
+### Updating an existing geospatial layer
+
+Use the [ArcGIS Online Layer Helper](/toolbox/load_agol_layer) to update layers in our database from their authoritative source on ArcGIS Online. 
+
+After a geospatial layer is updated, you must re-process any records which reference the layer. These updates require manual crafting of SQL statements which mirror the trigger functions that typically set these associations when a record is inserted or updated. For example, after updating the `location` polygons layer, you will need to re-process the `location_id` associations for `crashes`, `atd_apd_blueform`, `ems__incidents`, and `afd__incdents`. See [#26112](https://github.com/cityofaustin/atd-data-tech/issues/26112) as an example of how this can be accomplished.
 
 ## Backups
 

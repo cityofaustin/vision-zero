@@ -94,8 +94,8 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     fetchAlways: true,
   },
   {
-    path: "address_primary",
-    label: "address_primary",
+    path: "address_display",
+    label: "address_display",
     exportOnly: true,
     fetchAlways: true,
   },

@@ -1,6 +1,6 @@
 services:
   graphql-engine:
-    image: hasura/graphql-engine:v2.48.6
+    image: hasura/graphql-engine:v2.48.9
     volumes:
       - ./viewer/graphql-engine-metadata:/metadata
     ports:
@@ -27,8 +27,10 @@ services:
       -c 'max_wal_size=5GB'
       -c 'shared_buffers=2GB'
       -c 'work_mem=64MB'
+
   cr3-user-api:
     build: api
+    image: cr3-user-api
     # image: atddocker/vz-user-cr3-api
     env_file:
       - api/.env
@@ -37,3 +39,7 @@ services:
     volumes:
       - ./api:/usr/src/app
     command: flask run --host=0.0.0.0 --port=5000 --debug
+
+networks:
+  default:
+    name: vision-zero_default

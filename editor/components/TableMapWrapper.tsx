@@ -2,7 +2,8 @@ import { useMemo, useRef } from "react";
 import { MapRef } from "react-map-gl";
 import { useResizeObserver } from "@/utils/map";
 import { TableMap } from "@/components/TableMap";
-import { TableMapConfig, geoJsonTransformers } from "@/types/tableMapConfig";
+import { TableMapConfig } from "@/types/tableMapConfig";
+import { geoJsonTransformers } from "@/utils/map";
 
 interface TableMapWrapperProps<T extends Record<string, unknown>> {
   mapConfig: TableMapConfig;
@@ -17,6 +18,7 @@ export default function TableMapWrapper<T extends Record<string, unknown>>({
   data,
 }: TableMapWrapperProps<T>) {
   const mapRef = useRef<MapRef | null>(null);
+
   /**
    * Trigger resize() when the map container size changes - this ensures that
    * the map repaints when the sidebar is collapsed/expanded.
@@ -34,7 +36,10 @@ export default function TableMapWrapper<T extends Record<string, unknown>>({
   }, [data, mapConfig.geojsonTransformerName]);
 
   return (
-    <div className="table-map-container d-flex flex-grow-1" ref={mapContainerRef}>
+    <div
+      className="table-map-container d-flex flex-grow-1"
+      ref={mapContainerRef}
+    >
       <TableMap mapRef={mapRef} geojson={geojson} mapConfig={mapConfig} />
     </div>
   );

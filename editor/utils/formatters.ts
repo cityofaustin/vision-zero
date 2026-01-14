@@ -1,5 +1,4 @@
 import { format, parseISO } from "date-fns";
-import { Crash } from "@/types/crashes";
 
 /**
  * Format a number as a string with a dollar sign
@@ -76,13 +75,4 @@ export const formatYear = (value: unknown): string => {
  */
 export const formatFileTimestamp = (date: Date): string => {
   return format(date, "yyyy-MM-dd h.mm.ss a");
-};
-
-/**
- * Format primary and secondary addresses as: E MARTIN LUTHER KING JR BLVD & CHICON ST
- */
-export const formatAddresses = (crash: Crash): string => {
-  return `${crash.address_primary ? crash.address_primary : ""} ${
-    crash.address_secondary ? "& " + crash.address_secondary : ""
-  }`;
 };
