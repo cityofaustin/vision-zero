@@ -13,6 +13,7 @@ from utils.files import upload_file_to_s3
 from utils.settings import (
     DIAGRAM_BBOX_PIXELS,
     CR3_FORM_V2_TEST_PIXELS,
+    CR4_FORM_TEST_PIXELS,
 )
 
 ENV = os.getenv("BUCKET_ENV")
@@ -20,40 +21,73 @@ logger = get_logger()
 
 
 def are_all_pixels_black(page, test_pixels, threshold=5):
+    """Check if all specified pixels are black (RGB values below threshold).
+
+    Args:
+        page (PIL image): the PDF page as an image
+        test_pixels (list[tuple]): list of (x, y) pixel coordinates to check
+        threshold (int): maximum RGB value to consider as black (default: 5)
+
+    Returns:
+        bool: True if all pixels are black, False otherwise
+    """
     for pixel in test_pixels:
-        rgb_pixel = page.getpixel(pixel)
-        if (
-            rgb_pixel[0] > threshold
-            or rgb_pixel[1] > threshold
-            or rgb_pixel[2] > threshold
-        ):
+        try:
+            rgb_pixel = page.getpixel(pixel)
+            if (
+                rgb_pixel[0] > threshold
+                or rgb_pixel[1] > threshold
+                or rgb_pixel[2] > threshold
+            ):
+                return False
+        except IndexError:
+            # Pixel coordinates out of bounds
             return False
     return True
 
 
-def get_cr3_version(page):
-    """Determine the CR3 form version.
+def get_form_version(page):
+    """Determine the crash report form version (CR3 or CR4).
 
     The check is conducted by sampling if various pixels are black.
+    Different form versions have different layouts, so we check for
+    pixels that are unique to each form type.
+
+    Form history:
+    - CR3 v1: Legacy form (pre-August 2024)
+    - CR3 v2: Updated form (August 2024+)
+    - CR4: New form introduced with CRIS v30 (December 2025+)
 
     On August 27, 2024 CRIS started delivering all CR3s using a
-    smaller page size. This function was adapted to handle the
-    legacy large format page and the new smaller page size.
+    smaller page size. This function handles both the legacy large
+    format page and the new smaller page size.
 
     Args:
-        page (PIL image): the pdf page as an image
-        page_width (int): the width of the PDF in points
+        page (PIL image): the PDF page as an image
 
     Returns:
-        str: 'v1_small', 'v1_large','v2_large', or 'v2_small'
+        str: Form version identifier:
+            - 'v1_small', 'v1_large': CR3 v1 forms
+            - 'v2_large', 'v2_small': CR3 v2 forms
+            - 'cr4_small': CR4 forms (CRIS v30+)
     """
     width, height = page.size
     page_size = "small" if width < 2000 else "large"
 
+    # Check for CR4 form first (only available in small format)
+    if page_size == "small" and are_all_pixels_black(page, CR4_FORM_TEST_PIXELS["small"]):
+        return "cr4_small"
+
+    # Check for CR3 v2 form
     if are_all_pixels_black(page, CR3_FORM_V2_TEST_PIXELS[page_size]):
         return f"v2_{page_size}"
 
+    # Default to CR3 v1
     return f"v1_{page_size}"
+
+
+# Keep the old function name as an alias for backwards compatibility
+get_cr3_version = get_form_version
 
 
 def crop_and_save_diagram(page, cris_crash_id, bbox, extract_dir):
@@ -84,11 +118,17 @@ def get_cr3_object_key(filename, kind):
 
 
 def process_pdf(extract_dir, filename, s3_upload, index):
-    """Handles processing of one CR3 PDF document.
+    """Handles processing of one crash report PDF document (CR3 or CR4).
+
+    Extracts the crash diagram from the PDF and saves it locally.
+    - CR3 forms: diagram is on page 2
+    - CR4 forms: diagram is on page 1
+
+    Optionally uploads both the PDF and diagram to S3.
 
     Args:
         extract_dir (str): the local path to the current extract
-        filename (str): the filename of the CR3 PDF process, e.g. 123456.pdf
+        filename (str): the filename of the PDF to process, e.g. 123456.pdf
         s3_upload (bool): if the diagram and PDF should be uploaded to the S3 bucket
         index (int): the index ID of this pdf among all PDFs being processed
     """
@@ -96,18 +136,34 @@ def process_pdf(extract_dir, filename, s3_upload, index):
     cris_crash_id = int(filename.replace(".pdf", ""))
     pdf_path = os.path.join(extract_dir, "crashReports", filename)
 
-    logger.debug("Converting PDF to image...")
+    logger.debug("Converting PDF page 1 to check for CR4...")
 
-    page = convert_from_path(
+    # First, check page 1 to see if this is a CR4 form
+    page1 = convert_from_path(
         pdf_path,
-        fmt="jpeg",  # jpeg is much faster than the default ppm fmt
-        first_page=2,  # page 2 has the crash diagram
-        last_page=2,
+        fmt="jpeg",
+        first_page=1,
+        last_page=1,
         dpi=150,
     )[0]
 
-    cr3_version = get_cr3_version(page)
-    bbox = DIAGRAM_BBOX_PIXELS[cr3_version]
+    form_version = get_form_version(page1)
+    logger.debug(f"Detected form version: {form_version}")
+
+    # CR4 forms have the diagram on page 1, CR3 forms have it on page 2
+    if form_version.startswith("cr4"):
+        page = page1
+    else:
+        logger.debug("CR3 detected, converting page 2 for diagram...")
+        page = convert_from_path(
+            pdf_path,
+            fmt="jpeg",
+            first_page=2,
+            last_page=2,
+            dpi=150,
+        )[0]
+
+    bbox = DIAGRAM_BBOX_PIXELS[form_version]
 
     logger.debug("Cropping crash diagram...")
 
@@ -144,13 +200,16 @@ def process_pdf(extract_dir, filename, s3_upload, index):
 
 
 def process_pdfs(extract_dir, s3_upload, max_workers):
-    """Main loop for extract crash diagrams from  CR3 PDFs
+    """Main loop for extracting crash diagrams from crash report PDFs (CR3 and CR4).
+
+    Processes all PDF files in the extract's crashReports directory, extracting
+    crash diagrams and optionally uploading to S3.
 
     Args:
         extract_dir (str): the local path to the current extract
         s3_upload (bool): if the diagram and PDF should be uploaded to the S3 bucket
         max_workers (int): the maximum number of workers to assign to the
-            multiprocressing pool
+            multiprocessing pool
     """
     overall_start_tme = time.time()
     # make the crash_diagram extract directory

@@ -13,12 +13,15 @@ from utils.graphql import (
     UPDATE_CRASH_NARRATIVE_OCR_MUTATION,
 )
 from utils.logging import init_logger
-from utils.process_pdfs import get_cr3_version
+from utils.process_pdfs import get_form_version
 from utils.settings import NARRATIVE_BBOX_PIXELS
 
 
 def extract_narrative_pdf(cris_crash_id, crash_pk, index):
-    """Handles narrative extraction of one PDF
+    """Handles narrative extraction of one crash report PDF (CR3 only).
+
+    CR4 forms are skipped because CRIS provides the narrative directly in
+    the CSV data for these forms, so OCR extraction is not needed.
 
     Args:
         cris_crash_id (int): the CRIS crash ID
@@ -26,6 +29,9 @@ def extract_narrative_pdf(cris_crash_id, crash_pk, index):
         index (int): a unique id which captures the position of this
             item in the list of narratives being processed by the 
             script. it enables better error logging during concurrency
+    
+    Returns:
+        bool: True if narrative was extracted, False if skipped (CR4 form)
     """
     logger.info(f"Processing cris crash ID {cris_crash_id} ({index})")
     pdf = download_cr3_pdf(cris_crash_id)
@@ -39,19 +45,24 @@ def extract_narrative_pdf(cris_crash_id, crash_pk, index):
         dpi=150,
     )[0]
 
-    cr3_version = get_cr3_version(page)
-    logger.debug(f"CR3 version: {cr3_version}")
+    form_version = get_form_version(page)
+    logger.debug(f"Form version: {form_version}")
+
+    # Skip CR4 forms - narrative is provided in CRIS CSV data
+    if form_version.startswith("cr4"):
+        logger.info(f"Skipping CR4 form for cris crash ID {cris_crash_id} - narrative provided in CSV data")
+        return False
 
     # uncomment to save a copy of the pdf page image
-    # page.save(f"temp/{cris_crash_id}_page_{cr3_version}.jpeg")
+    # page.save(f"temp/{cris_crash_id}_page_{form_version}.jpeg")
 
-    bbox = NARRATIVE_BBOX_PIXELS[cr3_version]
+    bbox = NARRATIVE_BBOX_PIXELS[form_version]
 
     logger.debug("Cropping narrative from PDF...")
     narrative_image = page.crop(bbox)
 
     # uncomment to save a copy of the cropped narrative image
-    # narrative_image.save(f"temp/{cris_crash_id}_narrative_{cr3_version}.jpeg")
+    # narrative_image.save(f"temp/{cris_crash_id}_narrative_{form_version}.jpeg")
 
     logger.debug("Extracting narrative text...")
     narrative = None
