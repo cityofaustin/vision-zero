@@ -49,7 +49,7 @@ CR3_FORM_V2_TEST_PIXELS = {
         (100, 892),
         (1000, 892),
     ],
-    # TODO: These need to be calibrated for PAGE 1 of CR4
+    # TODO: These need to be re-calibrated for PAGE 1 of CR3 v2 large format
     "large": [
         (215, 2567),
         (872, 2568),
