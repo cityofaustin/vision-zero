@@ -31,6 +31,7 @@ def are_all_pixels_black(page, test_pixels, threshold=5):
     Returns:
         bool: True if all pixels are black, False otherwise
     """
+    page_width, page_height = page.size
     for pixel in test_pixels:
         try:
             rgb_pixel = page.getpixel(pixel)
@@ -41,19 +42,24 @@ def are_all_pixels_black(page, test_pixels, threshold=5):
             ):
                 return False
         except IndexError:
-            # Pixel coordinates out of bounds
+            # Pixel coordinates out of bounds - this indicates test pixel coordinates
+            # may be misconfigured for this page size
+            logger.debug(
+                f"Test pixel {pixel} is out of bounds for page size {page_width}x{page_height}. "
+                "This may indicate misconfigured test pixel coordinates."
+            )
             return False
     return True
 
 
-def get_form_version(page):
+def get_crash_report_version(page):
     """Determine the crash report form version (CR3 or CR4).
 
     The check is conducted by sampling if various pixels are black.
     Different form versions have different layouts, so we check for
     pixels that are unique to each form type.
 
-    Form history:
+    Crash Report Form history:
     - CR3 v1: Legacy form (pre-August 2024)
     - CR3 v2: Updated form (August 2024+)
     - CR4: New form introduced with CRIS v30 (December 2025+)
@@ -74,7 +80,7 @@ def get_form_version(page):
     width, height = page.size
     page_size = "small" if width < 2000 else "large"
 
-    # Check for CR4 form first (only available in small format)
+    # Check for CR4 form first
     if page_size == "small" and are_all_pixels_black(page, CR4_FORM_TEST_PIXELS["small"]):
         return "cr4_small"
 
@@ -84,10 +90,6 @@ def get_form_version(page):
 
     # Default to CR3 v1
     return f"v1_{page_size}"
-
-
-# Keep the old function name as an alias for backwards compatibility
-get_cr3_version = get_form_version
 
 
 def crop_and_save_diagram(page, cris_crash_id, bbox, extract_dir):
@@ -112,8 +114,8 @@ def crop_and_save_diagram(page, cris_crash_id, bbox, extract_dir):
     return diagram_full_path, diagram_filename
 
 
-def get_cr3_object_key(filename, kind):
-    """Format the S3 object to which the CR3 PDF or diagram saved"""
+def get_crash_report_pdf_object_key(filename, kind):
+    """Format the S3 object to which the crash report PDF or diagram saved"""
     return f"{ENV}/cr3s/{kind}/{filename}"
 
 
@@ -141,13 +143,13 @@ def process_pdf(extract_dir, filename, s3_upload, index):
     # First, check page 1 to see if this is a CR4 form
     page1 = convert_from_path(
         pdf_path,
-        fmt="jpeg",
-        first_page=1,
+        fmt="jpeg", # jpeg is much faster than the default ppm fmt
+        first_page=1, # page 1 has the crash diagram for CR4 forms
         last_page=1,
         dpi=150,
     )[0]
 
-    form_version = get_form_version(page1)
+    form_version = get_crash_report_version(page1)
     logger.debug(f"Detected form version: {form_version}")
 
     # CR4 forms have the diagram on page 1, CR3 forms have it on page 2
@@ -172,11 +174,11 @@ def process_pdf(extract_dir, filename, s3_upload, index):
     )
 
     if s3_upload:
-        s3_object_key_pdf = get_cr3_object_key(filename, "pdfs")
+        s3_object_key_pdf = get_crash_report_pdf_object_key(filename, "pdfs")
         logger.debug(f"Uploading CR3 pdf to {s3_object_key_pdf}")
         upload_file_to_s3(pdf_path, s3_object_key_pdf, content_type='application/pdf')
 
-        s3_object_key_diagram = get_cr3_object_key(diagram_filename, "crash_diagrams")
+        s3_object_key_diagram = get_crash_report_pdf_object_key(diagram_filename, "crash_diagrams")
         logger.debug(f"Uploading crash diagram to {s3_object_key_diagram}")
         upload_file_to_s3(diagram_full_path, s3_object_key_diagram, content_type='image/jpeg')
 
@@ -252,6 +254,6 @@ def process_pdfs(extract_dir, s3_upload, max_workers):
         raise errors[0][1]
 
     logger.info(
-        f"✅ {pdf_count} CR3s processed in {round((time.time() - overall_start_tme)/60, 2)} minutes"
+        f"✅ {pdf_count} Crash Report PDFs processed in {round((time.time() - overall_start_tme)/60, 2)} minutes"
     )
     return pdf_count

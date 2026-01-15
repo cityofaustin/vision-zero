@@ -13,7 +13,7 @@ from utils.graphql import (
     UPDATE_CRASH_NARRATIVE_OCR_MUTATION,
 )
 from utils.logging import init_logger
-from utils.process_pdfs import get_form_version
+from utils.process_pdfs import get_crash_report_version
 from utils.settings import NARRATIVE_BBOX_PIXELS
 
 
@@ -21,7 +21,7 @@ def extract_narrative_pdf(cris_crash_id, crash_pk, index):
     """Handles narrative extraction of one crash report PDF (CR3 only).
 
     CR4 forms are skipped because CRIS provides the narrative directly in
-    the CSV data for these forms, so OCR extraction is not needed.
+    the CSV data for these forms, so OCR extraction is not needed (we hope).
 
     Args:
         cris_crash_id (int): the CRIS crash ID
@@ -45,7 +45,7 @@ def extract_narrative_pdf(cris_crash_id, crash_pk, index):
         dpi=150,
     )[0]
 
-    form_version = get_form_version(page)
+    form_version = get_crash_report_version(page)
     logger.debug(f"Form version: {form_version}")
 
     # Skip CR4 forms - narrative is provided in CRIS CSV data

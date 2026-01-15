@@ -28,7 +28,7 @@ DIAGRAM_BBOX_PIXELS = {
 Bounding box coordinates (x1, y1, x2, y2) used to crop the crash narrative from PDF pages.
 
 Note: CR4 forms are not included here because CRIS provides the narrative in the CSV data
-for CR4 forms, so OCR extraction is not needed.
+for CR4 forms, so OCR extraction is not needed (hopefully).
 """
 NARRATIVE_BBOX_PIXELS = {
     # CR3 form versions only
@@ -49,6 +49,7 @@ CR3_FORM_V2_TEST_PIXELS = {
         (100, 892),
         (1000, 892),
     ],
+    # TODO: These need to be calibrated for PAGE 1 of CR4
     "large": [
         (215, 2567),
         (872, 2568),
@@ -66,8 +67,6 @@ The pixels should be black on CR4 page 1 but NOT black on CR3 page 1.
 """
 CR4_FORM_TEST_PIXELS = {
     "small": [
-        # TODO: These need to be calibrated for PAGE 1 of CR4
-        # Use: python analyze_pdf_form.py CR4.pdf --page 1 --save-page --show-grid
         (599, 100),
         (500, 292),
         (1200, 500),
