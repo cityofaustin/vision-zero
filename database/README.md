@@ -135,7 +135,7 @@ Any part of the range that is in the future will create daily zips that include 
 
 #### CRIS data processing
 
-We receive CRIS data from TxDOT on a nightly basis through the CRIS "automated interface", which delivers an encrypted `.zip` file to an S3 bucket on our AWS premise. The `.zip` file contains all crash records _processed_ in the last 24 hours, and includes both CSV files and crash report PDFs (aka CR3s).
+We receive CRIS data from TxDOT on a nightly basis through the CRIS "automated interface", which delivers an encrypted `.zip` file to an S3 bucket on our AWS premise. The `.zip` file contains all crash records _processed_ in the last 24 hours, and includes both CSV files and crash report PDFs.
 
 See [our docs](#cris-extract-configuration-and-accounts) about the extract configuration for more details.
 
