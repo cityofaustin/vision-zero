@@ -7,6 +7,12 @@ import time
 
 from pdf2image import convert_from_path, pdfinfo_from_path, pdfinfo_from_bytes
 
+try:
+    from pytesseract import image_to_data, Output
+    OCR_AVAILABLE = True
+except ImportError:
+    OCR_AVAILABLE = False
+
 from utils.graphql import UPDATE_CRASH_CR3_FIELDS, make_hasura_request
 from utils.logging import get_logger
 from utils.files import upload_file_to_s3
@@ -51,6 +57,165 @@ def are_all_pixels_black(page, test_pixels, threshold=5):
             )
             return False
     return True
+
+
+def find_diagram_top_y_ocr(page, search_text="Crash Diagram"):
+    """Find the Y coordinate where the crash diagram starts using OCR.
+    
+    Searches for the diagram header text (e.g., "Crash Diagram") and returns
+    the bottom Y coordinate of that text box, which marks the top of the diagram.
+    
+    Args:
+        page (PIL image): the PDF page as an image
+        search_text (str): text to search for that marks the diagram start
+    
+    Returns:
+        int or None: Y coordinate of diagram top, or None if not found
+    """
+    if not OCR_AVAILABLE:
+        return None
+    
+    try:
+        # Get OCR data with bounding boxes
+        ocr_data = image_to_data(page, lang="eng", output_type=Output.DICT)
+        
+        # Build list of words with their positions
+        words = []
+        for i in range(len(ocr_data['text'])):
+            word = ocr_data['text'][i].strip()
+            conf = int(ocr_data['conf'][i]) if ocr_data['conf'][i] != '-1' else 0
+            if word and conf > 30:  # Filter low-confidence detections
+                words.append({
+                    'text': word,
+                    'left': ocr_data['left'][i],
+                    'top': ocr_data['top'][i],
+                    'width': ocr_data['width'][i],
+                    'height': ocr_data['height'][i],
+                    'bottom': ocr_data['top'][i] + ocr_data['height'][i],
+                })
+        
+        # Look for "Crash" and "Diagram" near each other
+        # They should be on the same line or very close
+        candidates = []
+        for i, word1 in enumerate(words):
+            word1_upper = word1['text'].upper()
+            if word1_upper in ['CRASH', 'CRASHES']:
+                # Look for "Diagram" nearby (check next 10 words or within 200px horizontally)
+                for word2 in words[i+1:i+11]:
+                    word2_upper = word2['text'].upper()
+                    if word2_upper in ['DIAGRAM', 'DIAGRAMS']:
+                        # Check if they're roughly on the same line (within 20px vertically)
+                        if abs(word1['top'] - word2['top']) < 20:
+                            # Found "Crash Diagram" - use the bottom of the lower word
+                            bottom = max(word1['bottom'], word2['bottom'])
+                            candidates.append(bottom)
+        
+        if candidates:
+            # Use the lowest (most bottom) candidate, as there might be multiple matches
+            max_bottom = max(candidates)
+            # Add small padding below the text to start the diagram crop
+            result = max_bottom + 5
+            logger.debug(f"Found 'Crash Diagram' at Y={result}")
+            return result
+        else:
+            logger.debug(f"OCR did not find '{search_text}' text")
+            return None
+            
+    except Exception as e:
+        logger.warning(f"OCR failed while finding diagram top: {e}")
+        return None
+
+
+def find_diagram_top_y_visual(page):
+    """Find the Y coordinate where the crash diagram starts using visual detection.
+    
+    Looks for horizontal lines or changes in pixel density that indicate
+    the start of the diagram area. This is a fallback if OCR fails.
+    
+    Args:
+        page (PIL image): the PDF page as an image
+    
+    Returns:
+        int or None: Y coordinate of diagram top, or None if not found
+    """
+    width, height = page.size
+    
+    # Look for horizontal lines in the expected diagram area (roughly y=700-900)
+    # Scan for continuous black pixels across the width
+    for y in range(700, min(900, height - 100)):
+        black_pixel_count = 0
+        for x in range(50, width - 50, 10):  # Sample every 10th pixel
+            try:
+                rgb = page.getpixel((x, y))
+                if all(v < 10 for v in rgb[:3]):  # Black or very dark
+                    black_pixel_count += 1
+            except IndexError:
+                continue
+        
+        # If we find a line with many black pixels, it might be a separator
+        if black_pixel_count > (width // 20):  # At least 5% of sampled pixels are black
+            # Check if there's a diagram-like area below (less text density)
+            # by checking a few pixels below
+            return y + 10  # Add small offset below the line
+    
+    return None
+
+
+def get_cr4_diagram_bbox(page, form_version):
+    """Dynamically calculate the CR4 diagram bounding box.
+    
+    The diagram position varies based on how much text is in fields above it.
+    We dynamically find where the diagram starts (top Y) and use fixed values
+    for left, right, and bottom based on the form layout.
+    
+    Args:
+        page (PIL image): the PDF page as an image (page 1 for CR4)
+        form_version (str): the detected form version (e.g., 'cr4_v1_small')
+    
+    Returns:
+        tuple: (x1, y1, x2, y2) bounding box coordinates
+    """
+    width, height = page.size
+    
+    # Fixed coordinates for CR4 forms (based on form layout)
+    # Left edge: consistent across all CR4 forms
+    x1 = 74
+    # Right edge: consistent across all CR4 forms  
+    x2 = 1201
+    # Bottom edge: consistent across all CR4 forms
+    y2 = 1575
+    
+    # Dynamically find the top Y coordinate
+    y1 = None
+    
+    # Try OCR first (most accurate)
+    y1 = find_diagram_top_y_ocr(page, "Crash Diagram")
+    
+    # Fallback to visual detection if OCR fails
+    if y1 is None:
+        logger.debug("OCR failed to find diagram, trying visual detection...")
+        y1 = find_diagram_top_y_visual(page)
+    
+    # Final fallback: use version-specific default from settings
+    if y1 is None:
+        logger.info(f"Dynamic detection disabled/unsuccessful, using fallback coordinates for {form_version}")
+        default_bbox = DIAGRAM_BBOX_PIXELS.get(form_version)
+        if default_bbox:
+            logger.info(f"Using fallback bbox from settings: {default_bbox}")
+            return default_bbox
+        else:
+            # Ultimate fallback: use a safe default
+            logger.warning(f"No fallback found in settings for {form_version}, using hardcoded default")
+            logger.warning(f"Available keys in DIAGRAM_BBOX_PIXELS: {list(DIAGRAM_BBOX_PIXELS.keys())}")
+            y1 = 800
+            logger.warning(f"Using hardcoded Y coordinate: {y1}")
+    
+    # Ensure Y coordinate is within reasonable bounds
+    y1 = max(700, min(y1, 1000))  # Clamp between 700 and 1000
+    
+    bbox = (x1, y1, x2, y2)
+    logger.debug(f"Dynamic CR4 diagram bbox: {bbox}")
+    return bbox
 
 
 def get_crash_report_version(page):
@@ -147,7 +312,15 @@ def process_pdf(extract_dir, filename, s3_upload, index):
         index (int): the index ID of this pdf among all PDFs being processed
     """
     logger.info(f"Processing {filename} ({index})")
-    cris_crash_id = int(filename.replace(".pdf", ""))
+    
+    # Extract CRIS crash ID from filename (should be numeric)
+    try:
+        cris_crash_id = int(filename.replace(".pdf", ""))
+    except ValueError:
+        # Skip test files or non-standard filenames (e.g., CR4_v1.pdf, CR4_v2.pdf)
+        logger.warning(f"Skipping {filename} - filename is not a numeric CRIS crash ID (likely a test file)")
+        return
+    
     pdf_path = os.path.join(extract_dir, "crashReports", filename)
 
     logger.debug("Converting PDF page 1 to check for CR4...")
@@ -167,6 +340,8 @@ def process_pdf(extract_dir, filename, s3_upload, index):
     # CR4 forms have the diagram on page 1, CR3 forms have it on page 2
     if form_version.startswith("cr4"):
         page = page1
+        # Use dynamic bbox calculation for CR4 forms
+        bbox = get_cr4_diagram_bbox(page, form_version)
     else:
         logger.debug("CR3 detected, converting page 2 for diagram...")
         page = convert_from_path(
@@ -176,8 +351,8 @@ def process_pdf(extract_dir, filename, s3_upload, index):
             last_page=2,
             dpi=150,
         )[0]
-
-    bbox = DIAGRAM_BBOX_PIXELS[form_version]
+        # Use fixed bbox for CR3 forms
+        bbox = DIAGRAM_BBOX_PIXELS[form_version]
 
     logger.debug("Cropping crash diagram...")
 

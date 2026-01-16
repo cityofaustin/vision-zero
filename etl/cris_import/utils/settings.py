@@ -15,19 +15,28 @@ Size variants:
 - *_small: Smaller page format (width < 2000px at 150 DPI)
 - *_large: Legacy larger page format (width >= 2000px at 150 DPI)
 
-Note: CR4 forms use the small page format.
+IMPORTANT: CR4 forms use DYNAMIC bounding box calculation!
+The top Y coordinate (y1) is detected dynamically using OCR to find the "Crash Diagram"
+header text, because the diagram position varies based on how much text wraps in fields above it.
+The fixed coordinates below are only used as fallbacks if dynamic detection fails.
+
+Fixed coordinates for CR4 (used as fallbacks and for left/right/bottom):
+- Left (x1): 74
+- Right (x2): 1201  
+- Bottom (y2): 1575
+- Top (y1): Dynamically detected (typically 750-900 depending on form content)
 """
 DIAGRAM_BBOX_PIXELS = {
-    # CR3 form versions
+    # CR3 form versions (fixed coordinates)
     "v1_small": (681, 928, 1315, 1590),
     "v1_large": (2589, 3531, 5001, 6048),
     "v2_small": (658, 791, 1270, 1430),
     "v2_large": (2496, 3036, 4836, 5464),
-    # CR4 form versions (CRIS v30+)
+    # CR4 form versions (fallback coordinates - top Y is detected dynamically)
     # CR4 v1: Has "Intersecting Road" section
     "cr4_v1_small": (74, 802, 1201, 1575),
     # CR4 v2: Has "Nearest Intersecting Road or Reference Marker" section
-    "cr4_v2_small": (74, 842, 1201, 1575),  # Currently optimized for this version
+    "cr4_v2_small": (74, 842, 1201, 1575),  
 }
 
 """
