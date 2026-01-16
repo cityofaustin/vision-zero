@@ -14,6 +14,7 @@ from utils.settings import (
     DIAGRAM_BBOX_PIXELS,
     CR3_FORM_V2_TEST_PIXELS,
     CR4_FORM_TEST_PIXELS,
+    CR4_V2_TEST_PIXELS,
 )
 
 ENV = os.getenv("BUCKET_ENV")
@@ -62,7 +63,10 @@ def get_crash_report_version(page):
     Crash Report Form history:
     - CR3 v1: Legacy form (pre-August 2024)
     - CR3 v2: Updated form (August 2024+)
-    - CR4: New form introduced with CRIS v30 (December 2025+)
+    - CR4 v1: New form introduced with CRIS v30 (December 2025+)
+      - Has "Intersecting Road" section
+    - CR4 v2: New form introduced with CRIS v30 (December 2025+)
+      - Has "Nearest Intersecting Road or Reference Marker" section
 
     On August 27, 2024 CRIS started delivering all CR3s using a
     smaller page size. This function handles both the legacy large
@@ -75,14 +79,22 @@ def get_crash_report_version(page):
         str: Form version identifier:
             - 'v1_small', 'v1_large': CR3 v1 forms
             - 'v2_large', 'v2_small': CR3 v2 forms
-            - 'cr4_small': CR4 forms (CRIS v30+)
+            - 'cr4_v1_small': CR4 v1 forms (has "Intersecting Road")
+            - 'cr4_v2_small': CR4 v2 forms (has "Reference Marker" in section header)
     """
     width, height = page.size
     page_size = "small" if width < 2000 else "large"
 
-    # Check for CR4 form first
+    # Check for CR4 form first (any version)
     if page_size == "small" and are_all_pixels_black(page, CR4_FORM_TEST_PIXELS["small"]):
-        return "cr4_small"
+        # Distinguish between CR4 v1 and CR4 v2 using pixel-based detection
+        # CR4 v2 has "Nearest Intersecting Road or Reference Marker" section (longer text)
+        # CR4 v1 has "Intersecting Road" section (shorter text)
+        # The longer text in v2 creates different black pixel patterns
+        if are_all_pixels_black(page, CR4_V2_TEST_PIXELS["small"]):
+            return "cr4_v2_small"
+        else:
+            return "cr4_v1_small"
 
     # Check for CR3 v2 form
     if are_all_pixels_black(page, CR3_FORM_V2_TEST_PIXELS[page_size]):
