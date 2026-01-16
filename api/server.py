@@ -2,7 +2,7 @@
 """
 API which handles
 - Auth0 user management
-- Crash Report PDF downloads
+- CR3 PDF downloads
 - Person image uploads and downloads
 """
 import datetime
