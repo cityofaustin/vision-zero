@@ -51,7 +51,7 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
         <Button size="sm" onClick={onDownloadCR3} disabled={!isCr3Stored}>
           <AlignedLabel>
             <FaFilePdf className="me-2" />
-            <span>Download Crash Report</span>
+            <span>Download crash report</span>
           </AlignedLabel>
         </Button>
       </Card.Header>
