@@ -59,15 +59,14 @@ def are_all_pixels_black(page, test_pixels, threshold=5):
     return True
 
 
-def find_diagram_top_y_ocr(page, search_text="Crash Diagram"):
+def find_diagram_top_y_ocr(page):
     """Find the Y coordinate where the crash diagram starts using OCR.
     
-    Searches for the diagram header text (e.g., "Crash Diagram") and returns
-    the bottom Y coordinate of that text box, which marks the top of the diagram.
+    Searches for the "Crash Diagram" header text and returns the bottom Y coordinate
+    of that text box, which marks the top of the diagram area.
     
     Args:
         page (PIL image): the PDF page as an image
-        search_text (str): text to search for that marks the diagram start
     
     Returns:
         int or None: Y coordinate of diagram top, or None if not found
@@ -76,50 +75,35 @@ def find_diagram_top_y_ocr(page, search_text="Crash Diagram"):
         return None
     
     try:
-        # Get OCR data with bounding boxes
+        # Get OCR data with word-level bounding boxes
         ocr_data = image_to_data(page, lang="eng", output_type=Output.DICT)
         
-        # Build list of words with their positions
-        words = []
-        for i in range(len(ocr_data['text'])):
-            word = ocr_data['text'][i].strip()
-            conf = int(ocr_data['conf'][i]) if ocr_data['conf'][i] != '-1' else 0
-            if word and conf > 30:  # Filter low-confidence detections
-                words.append({
-                    'text': word,
-                    'left': ocr_data['left'][i],
-                    'top': ocr_data['top'][i],
-                    'width': ocr_data['width'][i],
-                    'height': ocr_data['height'][i],
-                    'bottom': ocr_data['top'][i] + ocr_data['height'][i],
-                })
+        # Extract valid words with their bounding box info
+        # Filter by confidence > 30 to avoid OCR noise
+        words = [
+            {
+                'text': word.strip().upper(),
+                'top': ocr_data['top'][i],
+                'bottom': ocr_data['top'][i] + ocr_data['height'][i],
+            }
+            for i, word in enumerate(ocr_data['text'])
+            if word.strip() and (int(ocr_data['conf'][i]) if ocr_data['conf'][i] != '-1' else 0) > 30
+        ]
         
-        # Look for "Crash" and "Diagram" near each other
-        # They should be on the same line or very close
-        candidates = []
+        # Find "Crash" followed by "Diagram" on the same line
         for i, word1 in enumerate(words):
-            word1_upper = word1['text'].upper()
-            if word1_upper in ['CRASH', 'CRASHES']:
-                # Look for "Diagram" nearby (check next 10 words or within 200px horizontally)
+            if word1['text'] in ['CRASH', 'CRASHES']:
+                # Check next 10 words for "Diagram" on the same line
                 for word2 in words[i+1:i+11]:
-                    word2_upper = word2['text'].upper()
-                    if word2_upper in ['DIAGRAM', 'DIAGRAMS']:
-                        # Check if they're roughly on the same line (within 20px vertically)
-                        if abs(word1['top'] - word2['top']) < 20:
-                            # Found "Crash Diagram" - use the bottom of the lower word
-                            bottom = max(word1['bottom'], word2['bottom'])
-                            candidates.append(bottom)
+                    if word2['text'] in ['DIAGRAM', 'DIAGRAMS']:
+                        if abs(word1['top'] - word2['top']) < 20:  # Same line (within 20px)
+                            # Return bottom of the lower word + small padding
+                            result = max(word1['bottom'], word2['bottom']) + 5
+                            logger.debug(f"Found 'Crash Diagram' at Y={result}")
+                            return result
         
-        if candidates:
-            # Use the lowest (most bottom) candidate, as there might be multiple matches
-            max_bottom = max(candidates)
-            # Add small padding below the text to start the diagram crop
-            result = max_bottom + 5
-            logger.debug(f"Found 'Crash Diagram' at Y={result}")
-            return result
-        else:
-            logger.debug(f"OCR did not find '{search_text}' text")
-            return None
+        logger.debug("OCR did not find 'Crash Diagram' text")
+        return None
             
     except Exception as e:
         logger.warning(f"OCR failed while finding diagram top: {e}")
