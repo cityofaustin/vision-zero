@@ -100,7 +100,7 @@ These pixels should be in the area where the longer text appears in CR4 v2.
 IMPORTANT: These pixels are checked on PAGE 1 of the PDF.
 The pixels should be black on CR4 v2 but NOT black on CR4 v1.
 """
-CR4_V2_TEST_PIXELS = {
+CR4_FORM_V2_TEST_PIXELS = {
     "small": [
         (409,420),
         (450,601),

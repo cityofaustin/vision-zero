@@ -20,7 +20,7 @@ from utils.settings import (
     DIAGRAM_BBOX_PIXELS,
     CR3_FORM_V2_TEST_PIXELS,
     CR4_FORM_TEST_PIXELS,
-    CR4_V2_TEST_PIXELS,
+    CR4_FORM_V2_TEST_PIXELS,
 )
 
 ENV = os.getenv("BUCKET_ENV")
@@ -256,7 +256,7 @@ def get_crash_report_version(page):
         # CR4 v2 has "Nearest Intersecting Road or Reference Marker" section (longer text)
         # CR4 v1 has "Intersecting Road" section (shorter text)
         # The longer text in v2 creates different black pixel patterns
-        if are_all_pixels_black(page, CR4_V2_TEST_PIXELS["small"]):
+        if are_all_pixels_black(page, CR4_FORM_V2_TEST_PIXELS["small"]):
             return "cr4_v2_small"
         else:
             return "cr4_v1_small"
