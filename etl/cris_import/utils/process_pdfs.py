@@ -312,14 +312,7 @@ def process_pdf(extract_dir, filename, s3_upload, index):
         index (int): the index ID of this pdf among all PDFs being processed
     """
     logger.info(f"Processing {filename} ({index})")
-    
-    # Extract CRIS crash ID from filename (should be numeric)
-    try:
-        cris_crash_id = int(filename.replace(".pdf", ""))
-    except ValueError:
-        # Skip test files or non-standard filenames (e.g., CR4_v1.pdf, CR4_v2.pdf)
-        logger.warning(f"Skipping {filename} - filename is not a numeric CRIS crash ID (likely a test file)")
-        return
+    cris_crash_id = int(filename.replace(".pdf", ""))
     
     pdf_path = os.path.join(extract_dir, "crashReports", filename)
 
