@@ -133,7 +133,7 @@ def get_cr4_diagram_bbox(page, form_version):
     x1, _, x2, y2 = default_bbox  # Extract x1, x2, y2 (ignore y1, we'll detect it dynamically)
     
     # Dynamically find the top Y coordinate using OCR
-    y1 = find_diagram_top_y_ocr(page, "Crash Diagram")
+    y1 = find_diagram_top_y_ocr(page)
     
     # Fallback: use version-specific default from settings if OCR fails
     if y1 is None:
