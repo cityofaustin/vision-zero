@@ -143,13 +143,10 @@ def get_cr4_diagram_bbox(page, form_version):
     """
     width, height = page.size
     
-    # Fixed coordinates for CR4 forms (based on form layout)
-    # Left edge: consistent across all CR4 forms
-    x1 = 74
-    # Right edge: consistent across all CR4 forms  
-    x2 = 1201
-    # Bottom edge: consistent across all CR4 forms
-    y2 = 1575
+    # Get fixed coordinates from settings (x1, x2, y2 are consistent across all CR4 forms)
+    # Extract from the fallback bbox for this form version, or use a default CR4 entry
+    default_bbox = DIAGRAM_BBOX_PIXELS.get(form_version)
+    x1, _, x2, y2 = default_bbox  # Extract x1, x2, y2 (ignore y1, we'll detect it dynamically)
     
     # Dynamically find the top Y coordinate using OCR
     y1 = find_diagram_top_y_ocr(page, "Crash Diagram")
@@ -157,7 +154,6 @@ def get_cr4_diagram_bbox(page, form_version):
     # Fallback: use version-specific default from settings if OCR fails
     if y1 is None:
         logger.info(f"OCR failed to find diagram, using fallback coordinates for {form_version}")
-        default_bbox = DIAGRAM_BBOX_PIXELS.get(form_version)
         if default_bbox:
             logger.debug(f"Using fallback bbox from settings: {default_bbox}")
             return default_bbox
