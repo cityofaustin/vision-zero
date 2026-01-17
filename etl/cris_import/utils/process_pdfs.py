@@ -126,47 +126,13 @@ def find_diagram_top_y_ocr(page, search_text="Crash Diagram"):
         return None
 
 
-def find_diagram_top_y_visual(page):
-    """Find the Y coordinate where the crash diagram starts using visual detection.
-    
-    Looks for horizontal lines or changes in pixel density that indicate
-    the start of the diagram area. This is a fallback if OCR fails.
-    
-    Args:
-        page (PIL image): the PDF page as an image
-    
-    Returns:
-        int or None: Y coordinate of diagram top, or None if not found
-    """
-    width, height = page.size
-    
-    # Look for horizontal lines in the expected diagram area (roughly y=700-900)
-    # Scan for continuous black pixels across the width
-    for y in range(700, min(900, height - 100)):
-        black_pixel_count = 0
-        for x in range(50, width - 50, 10):  # Sample every 10th pixel
-            try:
-                rgb = page.getpixel((x, y))
-                if all(v < 10 for v in rgb[:3]):  # Black or very dark
-                    black_pixel_count += 1
-            except IndexError:
-                continue
-        
-        # If we find a line with many black pixels, it might be a separator
-        if black_pixel_count > (width // 20):  # At least 5% of sampled pixels are black
-            # Check if there's a diagram-like area below (less text density)
-            # by checking a few pixels below
-            return y + 10  # Add small offset below the line
-    
-    return None
-
-
 def get_cr4_diagram_bbox(page, form_version):
     """Dynamically calculate the CR4 diagram bounding box.
     
     The diagram position varies based on how much text is in fields above it.
-    We dynamically find where the diagram starts (top Y) and use fixed values
-    for left, right, and bottom based on the form layout.
+    We dynamically find where the diagram starts (top Y) using OCR to locate
+    the "Crash Diagram" header text, and use fixed values for left, right,
+    and bottom based on the form layout.
     
     Args:
         page (PIL image): the PDF page as an image (page 1 for CR4)
@@ -185,23 +151,15 @@ def get_cr4_diagram_bbox(page, form_version):
     # Bottom edge: consistent across all CR4 forms
     y2 = 1575
     
-    # Dynamically find the top Y coordinate
-    y1 = None
-    
-    # Try OCR first (most accurate)
+    # Dynamically find the top Y coordinate using OCR
     y1 = find_diagram_top_y_ocr(page, "Crash Diagram")
     
-    # Fallback to visual detection if OCR fails
+    # Fallback: use version-specific default from settings if OCR fails
     if y1 is None:
-        logger.debug("OCR failed to find diagram, trying visual detection...")
-        y1 = find_diagram_top_y_visual(page)
-    
-    # Final fallback: use version-specific default from settings
-    if y1 is None:
-        logger.info(f"Dynamic detection disabled/unsuccessful, using fallback coordinates for {form_version}")
+        logger.info(f"OCR failed to find diagram, using fallback coordinates for {form_version}")
         default_bbox = DIAGRAM_BBOX_PIXELS.get(form_version)
         if default_bbox:
-            logger.info(f"Using fallback bbox from settings: {default_bbox}")
+            logger.debug(f"Using fallback bbox from settings: {default_bbox}")
             return default_bbox
         else:
             # Ultimate fallback: use a safe default
