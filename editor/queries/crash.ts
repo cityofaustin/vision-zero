@@ -212,6 +212,7 @@ export const GET_CRASH = gql`
         }
       }
       charges_cris {
+        id
         unit_nbr
         prsn_nbr
         citation_nbr

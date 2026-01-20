@@ -6,16 +6,12 @@ import { Card, Col, Row } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import { MapRef } from "react-map-gl";
 import { PointMap } from "@/components/PointMap";
-import FatalityVictimsCard from "@/components/FatalityVictimsCard";
+import FatalityUnitsCards from "@/components/FatalityUnitsCards";
 import CrashNarrativeEditableCard from "@/components/CrashNarrativeEditableCard";
 import { GET_CRASH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
 import { useDocumentTitle } from "@/utils/documentTitle";
-import {
-  formatAddresses,
-  formatIsoDateTimeWithDay,
-  formatYear,
-} from "@/utils/formatters";
+import { formatIsoDateTimeWithDay, formatYear } from "@/utils/formatters";
 import { useQuery } from "@/utils/graphql";
 
 export default function FatalCrashDetailsPage({
@@ -44,7 +40,7 @@ export default function FatalCrashDetailsPage({
   // Set document title based on loaded data
   useDocumentTitle(
     data && data.length > 0
-      ? `Fatalities ${data[0].record_locator} - ${formatAddresses(data[0])}`
+      ? `Fatalities ${data[0].record_locator} - ${data[0].address_display}`
       : "Vision Zero Editor",
     true // exclude the suffix
   );
@@ -66,7 +62,7 @@ export default function FatalCrashDetailsPage({
       <Row>
         <div className="d-flex justify-content-between align-items-center mb-3">
           <span className="fs-3 fw-bold text-uppercase">
-            {formatAddresses(data[0])}
+            {data[0].address_display}
           </span>
           <span className="fs-5">
             {formatYear(data[0].crash_timestamp)} Fatal Crash #
@@ -121,7 +117,7 @@ export default function FatalCrashDetailsPage({
           </Card>
         </Col>
         <Col className="mb-3" sm={12} md={6}>
-          <FatalityVictimsCard crash={crash} />
+          <FatalityUnitsCards crash={crash} />
         </Col>
       </Row>
       <Row>

@@ -220,6 +220,7 @@ select_permissions:
         - intrsct_relat_id
         - investigat_agency_id
         - investigator_narrative
+        - is_coa_roadway
         - is_deleted
         - is_temp_record
         - latitude
@@ -228,6 +229,7 @@ select_permissions:
         - location_id
         - longitude
         - medical_advisory_fl
+        - narrative_summary
         - obj_struck_id
         - onsys_fl
         - position
@@ -293,6 +295,7 @@ select_permissions:
         - intrsct_relat_id
         - investigat_agency_id
         - investigator_narrative
+        - is_coa_roadway
         - is_deleted
         - is_temp_record
         - latitude
@@ -301,6 +304,7 @@ select_permissions:
         - location_id
         - longitude
         - medical_advisory_fl
+        - narrative_summary
         - obj_struck_id
         - onsys_fl
         - position
