@@ -167,6 +167,9 @@ export const GET_CRASH = gql`
           sus_serious_injry_count
         }
       }
+      unit_types_involved {
+        unit_types_involved
+      }
       people_list_view(order_by: { unit_nbr: asc, prsn_nbr: asc }) {
         crash_pk
         id

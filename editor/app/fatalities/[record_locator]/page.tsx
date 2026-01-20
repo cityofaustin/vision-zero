@@ -86,7 +86,9 @@ export default function FatalCrashDetailsPage({
                     <td style={{ textWrap: "nowrap" }} className="fw-bold">
                       Units involved
                     </td>
-                    <td></td>
+                    <td>
+                      {crash.unit_types_involved?.unit_types_involved || ""}
+                    </td>
                   </tr>
                   <tr>
                     <td style={{ textWrap: "nowrap" }} className="fw-bold">
