@@ -1,9 +1,11 @@
 import { Crash } from "@/types/crashes";
 import { Unit } from "@/types/unit";
+import { useState } from "react";
 import { Card, ListGroupItem, Image } from "react-bootstrap";
 import { getInjuryColorClass } from "@/utils/people";
 import FatalityUnitCardFooter from "@/components/FatalityUnitCardFooter";
 import { PeopleListRow } from "@/types/peopleList";
+import FatalityImageUploadModal from "@/components/FatalityImageUploadModal";
 
 interface FatalityUnitsCardsProps {
   crash: Crash;
@@ -99,6 +101,7 @@ const getUnitDisplayData = (crash: Crash) => {
  * unit in the crash that has a fatality, contributing factor, or charge associated with it
  */
 export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
+  const [showImageModal, setShowImageModal] = useState(false);
   const unitDataReadyToRender = getUnitDisplayData(crash);
 
   return (
@@ -115,54 +118,70 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
           </Card.Header>
           {unit.hasVictim && (
             <Card.Body>
-              {unit.unitVictims?.map((victim) => (
-                <ListGroupItem
-                  className="d-flex align-items-center justify-content-between pb-3"
-                  key={victim.id}
-                  style={{ border: "none" }}
-                >
-                  <div className="d-flex align-items-center">
-                    <Image
-                      alt="placeholder"
-                      className="me-3"
-                      src={`${BASE_PATH}/assets/img/avatars/placeholder.png`}
-                      height="100px"
-                    ></Image>
-                    <div className="d-flex w-100 flex-column">
-                      <div className="pb-1">
-                        <span className="fw-bold me-2">
-                          {victim.prsn_first_name} {victim.prsn_mid_name}{" "}
-                          {victim.prsn_last_name}
-                        </span>
-                        <small className="text-secondary">
-                          {getPersonType(victim)}
-                        </small>
-                      </div>
-                      <span className="pb-1">
-                        {victim.prsn_age} YEARS OLD -{" "}
-                        {victim.drvr_ethncty?.label} {victim.gndr?.label}
-                      </span>
-                      {victim.rest?.label && shouldShowRestraintField(unit) && (
+              {unit.unitVictims?.map((victim) => {
+                const victimName = [
+                  victim.prsn_first_name,
+                  victim.prsn_mid_name,
+                  victim.prsn_last_name,
+                ]
+                  .filter((n) => n)
+                  .join(" ");
+                return (
+                  <ListGroupItem
+                    className="d-flex align-items-center justify-content-between pb-3"
+                    key={victim.id}
+                    style={{ border: "none" }}
+                  >
+                    <FatalityImageUploadModal
+                      showModal={showImageModal}
+                      setShowModal={setShowImageModal}
+                      victimName={victimName}
+                    ></FatalityImageUploadModal>
+                    <div className="d-flex align-items-center">
+                      <Image
+                        alt="placeholder"
+                        onClick={() => setShowImageModal(true)}
+                        className="me-3"
+                        src={`${BASE_PATH}/assets/img/avatars/placeholder.png`}
+                        height="100px"
+                        style={{
+                          cursor: "pointer",
+                        }}
+                      ></Image>
+                      <div className="d-flex w-100 flex-column">
+                        <div className="pb-1">
+                          <span className="fw-bold me-2">{victimName}</span>
+                          <small className="text-secondary">
+                            {getPersonType(victim)}
+                          </small>
+                        </div>
                         <span className="pb-1">
-                          Restraint used: {victim.rest.label}
+                          {victim.prsn_age} YEARS OLD -{" "}
+                          {victim.drvr_ethncty?.label} {victim.gndr?.label}
                         </span>
-                      )}
-                      {!!victim.prsn_exp_homelessness && (
-                        <span>{"Suspected unhoused"}</span>
-                      )}
+                        {victim.rest?.label &&
+                          shouldShowRestraintField(unit) && (
+                            <span className="pb-1">
+                              Restraint used: {victim.rest.label}
+                            </span>
+                          )}
+                        {!!victim.prsn_exp_homelessness && (
+                          <span>{"Suspected unhoused"}</span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  {victim.injry_sev?.label && (
-                    <div className="ms-2 flex-shrink-0">
-                      <span
-                        className={`${getInjuryColorClass(victim.injry_sev.label)} px-2 py-1 rounded`}
-                      >
-                        {victim.injry_sev?.label}
-                      </span>
-                    </div>
-                  )}
-                </ListGroupItem>
-              ))}
+                    {victim.injry_sev?.label && (
+                      <div className="ms-2 flex-shrink-0">
+                        <span
+                          className={`${getInjuryColorClass(victim.injry_sev.label)} px-2 py-1 rounded`}
+                        >
+                          {victim.injry_sev?.label}
+                        </span>
+                      </div>
+                    )}
+                  </ListGroupItem>
+                );
+              })}
             </Card.Body>
           )}
           {(unit.hasCharges || unit.hasContribFactors) && (
