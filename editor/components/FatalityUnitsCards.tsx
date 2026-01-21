@@ -105,18 +105,23 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
     <>
       <Card className="p-2 h-100">
         <div className="px-2 py-1 mb-1 d-flex flex-row justify-content-between">
-        <div className="fs-5 fw-bold">{showAllUnits ? "Units involved" : "Victims"}</div>
-        <div className="d-flex">
-          <Form.Label className="me-2">Show all units</Form.Label>
-          <Form.Check
-            type="switch"
-            checked={showAllUnits}
-            onClick={() => setShowAllUnits(!showAllUnits)}
-          />
+          <div className="fs-5 fw-bold">
+            {showAllUnits ? "Units involved" : "Victims"}
+          </div>
+          <div className="d-flex">
+            <Form.Label className="me-2">Show all units</Form.Label>
+            <Form.Check
+              type="switch"
+              checked={showAllUnits}
+              onClick={() => setShowAllUnits(!showAllUnits)}
+            />
+          </div>
         </div>
-      </div>
         {unitDataReadyToRender?.map((unit, i) => (
-          <Card key={unit.id} className={i < unitDataReadyToRender.length - 1 ? "mb-2" : ""}>
+          <Card
+            key={unit.id}
+            className={i < unitDataReadyToRender.length - 1 ? "mb-2" : ""}
+          >
             <Card.Header className="fatality-units-card-header-footer">
               <div className="d-flex w-100 justify-content-start align-items-center">
                 <span className="fs-5 fw-bold me-2">Unit {unit.unit_nbr}</span>
