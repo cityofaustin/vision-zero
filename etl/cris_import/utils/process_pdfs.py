@@ -88,8 +88,9 @@ def find_diagram_top_y_ocr(page):
         # Find "Crash" followed by "Diagram" on the same line
         for i, word1 in enumerate(words):
             if word1['text'] in ['CRASH', 'CRASHES']:
-                # Check next 10 words for "Diagram" on the same line
-                for word2 in words[i+1:i+11]:
+                # Check next 2 words for "Diagram" on the same line
+                # "Crash Diagram" should be consecutive words
+                for word2 in words[i+1:i+3]:
                     if word2['text'] in ['DIAGRAM', 'DIAGRAMS']:
                         if abs(word1['top'] - word2['top']) < 20:  # Same line (within 20px)
                             # Return bottom of the lower word + small padding
