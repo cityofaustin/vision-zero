@@ -1,8 +1,8 @@
 "use client";
 
 import { notFound } from "next/navigation";
-import { useRef, useCallback, use } from "react";
-import { Card, Col, Row } from "react-bootstrap";
+import { useRef, useCallback, use, useState } from "react";
+import { Card, Col, Form, Row } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import { MapRef } from "react-map-gl";
 import { PointMap } from "@/components/PointMap";
@@ -19,7 +19,6 @@ import DataCard from "@/components/DataCard";
 import { crashesColumns } from "@/configs/crashesColumns";
 
 const otherCardColumns = [
-  crashesColumns.record_locator_hyperlinked,
   crashesColumns.case_id,
   crashesColumns.law_enforcement_ytd_fatality_num,
   crashesColumns.light_cond,
@@ -33,6 +32,7 @@ export default function FatalCrashDetailsPage({
   params: Promise<{ record_locator: string }>;
 }) {
   const mapRef = useRef<MapRef | null>(null);
+  
   const { record_locator: recordLocator } = use(params);
 
   const typename = "crashes";
@@ -77,7 +77,7 @@ export default function FatalCrashDetailsPage({
           <span className="fs-3 fw-bold text-uppercase">
             {data[0].address_display}
           </span>
-          <span className="text-nowrap">
+          <span className="text-nowrap bg-light-use-theme py-2 rounded-3 px-3 border">
             <span className="fs-5 fw-bold me-1">Year</span>
             <span className="fs-5 me-3">
               {formatYear(data[0].crash_timestamp)}
@@ -91,10 +91,18 @@ export default function FatalCrashDetailsPage({
       </Row>
       <Row>
         <Col className="mb-3" sm={12} md={6}>
-          <Card>
+          <Card className="h-100">
             <Card.Body>
               <Table>
                 <tbody>
+                  <tr>
+                    <td className="fw-bold">Crash ID</td>
+                    <td>
+                      {crashesColumns.record_locator_hyperlinked.valueRenderer(
+                        crash
+                      )}
+                    </td>
+                  </tr>
                   <tr>
                     <td style={{ textWrap: "nowrap" }} className="fw-bold">
                       Date
@@ -155,7 +163,7 @@ export default function FatalCrashDetailsPage({
           <DataCard<Crash>
             record={crash}
             isValidating={false}
-            title="Other"
+            title="Details"
             columns={otherCardColumns}
             mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
