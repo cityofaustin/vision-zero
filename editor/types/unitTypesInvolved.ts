@@ -6,4 +6,3 @@ export type UnitTypesInvolved = {
   crash_pk?: number;
   unit_types_involved?: string | null;
 };
- 
