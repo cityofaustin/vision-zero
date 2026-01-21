@@ -1,8 +1,8 @@
 "use client";
 
 import { notFound } from "next/navigation";
-import { useRef, useCallback, use, useState } from "react";
-import { Card, Col, Form, Row } from "react-bootstrap";
+import { useRef, useCallback, use } from "react";
+import { Card, Col, Row } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import { MapRef } from "react-map-gl";
 import { PointMap } from "@/components/PointMap";
@@ -32,7 +32,7 @@ export default function FatalCrashDetailsPage({
   params: Promise<{ record_locator: string }>;
 }) {
   const mapRef = useRef<MapRef | null>(null);
-  
+
   const { record_locator: recordLocator } = use(params);
 
   const typename = "crashes";
