@@ -6,12 +6,7 @@ from pathlib import Path
 import time
 
 from pdf2image import convert_from_path, pdfinfo_from_path, pdfinfo_from_bytes
-
-try:
-    from pytesseract import image_to_data, Output
-    OCR_AVAILABLE = True
-except ImportError:
-    OCR_AVAILABLE = False
+from pytesseract import image_to_data, Output
 
 from utils.graphql import UPDATE_CRASH_CR3_FIELDS, make_hasura_request
 from utils.logging import get_logger
@@ -71,9 +66,6 @@ def find_diagram_top_y_ocr(page):
     Returns:
         int or None: Y coordinate of diagram top, or None if not found
     """
-    if not OCR_AVAILABLE:
-        return None
-    
     try:
         # Get OCR data with word-level bounding boxes
         ocr_data = image_to_data(page, lang="eng", output_type=Output.DICT)
