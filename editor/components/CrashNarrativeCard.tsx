@@ -6,7 +6,7 @@ import { Crash } from "@/types/crashes";
 import { useGetToken } from "@/utils/auth";
 
 /**
- * Card component that renders the crash narrative and a download CR3 button
+ * Card component that renders the crash narrative and a download Crash Report button
  */
 export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
   const getToken = useGetToken();
@@ -28,7 +28,9 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
       if (!response.ok) {
         const responseText = await response.text();
         console.error(responseText);
-        window.alert(`Failed to download CR3: ${String(responseText)}`);
+        window.alert(
+          `Failed to download Crash Report PDF: ${String(responseText)}`
+        );
       } else {
         const responseJson = await response.json();
         const win = window.open(responseJson.message, "_blank");
@@ -36,7 +38,9 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
       }
     } catch (error) {
       console.error(error);
-      window.alert(`Failed to download CR3: An unknown error has occured`);
+      window.alert(
+        `Failed to download Crash Report PDF: An unknown error has occured`
+      );
     }
   };
 
@@ -47,7 +51,7 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
         <Button size="sm" onClick={onDownloadCR3} disabled={!isCr3Stored}>
           <AlignedLabel>
             <FaFilePdf className="me-2" />
-            <span>Download CR3</span>
+            <span>Open crash report</span>
           </AlignedLabel>
         </Button>
       </Card.Header>
