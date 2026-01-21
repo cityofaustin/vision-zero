@@ -1,4 +1,4 @@
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, Row, Col, InputGroup } from "react-bootstrap";
 import { Dispatch, SetStateAction } from "react";
 
 interface FatalityImageUploadModalProps {
@@ -13,30 +13,25 @@ export default function FatalityImageUploadModal({
   victimName,
 }: FatalityImageUploadModalProps) {
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)}>
+    <Modal show={showModal} size="lg" onHide={() => setShowModal(false)}>
       <Modal.Header>
         <Modal.Title>{`Photo | ${victimName}`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={(e) => e.preventDefault()}>
-          <Form.Control
-            type="file"
-            name="file"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setSuccess(false);
-              if (validationErrors) {
-                setValidationErrors(null);
-              }
-              if (e.target?.files && e.target?.files.length > 0) {
-                setParsing(true);
-                onSelectFile(e.target?.files[0]);
-                // reset file input
-                e.target.value = "";
-              } else {
-                setParsing(false);
-              }
-            }}
-          />
+          <Row>
+            <Col>
+              <Form.Control type="file" name="file" />
+            </Col>
+            <Col>
+              <InputGroup>
+                <InputGroup.Text id="basic-addon1">
+                  Image source
+                </InputGroup.Text>
+                <Form.Control placeholder="https://www.legacy.com/us/obituaries/statesman/" />
+              </InputGroup>
+            </Col>
+          </Row>
         </Form>
       </Modal.Body>
       <Modal.Footer>
