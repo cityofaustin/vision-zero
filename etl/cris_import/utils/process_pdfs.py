@@ -16,6 +16,9 @@ from utils.settings import (
     CR3_FORM_V2_TEST_PIXELS,
     CR4_FORM_TEST_PIXELS,
     CR4_FORM_V2_TEST_PIXELS,
+    CR4_DIAGRAM_Y_FALLBACK,
+    CR4_DIAGRAM_Y_MIN,
+    CR4_DIAGRAM_Y_MAX,
 )
 
 ENV = os.getenv("BUCKET_ENV")
@@ -137,11 +140,11 @@ def get_cr4_diagram_bbox(page, form_version):
             # Ultimate fallback: use a safe default
             logger.warning(f"No fallback found in settings for {form_version}, using hardcoded default")
             logger.warning(f"Available keys in DIAGRAM_BBOX_PIXELS: {list(DIAGRAM_BBOX_PIXELS.keys())}")
-            y1 = 800
+            y1 = CR4_DIAGRAM_Y_FALLBACK
             logger.warning(f"Using hardcoded Y coordinate: {y1}")
     
     # Ensure Y coordinate is within reasonable bounds
-    y1 = max(700, min(y1, 1000))  # Clamp between 700 and 1000
+    y1 = max(CR4_DIAGRAM_Y_MIN, min(y1, CR4_DIAGRAM_Y_MAX))
     
     bbox = (x1, y1, x2, y2)
     logger.debug(f"Dynamic CR4 diagram bbox: {bbox}")

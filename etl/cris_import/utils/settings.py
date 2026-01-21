@@ -40,6 +40,19 @@ DIAGRAM_BBOX_PIXELS = {
 }
 
 """
+Constants for CR4 dynamic diagram detection fallback and bounds.
+
+These are used when OCR fails to find the "Crash Diagram" header text.
+"""
+# Hardcoded fallback Y coordinate when OCR fails and no form-specific fallback exists
+CR4_DIAGRAM_Y_FALLBACK = 800
+
+# Bounds for clamping the dynamically detected Y coordinate
+# The Y coordinate is clamped to ensure it's within reasonable bounds for CR4 forms
+CR4_DIAGRAM_Y_MIN = 700
+CR4_DIAGRAM_Y_MAX = 1000
+
+"""
 Bounding box coordinates (x1, y1, x2, y2) used to crop the crash narrative from PDF pages.
 
 Note: CR4 forms are not included here because CRIS provides the narrative in the CSV data
