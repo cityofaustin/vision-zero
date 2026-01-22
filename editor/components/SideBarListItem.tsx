@@ -28,7 +28,6 @@ export default function SideBarListItem({
         cursor: "pointer",
         whiteSpace: "nowrap",
         border: "none",
-        // todo: border pushes icon to left
         borderLeft: isCurrentPage ? `4px solid ${COLORS.primary}` : "none",
       }}
       as={Link}
