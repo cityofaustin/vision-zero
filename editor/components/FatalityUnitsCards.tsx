@@ -35,7 +35,7 @@ const getPersonType = (victim: PeopleListRow) =>
   victim.prsn_type_id !== 4 // pedestrian
     ? victim.prsn_type_id === 5 //mot
       ? "DRIVER OF MOTORCYCLE" // Reformat this person type bc its really long
-      : victim.prsn_type.label
+      : victim.prsn_type?.label
     : null;
 
 /** Process crash data and return an enriched list of unit objects to be rendered in the
@@ -166,7 +166,9 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                           </small>
                         </div>
                         <span className="pb-1">
-                          {victim.prsn_age} YEARS OLD -{" "}
+                          {victim.prsn_age
+                            ? `${victim.prsn_age} YEARS OLD - `
+                            : ""}
                           {victim.drvr_ethncty?.label} {victim.gndr?.label}
                         </span>
                         {victim.rest?.label &&
