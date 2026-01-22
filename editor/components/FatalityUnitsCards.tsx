@@ -115,7 +115,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
           </div>
           <Form.Label
             className="d-flex align-items-center mb-0"
-            style={{ cursor: "pointer" }}
+            style={{ cursor: isSingleUnitCrash ? "auto" : "pointer" }}
           >
             <span className="me-2 text-secondary">Show all units</span>
             <Form.Check
