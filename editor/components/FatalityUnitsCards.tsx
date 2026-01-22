@@ -105,17 +105,13 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
   );
 
   const isSingleUnitCrash = crash.units?.length === 1;
-  const isSingleVictimCrash =
-    unitDataReadyToRender?.filter((unit) => unit.hasVictim).length || 0 < 2;
 
   return (
     <>
       <Card className="p-2 h-100">
         <div className="px-2 py-1 mb-1 d-flex flex-row justify-content-between">
           <div className="fs-5 fw-bold">
-            {showAllUnits && !isSingleUnitCrash
-              ? "Units involved"
-              : `Victim${isSingleVictimCrash ? "" : "s"}`}
+            {showAllUnits && !isSingleUnitCrash ? "Units involved" : "Victims"}
           </div>
           <Form.Label className="d-flex align-items-center mb-0">
             <span className="me-2 text-secondary">Show all units</span>
