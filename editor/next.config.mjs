@@ -43,7 +43,6 @@ const nextConfig = {
   },
   sassOptions: {
     silenceDeprecations: [
-      "mixed-decls",
       "color-functions",
       "global-builtin",
       "import",
