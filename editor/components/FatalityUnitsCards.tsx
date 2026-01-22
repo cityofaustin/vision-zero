@@ -113,13 +113,17 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
           <div className="fs-5 fw-bold">
             {showAllUnits && !isSingleUnitCrash ? "Units involved" : "Victims"}
           </div>
-          <Form.Label className="d-flex align-items-center mb-0">
+          <Form.Label
+            className="d-flex align-items-center mb-0"
+            style={{ cursor: "pointer" }}
+          >
             <span className="me-2 text-secondary">Show all units</span>
             <Form.Check
               type="switch"
               checked={showAllUnits}
               disabled={isSingleUnitCrash}
               onChange={(e) => setShowAllUnits(e.target.checked)}
+              style={{ pointerEvents: "none" }}
             />
           </Form.Label>
         </div>
