@@ -1,6 +1,6 @@
 ## Local Development
 
-The suite has a python script in the root of the respository, named `vision-zero`, which can be used to replicate and run the Vision Zero database and graphQL API locally.
+Use the [`vision-zero`](./vision-zero) helper script to replicate and run the Vision Zero database and graphQL API locally.
 
 See the repo [README](/README.md) for quick start instructions for using this tool.
 
@@ -20,12 +20,6 @@ source ./venv/bin/active;
 
 ### Examples of `vision-zero` commands
 
-Note: There is a flag which ends up being observed for any of the following commands which start the postgres database:
-
-`-r / --ram-disk` will cause the database to back its "storage" on a RAM disk instead of non-volatile storage. This has the upside of being much faster as there is essentially no limit to the IOPS available to the database, but the data won't be able to survive a restart and will require being `replicate-db`'d back into place.
-
-The default is to use the disk in the host to back the database, which is the operation our team is most familiar with, so if you don't need or want the RAM disk configuration, you can ignore this option.
-
 #### `vision-zero build`
 
 Rebuild the stack's images based on the Dockerfiles found in the repository. They are built with the `--no-cache` flag which will make the build process slower, but avoid any stale image layers that have inadvertently cached out-of-date apt resource lists.
@@ -42,7 +36,7 @@ Start and stop the Hasura graphql-engine software as well as the database
 
 Start and stop the Vision Zero CR3 / User API
 
-### `vision-zero local-stack-up` & `vision-zero local-stack-down`
+### `vision-zero up` & `vision-zero down`
 
 Start and stop the DB, `graphql-engine`, and the API at once
 
@@ -58,7 +52,7 @@ Start a `bash` shell on a machine with supporting tooling
 
 Stop the stack
 
-#### `vision-zero replicate-db`
+#### `vision-zero replicate`
 
 - Download a snapshot of the production database
 - Store the file in `./database/snapshots/visionzero-{date}-{with|without}-change-log.sql`
@@ -68,8 +62,8 @@ Stop the stack
 Note: the `-c / --include-change-log-data` flag can be used to opt to include the data of past change log events. The schema is created either way.
 Note: the `-f / --filename` flag can be optionally used to point to a specific data dump .sql file to use to restore.
 
-The way the snapshots are dated means that one will only end up downloading
-one copy of the data per-day, both in the with and without change log data.
+The way the snapshots are dated means that one will only end up downloading one copy of the data per-day, both in the with and without change log data.
+
 
 #### `vision-zero dump-local-db`
 
