@@ -215,8 +215,10 @@ export default function TableColumnVisibilityMenu({
     <Dropdown className="d-flex">
       <OverlayTrigger
         placement="top"
-        container={document.body}
         overlay={<Tooltip id="table-settings">Settings</Tooltip>}
+        popperConfig={{
+          strategy: "fixed",
+        }}
       >
         <Dropdown.Toggle
           variant="outline-primary"
