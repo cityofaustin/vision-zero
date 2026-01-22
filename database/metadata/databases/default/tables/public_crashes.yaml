@@ -60,6 +60,15 @@ object_relationships:
   - name: traffic_cntl
     using:
       foreign_key_constraint_on: traffic_cntl_id
+  - name: unit_types_involved
+    using:
+      manual_configuration:
+        column_mapping:
+          id: crash_pk
+        insertion_order: null
+        remote_table:
+          name: unit_types_involved_view
+          schema: public
   - name: wthr_cond
     using:
       foreign_key_constraint_on: wthr_cond_id
@@ -136,6 +145,7 @@ select_permissions:
         - intrsct_relat_id
         - investigat_agency_id
         - investigator_narrative
+        - is_coa_roadway
         - is_deleted
         - is_temp_record
         - latitude
@@ -144,6 +154,7 @@ select_permissions:
         - location_id
         - longitude
         - medical_advisory_fl
+        - narrative_summary
         - obj_struck_id
         - onsys_fl
         - position
@@ -209,6 +220,7 @@ select_permissions:
         - intrsct_relat_id
         - investigat_agency_id
         - investigator_narrative
+        - is_coa_roadway
         - is_deleted
         - is_temp_record
         - latitude
@@ -217,6 +229,7 @@ select_permissions:
         - location_id
         - longitude
         - medical_advisory_fl
+        - narrative_summary
         - obj_struck_id
         - onsys_fl
         - position
@@ -282,6 +295,7 @@ select_permissions:
         - intrsct_relat_id
         - investigat_agency_id
         - investigator_narrative
+        - is_coa_roadway
         - is_deleted
         - is_temp_record
         - latitude
@@ -290,6 +304,7 @@ select_permissions:
         - location_id
         - longitude
         - medical_advisory_fl
+        - narrative_summary
         - obj_struck_id
         - onsys_fl
         - position
@@ -356,6 +371,7 @@ update_permissions:
         - location_id
         - longitude
         - medical_advisory_fl
+        - narrative_summary
         - obj_struck_id
         - onsys_fl
         - position
@@ -420,6 +436,7 @@ update_permissions:
         - location_id
         - longitude
         - medical_advisory_fl
+        - narrative_summary
         - obj_struck_id
         - onsys_fl
         - position

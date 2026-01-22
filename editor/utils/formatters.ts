@@ -31,6 +31,16 @@ export const formatIsoDateTime = (value: unknown): string => {
 };
 
 /**
+ * Format date as: 08/24/2025 8:57 PM — Sun
+ */
+export const formatIsoDateTimeWithDay = (value: unknown): string => {
+  if (!value || typeof value !== "string") {
+    return "";
+  }
+  return format(parseISO(value), "MM/dd/yyyy h:mm a — E") || "";
+};
+
+/**
  * Format date as: 2024-01-01
  */
 export const formatDate = (value: unknown): string => {
@@ -51,8 +61,32 @@ export const formatTime = (value: unknown): string => {
 };
 
 /**
+ * Format year as: 2025
+ */
+export const formatYear = (value: unknown): string => {
+  if (!value || typeof value !== "string") {
+    return "";
+  }
+  return format(parseISO(value), "yyyy") || "";
+};
+
+/**
  * Format date as: 2025-01-13 4.33.36 PM
  */
 export const formatFileTimestamp = (date: Date): string => {
   return format(date, "yyyy-MM-dd h.mm.ss a");
+};
+
+/**
+ * Format an array of values to a comma-separated-string, removing
+ * null, undefined, and empty strings
+ */
+export const formatArrayToString = (value: unknown): string => {
+  if (value && Array.isArray(value)) {
+    return value
+      .filter((val) => val !== undefined && val !== null && val !== "")
+      .map((val) => String(val))
+      .join(", ");
+  }
+  return "";
 };

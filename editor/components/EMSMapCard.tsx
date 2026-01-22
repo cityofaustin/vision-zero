@@ -148,7 +148,7 @@ export default function EMSMapCard({
 
   /**
    * Trigger resize() when the map container size changes - this ensures that
-   * the map repaints when the sidebar is collased/expanded.
+   * the map repaints when the sidebar is collapsed/expanded.
    */
   const mapContainerRef = useResizeObserver<HTMLDivElement>(() => {
     mapRef.current?.resize();
