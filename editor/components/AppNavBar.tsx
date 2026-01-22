@@ -33,10 +33,7 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
   const userId = user?.["https://hasura.io/jwt/claims"]?.["x-hasura-user-id"];
 
   return (
-    <Navbar
-      className="app-navbar border-bottom pe-3 w-100"
-      style={{ zIndex: 1050, position: "fixed" }}
-    >
+    <Navbar className="app-navbar border-bottom pe-3 w-100">
       <Container fluid>
         <Col className="d-flex justify-content-start">
           <Navbar.Brand href="/crashes" as={Link}>
