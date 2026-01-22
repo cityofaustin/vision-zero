@@ -64,7 +64,7 @@ export default function CrashNarrativeEditableCard({
   };
 
   return (
-    <Card>
+    <Card className="h-100">
       <Tab.Container
         activeKey={activeTab}
         onSelect={(tab) => tab && setActiveTab(tab)}

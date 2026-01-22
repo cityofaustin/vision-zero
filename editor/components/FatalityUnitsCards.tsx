@@ -1,9 +1,10 @@
 import { Crash } from "@/types/crashes";
 import { Unit } from "@/types/unit";
-import { Card, ListGroupItem, Image } from "react-bootstrap";
+import { Card, ListGroupItem, Image, Form } from "react-bootstrap";
 import { getInjuryColorClass } from "@/utils/people";
 import FatalityUnitCardFooter from "@/components/FatalityUnitCardFooter";
 import { PeopleListRow } from "@/types/peopleList";
+import { useMemo, useState } from "react";
 
 interface FatalityUnitsCardsProps {
   crash: Crash;
@@ -40,7 +41,7 @@ const getPersonType = (victim: PeopleListRow) =>
 /** Process crash data and return an enriched list of unit objects to be rendered in the
  * unit cards. Filters out units that dont have any fatalities, charges, or contrib factors
  */
-const getUnitDisplayData = (crash: Crash) => {
+const getUnitDisplayData = (crash: Crash, showAllUnits: boolean) => {
   const victims = crash.people_list_view?.filter(
     (person) => person.prsn_injry_sev_id === 4
   );
@@ -87,9 +88,7 @@ const getUnitDisplayData = (crash: Crash) => {
         unitYearMakeModel,
       };
     })
-    .filter(
-      (data) => data.hasVictim || data.hasCharges || data.hasContribFactors
-    );
+    .filter((data) => (showAllUnits ? true : data.hasVictim));
 
   return unitsData;
 };
@@ -99,84 +98,110 @@ const getUnitDisplayData = (crash: Crash) => {
  * unit in the crash that has a fatality, contributing factor, or charge associated with it
  */
 export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
-  const unitDataReadyToRender = getUnitDisplayData(crash);
+  const [showAllUnits, setShowAllUnits] = useState(true);
+  const unitDataReadyToRender = useMemo(
+    () => getUnitDisplayData(crash, showAllUnits),
+    [crash, showAllUnits]
+  );
+
+  const isSingleUnitCrash = crash.units?.length === 1;
 
   return (
     <>
-      {unitDataReadyToRender?.map((unit) => (
-        <Card key={unit.id} className="mb-3">
-          <Card.Header className="fatality-units-card-header-footer">
-            <div className="d-flex w-100 justify-content-start align-items-center">
-              <span className="fs-5 fw-bold me-2">Unit {unit.unit_nbr}</span>
-              <span>
-                {unit.unit_desc?.label} {unit.unitYearMakeModel}
-              </span>
-            </div>
-          </Card.Header>
-          {unit.hasVictim && (
-            <Card.Body>
-              {unit.unitVictims?.map((victim) => (
-                <ListGroupItem
-                  className="d-flex align-items-center justify-content-between pb-3"
-                  key={victim.id}
-                  style={{ border: "none" }}
-                >
-                  <div className="d-flex align-items-center">
-                    <Image
-                      alt="placeholder"
-                      className="me-3"
-                      src={`${BASE_PATH}/assets/img/avatars/placeholder.png`}
-                      height="100px"
-                    ></Image>
-                    <div className="d-flex w-100 flex-column">
-                      <div className="pb-1">
-                        <span className="fw-bold me-2">
-                          {victim.prsn_first_name} {victim.prsn_mid_name}{" "}
-                          {victim.prsn_last_name}
-                        </span>
-                        <small className="text-secondary">
-                          {getPersonType(victim)}
-                        </small>
-                      </div>
-                      <span className="pb-1">
-                        {victim.prsn_age} YEARS OLD -{" "}
-                        {victim.drvr_ethncty?.label} {victim.gndr?.label}
-                      </span>
-                      {victim.rest?.label && shouldShowRestraintField(unit) && (
-                        <span className="pb-1">
-                          Restraint used: {victim.rest.label}
-                        </span>
-                      )}
-                      {!!victim.prsn_exp_homelessness && (
-                        <span>{"Suspected unhoused"}</span>
-                      )}
-                    </div>
-                  </div>
-                  {victim.injry_sev?.label && (
-                    <div className="ms-2 flex-shrink-0">
-                      <span
-                        className={`${getInjuryColorClass(victim.injry_sev.label)} px-2 py-1 rounded`}
-                      >
-                        {victim.injry_sev?.label}
-                      </span>
-                    </div>
-                  )}
-                </ListGroupItem>
-              ))}
-            </Card.Body>
-          )}
-          {(unit.hasCharges || unit.hasContribFactors) && (
-            <FatalityUnitCardFooter
-              hasCharges={unit.hasCharges}
-              hasVictim={unit.hasVictim}
-              hasContribFactors={unit.hasContribFactors}
-              unitCharges={unit.unitCharges}
-              primaryContribFactors={unit.primaryContribFactors}
-              possibleContribFactors={unit.possibleContribFactors}
+      <Card className="p-2 h-100">
+        <div className="px-2 py-1 mb-1 d-flex flex-row justify-content-between">
+          <div className="fs-5 fw-bold">
+            {showAllUnits && !isSingleUnitCrash ? "Units involved" : "Victims"}
+          </div>
+          <Form.Label className="d-flex align-items-center mb-0">
+            <span className="me-2 text-secondary">Show all units</span>
+            <Form.Check
+              type="switch"
+              checked={showAllUnits}
+              disabled={isSingleUnitCrash}
+              onChange={(e) => setShowAllUnits(e.target.checked)}
             />
-          )}
-        </Card>
-      ))}
+          </Form.Label>
+        </div>
+        {unitDataReadyToRender?.map((unit, i) => (
+          <Card
+            key={unit.id}
+            className={i < unitDataReadyToRender.length - 1 ? "mb-2" : ""}
+          >
+            <Card.Header className="fatality-units-card-header-footer">
+              <div className="d-flex w-100 justify-content-start align-items-center">
+                <span className="fs-5 fw-bold me-2">Unit {unit.unit_nbr}</span>
+                <span>
+                  {unit.unit_desc?.label} {unit.unitYearMakeModel}
+                </span>
+              </div>
+            </Card.Header>
+            {unit.hasVictim && (
+              <Card.Body>
+                {unit.unitVictims?.map((victim) => (
+                  <ListGroupItem
+                    className="d-flex align-items-center justify-content-between pb-3"
+                    key={victim.id}
+                    style={{ border: "none" }}
+                  >
+                    <div className="d-flex align-items-center">
+                      <Image
+                        alt="placeholder"
+                        className="me-3"
+                        src={`${BASE_PATH}/assets/img/avatars/placeholder.png`}
+                        height="100px"
+                      ></Image>
+                      <div className="d-flex w-100 flex-column">
+                        <div className="pb-1">
+                          <span className="fw-bold me-2">
+                            {victim.prsn_first_name} {victim.prsn_mid_name}{" "}
+                            {victim.prsn_last_name}
+                          </span>
+                          <small className="text-secondary">
+                            {getPersonType(victim)}
+                          </small>
+                        </div>
+                        <span className="pb-1">
+                          {victim.prsn_age} YEARS OLD -{" "}
+                          {victim.drvr_ethncty?.label} {victim.gndr?.label}
+                        </span>
+                        {victim.rest?.label &&
+                          shouldShowRestraintField(unit) && (
+                            <span className="pb-1">
+                              Restraint used: {victim.rest.label}
+                            </span>
+                          )}
+                        {!!victim.prsn_exp_homelessness && (
+                          <span>{"Suspected unhoused"}</span>
+                        )}
+                      </div>
+                    </div>
+                    {victim.injry_sev?.label && (
+                      <div className="ms-2 flex-shrink-0">
+                        <span
+                          className={`${getInjuryColorClass(victim.injry_sev.label)} px-2 py-1 rounded`}
+                        >
+                          {victim.injry_sev?.label}
+                        </span>
+                      </div>
+                    )}
+                  </ListGroupItem>
+                ))}
+              </Card.Body>
+            )}
+            {(unit.hasCharges || unit.hasContribFactors) && (
+              <FatalityUnitCardFooter
+                hasCharges={unit.hasCharges}
+                hasVictim={unit.hasVictim}
+                hasContribFactors={unit.hasContribFactors}
+                unitCharges={unit.unitCharges}
+                primaryContribFactors={unit.primaryContribFactors}
+                possibleContribFactors={unit.possibleContribFactors}
+              />
+            )}
+          </Card>
+        ))}
+      </Card>
     </>
   );
 }
