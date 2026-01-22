@@ -87,6 +87,7 @@
 - "!include public_socrata_export_crashes_view.yaml"
 - "!include public_socrata_export_people_view.yaml"
 - "!include public_unit_injury_metrics_view.yaml"
+- "!include public_unit_types_involved_view.yaml"
 - "!include public_units.yaml"
 - "!include public_units_cris.yaml"
 - "!include public_user_events.yaml"
