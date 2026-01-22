@@ -8,7 +8,7 @@ export default function LocationTableMapPopupContent({
   return (
     <div className="h-100 m-1 px-1" style={{ minWidth: "125px" }}>
       <div className="fw-bold fs-6 pb-2 border-bottom">
-        {properties?.address_primary}
+        {properties?.address_display}
       </div>
       <div className="d-flex justify-content-between">
         <span className="fw-bold">Type</span>

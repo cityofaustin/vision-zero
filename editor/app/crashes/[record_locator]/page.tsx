@@ -15,6 +15,7 @@ import DataCard from "@/components/DataCard";
 import NotesCard from "@/components/NotesCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
 import ShortcutHelperText from "@/components/ShortcutHelperText";
+import UserEventsLogger from "@/components/UserEventsLogger";
 import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { crashNotesColumns } from "@/configs/notesColumns";
@@ -32,7 +33,6 @@ import {
   scrollToElementOnKeyPress,
   useKeyboardShortcut,
 } from "@/utils/shortcuts";
-import { formatAddresses } from "@/utils/formatters";
 import EMSCardHeader from "@/components/EMSCardHeader";
 import { useDocumentTitle } from "@/utils/documentTitle";
 
@@ -47,7 +47,6 @@ const shortcutKeyLookup: ShortcutKeyLookup[] = [
   { key: "N", elementId: "notes" },
   { key: "F", elementId: "fatality" },
 ];
-
 
 export default function CrashDetailsPage({
   params,
@@ -76,7 +75,7 @@ export default function CrashDetailsPage({
   // Set document title based on loaded crash data
   useDocumentTitle(
     data && data.length > 0
-      ? `${data[0].record_locator} - ${formatAddresses(data[0])}`
+      ? `${data[0].record_locator} - ${data[0].address_display}`
       : "Vision Zero Editor",
     true // exclude the suffix
   );
@@ -94,7 +93,7 @@ export default function CrashDetailsPage({
   const crash = data[0];
 
   return (
-    <>
+    <UserEventsLogger eventName="crash_details_view">
       <CrashHeader crash={crash} refetch={refetch} />
       {
         // show alert if crash on private drive or outside of Austin full purpose
@@ -250,6 +249,6 @@ export default function CrashDetailsPage({
       <Row>
         <Col>{crash && <ChangeLog logs={crash.change_logs || []} />}</Col>
       </Row>
-    </>
+    </UserEventsLogger>
   );
 }

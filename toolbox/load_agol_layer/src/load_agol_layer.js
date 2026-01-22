@@ -105,12 +105,14 @@ const main = async ({ layer: layerName, save }) => {
    * an upsert mutation is performed. We simply take the entire field array excluding
    * the primary key
    */
-
   const isUpsert = layerConfig.upsert;
 
   const updateFields = layerConfig.fields
     .filter((field) => !field.isPrimaryKey)
     .map((field) => field.outputName);
+
+  // add geometry to updated fields
+  updateFields.push("geometry");
 
   const mutation = isUpsert
     ? getUpsertMutation(

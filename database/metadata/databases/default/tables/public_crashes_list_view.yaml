@@ -26,6 +26,7 @@ select_permissions:
     permission:
       columns:
         - cris_fatality_count
+        - est_total_person_comp_cost
         - fatality_count
         - law_enf_fatality_count
         - nonincap_injry_count
@@ -53,7 +54,6 @@ select_permissions:
         - crash_speed_limit
         - cris_crash_id
         - est_comp_cost_crash_based
-        - est_total_person_comp_cost
         - id
         - intrsct_relat_id
         - light_cond_id
@@ -62,8 +62,7 @@ select_permissions:
         - wthr_cond_id
         - latitude
         - longitude
-        - address_primary
-        - address_secondary
+        - address_display
         - case_id
         - collsn_desc
         - crash_date_ct
@@ -88,6 +87,7 @@ select_permissions:
     permission:
       columns:
         - cris_fatality_count
+        - est_total_person_comp_cost
         - fatality_count
         - law_enf_fatality_count
         - nonincap_injry_count
@@ -115,7 +115,6 @@ select_permissions:
         - crash_speed_limit
         - cris_crash_id
         - est_comp_cost_crash_based
-        - est_total_person_comp_cost
         - id
         - intrsct_relat_id
         - light_cond_id
@@ -124,8 +123,7 @@ select_permissions:
         - wthr_cond_id
         - latitude
         - longitude
-        - address_primary
-        - address_secondary
+        - address_display
         - case_id
         - collsn_desc
         - crash_date_ct
@@ -150,6 +148,7 @@ select_permissions:
     permission:
       columns:
         - cris_fatality_count
+        - est_total_person_comp_cost
         - fatality_count
         - law_enf_fatality_count
         - nonincap_injry_count
@@ -177,7 +176,6 @@ select_permissions:
         - crash_speed_limit
         - cris_crash_id
         - est_comp_cost_crash_based
-        - est_total_person_comp_cost
         - id
         - intrsct_relat_id
         - light_cond_id
@@ -186,8 +184,7 @@ select_permissions:
         - wthr_cond_id
         - latitude
         - longitude
-        - address_primary
-        - address_secondary
+        - address_display
         - case_id
         - collsn_desc
         - crash_date_ct

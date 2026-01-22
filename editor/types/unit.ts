@@ -19,6 +19,7 @@ export type Unit = {
   unit_desc_id: number | null;
   trvl_dir: LookupTableOption | null;
   veh_trvl_dir_id: number | null;
+  veh_hnr_fl: boolean | null;
   movt: LookupTableOption | null;
   movement_id: number | null;
 };

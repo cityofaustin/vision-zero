@@ -12,8 +12,8 @@ export const emsMatchingPeopleColumns = [
   ALL_PEOPLE_COLUMNS.prsn_taken_to,
   ALL_PEOPLE_COLUMNS.case_id,
   ALL_PEOPLE_COLUMNS.crash_timestamp,
-  ALL_PEOPLE_COLUMNS.address_combined,
+  ALL_PEOPLE_COLUMNS.address_display,
   ALL_PEOPLE_COLUMNS.record_locator,
   ALL_PEOPLE_COLUMNS.id,
-  ALL_PEOPLE_COLUMNS.ems_match_status
+  ALL_PEOPLE_COLUMNS.ems_match_status,
 ];

@@ -42,75 +42,75 @@ select_permissions:
   - role: editor
     permission:
       columns:
-        - ytd_fatal_crash
-        - ytd_fatality
-        - crash_pk
-        - cris_crash_id
-        - engineering_area_id
-        - person_id
-        - unit_id
-        - latitude
-        - longitude
-        - address_primary
+        - address_display
         - case_id
         - crash_date_ct
+        - crash_pk
         - crash_time_ct
+        - crash_timestamp
+        - cris_crash_id
+        - engineering_area_id
+        - latitude
         - law_enforcement_ytd_fatality_num
         - location
+        - longitude
+        - person_id
         - record_locator
+        - unit_id
         - victim_name
         - year
-        - crash_timestamp
+        - ytd_fatal_crash
+        - ytd_fatality
       filter: {}
       allow_aggregations: true
     comment: ""
   - role: readonly
     permission:
       columns:
-        - ytd_fatal_crash
-        - ytd_fatality
-        - crash_pk
-        - cris_crash_id
-        - engineering_area_id
-        - person_id
-        - unit_id
-        - latitude
-        - longitude
-        - address_primary
+        - address_display
         - case_id
         - crash_date_ct
+        - crash_pk
         - crash_time_ct
+        - crash_timestamp
+        - cris_crash_id
+        - engineering_area_id
+        - latitude
         - law_enforcement_ytd_fatality_num
         - location
+        - longitude
+        - person_id
         - record_locator
+        - unit_id
         - victim_name
         - year
-        - crash_timestamp
+        - ytd_fatal_crash
+        - ytd_fatality
       filter: {}
       allow_aggregations: true
     comment: ""
   - role: vz-admin
     permission:
       columns:
-        - ytd_fatal_crash
-        - ytd_fatality
-        - crash_pk
-        - cris_crash_id
-        - engineering_area_id
-        - person_id
-        - unit_id
-        - latitude
-        - longitude
-        - address_primary
+        - address_display
         - case_id
         - crash_date_ct
+        - crash_pk
         - crash_time_ct
+        - crash_timestamp
+        - cris_crash_id
+        - engineering_area_id
+        - latitude
         - law_enforcement_ytd_fatality_num
         - location
+        - longitude
+        - person_id
         - record_locator
+        - unit_id
         - victim_name
         - year
-        - crash_timestamp
+        - ytd_fatal_crash
+        - ytd_fatality
       filter: {}
       allow_aggregations: true
     comment: ""
