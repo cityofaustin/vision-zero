@@ -4,7 +4,7 @@ import { Card, ListGroupItem, Image, Form } from "react-bootstrap";
 import { getInjuryColorClass } from "@/utils/people";
 import FatalityUnitCardFooter from "@/components/FatalityUnitCardFooter";
 import { PeopleListRow } from "@/types/peopleList";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface FatalityUnitsCardsProps {
   crash: Crash;
@@ -99,23 +99,33 @@ const getUnitDisplayData = (crash: Crash, showAllUnits: boolean) => {
  */
 export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
   const [showAllUnits, setShowAllUnits] = useState(true);
-  const unitDataReadyToRender = getUnitDisplayData(crash, showAllUnits);
+  const unitDataReadyToRender = useMemo(
+    () => getUnitDisplayData(crash, showAllUnits),
+    [crash, showAllUnits]
+  );
+
+  const isSingleUnitCrash = crash.units?.length === 1;
+  const isSingleVictimCrash =
+    unitDataReadyToRender?.filter((unit) => unit.hasVictim).length || 0 < 2;
 
   return (
     <>
       <Card className="p-2 h-100">
         <div className="px-2 py-1 mb-1 d-flex flex-row justify-content-between">
           <div className="fs-5 fw-bold">
-            {showAllUnits ? "Units involved" : "Victims"}
+            {showAllUnits && !isSingleUnitCrash
+              ? "Units involved"
+              : `Victim${isSingleVictimCrash ? "" : "s"}`}
           </div>
-          <div className="d-flex">
-            <Form.Label className="me-2">Show all units</Form.Label>
+          <Form.Label className="d-flex align-items-center mb-0">
+            <span className="me-2 text-secondary">Show all units</span>
             <Form.Check
               type="switch"
               checked={showAllUnits}
-              onClick={() => setShowAllUnits(!showAllUnits)}
+              disabled={isSingleUnitCrash}
+              onChange={(e) => setShowAllUnits(e.target.checked)}
             />
-          </div>
+          </Form.Label>
         </div>
         {unitDataReadyToRender?.map((unit, i) => (
           <Card
