@@ -20,6 +20,7 @@ export default function Fatalities() {
           initialQueryConfig={fatalitiesListViewQueryConfig}
           localStorageKey={localStorageKey}
           filtersEventName="fatalities_list_filters_toggle"
+          mapEventName="fatalities_map_toggle"
         />
       </div>
     </UserEventsLogger>

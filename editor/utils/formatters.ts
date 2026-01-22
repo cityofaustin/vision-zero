@@ -76,3 +76,17 @@ export const formatYear = (value: unknown): string => {
 export const formatFileTimestamp = (date: Date): string => {
   return format(date, "yyyy-MM-dd h.mm.ss a");
 };
+
+/**
+ * Format an array of values to a comma-separated-string, removing
+ * null, undefined, and empty strings
+ */
+export const formatArrayToString = (value: unknown): string => {
+  if (value && Array.isArray(value)) {
+    return value
+      .filter((val) => val !== undefined && val !== null && val !== "")
+      .map((val) => String(val))
+      .join(", ");
+  }
+  return "";
+};

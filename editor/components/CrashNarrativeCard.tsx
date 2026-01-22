@@ -39,7 +39,7 @@ export const onDownloadCR3 = async ({
 };
 
 /**
- * Card component that renders the crash narrative and a download CR3 button
+ * Card component that renders the crash narrative and a download Crash Report button
  */
 export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
   const getToken = useGetToken();
@@ -57,7 +57,7 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
         >
           <AlignedLabel>
             <FaFilePdf className="me-2" />
-            <span>Download CR3</span>
+            <span>Open crash report</span>
           </AlignedLabel>
         </Button>
       </Card.Header>
