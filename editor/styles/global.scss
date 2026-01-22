@@ -3,6 +3,7 @@
 $baby-powder: #fbfef9;
 $night: #131515;
 $moped-blue: #1276d1;
+$light-blue: #f1f6fc;
 $dim-gray: #6b7676;
 $anti-flash-white: #f4f5f6;
 $sea-green: #09814a;
@@ -18,29 +19,25 @@ $success: $sea-green;
 $info: $moped-blue;
 $warning: $jonquil;
 $danger: $rojo;
-$light: $anti-flash-white;
+$light: $light-blue;
 $dark: $night;
 
-/* override bootstrap dark mode palette */
-$body-bg-dark: #0d1117;
+/* dark mode pallette */
+$dark-mode-bg: #0d1117;
+$dark-mode-muted-text: #9198a1;
+$dark-mode-list-item-bg-hover: #656c7633;
+$dark-mode-light-header: #151b23;
+$body-bg-dark-inset: #010409; // extra dark color for navbar
+
+$light-mode-list-item-bg-hover: #818b981a; // active and hovered list item
+$gh-light-mode-muted-text: #59636e; // secondary color in header and icon color in menu
+
+/* override bootstrap dark mode vars */
+$body-bg-dark: $dark-mode-bg;
 $border-color-dark: #495057;
 
 /* our custom vars */
-$body-bg-dark-inset: #010409;
 $sidebarWidth: 66px;
-
-/* github */
-
-// dark mode
-$gh-dark-mode-muted-text: #9198a1; // like secondary color in dark mode and icon color in menu
-$gh-dark-mode-list-item-bg-hover: #656c7633; // active and hovered list item
-$gh-dark-mode-light-header: #151b23; // card headers
-
-// light mode
-$gh-light-mode-light-header: #f7f8fa; // card header (less than 1 deltaE from our anti-flash-white
-$gh-light-mode-light-badge-bg: #dde1e5; // rendered on issue count badges over light header
-$gh-light-mode-list-item-bg-hover: #818b981a; // active and hovered list item
-$gh-light-mode-muted-text: #59636e; // secondary color in header and icon color in menu
 
 // https://isotropic.co/tool/hex-color-to-css-filter/
 .app-brand-img {
@@ -67,7 +64,7 @@ $gh-light-mode-muted-text: #59636e; // secondary color in header and icon color 
 /* Navbar */
 .app-navbar {
   [data-bs-theme="light"] & {
-    background-color: $light;
+    background-color: $light-blue;
   }
   [data-bs-theme="dark"] & {
     background-color: $body-bg-dark-inset;
@@ -117,10 +114,10 @@ $gh-light-mode-muted-text: #59636e; // secondary color in header and icon color 
 .sidebar-list-item-current,
 .sidebar-list-item-content:hover {
   [data-bs-theme="light"] & {
-    background-color: $gh-light-mode-list-item-bg-hover;
+    background-color: $light-mode-list-item-bg-hover;
   }
   [data-bs-theme="dark"] & {
-    background-color: $gh-dark-mode-list-item-bg-hover;
+    background-color: $dark-mode-list-item-bg-hover;
   }
 }
 
@@ -138,7 +135,7 @@ $gh-light-mode-muted-text: #59636e; // secondary color in header and icon color 
     color: $gh-light-mode-muted-text;
   }
   [data-bs-theme="dark"] & {
-    color: $gh-dark-mode-muted-text;
+    color: $dark-mode-muted-text;
   }
 }
 
@@ -159,7 +156,7 @@ $gh-light-mode-muted-text: #59636e; // secondary color in header and icon color 
 
 // todo: revist this to use a lighter dark mode color?
 [data-bs-theme="dark"] .bg-light-use-theme {
-  background-color: $gh-dark-mode-light-header !important;
+  background-color: $dark-mode-light-header !important;
 }
 
 [data-bs-theme="light"] .bg-light-use-theme {
@@ -185,8 +182,8 @@ $gh-light-mode-muted-text: #59636e; // secondary color in header and icon color 
 
 [data-bs-theme="dark"] .date-preset-button {
   color: $white;
-  border-color: $gh-dark-mode-light-header !important;
-  background-color: $gh-dark-mode-light-header;
+  border-color: $dark-mode-light-header !important;
+  background-color: $dark-mode-light-header;
   &:hover,
   &:active,
   &:focus,
@@ -275,15 +272,17 @@ layout shift */
   margin-top: 0.2rem;
 }
 
-.card-header {
-  padding: 1rem;
-//   border: none !important;
-  background-color: #1275d110 !important;
+[data-bs-theme="dark"] .card-header {
+  background-color: $dark-mode-light-header !important;
+}
+
+[data-bs-theme="light"] .card-header {
+  background-color: $light !important;
 }
 
 h5.card-title {
   font-size: 1.3rem !important;
-//   font-weight: bold;
+  font-weight: bold;
 }
 
 .card-footer {
