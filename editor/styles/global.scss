@@ -64,7 +64,7 @@ $sidebarWidth: 66px;
 /* Navbar */
 .app-navbar {
   z-index: 1050;
-  position: "fixed";
+  position: fixed !important;
   [data-bs-theme="light"] & {
     background-color: $light-blue;
   }
