@@ -162,7 +162,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               setIsTouched={setIsTouched}
             />
             <TransformComponent
-              wrapperStyle={{ width: "100%" }}
+              wrapperStyle={{ width: "100%", height: "100%" }}
               contentStyle={{ mixBlendMode: "multiply" }}
             >
               <Image
