@@ -175,7 +175,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
                   initPositionImage(defaultValues);
                 }}
                 onError={() => {
-                  console.error("Error loading CR3 diagram image");
+                  console.warn("Error loading CR3 diagram image");
                   setDiagramError(true);
                 }}
               />
