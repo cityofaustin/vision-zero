@@ -1,17 +1,18 @@
 import { Crash } from "@/types/crashes";
 import { Unit } from "@/types/unit";
 import { useState } from "react";
-import { Card, ListGroupItem, Image } from "react-bootstrap";
+import { Card, ListGroupItem } from "react-bootstrap";
 import { getInjuryColorClass } from "@/utils/people";
 import FatalityUnitCardFooter from "@/components/FatalityUnitCardFooter";
 import { PeopleListRow } from "@/types/peopleList";
 import FatalityImageUploadModal from "@/components/FatalityImageUploadModal";
+import PersonImage from "@/components/PersonImage";
 
 interface FatalityUnitsCardsProps {
   crash: Crash;
 }
 
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+// const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 /** Builds the year make and model string */
 const getUnitYearMakeModel = (unit: Unit) => {
@@ -136,18 +137,13 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                       showModal={showImageModal}
                       setShowModal={setShowImageModal}
                       victimName={victimName}
+                      personId={victim.id}
                     ></FatalityImageUploadModal>
                     <div className="d-flex align-items-center">
-                      <Image
-                        alt="placeholder"
+                      <PersonImage
+                        personId={victim.id}
                         onClick={() => setShowImageModal(true)}
-                        className="me-3"
-                        src={`${BASE_PATH}/assets/img/avatars/placeholder.png`}
-                        height="100px"
-                        style={{
-                          cursor: "pointer",
-                        }}
-                      ></Image>
+                      />
                       <div className="d-flex w-100 flex-column">
                         <div className="pb-1">
                           <span className="fw-bold me-2">{victimName}</span>
