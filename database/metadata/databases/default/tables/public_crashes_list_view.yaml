@@ -11,6 +11,15 @@ object_relationships:
         remote_table:
           name: recommendations
           schema: public
+  - name: unit_types_involved
+    using:
+      manual_configuration:
+        column_mapping:
+          id: crash_pk
+        insertion_order: null
+        remote_table:
+          name: unit_types_involved_view
+          schema: public
 array_relationships:
   - name: units
     using:

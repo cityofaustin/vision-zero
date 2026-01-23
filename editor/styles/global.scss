@@ -320,7 +320,7 @@ to make sure it renders on top is a common fix */
 }
 
 /* Push the top-right mapbox control container down to accomodate our custom control */
-.table-map-container > .mapboxgl-ctrl-top-right {
+.table-map-container>.mapboxgl-ctrl-top-right {
   right: 0;
   top: 35px !important;
 }
@@ -331,7 +331,7 @@ to make sure it renders on top is a common fix */
 }
 
 /* Push the top-right mapbox control container down to accomodate our custom control */
-.crash-header-card-body > .mapboxgl-ctrl-top-right {
+.crash-header-card-body>.mapboxgl-ctrl-top-right {
   right: 0;
   top: 35px !important;
 }
@@ -368,7 +368,7 @@ to make sure it renders on top is a common fix */
   margin-bottom: 2.5rem;
 }
 
-.map-select-basemap-bottom-left > .card {
+.map-select-basemap-bottom-left>.card {
   box-shadow: 0 0 0 2px #0000001a;
 }
 
