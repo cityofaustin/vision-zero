@@ -100,6 +100,8 @@ const getUnitDisplayData = (crash: Crash, showAllUnits: boolean) => {
 export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
   const [showAllUnits, setShowAllUnits] = useState(true);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [imageVersion, setImageVersion] = useState(0);
+
   const unitDataReadyToRender = useMemo(
     () => getUnitDisplayData(crash, showAllUnits),
     [crash, showAllUnits]
@@ -162,9 +164,11 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                         setShowModal={setShowImageModal}
                         victimName={victimName}
                         personId={victim.id}
+                        setImageVersion={setImageVersion}
                       ></FatalityImageUploadModal>
                       <div className="d-flex align-items-center">
                         <PersonImage
+                          key={`${victim.id}-${imageVersion}`} // Changing key forces re-mount
                           personId={victim.id}
                           onClick={() => setShowImageModal(true)}
                         />
