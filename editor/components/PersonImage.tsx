@@ -101,8 +101,8 @@ export default function PersonImage({ personId, onClick }: PersonImageProps) {
         onClick={onClick}
         style={{
           cursor: "pointer",
-          // objectFit: "cover",
-          // borderRadius: "4px",
+          objectFit: "cover", // crop & maintain aspect ratio
+          objectPosition: "center", // centers the crop
         }}
         onError={handleImageError}
         loading="lazy"
@@ -116,8 +116,6 @@ export default function PersonImage({ personId, onClick }: PersonImageProps) {
       src={`${BASE_PATH}/assets/img/avatars/placeholder.png`}
       style={{
         cursor: "pointer",
-        // objectFit: "cover",
-        // borderRadius: "4px",
       }}
       height={100}
       width={100}
