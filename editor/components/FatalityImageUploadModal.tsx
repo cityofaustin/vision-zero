@@ -1,4 +1,12 @@
-import { Modal, Button, Form, Row, Col, InputGroup } from "react-bootstrap";
+import {
+  Modal,
+  Button,
+  Form,
+  Row,
+  Col,
+  InputGroup,
+  Image,
+} from "react-bootstrap";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useGetToken } from "@/utils/auth";
@@ -8,6 +16,7 @@ interface FatalityImageUploadModalProps {
   setShowModal: Dispatch<SetStateAction<boolean>>;
   victimName: string;
   personId: number;
+  setImageVersion: Dispatch<SetStateAction<number>>;
 }
 
 interface FormData {
@@ -20,10 +29,12 @@ export default function FatalityImageUploadModal({
   setShowModal,
   victimName,
   personId,
+  setImageVersion,
 }: FatalityImageUploadModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const getToken = useGetToken();
 
@@ -51,6 +62,15 @@ export default function FatalityImageUploadModal({
       trigger();
     }
   }, [file, imageSource, trigger]);
+
+  // Cleanup previewURL
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
@@ -88,13 +108,14 @@ export default function FatalityImageUploadModal({
       }
 
       setSuccess(true);
+      setImageVersion((prev) => prev + 1);
 
       // Close modal after successful upload
       setTimeout(() => {
         setShowModal(false);
         reset();
         setSuccess(false);
-      }, 1500);
+      }, 2000);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An unknown error occurred"
@@ -109,28 +130,34 @@ export default function FatalityImageUploadModal({
     setError(null);
     setSuccess(false);
     setShowModal(false);
+    setPreviewUrl(null);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPreviewUrl(null);
+    setError(null);
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      // Validate file size
-      const maxSizeMB = 10;
-      const maxSizeBytes = maxSizeMB * 1024 * 1024;
-
-      if (selectedFile.size > maxSizeBytes) {
-        setError(`File must be smaller than ${maxSizeMB}MB`);
-        e.target.value = "";
-      } else {
-        setError(null);
-      }
-
       // Validate file type
       const validTypes = ["image/jpeg", "image/jpg", "image/png"];
       if (!validTypes.includes(selectedFile.type)) {
         setError("File must be JPEG, JPG or PNG");
         e.target.value = "";
+        return;
       }
+
+      // Validate file size
+      const maxSizeMB = 5;
+      const maxSizeBytes = maxSizeMB * 1024 * 1024;
+      if (selectedFile.size > maxSizeBytes) {
+        setError(`File must be smaller than ${maxSizeMB}MB`);
+        e.target.value = "";
+        return;
+      }
+
+      // Finally if file is valid, create preview URL
+      const url = URL.createObjectURL(selectedFile);
+      setPreviewUrl(url);
     }
   };
 
@@ -151,51 +178,20 @@ export default function FatalityImageUploadModal({
               {error}
             </div>
           )}
-
           {success && (
             <div className="alert alert-success" role="alert">
               Image uploaded successfully!
             </div>
           )}
-
           <Row className="mb-3">
             <Col>
               <Form.Group controlId="formFile">
-                <Form.Label>Image file (JPEG, JPG or PNG, max 10MB)</Form.Label>
+                <Form.Label>Image file (JPEG, JPG or PNG, max 5MB)</Form.Label>
                 <Form.Control
                   type="file"
                   accept=".jpg,.jpeg,.png,image/jpeg,image/png"
                   {...register("file", {
                     required: "Image file is required",
-                    validate: {
-                      fileType: (files) => {
-                        if (files && files.length > 0) {
-                          const file = files[0];
-                          const validTypes = [
-                            "image/jpeg",
-                            "image/jpg",
-                            "image/png",
-                          ];
-                          return (
-                            validTypes.includes(file.type) ||
-                            "File must be JPEG or PNG image"
-                          );
-                        }
-                        return true;
-                      },
-                      fileSize: (files) => {
-                        if (files && files.length > 0) {
-                          const file = files[0];
-                          const maxSizeMB = 10;
-                          const maxSizeBytes = maxSizeMB * 1024 * 1024;
-                          return (
-                            file.size <= maxSizeBytes ||
-                            `File must be smaller than ${maxSizeMB}MB`
-                          );
-                        }
-                        return true;
-                      },
-                    },
                   })}
                   onChange={handleFileChange}
                   isInvalid={!!errors.file}
@@ -203,18 +199,9 @@ export default function FatalityImageUploadModal({
                 <Form.Control.Feedback type="invalid">
                   {errors.file?.message}
                 </Form.Control.Feedback>
-                {file && file.length > 0 && (
-                  <div className="mt-2">
-                    <small className="text-muted">
-                      Selected: {file[0].name} (
-                      {(file[0].size / 1024 / 1024).toFixed(2)} MB)
-                    </small>
-                  </div>
-                )}
               </Form.Group>
             </Col>
           </Row>
-
           <Row>
             <Col>
               <Form.Group controlId="formImageSource">
@@ -225,30 +212,24 @@ export default function FatalityImageUploadModal({
                     placeholder="https://www.legacy.com/us/obituaries/statesman/"
                     {...register("image_source", {
                       required: "Image source is required",
-                      validate: (value) => {
-                        return (
-                          value.trim() !== "" || "Image source cannot be empty"
-                        );
-                      },
                     })}
                     isInvalid={!!errors.image_source}
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.image_source?.message}
+                  </Form.Control.Feedback>
                 </InputGroup>
-                <Form.Control.Feedback type="invalid">
-                  {errors.image_source?.message}
-                </Form.Control.Feedback>
-                <Form.Text className="text-muted ms-2">
-                  URL or description of source
-                </Form.Text>
               </Form.Group>
             </Col>
           </Row>
-
-          {!isFormComplete() && (file?.length > 0 || imageSource) && (
+          {previewUrl && (
             <div className="mt-3">
-              <small className="text-danger">
-                Please fill out both required fields to enable upload
-              </small>
+              <Image
+                src={previewUrl}
+                alt="Preview"
+                style={{ maxWidth: "600px", maxHeight: "600px" }}
+                className="img-thumbnail"
+              />
             </div>
           )}
         </Modal.Body>
