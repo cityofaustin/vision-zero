@@ -27,8 +27,10 @@ The script uses hierarchical attribute matching to link records, and works like 
 docker build . -t atddocker/vz-ems-person-match:development
 ```
 
+```
+docker run -v "$(pwd)":/app -it --rm --env-file .env atddocker/vz-ems-person-match:development python match_ems_to_crashes.py
+```
+
 4. Run the ETL
 
-```
-docker run -it --rm --env-file .env atddocker/vz-ems-person-match:development python match_ems_to_people.py
-```
+
