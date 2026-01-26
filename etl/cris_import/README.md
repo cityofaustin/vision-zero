@@ -4,7 +4,7 @@ This ETL manages the processing and importing of TxDOT CRIS data into the Vision
 
 The following scripts are available:
 
-- **`cris_import.py`**: the primary data import script which processes both CSV files and CR3 PDF crash reports.
+- **`cris_import.py`**: the primary data import script which processes both CSV files and Crash Report PDF crash reports.
 - **`cr3_ocr_narrative.py`**: a utility script which extracts crash narrative data from CR3 PDFs using Optical Character Recognition (OCR)
 - **`_restore_zips_from_archive.py`**: a development helper script that moves CRIS extract zips from `./archive` to `./inbox` in the S3 bucket.
 
@@ -21,7 +21,7 @@ docker compose build # <- do this once, and when dependencies change
 docker compose run cris_import
 ```
 
-4. Run the CRIS import script. This will download any extracts available in S3, load the CSV crash records into the database, crop crash diagrams out of the CR3 PDFs, and upload the CR3 pdfs and crash diagrams to the s3 bucket.
+4. Run the CRIS import script. This will download any extracts available in S3, load the CSV crash records into the database, crop crash diagrams out of the Crash Report PDFs, and upload the Crash Report PDFs and crash diagrams to the s3 bucket.
 
 ```shell
 # from the cris_import container's shell
@@ -46,13 +46,13 @@ EXTRACT_PASSWORD=
 
 ## CRIS Import - `cris_import.py`
 
-This is the primary data import script which processes both CSV files and CR3 PDF crash reports. It supports a number of CLI args, with usage examples described below.
+This is the primary data import script which processes both CSV files and Crash Report PDFs. It supports a number of CLI args, with usage examples described below.
 
 ```shell
   --csv              Process CSV files. At least one of --csv or --pdf is required.
-  --pdf              Process CR3 pdfs. At least one of --csv or --pdf is required.
+  --pdf              Process Crash Report pdfs. At least one of --csv or --pdf is required.
   --s3-download      Source zip extracts from S3 bucket
-  --s3-upload        Upload cr3 pdfs and diagrams to S3 bucket
+  --s3-upload        Upload Crash Report pdfs and diagrams to S3 bucket
   --s3-archive       If using --s3-download, move the processed extracts from ./inbox to ./archive when done
   --skip-unzip       Only process files that are already unzipped in the local directory
   --verbose, -v      Sets logging level to DEBUG mode
@@ -61,7 +61,7 @@ This is the primary data import script which processes both CSV files and CR3 PD
 
 ### Production run
 
-This is the expected invocation during a production deployment. It will download any extracts available in S3, load the CSV crash records into the database, crop crash diagrams out of the CR3 PDFs, upload the CR3 pdfs and crash diagrams to the s3 bucket. It also makes use of the `--workers` flag to increase the size of the processing pool to `8`.
+This is the expected invocation during a production deployment. It will download any extracts available in S3, load the CSV crash records into the database, crop crash diagrams out of the Crash Report PDFs, upload the Crash Report pdfs and crash diagrams to the s3 bucket. It also makes use of the `--workers` flag to increase the size of the processing pool to `8`.
 
 This invocation also "archives" the extract zips by moving them from `./inbox` to `./archive` subdirectory of the S3 bucket.
 
@@ -100,6 +100,8 @@ $ ./cris_import.py --pdf --skip-unzip --s3-upload --workers 8 --verbose
 
 This utility script extracts crash narrative data from CR3 PDFs using Optical Character Recognition (OCR). Although CRIS provides an `investigator_narrative` column, it is often blank due to an unknown CRIS issue tracked [here](https://github.com/cityofaustin/atd-data-tech/issues/18971).
 
+_Note: CR4 forms are skipped because CRIS now provides the narrative directly in the CSV data, so OCR extraction is not needed (we hope)._
+
 It supports the `--verbose` flag to enable debug logging, and the number of concurrent workers can be set with the `--workers` flag.
 
 ```shell
@@ -116,11 +118,11 @@ select * from _cris_import_log order by id desc;
 
 The import log provides the following information:
 
-column | description
--- | --
-`id` | The serial ID primary key
-`object_path` | The location within the bucket where the extract was found
-`object_name` | The name of the object (file) within the bucket
-`created_at` | Audit field for when the import started
-`completed_at` | Audit field for when the import finished
-`records_processed` | A JSON blob that contains counts or a list of crashes imported per schema
+| column              | description                                                               |
+| ------------------- | ------------------------------------------------------------------------- |
+| `id`                | The serial ID primary key                                                 |
+| `object_path`       | The location within the bucket where the extract was found                |
+| `object_name`       | The name of the object (file) within the bucket                           |
+| `created_at`        | Audit field for when the import started                                   |
+| `completed_at`      | Audit field for when the import finished                                  |
+| `records_processed` | A JSON blob that contains counts or a list of crashes imported per schema |

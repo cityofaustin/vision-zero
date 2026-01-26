@@ -13,6 +13,18 @@ import { Crash } from "@/types/crashes";
 import { useDocumentTitle } from "@/utils/documentTitle";
 import { formatIsoDateTimeWithDay, formatYear } from "@/utils/formatters";
 import { useQuery } from "@/utils/graphql";
+import { UPDATE_CRASH } from "@/queries/crash";
+import CrashDiagramCard from "@/components/CrashDiagramCard";
+import DataCard from "@/components/DataCard";
+import { crashesColumns } from "@/configs/crashesColumns";
+
+const otherCardColumns = [
+  crashesColumns.case_id,
+  crashesColumns.law_enforcement_ytd_fatality_num,
+  crashesColumns.light_cond,
+  crashesColumns.crash_speed_limit,
+  crashesColumns.obj_struck,
+];
 
 export default function FatalCrashDetailsPage({
   params,
@@ -20,6 +32,7 @@ export default function FatalCrashDetailsPage({
   params: Promise<{ record_locator: string }>;
 }) {
   const mapRef = useRef<MapRef | null>(null);
+
   const { record_locator: recordLocator } = use(params);
 
   const typename = "crashes";
@@ -64,18 +77,32 @@ export default function FatalCrashDetailsPage({
           <span className="fs-3 fw-bold text-uppercase">
             {data[0].address_display}
           </span>
-          <span className="fs-5">
-            {formatYear(data[0].crash_timestamp)} Fatal Crash #
-            {data[0].law_enforcement_ytd_fatality_num}
+          <span className="text-nowrap bg-light-use-theme py-2 rounded-3 px-3 border">
+            <span className="fs-5 fw-bold me-1">Year</span>
+            <span className="fs-5 me-3">
+              {formatYear(data[0].crash_timestamp)}
+            </span>
+            <span className="fs-5 fw-bold me-1">Fatal Crash</span>
+            <span className="fs-5">
+              #{data[0].law_enforcement_ytd_fatality_num}
+            </span>
           </span>
         </div>
       </Row>
       <Row>
         <Col className="mb-3" sm={12} md={6}>
-          <Card>
+          <Card className="h-100">
             <Card.Body>
               <Table>
                 <tbody>
+                  <tr>
+                    <td className="fw-bold">Crash ID</td>
+                    <td>
+                      {crashesColumns.record_locator_hyperlinked.valueRenderer(
+                        crash
+                      )}
+                    </td>
+                  </tr>
                   <tr>
                     <td style={{ textWrap: "nowrap" }} className="fw-bold">
                       Date
@@ -86,7 +113,9 @@ export default function FatalCrashDetailsPage({
                     <td style={{ textWrap: "nowrap" }} className="fw-bold">
                       Units involved
                     </td>
-                    <td></td>
+                    <td>
+                      {crash.unit_types_involved?.unit_types_involved || ""}
+                    </td>
                   </tr>
                   <tr>
                     <td style={{ textWrap: "nowrap" }} className="fw-bold">
@@ -122,13 +151,26 @@ export default function FatalCrashDetailsPage({
       </Row>
       <Row>
         <Col className="mb-3" sm={12} md={6} lg={4}>
+          <CrashDiagramCard crash={crash} />
+        </Col>
+        <Col className="mb-3" sm={12} md={6} lg={4}>
           <CrashNarrativeEditableCard
             crash={crash}
             onSaveCallback={onSaveCallback}
           />
         </Col>
-        <Col></Col>
-        <Col></Col>
+        <Col>
+          <DataCard<Crash>
+            record={crash}
+            isValidating={false}
+            title="Details"
+            columns={otherCardColumns}
+            mutation={UPDATE_CRASH}
+            onSaveCallback={onSaveCallback}
+            shouldShowColumnVisibilityPicker={true}
+            localStorageKey="crashPageOther"
+          />
+        </Col>
       </Row>
     </>
   );

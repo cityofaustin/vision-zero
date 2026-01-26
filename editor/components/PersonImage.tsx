@@ -100,9 +100,9 @@ export default function PersonImage({ personId, onClick }: PersonImageProps) {
         className="me-3"
         onClick={onClick}
         style={{
-          cursor: onClick ? "pointer" : "default",
-          objectFit: "cover",
-          borderRadius: "4px",
+          cursor: "pointer",
+          // objectFit: "cover",
+          // borderRadius: "4px",
         }}
         onError={handleImageError}
         loading="lazy"
@@ -114,6 +114,11 @@ export default function PersonImage({ personId, onClick }: PersonImageProps) {
     <Image
       alt="placeholder"
       src={`${BASE_PATH}/assets/img/avatars/placeholder.png`}
+      style={{
+        cursor: "pointer",
+        // objectFit: "cover",
+        // borderRadius: "4px",
+      }}
       height={100}
       width={100}
       className="me-3"

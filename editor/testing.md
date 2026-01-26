@@ -137,7 +137,7 @@ The below features should be tested with each role. Features with role-based acc
   - `shift` + `c`: Charges
   - `shift` + `n`: Notes
   - `shift` + `f`: Fatality Review Board recommendations
-- Hover your mouse over each card that has a shortcut key and verify that the shortcut key helper text appears above the right edge of the card. 
+- Hover your mouse over each card that has a shortcut key and verify that the shortcut key helper text appears above the right edge of the card.
 
 ### Sidebar
 
@@ -178,11 +178,11 @@ refresh materialized view location_crashes_view;
 ### EMS incident details - `/ems/[incident-number]`
 
 - Page breadcrumb and title—which is the EMS record address—look normal
-- Incident map (top right of page) 
-    - Use the EMS list page to filter/find an incident that has been matched automatically to a crash, person, and non-cr3 record
-    - The incident map should display a CR3 crash (blue circle with car icon) and non-cr3 (gray cricle with sticky note icon) on the map as well as the EMS incident (red circle with ambulence icon)
-    - Use the layer selector to toggle the CR3 and non-cr3 layers on/off
-    - Use the layer selector to switch beetween the satellite and streets basemap
+- Incident map (top right of page)
+  - Use the EMS list page to filter/find an incident that has been matched automatically to a crash, person, and non-cr3 record
+  - The incident map should display a CR3 crash (blue circle with car icon) and non-cr3 (gray cricle with sticky note icon) on the map as well as the EMS incident (red circle with ambulence icon)
+  - Use the layer selector to toggle the CR3 and non-cr3 layers on/off
+  - Use the layer selector to switch beetween the satellite and streets basemap
 - Navigating to a bogus incident number such as `/ems/1abc` results in 404
 
 #### EMS -> CR3 matching UI
@@ -222,6 +222,25 @@ refresh materialized view location_crashes_view;
 - Test the column visibility picker to show/hide columns
 - Toggle the map view and click on a point to open it's pop-up card. Click on the hyperlinked crash ID to navigate the crash details page
 
+### Fatalitiy details page - `/fatalities/[record-locator]`
+
+- Page title is `Fatalities <record-locator>`
+- Observe that summary/map card renders normally with hyperlinked crash ID
+- Units/victims card
+  - If the crash has multiple units, all units invovled should be displayed with the **Show all units** toggle enabled
+    - Uncheck the **Show all units** toggle to hide units except for those with fatalities
+    - Confirm the section header changes from **Units involved** to **Victims** after unchecking the toggle
+  - Locate a crash with just one unit/victim. Confirm that the **Show all units** toggle is disabled and the section header says **Victims** (not **Units invovled**)
+- Confirm that the crash diagram card (second row, leftmost card) renders and functions normally
+- Use the narrative card (second row, middle card) displays the crash narrative.
+  - [role: editor, admin] Click the **Add summary** button and confirm that the narrative becomes editable
+  - [role: editor, admin] Modify the narrative and click **Save summary** to confirm your changes are saved. Refresh the page and confirm that the **Summary** tab is focused and showing your edited narrative.
+  - Switch to the **Narrative** tab and confirm it looks normal
+  - Switch back to the **Sumamary** tab, use the **Edit summary** button to clear the summary you created and then **Save summary**
+  - Confirm that the **Summary** tab has disappeard and only the **Narrative** tab is shown
+- Observe that the **Details** card (second row, rightmost card) looks normal
+  - [role: editor, admin] confirm that the LE YTD Fatal Crash, light condition, speed limit, and Object struct fields are editable
+
 ### Top nav
 
 - Vision Zero logo displays on left side
@@ -256,7 +275,6 @@ refresh materialized view location_crashes_view;
 - delete a user
 - copy user emails
 
-
 ### User events tracking
 
 Insepct the the `user_events` table in the DB and verify that your recent activity was logged:
@@ -273,4 +291,3 @@ select * from user_events;
 - Locally, the environment banner shows in the top navigation bar with a light yellow background. On staging/netlify, the banner shows with a light blue background
 - login page looks good
 - upload non-cr3
-

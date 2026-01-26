@@ -2,6 +2,7 @@ import { ColDataCardDef } from "@/types/types";
 import { Crash } from "@/types/crashes";
 import { formatDateTimeWithDay } from "@/utils/formatters";
 import { commonValidations } from "@/utils/formHelpers";
+import Link from "next/link";
 
 export const crashesColumns = {
   active_school_zone_fl: {
@@ -13,6 +14,16 @@ export const crashesColumns = {
   record_locator: {
     path: "record_locator",
     label: "Crash ID",
+  },
+  record_locator_hyperlinked: {
+    path: "record_locator",
+    label: "Crash ID",
+    sortable: true,
+    valueRenderer: (record: Crash) => (
+      <Link href={`/crashes/${record.record_locator}`} prefetch={false}>
+        {record.record_locator}
+      </Link>
+    ),
   },
   address_display: {
     path: "address_display",
