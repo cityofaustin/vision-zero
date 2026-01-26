@@ -7,7 +7,40 @@ from utils.exceptions import HasuraAPIError, EMSPersonIdError
 ENDPOINT = os.getenv("HASURA_GRAPHQL_ENDPOINT")
 ADMIN_SECRET = os.getenv("HASURA_GRAPHQL_ADMIN_SECRET")
 
-GET_UNMATCHED_EMS_PCRS = """
+GET_UNMATCHED_EMS_PCRS_TO_CRASHES = """
+query GetEMSTodo {
+  ems__incidents(
+    order_by: { id: desc }
+    where: {
+      crash_match_status: {_in: ["unmatched"]},
+      person_match_status: {_neq: "unmatched_by_manual_qa"},
+      apd_incident_numbers: {_is_null: false},
+      crash_pk: {_is_null: true},
+      is_deleted: {_eq: false}
+    }) {
+    id
+    incident_number
+  }
+}
+"""
+
+GET_UNMATCHED_EMS_PCRS_TO_NON_CR3S = """
+query GetEMSTodo {
+  ems__incidents(
+    order_by: { id: desc }
+    where: {
+      non_cr3_match_status: {_eq: "unmatched"},
+      apd_incident_numbers: {_is_null: false},
+      atd_apd_blueform_case_id: {_is_null: true},
+      is_deleted: {_eq: false}
+    }) {
+    id
+    incident_number
+  }
+}
+"""
+
+GET_UNMATCHED_EMS_PCRS_TO_PEOPLE = """
 query GetEMSTodo {
   ems__incidents(
     order_by: { id: desc }
@@ -29,7 +62,9 @@ query GetEMSPCRsByIncident($incident_number: String!) {
     id
     incident_number
     crash_pk
+    atd_apd_blueform_case_id
     crash_match_status
+    incident_location_address
     mvc_form_position_in_vehicle
     pcr_patient_age
     pcr_patient_race
@@ -40,6 +75,7 @@ query GetEMSPCRsByIncident($incident_number: String!) {
     matched_person_ids
     person_id
     travel_mode
+    apd_incident_numbers
   }
 }
 """
@@ -67,10 +103,44 @@ query GetUnmatchedCrashPeople($crash_pk: Int!, $matched_ids: [Int!]) {
 }
 """
 
+GET_CRASH_BY_APD_CASE_ID = """
+query GetCrashByApdCaseId($case_id: String!) {
+  crashes(where: {case_id: {_eq: $case_id},
+    investigat_agency_id:{_eq: 74},
+    is_deleted: {_eq: false}}) {
+    id
+    address_display
+    rpt_street_name
+    rpt_sec_street_name
+    crash_timestamp
+    record_locator
+  }
+}
+"""
+
+GET_NON_CR3_BY_APD_CASE_ID = """
+query GetNonCR3ByApdCaseId($case_id: Int!) {
+  atd_apd_blueform(where: {case_id: {_eq: $case_id}, is_deleted: {_eq: false}}) {
+    form_id
+    case_id
+    address
+  }
+}
+"""
+
+
 UPDATE_EMS_PCR = """
 mutation UpdateEMSIncidentPCR($id: Int!, $updates: ems__incidents_set_input!) {
   update_ems__incidents_by_pk(pk_columns: {id: $id}, _set: $updates) {
     id
+  }
+}
+"""
+
+UPDATE_EMS_PCRs_BY_INCIDENT_NUMBER = """
+mutation UpdateEMSIncidentPCR($incident_number: String!, $updates: ems__incidents_set_input!) {
+  update_ems__incidents(where: {incident_number: {_eq: $incident_number}}, _set: $updates) {
+    affected_rows
   }
 }
 """
