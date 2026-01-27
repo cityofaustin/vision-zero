@@ -82,7 +82,6 @@ export default function PersonImage({ personId, onClick }: PersonImageProps) {
           objectFit: "cover", // crop & maintain aspect ratio
           objectPosition: "center", // centers the crop
         }}
-        loading="lazy"
       />
     );
   }

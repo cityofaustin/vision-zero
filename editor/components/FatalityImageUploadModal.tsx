@@ -161,7 +161,6 @@ export default function FatalityImageUploadModal({
     }
   };
 
-  // Check if both required fields are filled
   const isFormComplete = () => {
     return file?.length > 0 && imageSource && imageSource.trim() !== "";
   };
