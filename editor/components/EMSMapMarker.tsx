@@ -1,5 +1,5 @@
 import { Marker, MarkerProps } from "react-map-gl";
-import { FaTruckMedical } from "react-icons/fa6";
+import { LuAmbulance } from "react-icons/lu";
 import { ICON_MAP_MARKER_STYLES } from "@/configs/map";
 
 export default function EMSIncidentMarker(props: MarkerProps) {
@@ -15,7 +15,7 @@ export default function EMSIncidentMarker(props: MarkerProps) {
           pointerEvents: "none",
         }}
       >
-        <FaTruckMedical size={18} color="#fff" />
+        <LuAmbulance size={18} color="#fff" />
       </div>
     </Marker>
   );

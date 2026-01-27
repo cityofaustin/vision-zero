@@ -41,6 +41,15 @@ const nextConfig = {
       },
     ];
   },
+  sassOptions: {
+    silenceDeprecations: [
+      "color-functions",
+      "global-builtin",
+      "import",
+      "legacy-js-api",
+      "if-function"
+    ],
+  },
 };
 
 export default nextConfig;
