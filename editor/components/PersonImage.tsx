@@ -12,24 +12,18 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 export default function PersonImage({ personId, onClick }: PersonImageProps) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const getToken = useGetToken();
 
   useEffect(() => {
-    let mounted = true;
-
     const fetchImage = async () => {
       if (!personId) {
-        if (mounted) {
-          setImageUrl(null);
-          setIsLoading(false);
-        }
+        setImageUrl(null);
+        setIsLoading(false);
         return;
       }
 
       setIsLoading(true);
-      setError(null);
 
       try {
         const token = await getToken();
@@ -42,45 +36,29 @@ export default function PersonImage({ personId, onClick }: PersonImageProps) {
           }
         );
 
+        // No image exists
+        if (response.status === 404) {
+          setImageUrl(null);
+          setIsLoading(false);
+          return;
+        }
+
         if (!response.ok) {
-          if (response.status === 404) {
-            if (mounted) {
-              setImageUrl(null);
-              setIsLoading(false);
-            }
-            return;
-          }
-          throw new Error(`Failed to fetch image: ${response.status}`);
+          throw new Error(`HTTP ${response.status}`);
         }
 
         const data = await response.json();
-
-        if (mounted) {
-          setImageUrl(data.url);
-          setIsLoading(false);
-        }
+        setImageUrl(data.url);
+        setIsLoading(false);
       } catch (err) {
         console.error("Error fetching person image:", err);
-        if (mounted) {
-          setError(err instanceof Error ? err.message : "Failed to load image");
-          setImageUrl(null);
-          setIsLoading(false);
-        }
+        setImageUrl(null);
+        setIsLoading(false);
       }
     };
 
     fetchImage();
-
-    return () => {
-      mounted = false;
-    };
   }, [personId, getToken]);
-
-  // Handle image loading errors
-  const handleImageError = () => {
-    setImageUrl(null);
-    setError("Failed to load image");
-  };
 
   if (isLoading) {
     return (
@@ -90,7 +68,7 @@ export default function PersonImage({ personId, onClick }: PersonImageProps) {
     );
   }
 
-  if (imageUrl && !error) {
+  if (imageUrl) {
     return (
       <Image
         alt="Person image"
@@ -104,7 +82,6 @@ export default function PersonImage({ personId, onClick }: PersonImageProps) {
           objectFit: "cover", // crop & maintain aspect ratio
           objectPosition: "center", // centers the crop
         }}
-        onError={handleImageError}
         loading="lazy"
       />
     );
