@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
 import { Image, Spinner } from "react-bootstrap";
-import { useGetToken } from "@/utils/auth";
+import { useGetPersonImage } from "@/utils/getPersonImage";
 
 interface PersonImageProps {
   personId: number;
@@ -10,55 +9,7 @@ interface PersonImageProps {
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export default function PersonImage({ personId, onClick }: PersonImageProps) {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const getToken = useGetToken();
-
-  useEffect(() => {
-    const fetchImage = async () => {
-      if (!personId) {
-        setImageUrl(null);
-        setIsLoading(false);
-        return;
-      }
-
-      setIsLoading(true);
-
-      try {
-        const token = await getToken();
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${personId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        // No image exists
-        if (response.status === 404) {
-          setImageUrl(null);
-          setIsLoading(false);
-          return;
-        }
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-        setImageUrl(data.url);
-        setIsLoading(false);
-      } catch (err) {
-        console.error("Error fetching person image:", err);
-        setImageUrl(null);
-        setIsLoading(false);
-      }
-    };
-
-    fetchImage();
-  }, [personId, getToken]);
+  const { imageUrl, isLoading } = useGetPersonImage(personId);
 
   if (isLoading) {
     return (
