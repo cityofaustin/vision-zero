@@ -1,16 +1,18 @@
 import { Image, Spinner } from "react-bootstrap";
-import { useGetPersonImage } from "@/utils/getPersonImage";
 
 interface PersonImageProps {
-  personId: number;
   onClick?: () => void;
+  imageUrl: string | null;
+  isLoading: boolean;
 }
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-export default function PersonImage({ personId, onClick }: PersonImageProps) {
-  const { imageUrl, isLoading } = useGetPersonImage(personId);
-
+export default function PersonImage({
+  onClick,
+  imageUrl,
+  isLoading,
+}: PersonImageProps) {
   if (isLoading) {
     return (
       <div className="d-flex align-items-center justify-content-center me-3">

@@ -3,8 +3,9 @@ import FatalityImageUploadModal from "@/components/FatalityImageUploadModal";
 import PersonImage from "@/components/PersonImage";
 import { PeopleListRow } from "@/types/peopleList";
 import { getInjuryColorClass } from "@/utils/people";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Unit } from "@/types/unit";
+import { useGetToken } from "@/utils/auth";
 
 interface FatalityVictimProps {
   victim: PeopleListRow;
@@ -30,8 +31,13 @@ const getPersonType = (victim: PeopleListRow) =>
     : null;
 
 export default function FatalityVictim({ victim, unit }: FatalityVictimProps) {
-  const [modalOpenId, setModalOpenId] = useState<number | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageVersion, setImageVersion] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getToken = useGetToken();
+
   const victimName = [
     victim.prsn_first_name,
     victim.prsn_mid_name,
@@ -39,6 +45,54 @@ export default function FatalityVictim({ victim, unit }: FatalityVictimProps) {
   ]
     .filter((n) => n)
     .join(" ");
+
+  const personId = victim.id;
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      if (!personId) {
+        setImageUrl(null);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+
+      try {
+        const token = await getToken();
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${personId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        // No image exists
+        if (response.status === 404) {
+          setImageUrl(null);
+          setIsLoading(false);
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        setImageUrl(data.url);
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Error fetching person image:", err);
+        setImageUrl(null);
+        setIsLoading(false);
+      }
+    };
+
+    fetchImage();
+  }, [personId, getToken, imageVersion]);
+
   return (
     <ListGroupItem
       className="d-flex align-items-center justify-content-between pb-3"
@@ -46,17 +100,21 @@ export default function FatalityVictim({ victim, unit }: FatalityVictimProps) {
       style={{ border: "none" }}
     >
       <FatalityImageUploadModal
-        showModal={modalOpenId === victim.id}
-        setModalOpenId={setModalOpenId}
+        showModal={showModal}
+        setShowModal={setShowModal}
         victimName={victimName}
         personId={victim.id}
+        imageUrl={imageUrl}
+        setImageUrl={setImageUrl}
+        isLoading={isLoading}
         setImageVersion={setImageVersion}
       ></FatalityImageUploadModal>
       <div className="d-flex align-items-center">
         <PersonImage
           key={`${victim.id}-${imageVersion}`} // Changing key forces re-mount
-          personId={victim.id}
-          onClick={() => setModalOpenId(victim.id)}
+          onClick={() => setShowModal(true)}
+          imageUrl={imageUrl}
+          isLoading={isLoading}
         />
         <div className="d-flex w-100 flex-column">
           <div className="pb-1">

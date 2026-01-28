@@ -11,13 +11,15 @@ import {
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useGetToken } from "@/utils/auth";
-import { useGetPersonImage } from "@/utils/getPersonImage";
 
 interface FatalityImageUploadModalProps {
   showModal: boolean;
-  setModalOpenId: Dispatch<SetStateAction<number | null>>;
+  setShowModal: Dispatch<SetStateAction<boolean>>;
   victimName: string;
   personId: number;
+  imageUrl: string | null;
+  setImageUrl: Dispatch<SetStateAction<string | null>>;
+  isLoading: boolean;
   setImageVersion: Dispatch<SetStateAction<number>>;
 }
 
@@ -28,9 +30,11 @@ interface FormData {
 
 export default function FatalityImageUploadModal({
   showModal,
-  setModalOpenId,
+  setShowModal,
   victimName,
   personId,
+  imageUrl,
+  isLoading,
   setImageVersion,
 }: FatalityImageUploadModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,8 +43,6 @@ export default function FatalityImageUploadModal({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const getToken = useGetToken();
-
-  const { imageUrl, isLoading, setImageUrl } = useGetPersonImage(personId);
 
   const {
     register,
@@ -113,9 +115,7 @@ export default function FatalityImageUploadModal({
 
       setSuccess(true);
       setImageVersion((prev) => prev + 1);
-
       setTimeout(() => {
-        setImageUrl(null);
         handleClose();
       }, 1500);
     } catch (err) {
@@ -131,7 +131,7 @@ export default function FatalityImageUploadModal({
     reset();
     setError(null);
     setSuccess(false);
-    setModalOpenId(null);
+    setShowModal(false);
     setPreviewUrl(null);
   };
 
