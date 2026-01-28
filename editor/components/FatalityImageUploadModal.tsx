@@ -6,14 +6,16 @@ import {
   Col,
   InputGroup,
   Image,
+  Spinner,
 } from "react-bootstrap";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useGetToken } from "@/utils/auth";
+import { useGetPersonImage } from "@/utils/getPersonImage";
 
 interface FatalityImageUploadModalProps {
   showModal: boolean;
-  setShowModal: Dispatch<SetStateAction<boolean>>;
+  setModalOpenId: Dispatch<SetStateAction<number | null>>;
   victimName: string;
   personId: number;
   setImageVersion: Dispatch<SetStateAction<number>>;
@@ -26,7 +28,7 @@ interface FormData {
 
 export default function FatalityImageUploadModal({
   showModal,
-  setShowModal,
+  setModalOpenId,
   victimName,
   personId,
   setImageVersion,
@@ -37,6 +39,8 @@ export default function FatalityImageUploadModal({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const getToken = useGetToken();
+
+  const { imageUrl, isLoading, setImageUrl } = useGetPersonImage(personId);
 
   const {
     register,
@@ -110,12 +114,10 @@ export default function FatalityImageUploadModal({
       setSuccess(true);
       setImageVersion((prev) => prev + 1);
 
-      // Close modal after successful upload
       setTimeout(() => {
-        setShowModal(false);
-        reset();
-        setSuccess(false);
-      }, 2000);
+        setImageUrl(null);
+        handleClose();
+      }, 1500);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An unknown error occurred"
@@ -129,7 +131,7 @@ export default function FatalityImageUploadModal({
     reset();
     setError(null);
     setSuccess(false);
-    setShowModal(false);
+    setModalOpenId(null);
     setPreviewUrl(null);
   };
 
@@ -229,6 +231,21 @@ export default function FatalityImageUploadModal({
                 style={{ maxWidth: "600px", maxHeight: "600px" }}
                 className="img-thumbnail"
               />
+            </div>
+          )}
+          {imageUrl && !previewUrl && !isLoading && (
+            <div className="mt-3">
+              <Image
+                src={imageUrl}
+                alt="Preview"
+                style={{ maxWidth: "600px", maxHeight: "600px" }}
+                className="img-thumbnail"
+              />
+            </div>
+          )}
+          {isLoading && (
+            <div className="d-flex align-items-center justify-content-center me-3">
+              <Spinner animation="border" size="sm" />
             </div>
           )}
         </Modal.Body>
