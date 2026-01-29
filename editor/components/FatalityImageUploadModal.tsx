@@ -65,7 +65,7 @@ export default function FatalityImageUploadModal({
   const file = watch("file");
   const imageSource = watch("image_source");
 
-  // Validate form when fields change
+  // Validates form when fields change
   useEffect(() => {
     if (file?.length > 0 || imageSource) {
       trigger();
@@ -81,6 +81,7 @@ export default function FatalityImageUploadModal({
     };
   }, [previewUrl]);
 
+  // Uploads the image to the API
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     setError(null);

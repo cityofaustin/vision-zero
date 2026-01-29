@@ -37,7 +37,7 @@ const getPersonType = (victim: PeopleListRow) =>
 export default function FatalityVictim({ victim, unit }: FatalityVictimProps) {
   const [showModal, setShowModal] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  // Used to force a re-mount of PersonImage after new image in uploaded in modal
+  // Used to force a re-mount of PersonImage after new image is uploaded in modal
   const [imageVersion, setImageVersion] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -53,6 +53,7 @@ export default function FatalityVictim({ victim, unit }: FatalityVictimProps) {
 
   const personId = victim.id;
 
+  // Tries to fetch the person image from the API and sets the url state
   useEffect(() => {
     const fetchImage = async () => {
       if (!personId) {
