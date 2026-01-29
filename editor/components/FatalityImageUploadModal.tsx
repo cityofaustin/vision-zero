@@ -28,6 +28,9 @@ interface FormData {
   image_source: string;
 }
 
+/**
+ * The modal interface for uploading a fatality victim photo.
+ */
 export default function FatalityImageUploadModal({
   showModal,
   setShowModal,

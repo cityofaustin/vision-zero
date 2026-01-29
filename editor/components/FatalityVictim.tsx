@@ -30,9 +30,14 @@ const getPersonType = (victim: PeopleListRow) =>
       : victim.prsn_type.label
     : null;
 
+/**
+ * This component is rendered for each victim in the FatalityUnitsCards component.
+ * It renders person info, the person image, and person image upload modal
+ */
 export default function FatalityVictim({ victim, unit }: FatalityVictimProps) {
   const [showModal, setShowModal] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  // Used to force a re-mount of PersonImage after new image in uploaded in modal
   const [imageVersion, setImageVersion] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -111,7 +116,7 @@ export default function FatalityVictim({ victim, unit }: FatalityVictimProps) {
       ></FatalityImageUploadModal>
       <div className="d-flex align-items-center">
         <PersonImage
-          key={`${victim.id}-${imageVersion}`} // Changing key forces re-mount
+          key={`${victim.id}-${imageVersion}`} // Changing this key forces a re-mount
           onClick={() => setShowModal(true)}
           imageUrl={imageUrl}
           isLoading={isLoading}

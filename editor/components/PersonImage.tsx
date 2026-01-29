@@ -8,6 +8,9 @@ interface PersonImageProps {
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
+/**
+ * Renders the person image based on a given URL, or a placeholder image
+ */
 export default function PersonImage({
   onClick,
   imageUrl,
