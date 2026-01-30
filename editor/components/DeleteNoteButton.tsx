@@ -2,6 +2,7 @@ import Button from "react-bootstrap/Button";
 import { useMutation } from "@/utils/graphql";
 import AlignedLabel from "@/components/AlignedLabel";
 import { FaTrashCan } from "react-icons/fa6";
+import { LuTrash, LuPencil } from "react-icons/lu";
 import { HeaderActionComponentProps } from "@/components/DataCard";
 import PermissionsRequired from "@/components/PermissionsRequired";
 
@@ -21,7 +22,8 @@ export default function DeleteNoteButton<T extends Record<string, unknown>>({
     <PermissionsRequired allowedRoles={allowedDeleteNoteRoles}>
       <Button
         size="sm"
-        variant="secondary"
+        className="h-100"
+        variant="outline-secondary"
         disabled={isMutating}
         onClick={async () => {
           if (window.confirm("Are you sure you want to delete this note?")) {
@@ -37,8 +39,8 @@ export default function DeleteNoteButton<T extends Record<string, unknown>>({
         }}
       >
         <AlignedLabel>
-          <FaTrashCan className="me-2" />
-          <span>Delete</span>
+          <LuTrash className="me-1" />
+          Delete
         </AlignedLabel>
       </Button>
     </PermissionsRequired>

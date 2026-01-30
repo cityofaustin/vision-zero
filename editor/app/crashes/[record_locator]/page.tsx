@@ -222,9 +222,9 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="notes" className="offset-header-scroll-top">
+      {/* <Row id="notes" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="N" />
-        <Col sm={12} className="mb-1">
+        <Col sm={12} md={6} className="mb-1">
           <NotesCard
             notes={crash.crash_notes || []}
             notesColumns={crashNotesColumns}
@@ -235,7 +235,7 @@ export default function CrashDetailsPage({
             refetch={onSaveCallback}
           />
         </Col>
-      </Row>
+      </Row> */}
       <Row id="fatality" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="F" />
         <Col sm={12} md={6} className="mb-1">
@@ -243,6 +243,17 @@ export default function CrashDetailsPage({
             recommendation={crash.recommendation}
             crash_pk={crash.id}
             onSaveCallback={onSaveCallback}
+          />
+        </Col>
+        <Col sm={12} md={6} className="mb-1">
+          <NotesCard
+            notes={crash.crash_notes || []}
+            notesColumns={crashNotesColumns}
+            updateMutation={UPDATE_CRASH_NOTE}
+            insertMutation={INSERT_CRASH_NOTE}
+            onSaveCallback={onSaveCallback}
+            recordId={crash.id}
+            refetch={onSaveCallback}
           />
         </Col>
       </Row>
