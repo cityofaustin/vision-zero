@@ -17,6 +17,7 @@ import { UPDATE_CRASH } from "@/queries/crash";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import DataCard from "@/components/DataCard";
 import { crashesColumns } from "@/configs/crashesColumns";
+import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 
 const otherCardColumns = [
   crashesColumns.case_id,
@@ -169,6 +170,15 @@ export default function FatalCrashDetailsPage({
             onSaveCallback={onSaveCallback}
             shouldShowColumnVisibilityPicker={true}
             localStorageKey="crashPageOther"
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col className="mb-3" sm={12} md={12} xl={6}>
+          <CrashRecommendationCard
+            crash_pk={crash.id}
+            onSaveCallback={onSaveCallback}
+            recommendation={crash.recommendation}
           />
         </Col>
       </Row>

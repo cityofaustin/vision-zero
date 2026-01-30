@@ -27,7 +27,7 @@ const getPersonType = (victim: PeopleListRow) =>
   victim.prsn_type_id !== 4 // pedestrian
     ? victim.prsn_type_id === 5 //mot
       ? "DRIVER OF MOTORCYCLE" // Reformat this person type bc its really long
-      : victim.prsn_type.label
+      : victim.prsn_type?.label
     : null;
 
 /**
@@ -132,7 +132,7 @@ export default function FatalityVictim({ victim, unit }: FatalityVictimProps) {
             {victim.gndr?.label}
           </span>
           {victim.rest?.label && shouldShowRestraintField(unit) && (
-            <span className="pb-1">Restraint used: {victim.rest.label}</span>
+            <span className="pb-1">Restraint used: {victim.rest?.label}</span>
           )}
           {!!victim.prsn_exp_homelessness && (
             <span>{"Suspected unhoused"}</span>
