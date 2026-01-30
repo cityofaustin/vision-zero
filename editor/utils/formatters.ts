@@ -90,3 +90,13 @@ export const formatArrayToString = (value: unknown): string => {
   }
   return "";
 };
+
+/**
+ * Lazily format a user name by lopping off everything after `@`
+ */
+export const formatUserName = (value: unknown): string => {
+  if (!value || typeof value !== "string") {
+    return String(value);
+  }
+  return value.split("@")[0];
+};
