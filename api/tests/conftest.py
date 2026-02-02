@@ -6,8 +6,9 @@ import requests
 from PIL import Image
 import io
 
-# Configuration
+
 API_BASE_URL = os.getenv("API_BASE_URL", "http://cr3-user-api:5000")
+# these IDs must exist in your local DB
 TEST_CRASH_ID = os.getenv("TEST_CRASH_ID", 13668443)
 TEST_PERSON_ID = os.getenv("TEST_PERSON_ID", 102580)
 
@@ -16,6 +17,7 @@ TEST_PERSON_ID = os.getenv("TEST_PERSON_ID", 102580)
 def api_base_url():
     """Base URL for the API"""
     return API_BASE_URL
+
 
 def get_jwt_from_credentials(username, password, domain, client_id):
     """Get JWT by logging in with username/password"""
