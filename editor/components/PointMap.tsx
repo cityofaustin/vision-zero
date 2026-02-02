@@ -61,6 +61,11 @@ interface PointMapProps {
    * Ref object which will hold the mapbox instance
    */
   mapRef: MutableRefObject<MapRef | null>;
+
+  /**
+   * The default basemap type
+   */
+  initialBasemapType?: "aerial" | "streets";
   /**
    * The initial latitude - used when not editing
    */
@@ -98,6 +103,7 @@ interface PointMapProps {
  */
 export const PointMap = ({
   mapRef,
+  initialBasemapType,
   savedLatitude,
   savedLongitude,
   isEditing,
@@ -107,7 +113,9 @@ export const PointMap = ({
   children,
   customLayerToggles,
 }: PointMapProps) => {
-  const { basemapURL, basemapType, setBasemapType } = useBasemap("aerial");
+  const { basemapURL, basemapType, setBasemapType } = useBasemap(
+    initialBasemapType || "aerial"
+  );
 
   const geojsonBounds = useCurrentBounds({
     type: "Point",

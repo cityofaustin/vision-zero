@@ -14,7 +14,7 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     label: "Crash ID",
     sortable: true,
     valueRenderer: (record: fatalitiesListRow) => (
-      <Link href={`/crashes/${record.record_locator}`} prefetch={false}>
+      <Link href={`/fatalities/${record.record_locator}`} prefetch={false}>
         {record.record_locator}
       </Link>
     ),
@@ -94,8 +94,8 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     fetchAlways: true,
   },
   {
-    path: "address_primary",
-    label: "address_primary",
+    path: "address_display",
+    label: "address_display",
     exportOnly: true,
     fetchAlways: true,
   },

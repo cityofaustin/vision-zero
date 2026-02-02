@@ -2,8 +2,7 @@ CRASHES_QUERY = """
 query SocrataExportCrashes($limit: Int!, $minId: Int!) {
   socrata_export_crashes_view(limit: $limit, where: {id: {_gte: $minId}}) {
     id
-    address_primary
-    address_secondary
+    address_display
     bicycle_death_count
     bicycle_serious_injury_count
     case_id

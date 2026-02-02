@@ -5,10 +5,15 @@ import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/types/queryBuilder";
 import { ButtonGroup } from "react-bootstrap";
 import { produce } from "immer";
+import { useLogUserEvent } from "@/utils/userEvents";
 
 export interface TableMapToggleProps {
   queryConfig: QueryConfig;
   setQueryConfig: Dispatch<SetStateAction<QueryConfig>>;
+  /**
+   * If provided, enables logging a user event when map view is activated
+   */
+  eventName?: string;
 }
 
 /**
@@ -17,7 +22,30 @@ export interface TableMapToggleProps {
 export default function TableMapToggle({
   queryConfig,
   setQueryConfig,
+  eventName,
 }: TableMapToggleProps) {
+  const logUserEvent = useLogUserEvent();
+
+  const handleMapClick = () => {
+    if (queryConfig.mapConfig?.isActive) {
+      // nothing todo
+      return;
+    }
+
+    // Log the event when map is activated
+    if (eventName) {
+      logUserEvent(eventName);
+    }
+
+    const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
+      if (newQueryConfig.mapConfig) {
+        newQueryConfig.mapConfig.isActive = true;
+      }
+      return newQueryConfig;
+    });
+    setQueryConfig(newQueryConfig);
+  };
+
   return (
     <ButtonGroup>
       {/* list toggle */}
@@ -49,19 +77,7 @@ export default function TableMapToggle({
         variant={
           queryConfig.mapConfig?.isActive ? "primary" : "outline-primary"
         }
-        onClick={() => {
-          if (queryConfig.mapConfig?.isActive) {
-            // nothing todo
-            return;
-          }
-          const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
-            if (newQueryConfig.mapConfig) {
-              newQueryConfig.mapConfig.isActive = true;
-            }
-            return newQueryConfig;
-          });
-          setQueryConfig(newQueryConfig);
-        }}
+        onClick={handleMapClick}
       >
         <AlignedLabel>
           <FaMapPin />

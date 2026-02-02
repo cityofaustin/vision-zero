@@ -3,7 +3,7 @@ import { getInjuryColorClass } from "@/utils/people";
 import { ColDataCardDef } from "@/types/types";
 import { PeopleListRow } from "@/types/peopleList";
 import PersonNameField from "@/components/PersonNameField";
-import { formatAddresses, formatIsoDateTime } from "@/utils/formatters";
+import { formatIsoDateTime } from "@/utils/formatters";
 import { commonValidations } from "@/utils/formHelpers";
 import { formatCrashMatchStatus } from "@/configs/emsColumns";
 
@@ -38,7 +38,7 @@ export const ALL_PEOPLE_COLUMNS = {
     },
     valueRenderer: (record) => {
       const value = record.injry_sev?.label || "";
-      const className = `${getInjuryColorClass(value)} px-2 py-1 rounded`;
+      const className = `${getInjuryColorClass(value)} px-2 py-1 rounded text-nowrap`;
       return <span className={className}>{value}</span>;
     },
     sortable: true,
@@ -171,12 +171,9 @@ export const ALL_PEOPLE_COLUMNS = {
     valueFormatter: formatIsoDateTime,
     sortable: true,
   },
-  address_combined: {
-    path: "crash.address_primary",
+  address_display: {
+    path: "crash.address_display",
     label: "Address",
-    valueRenderer: (record) => {
-      return record.crash ? formatAddresses(record.crash) : "";
-    },
     sortable: true,
   },
   record_locator: {

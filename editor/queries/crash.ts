@@ -18,6 +18,7 @@ export const GET_CRASH = gql`
       case_id
       crash_timestamp
       fhe_collsn_id
+      is_coa_roadway
       collsn {
         id
         label
@@ -40,7 +41,7 @@ export const GET_CRASH = gql`
       obj_struck_id
       crash_speed_limit
       traffic_cntl_id
-      address_primary
+      address_display
       rpt_block_num
       rpt_street_name
       rpt_street_desc
@@ -58,7 +59,6 @@ export const GET_CRASH = gql`
       rpt_street_pfx
       rpt_street_name
       rpt_street_sfx
-      address_secondary
       rpt_sec_block_num
       rpt_sec_street_name
       rpt_sec_street_desc
@@ -85,6 +85,7 @@ export const GET_CRASH = gql`
       toll_road_fl
       law_enforcement_ytd_fatality_num
       investigator_narrative
+      narrative_summary
       cr3_stored_fl
       latitude
       longitude
@@ -135,6 +136,7 @@ export const GET_CRASH = gql`
           id
           label
         }
+        veh_hnr_fl
         movement_id
         movt {
           id
@@ -165,6 +167,9 @@ export const GET_CRASH = gql`
           sus_serious_injry_count
         }
       }
+      unit_types_involved {
+        unit_types_involved
+      }
       people_list_view(order_by: { unit_nbr: asc, prsn_nbr: asc }) {
         crash_pk
         id
@@ -179,6 +184,11 @@ export const GET_CRASH = gql`
         prsn_mid_name
         prsn_last_name
         prsn_injry_sev_id
+        prsn_rest_id
+        rest {
+          id
+          label
+        }
         injry_sev {
           id
           label
@@ -205,6 +215,7 @@ export const GET_CRASH = gql`
         }
       }
       charges_cris {
+        id
         unit_nbr
         prsn_nbr
         citation_nbr

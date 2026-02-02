@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
 import { useQuery } from "@/utils/graphql";
+import { useLogUserEvent } from "@/utils/userEvents";
 import { unparse } from "papaparse";
 import AlignedLabel from "./AlignedLabel";
 import { FaCircleInfo, FaDownload } from "react-icons/fa6";
@@ -48,6 +49,10 @@ interface TableExportModalProps<T extends Record<string, unknown>> {
    * The typename of the query root that will be used to access the rows returned by the query
    */
   typename: string;
+  /**
+   * If provided, enables logging a user event when download modal is opened
+   */
+  eventName?: string;
 }
 
 /**
@@ -76,18 +81,37 @@ export default function TableExportModal<T extends Record<string, unknown>>({
   totalRecordCount,
   show,
   typename,
+  eventName,
 }: TableExportModalProps<T>) {
   /**
    * TODO: exclude aggregations from export
    * https://github.com/cityofaustin/atd-data-tech/issues/20481
    */
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const logUserEvent = useLogUserEvent();
+  const hasLoggedEvent = useRef(false);
+
   const { data, isLoading, error } = useQuery<T>({
     // don't fetch until this modal is visible
     query: show ? query : null,
     typename,
     hasAggregates: false,
   });
+
+  /**
+   * Hook which logs the download event when the modal is opened
+   */
+  useEffect(() => {
+    if (show && eventName && !hasLoggedEvent.current) {
+      hasLoggedEvent.current = true;
+      logUserEvent(eventName);
+    }
+
+    // Reset the flag when modal is closed
+    if (!show) {
+      hasLoggedEvent.current = false;
+    }
+  }, [show, eventName, logUserEvent]);
 
   /**
    * Hook which creates the CSV download blob when data becomes available
