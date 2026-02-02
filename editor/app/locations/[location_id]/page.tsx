@@ -17,7 +17,6 @@ import { locationCrashesColumns } from "@/configs/locationCrashesColumns";
 import { locationCrashesQueryConfig } from "@/configs/locationCrashesTable";
 import AlignedLabel from "@/components/AlignedLabel";
 import { FaCircleInfo } from "react-icons/fa6";
-import { locationNotesColumns } from "@/configs/notesColumns";
 import NotesCard from "@/components/NotesCard";
 import {
   INSERT_LOCATION_NOTE,
@@ -144,11 +143,11 @@ export default function LocationDetailsPage({
         <Col sm={12}>
           <NotesCard
             notes={location.location_notes || []}
-            notesColumns={locationNotesColumns}
             updateMutation={UPDATE_LOCATION_NOTE}
             insertMutation={INSERT_LOCATION_NOTE}
             onSaveCallback={onSaveCallback}
             recordId={location.location_id}
+            recordKey="location_id"
             refetch={onSaveCallback}
           />
         </Col>

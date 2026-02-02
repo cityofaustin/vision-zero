@@ -6,30 +6,33 @@ import { useMutation } from "@/utils/graphql";
 import { useAuth0 } from "@auth0/auth0-react";
 import { CrashNote } from "@/types/crashNote";
 import { useRef } from "react";
+import { LocationNote } from "@/types/locationNote";
 
-interface NotesModalProps {
+interface NotesModalProps<T extends CrashNote | LocationNote> {
   show: boolean;
   handleCloseModal: () => void;
   onSubmitCallback: () => void;
-  recordId?: number;
   insertMutation: string;
   updateMutation: string;
-  note: Partial<CrashNote>;
+  note: Partial<T>;
+  recordKey: keyof T; // 'crash_pk' or 'location_id'
+  recordId?: number | string;
 }
 
 interface NoteFormInputs {
   text: string;
 }
 
-export default function NotesModal({
+export default function NotesModal<T extends CrashNote | LocationNote>({
   show,
   handleCloseModal,
   onSubmitCallback,
   recordId,
+  recordKey,
   insertMutation,
   updateMutation,
   note,
-}: NotesModalProps) {
+}: NotesModalProps<T>) {
   const { user } = useAuth0();
   // we need a ref to ensure autofocus inside the modal
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -48,11 +51,11 @@ export default function NotesModal({
   );
 
   const onSubmit: SubmitHandler<NoteFormInputs> = async (data) => {
-    const updates: Partial<CrashNote> = {
+    const updates = {
       text: data.text,
-      crash_pk: recordId,
+      [recordKey]: recordId,
       updated_by: user?.email,
-    };
+    } as Partial<T>;
 
     let variables;
 

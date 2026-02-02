@@ -3,21 +3,22 @@ import Card from "react-bootstrap/Card";
 import { useState } from "react";
 import { LuCirclePlus } from "react-icons/lu";
 import NotesModal from "./NotesModal";
-import { ColDataCardDef } from "@/types/types";
 import AlignedLabel from "@/components/AlignedLabel";
 import DeleteNoteButton from "@/components/DeleteNoteButton";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import { CrashNote } from "@/types/crashNote";
 import { formatDate, formatUserName } from "@/utils/formatters";
 import { LuSquarePen } from "react-icons/lu";
+import { LocationNote } from "@/types/locationNote";
 
 const allowedNoteRoles = ["vz-admin", "editor"];
 
-interface NotesCardProps {
-  notes: CrashNote[];
+interface NotesCardProps<T extends CrashNote | LocationNote> {
+  notes: T[];
   updateMutation: string;
   insertMutation: string;
-  recordId: number;
+  recordId: number | string;
+  recordKey: keyof T; // 'crash_pk' or 'location_id';
   onSaveCallback: () => Promise<void>;
   refetch: () => Promise<void>;
 }
@@ -38,14 +39,15 @@ const AddNoteButton = ({ onClick }: { onClick: () => void }) => {
 /**
  * UI component for adding a note to a crash
  */
-export default function NotesCard({
+export default function NotesCard<T extends CrashNote | LocationNote>({
   notes,
   updateMutation,
   insertMutation,
   recordId,
+  recordKey,
   onSaveCallback,
-}: NotesCardProps) {
-  const [editNote, setEditNote] = useState<Partial<CrashNote> | null>(null);
+}: NotesCardProps<T>) {
+  const [editNote, setEditNote] = useState<Partial<T> | null>(null);
   const handleCloseModal = () => {
     setEditNote(null);
   };
@@ -54,7 +56,10 @@ export default function NotesCard({
     <Card className="h-100">
       <Card.Header className="d-flex justify-content-between">
         <Card.Title>Notes</Card.Title>
-        <AddNoteButton onClick={() => setEditNote({ text: "" })} />
+        <AddNoteButton
+          // type assertion here because TS can't figure out that `text` satifies a partial<T>
+          onClick={() => setEditNote({ text: "" } as Partial<T>)}
+        />
       </Card.Header>
       <Card.Body>
         {notes.length === 0 && <div className="text-secondary">No notes</div>}
@@ -97,12 +102,13 @@ export default function NotesCard({
         })}
       </Card.Body>
       {editNote && (
-        <NotesModal
+        <NotesModal<T>
           note={editNote}
           show={true}
           handleCloseModal={handleCloseModal}
           onSubmitCallback={onSaveCallback}
           recordId={recordId}
+          recordKey={recordKey}
           insertMutation={insertMutation}
           updateMutation={updateMutation}
         />

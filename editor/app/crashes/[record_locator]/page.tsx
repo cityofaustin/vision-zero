@@ -237,6 +237,7 @@ export default function CrashDetailsPage({
             insertMutation={INSERT_CRASH_NOTE}
             onSaveCallback={onSaveCallback}
             recordId={crash.id}
+            recordKey="crash_pk"
             refetch={onSaveCallback}
           />
         </Col>
