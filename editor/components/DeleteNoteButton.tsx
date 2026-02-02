@@ -1,8 +1,7 @@
 import Button from "react-bootstrap/Button";
 import { useMutation } from "@/utils/graphql";
 import AlignedLabel from "@/components/AlignedLabel";
-import { FaTrashCan } from "react-icons/fa6";
-import { LuTrash, LuPencil } from "react-icons/lu";
+import { LuTrash } from "react-icons/lu";
 import { HeaderActionComponentProps } from "@/components/DataCard";
 import PermissionsRequired from "@/components/PermissionsRequired";
 

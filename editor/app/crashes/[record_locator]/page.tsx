@@ -18,7 +18,6 @@ import ShortcutHelperText from "@/components/ShortcutHelperText";
 import UserEventsLogger from "@/components/UserEventsLogger";
 import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
 import { crashDataCards } from "@/configs/crashDataCard";
-import { crashNotesColumns } from "@/configs/notesColumns";
 import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
 import { emsRelatedRecordCols } from "@/configs/emsRelatedRecordTable";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
@@ -222,20 +221,6 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      {/* <Row id="notes" className="offset-header-scroll-top">
-        <ShortcutHelperText shortcutKey="N" />
-        <Col sm={12} md={6} className="mb-1">
-          <NotesCard
-            notes={crash.crash_notes || []}
-            notesColumns={crashNotesColumns}
-            updateMutation={UPDATE_CRASH_NOTE}
-            insertMutation={INSERT_CRASH_NOTE}
-            onSaveCallback={onSaveCallback}
-            recordId={crash.id}
-            refetch={onSaveCallback}
-          />
-        </Col>
-      </Row> */}
       <Row id="fatality" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="F" />
         <Col sm={12} md={6} className="mb-1">
@@ -248,7 +233,6 @@ export default function CrashDetailsPage({
         <Col sm={12} md={6} className="mb-1">
           <NotesCard
             notes={crash.crash_notes || []}
-            notesColumns={crashNotesColumns}
             updateMutation={UPDATE_CRASH_NOTE}
             insertMutation={INSERT_CRASH_NOTE}
             onSaveCallback={onSaveCallback}

@@ -17,7 +17,6 @@ interface NotesCardProps {
   notes: CrashNote[];
   updateMutation: string;
   insertMutation: string;
-  notesColumns: ColDataCardDef<CrashNote>[];
   recordId: number;
   onSaveCallback: () => Promise<void>;
   refetch: () => Promise<void>;
@@ -41,7 +40,6 @@ const AddNoteButton = ({ onClick }: { onClick: () => void }) => {
  */
 export default function NotesCard({
   notes,
-  notesColumns,
   updateMutation,
   insertMutation,
   recordId,
@@ -69,7 +67,7 @@ export default function NotesCard({
               <Card.Footer className="d-flex justify-content-between border-top text-secondary">
                 <div>
                   <small>
-                    <span className="">{`Updated by ${formatUserName(note.updated_by)}`}</span>
+                    <span className="">{formatUserName(note.updated_by)}</span>
                     <span>{` on `}</span>
                     <span className="text-nowrap">
                       {formatDate(note.updated_at)}
