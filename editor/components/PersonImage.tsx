@@ -31,7 +31,7 @@ export default function PersonImage({
         src={imageUrl}
         height={100}
         width={100}
-        className="me-3"
+        className="me-3 p-1 border rounded editable-image"
         onClick={onClick}
         style={{
           cursor: "pointer",
@@ -51,7 +51,7 @@ export default function PersonImage({
       }}
       height={100}
       width={100}
-      className="me-3"
+      className="me-3 p-1 border rounded editable-image"
       onClick={onClick}
     />
   );

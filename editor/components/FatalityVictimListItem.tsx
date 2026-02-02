@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { Unit } from "@/types/unit";
 import { useGetToken } from "@/utils/auth";
 
-interface FatalityVictimProps {
+interface FatalityVictimListItemProps {
   victim: PeopleListRow;
   unit: Unit;
 }
@@ -34,7 +34,10 @@ const getPersonType = (victim: PeopleListRow) =>
  * This component is rendered for each victim in the FatalityUnitsCards component.
  * It renders person info, the person image, and person image upload modal
  */
-export default function FatalityVictim({ victim, unit }: FatalityVictimProps) {
+export default function FatalityVictimListItem({
+  victim,
+  unit,
+}: FatalityVictimListItemProps) {
   const [showModal, setShowModal] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   // Used to force a re-mount of PersonImage after new image is uploaded in modal

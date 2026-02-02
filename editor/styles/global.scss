@@ -375,4 +375,14 @@ to make sure it renders on top is a common fix */
   opacity: 1;
 }
 
+/* Used in fatal victim PersonImages*/
+.editable-image {
+  transition: all 0.2s;
+}
+
+.editable-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 @import "bootstrap/scss/bootstrap.scss";

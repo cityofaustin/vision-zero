@@ -10,3 +10,6 @@ export const COLORS = {
 
 export const ALLOWED_QUERY_PAGE_SIZES = [10, 50, 250, 1000] as const;
 export type AllowedPageSize = (typeof ALLOWED_QUERY_PAGE_SIZES)[number];
+
+export const MAX_SIZE_MB = 5;
+export const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
