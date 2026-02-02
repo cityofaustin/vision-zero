@@ -140,7 +140,11 @@ class TestUserCreateUser:
     def test_create_user_requires_auth(self, api_base_url, test_user_email):
         """Test that create user requires authentication"""
         res = requests.post(
-            f"{api_base_url}/user/create_user", json={"email": test_user_email}
+            f"{api_base_url}/user/create_user",
+            json={
+                "email": test_user_email,
+                "app_metadata": {"roles": ["readonly"]},
+            },
         )
         assert res.status_code == 401
 
@@ -149,10 +153,128 @@ class TestUserCreateUser:
         res = requests.post(
             f"{api_base_url}/user/create_user",
             headers=headers,
-            json={"email": test_user_email},
+            json={
+                "email": test_user_email,
+                "app_metadata": {"roles": ["readonly"]},
+            },
         )
         assert res.status_code == 403
         assert "You do not have permission" in res.json()["message"]
+
+    def test_create_user_missing_app_metadata(
+        self, api_base_url, admin_headers, test_user_email
+    ):
+        """Test that create user requires app_metadata"""
+        res = requests.post(
+            f"{api_base_url}/user/create_user",
+            headers=admin_headers,
+            json={
+                "name": "Test User",
+                "email": test_user_email,
+            },
+        )
+        assert res.status_code == 400
+        assert "Invalid app_metadata" in res.json()["error"]
+
+    def test_create_user_empty_roles(
+        self, api_base_url, admin_headers, test_user_email
+    ):
+        """Test that app_metadata.roles must contain exactly one role"""
+        res = requests.post(
+            f"{api_base_url}/user/create_user",
+            headers=admin_headers,
+            json={
+                "name": "Test User",
+                "email": test_user_email,
+                "app_metadata": {"roles": []},
+            },
+        )
+        assert res.status_code == 400
+        assert "Invalid app_metadata.roles" in res.json()["error"]
+
+    def test_create_user_multiple_roles(
+        self, api_base_url, admin_headers, test_user_email
+    ):
+        """Test that app_metadata.roles must contain exactly one role"""
+        res = requests.post(
+            f"{api_base_url}/user/create_user",
+            headers=admin_headers,
+            json={
+                "name": "Test User",
+                "email": test_user_email,
+                "app_metadata": {"roles": ["readonly", "editor"]},
+            },
+        )
+        assert res.status_code == 400
+        assert "Invalid app_metadata.roles" in res.json()["error"]
+
+    def test_create_user_invalid_role_value(
+        self, api_base_url, admin_headers, test_user_email
+    ):
+        """Test that role must be one of the allowed values"""
+        res = requests.post(
+            f"{api_base_url}/user/create_user",
+            headers=admin_headers,
+            json={
+                "name": "Test User",
+                "email": test_user_email,
+                "app_metadata": {"roles": ["invalid_role"]},
+            },
+        )
+        assert res.status_code == 400
+        assert "must be one of" in res.json()["error"]
+
+    def test_create_user_with_readonly_role(
+        self, api_base_url, admin_headers, test_user_email
+    ):
+        """Test creating a user with readonly role"""
+        res = requests.post(
+            f"{api_base_url}/user/create_user",
+            headers=admin_headers,
+            json={
+                "name": "Test User",
+                "email": test_user_email,
+                "app_metadata": {"roles": ["readonly"]},
+            },
+        )
+        assert res.status_code == 201
+        user_data = res.json()
+        assert user_data["email"] == test_user_email
+        assert "user_id" in user_data
+
+    def test_create_user_with_editor_role(
+        self, api_base_url, admin_headers, test_user_email
+    ):
+        """Test creating a user with editor role"""
+        res = requests.post(
+            f"{api_base_url}/user/create_user",
+            headers=admin_headers,
+            json={
+                "name": "Test User",
+                "email": test_user_email,
+                "app_metadata": {"roles": ["editor"]},
+            },
+        )
+        assert res.status_code == 201
+        user_data = res.json()
+        assert user_data["email"] == test_user_email
+
+    def test_create_user_with_admin_role(
+        self, api_base_url, admin_headers, test_user_email
+    ):
+        """Test creating a user with vz-admin role"""
+        res = requests.post(
+            f"{api_base_url}/user/create_user",
+            headers=admin_headers,
+            json={
+                "name": "Test User",
+                "email": test_user_email,
+                "app_metadata": {"roles": ["vz-admin"]},
+            },
+        )
+        assert res.status_code == 201
+        user_data = res.json()
+        assert user_data["email"] == test_user_email
 
     def test_create_user_with_admin(self, api_base_url, admin_headers, test_user_email):
         """Test creating a user with admin privileges"""
@@ -212,7 +334,6 @@ class TestUserUpdateUser:
         )
         assert res.status_code == 401
 
-    # todo: add app_metadata.roles here and test chaning them
     def test_update_user_requires_admin(self, api_base_url, headers):
         """Test that update user requires admin role"""
         res = requests.put(
@@ -305,7 +426,10 @@ class TestUserDeleteUser:
         create_res = requests.post(
             f"{api_base_url}/user/create_user",
             headers=admin_headers,
-            json={"email": test_email},
+            json={
+                "email": test_email,
+                "app_metadata": {"roles": ["readonly"]},
+            },
         )
         assert create_res.status_code == 201
 
@@ -323,4 +447,4 @@ class TestUserDeleteUser:
         res = requests.delete(
             f"{api_base_url}/user/delete_user/{fake_id}", headers=admin_headers
         )
-        assert res.status_code == 404
+        assert res.status_code == 204
