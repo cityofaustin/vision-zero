@@ -497,11 +497,11 @@ def user_create_user():
 
         # validate our custom user metadata
         app_metadata = json_data.get("app_metadata")
-        if not app_metadata or type(app_metadata) != "dict":
-            return jsonify(error="Invalid app_metadta"), 400
+        if not app_metadata or type(app_metadata) != dict:
+            return jsonify(error="Invalid app_metadata"), 400
 
         roles = app_metadata.get("roles")
-        if not roles or type(roles) != "list" or len(roles) != 1:
+        if not roles or type(roles) != list or len(roles) != 1:
             return jsonify(error="Invalid app_metadata.roles"), 400
 
         if roles[0] not in ["readonly", "editor", "vz-admin"]:
