@@ -9,7 +9,6 @@ export interface FatalitiesMapPopupContentProps {
 export default function FatalitiesMapPopupContent({
   properties,
 }: FatalitiesMapPopupContentProps) {
-  console.log("new ", properties)
   return (
     <div className="h-100 m-1 px-1" style={{ minWidth: "125px" }}>
       <div className="fw-bold fs-6 pb-2 border-bottom">
