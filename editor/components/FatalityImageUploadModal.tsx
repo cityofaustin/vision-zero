@@ -2,7 +2,6 @@ import { Modal, Button, Form, Row, Col, Image, Spinner } from "react-bootstrap";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useGetToken } from "@/utils/auth";
-import { MAX_SIZE_MB, MAX_SIZE_BYTES } from "@/utils/constants";
 
 interface FatalityImageUploadModalProps {
   showModal: boolean;
@@ -19,6 +18,9 @@ interface FormData {
   file: FileList;
   image_source: string;
 }
+
+const MAX_SIZE_MB = 5;
+const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
 /**
  * The modal interface for uploading a fatality victim photo.
