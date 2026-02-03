@@ -33,7 +33,6 @@ export default function FatalityImageUploadModal({
   setImageVersion,
 }: FatalityImageUploadModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const getToken = useGetToken();
@@ -44,7 +43,6 @@ export default function FatalityImageUploadModal({
     reset,
     formState: { errors, isDirty },
     watch,
-    trigger,
   } = useForm<FormData>({
     mode: "onChange",
     defaultValues: {
@@ -56,26 +54,24 @@ export default function FatalityImageUploadModal({
   const file = watch("file");
   const imageSource = watch("image_source");
 
-  // Validates form when fields change
+  // Keeps track of file updates and errors to update preview URL
   useEffect(() => {
-    if (file?.length > 0 || imageSource) {
-      trigger();
+    if (file && file.length > 0 && !errors.file) {
+      const url = URL.createObjectURL(file[0]);
+      setPreviewUrl(url);
+
+      // Return cleanup function that revokes this specific URL
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    } else {
+      setPreviewUrl(null);
     }
-  }, [file, imageSource, trigger]);
+  }, [file, errors.file]);
 
-  // Cleanup previewURL
-  useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
-
-  // Uploads the image to the API
+  /**  Uploads the image to the API */
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
-    setError(null);
     try {
       const formData = new FormData();
 
@@ -109,7 +105,7 @@ export default function FatalityImageUploadModal({
       setImageVersion((prev) => prev + 1);
       handleClose();
     } catch (err) {
-      setError(
+      console.log(
         err instanceof Error ? err.message : "An unknown error occurred"
       );
     } finally {
@@ -119,55 +115,32 @@ export default function FatalityImageUploadModal({
 
   const handleClose = () => {
     if (!isSubmitting) {
-      reset();
-      setError(null);
       setShowModal(false);
-      setPreviewUrl(null);
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPreviewUrl(null);
-    setError(null);
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      // Validate file type
-      const validTypes = ["image/jpeg", "image/jpg", "image/png"];
-      if (!validTypes.includes(selectedFile.type)) {
-        setError("File must be JPEG, JPG or PNG");
-        e.target.value = "";
-        return;
-      }
-
-      // Validate file size
-      if (selectedFile.size > MAX_SIZE_BYTES) {
-        setError(`File must be smaller than ${MAX_SIZE_MB}MB`);
-        e.target.value = "";
-        return;
-      }
-
-      // Finally if file is valid, create preview URL
-      const url = URL.createObjectURL(selectedFile);
-      setPreviewUrl(url);
-    }
-  };
-
+  const isValid = !errors.file && !errors.image_source;
   const isFormComplete = () => {
-    return file?.length > 0 && imageSource && imageSource.trim() !== "";
+    return (
+      file?.length > 0 && imageSource && imageSource.trim() !== "" && isValid
+    );
   };
 
   return (
-    <Modal show={showModal} size="lg" onHide={handleClose}>
+    <Modal
+      show={showModal}
+      size="lg"
+      onHide={handleClose}
+      onExited={() => {
+        setPreviewUrl(null);
+        reset();
+      }}
+    >
       <Modal.Header closeButton>
         <Modal.Title>{`Photo | ${victimName}`}</Modal.Title>
       </Modal.Header>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Modal.Body>
-          {error && (
-            <div className="alert alert-danger" role="alert">
-              {error}
-            </div>
-          )}
           <Row className="mb-3">
             <Col>
               <Form.Group controlId="formFile">
@@ -177,13 +150,40 @@ export default function FatalityImageUploadModal({
                   accept=".jpg,.jpeg,.png,image/jpeg,image/png"
                   {...register("file", {
                     required: true,
+                    validate: {
+                      fileType: (files) => {
+                        if (!files || files.length === 0) return true;
+                        const file = files[0];
+                        const validTypes = [
+                          "image/jpeg",
+                          "image/jpg",
+                          "image/png",
+                        ];
+                        return (
+                          validTypes.includes(file.type) ||
+                          "File must be JPEG or PNG"
+                        );
+                      },
+                      fileSize: (files) => {
+                        if (!files || files.length === 0) return true;
+                        const file = files[0];
+                        return (
+                          file.size <= MAX_SIZE_BYTES ||
+                          `File must be smaller than ${MAX_SIZE_MB}MB`
+                        );
+                      },
+                    },
                   })}
-                  onChange={handleFileChange}
                   isInvalid={!!errors.file}
                 />
-                <Form.Text className="text-muted">
-                  JPEG or PNG, max 5MB
-                </Form.Text>
+                {!errors.file?.message && (
+                  <Form.Text className="text-muted">
+                    JPEG or PNG, max 5MB
+                  </Form.Text>
+                )}
+                <Form.Control.Feedback type="invalid">
+                  {errors.file?.message}
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col>
@@ -203,7 +203,7 @@ export default function FatalityImageUploadModal({
               </Form.Group>
             </Col>
           </Row>
-          {previewUrl && (
+          {!errors.file && previewUrl && (
             <div className="d-flex mt-3 justify-content-center">
               <Image
                 src={previewUrl}
@@ -212,7 +212,7 @@ export default function FatalityImageUploadModal({
               />
             </div>
           )}
-          {imageUrl && !previewUrl && !isLoading && (
+          {!errors.file && imageUrl && !previewUrl && !isLoading && (
             <div className="d-flex mt-3 justify-content-center">
               <Image
                 src={imageUrl}
