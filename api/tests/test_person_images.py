@@ -12,7 +12,9 @@ def api_url(api_base_url, test_person_id):
     return f"{api_base_url}/images/person/{test_person_id}"
 
 
-def test_new_image_upload_get_delete_flow(api_url, editor_user_headers, test_image_jpg, cleanup_person_image):
+def test_new_image_upload_get_delete_flow(
+    api_url, editor_user_headers, test_image_jpg, cleanup_person_image
+):
     """Test the complete upload -> get -> delete flow for a new image"""
 
     # Upload (create new)
@@ -51,7 +53,9 @@ def test_upload_png(api_url, editor_user_headers, test_image_png, cleanup_person
     assert res.status_code == 201
 
 
-def test_upsert_update_source_only(api_url, editor_user_headers, test_image_jpg, cleanup_person_image):
+def test_upsert_update_source_only(
+    api_url, editor_user_headers, test_image_jpg, cleanup_person_image
+):
     """Test updating only the image_source without uploading a new file."""
     # First, create an image
     files = {"file": test_image_jpg}
@@ -66,7 +70,13 @@ def test_upsert_update_source_only(api_url, editor_user_headers, test_image_jpg,
     assert res.json()["success"] is True
 
 
-def test_upsert_update_file(api_url, editor_user_headers, test_image_jpg, create_test_image, cleanup_person_image):
+def test_upsert_update_file(
+    api_url,
+    editor_user_headers,
+    test_image_jpg,
+    create_test_image,
+    cleanup_person_image,
+):
     """Test updating an existing image file with a new image and source"""
     # First, create an image
     files = {"file": test_image_jpg}
@@ -92,7 +102,9 @@ def test_upsert_update_file(api_url, editor_user_headers, test_image_jpg, create
     assert img.size == (300, 300)
 
 
-def test_upsert_change_format(api_url, editor_user_headers, test_image_jpg, test_image_png, cleanup_person_image):
+def test_upsert_change_format(
+    api_url, editor_user_headers, test_image_jpg, test_image_png, cleanup_person_image
+):
     """Test changing image format from JPEG to PNG."""
     # Upload JPEG
     files = {"file": test_image_jpg}
@@ -150,7 +162,13 @@ def test_upload_new_no_source(api_url, editor_user_headers, test_image_jpg):
     )
 
 
-def test_update_file_without_source(api_url, editor_user_headers, test_image_jpg, create_test_image, cleanup_person_image):
+def test_update_file_without_source(
+    api_url,
+    editor_user_headers,
+    test_image_jpg,
+    create_test_image,
+    cleanup_person_image,
+):
     """Test error when updating file without providing source."""
     # First, create an image
     files = {"file": test_image_jpg}

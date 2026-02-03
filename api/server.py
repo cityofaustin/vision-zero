@@ -418,7 +418,7 @@ def download_crash_id(crash_id):
     return jsonify(message=url)
 
 
-@app.route("/images/person/<int:person_id>", methods=["GET", "DELETE", "PUT"])
+@app.route("/images/person/<int:person_id>", methods=["DELETE", "PUT"])
 @cross_origin(
     headers=[
         "Content-Type",
@@ -431,22 +431,30 @@ def download_crash_id(crash_id):
 @requires_roles(ADMIN_ROLE_NAME, EDITOR_ROLE_NAME)
 @validate_file_size(MAX_IMAGE_SIZE_MEGABYTES)
 def person_image(person_id):
-    """Handles person images. Expects a jpeg or png sent in the `file` property"""
-
-    if not person_id:
-        # todo: can this even happen?
-        return jsonify(error="Missing person_id"), 400
-
-    if request.method == "GET":
-        return _get_person_image_url(person_id, s3)
-
-    elif request.method == "PUT":
+    """Upserts or deletes a person image"""
+    if request.method == "PUT":
         return _upsert_person_image(person_id, s3)
 
     elif request.method == "DELETE":
         return _delete_person_image(person_id, s3)
 
     return jsonify(message="Bad Request"), 400
+
+
+@app.route("/images/person/<int:person_id>", methods=["GET"])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
+@requires_auth
+@validate_file_size(MAX_IMAGE_SIZE_MEGABYTES)
+def person_image(person_id):
+    """Retrieves a person image"""
+    return _get_person_image_url(person_id, s3)
 
 
 @app.route("/user/test")
