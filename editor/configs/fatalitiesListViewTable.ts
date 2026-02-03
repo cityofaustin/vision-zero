@@ -292,6 +292,7 @@ export const fatalitiesListViewQueryConfig: QueryConfig = {
   filterCards: fatalitiesListViewFilterCards,
   mapConfig: {
     isActive: false,
+    popupComponentName: "fatalitiesTableMap",
     layerProps: {
       id: "points-layer",
       type: "circle",
