@@ -13,7 +13,6 @@ type MapGLComponentProps = React.ComponentProps<typeof MapGL>;
 export const getPopupComponent = (
   popupName: "locationTableMap" | "fatalitiesTableMap" | undefined
 ) => {
-  console.log(popupName)
   switch (popupName) {
     case "locationTableMap":
       return LocationTableMapPopupContent;
