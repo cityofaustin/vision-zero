@@ -193,7 +193,7 @@ export default function FatalityImageUploadModal({
                 <Form.Label className="fw-bold">Image source</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="https://www.legacy.com/us/obituaries/statesman/"
+                  placeholder="ex: https://www.legacy.com/us/obituaries/statesman/"
                   {...register("image_source", {
                     required: true,
                   })}
@@ -211,16 +211,13 @@ export default function FatalityImageUploadModal({
                 src={previewUrl}
                 alt="Preview"
                 style={{ maxWidth: "600px", maxHeight: "600px" }}
+                fluid // Makes image responsive to parent width
               />
             </div>
           )}
           {!errors.file && imageUrl && !previewUrl && !isLoading && (
             <div className="d-flex mt-3 justify-content-center">
-              <Image
-                src={imageUrl}
-                alt="Preview"
-                style={{ maxWidth: "600px", maxHeight: "600px" }}
-              />
+              <Image src={imageUrl} alt="Preview" fluid />
             </div>
           )}
           {isLoading && (
