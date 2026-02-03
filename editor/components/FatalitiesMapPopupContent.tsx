@@ -26,6 +26,12 @@ export default function FatalitiesMapPopupContent({
           {formatDate(properties?.crash_timestamp)}
         </span>
       </div>
+      <div className="d-flex justify-content-between">
+        <span className="fw-bold">YTD Fatal Crash</span>
+        <span className="text-muted">
+          {properties?.ytd_fatal_crash}
+        </span>
+      </div>
     </div>
   );
 }
