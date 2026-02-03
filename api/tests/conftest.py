@@ -44,13 +44,23 @@ def get_jwt_from_credentials(username, password, domain, client_id):
 
     return response.json()["access_token"]
 
-
 @pytest.fixture(scope="session")
-def headers():
+def read_only_user_headers():
     """Standard user auth headers (readonly)"""
     token = get_jwt_from_credentials(
-        username=os.getenv("TEST_USER_EMAIL"),
-        password=os.getenv("TEST_USER_PASSWORD"),
+        username=os.getenv("READ_ONLY_USER_EMAIL"),
+        password=os.getenv("READ_ONLY_USER_PASSWORD"),
+        domain=os.getenv("AUTH0_DOMAIN"),
+        client_id=os.getenv("CLIENT_ID"),
+    )
+    return {"Authorization": f"Bearer {token}"}
+
+@pytest.fixture(scope="session")
+def editor_user_headers():
+    """Standard user auth headers (readonly)"""
+    token = get_jwt_from_credentials(
+        username=os.getenv("EDITOR_USER_EMAIL"),
+        password=os.getenv("EDITOR_USER_PASSWORD"),
         domain=os.getenv("AUTH0_DOMAIN"),
         client_id=os.getenv("CLIENT_ID"),
     )
@@ -58,7 +68,7 @@ def headers():
 
 
 @pytest.fixture(scope="session")
-def admin_headers():
+def admin_user_headers():
     """Admin user auth headers"""
     token = get_jwt_from_credentials(
         username=os.getenv("ADMIN_USER_EMAIL"),
@@ -119,18 +129,18 @@ def create_test_image():
 
 
 @pytest.fixture
-def cleanup_person_image(test_person_id, headers):
+def cleanup_person_image(test_person_id, editor_user_headers):
     """Delete person image after test."""
     yield
     try:
         url = f"{API_BASE_URL}/images/person/{test_person_id}"
-        requests.delete(url, headers=headers)
+        requests.delete(url, headers=editor_user_headers)
     except:
         pass
 
 
 @pytest.fixture
-def cleanup_test_user(admin_headers):
+def cleanup_test_user(admin_user_headers):
     """Factory fixture to clean up test users by email after tests."""
     users_to_cleanup = []
 
@@ -145,7 +155,7 @@ def cleanup_test_user(admin_headers):
         try:
             list_res = requests.get(
                 f"{API_BASE_URL}/user/list_users",
-                headers=admin_headers,
+                headers=admin_user_headers,
                 params={"page": 0, "per_page": 100},
             )
             if list_res.status_code == 200:
@@ -154,7 +164,7 @@ def cleanup_test_user(admin_headers):
                     if user.get("email") == email:
                         requests.delete(
                             f"{API_BASE_URL}/user/delete_user/{user['user_id']}",
-                            headers=admin_headers,
+                            headers=admin_user_headers,
                         )
                         break
         except:

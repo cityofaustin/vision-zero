@@ -14,9 +14,9 @@ class TestUserTest:
         res = requests.get(f"{api_base_url}/user/test")
         assert res.status_code == 401
 
-    def test_user_test_with_auth(self, api_base_url, headers):
+    def test_user_test_with_auth(self, api_base_url, editor_user_headers):
         """Test user test endpoint returns current user info"""
-        res = requests.get(f"{api_base_url}/user/test", headers=headers)
+        res = requests.get(f"{api_base_url}/user/test", headers=editor_user_headers)
         assert res.status_code == 200
         assert "message" in res.json()
 
@@ -35,11 +35,11 @@ class TestUserListUsers:
         res = requests.get(f"{api_base_url}/user/list_users?page=0&per_page=10")
         assert res.status_code == 401
 
-    def test_list_users_with_auth(self, api_base_url, headers):
+    def test_list_users_with_auth(self, api_base_url, editor_user_headers):
         """Test listing users with pagination"""
         res = requests.get(
             f"{api_base_url}/user/list_users",
-            headers=headers,
+            headers=editor_user_headers,
             params={"page": 0, "per_page": 10},
         )
         assert res.status_code == 200
@@ -52,11 +52,11 @@ class TestUserListUsers:
         assert "length" in data
         assert isinstance(data["users"], list)
 
-    def test_list_users_pagination(self, api_base_url, headers):
+    def test_list_users_pagination(self, api_base_url, editor_user_headers):
         """Test pagination parameters work"""
         res = requests.get(
             f"{api_base_url}/user/list_users",
-            headers=headers,
+            headers=editor_user_headers,
             params={"page": 1, "per_page": 5},
         )
         assert res.status_code == 200
@@ -72,12 +72,12 @@ class TestUserGetUser:
         res = requests.get(f"{api_base_url}/user/get_user/auth0|123456")
         assert res.status_code == 401
 
-    def test_get_user_with_auth(self, api_base_url, headers):
+    def test_get_user_with_auth(self, api_base_url, editor_user_headers):
         """Test getting a specific user"""
         # First get the list to find a valid user ID
         list_res = requests.get(
             f"{api_base_url}/user/list_users",
-            headers=headers,
+            headers=editor_user_headers,
             params={"page": 0, "per_page": 1},
         )
         assert list_res.status_code == 200
@@ -88,7 +88,7 @@ class TestUserGetUser:
 
             # Get that specific user
             res = requests.get(
-                f"{api_base_url}/user/get_user/{user_id}", headers=headers
+                f"{api_base_url}/user/get_user/{user_id}", headers=editor_user_headers
             )
             assert res.status_code == 200
 
@@ -96,10 +96,10 @@ class TestUserGetUser:
             assert "user_id" in user_data
             assert user_data["user_id"] == user_id
 
-    def test_get_nonexistent_user(self, api_base_url, headers):
+    def test_get_nonexistent_user(self, api_base_url, editor_user_headers):
         """Test getting a user that doesn't exist"""
         fake_id = "auth0|nonexistent123456789"
-        res = requests.get(f"{api_base_url}/user/get_user/{fake_id}", headers=headers)
+        res = requests.get(f"{api_base_url}/user/get_user/{fake_id}", headers=editor_user_headers)
         # Auth0 returns 404 for non-existent users
         assert res.status_code == 404
 
@@ -114,7 +114,7 @@ class TestUserCreateUser:
         return f"test_user_{timestamp}@austinmobility.io"
 
     @pytest.fixture(autouse=True)
-    def cleanup_test_user(self, api_base_url, admin_headers, test_user_email):
+    def cleanup_test_user(self, api_base_url, admin_user_headers, test_user_email):
         """Clean up test user after each test"""
         yield
 
@@ -122,7 +122,7 @@ class TestUserCreateUser:
         try:
             list_res = requests.get(
                 f"{api_base_url}/user/list_users",
-                headers=admin_headers,
+                headers=admin_user_headers,
                 params={"page": 0, "per_page": 100},
             )
             if list_res.status_code == 200:
@@ -131,7 +131,7 @@ class TestUserCreateUser:
                     if user.get("email") == test_user_email:
                         requests.delete(
                             f"{api_base_url}/user/delete_user/{user['user_id']}",
-                            headers=admin_headers,
+                            headers=admin_user_headers,
                         )
                         break
         except:
@@ -148,11 +148,11 @@ class TestUserCreateUser:
         )
         assert res.status_code == 401
 
-    def test_create_user_requires_admin(self, api_base_url, headers, test_user_email):
+    def test_create_user_requires_admin(self, api_base_url, editor_user_headers, test_user_email):
         """Test that create user requires admin role"""
         res = requests.post(
             f"{api_base_url}/user/create_user",
-            headers=headers,
+            headers=editor_user_headers,
             json={
                 "email": test_user_email,
                 "app_metadata": {"roles": ["readonly"]},
@@ -162,12 +162,12 @@ class TestUserCreateUser:
         assert "You do not have permission" in res.json()["message"]
 
     def test_create_user_missing_app_metadata(
-        self, api_base_url, admin_headers, test_user_email
+        self, api_base_url, admin_user_headers, test_user_email
     ):
         """Test that create user requires app_metadata"""
         res = requests.post(
             f"{api_base_url}/user/create_user",
-            headers=admin_headers,
+            headers=admin_user_headers,
             json={
                 "name": "Test User",
                 "email": test_user_email,
@@ -177,12 +177,12 @@ class TestUserCreateUser:
         assert "Invalid app_metadata" in res.json()["error"]
 
     def test_create_user_empty_roles(
-        self, api_base_url, admin_headers, test_user_email
+        self, api_base_url, admin_user_headers, test_user_email
     ):
         """Test that app_metadata.roles must contain exactly one role"""
         res = requests.post(
             f"{api_base_url}/user/create_user",
-            headers=admin_headers,
+            headers=admin_user_headers,
             json={
                 "name": "Test User",
                 "email": test_user_email,
@@ -193,12 +193,12 @@ class TestUserCreateUser:
         assert "Invalid app_metadata.roles" in res.json()["error"]
 
     def test_create_user_multiple_roles(
-        self, api_base_url, admin_headers, test_user_email
+        self, api_base_url, admin_user_headers, test_user_email
     ):
         """Test that app_metadata.roles must contain exactly one role"""
         res = requests.post(
             f"{api_base_url}/user/create_user",
-            headers=admin_headers,
+            headers=admin_user_headers,
             json={
                 "name": "Test User",
                 "email": test_user_email,
@@ -209,12 +209,12 @@ class TestUserCreateUser:
         assert "Invalid app_metadata.roles" in res.json()["error"]
 
     def test_create_user_invalid_role_value(
-        self, api_base_url, admin_headers, test_user_email
+        self, api_base_url, admin_user_headers, test_user_email
     ):
         """Test that role must be one of the allowed values"""
         res = requests.post(
             f"{api_base_url}/user/create_user",
-            headers=admin_headers,
+            headers=admin_user_headers,
             json={
                 "name": "Test User",
                 "email": test_user_email,
@@ -225,12 +225,12 @@ class TestUserCreateUser:
         assert "must be one of" in res.json()["error"]
 
     def test_create_user_with_readonly_role(
-        self, api_base_url, admin_headers, test_user_email
+        self, api_base_url, admin_user_headers, test_user_email
     ):
         """Test creating a user with readonly role"""
         res = requests.post(
             f"{api_base_url}/user/create_user",
-            headers=admin_headers,
+            headers=admin_user_headers,
             json={
                 "name": "Test User",
                 "email": test_user_email,
@@ -243,12 +243,12 @@ class TestUserCreateUser:
         assert "user_id" in user_data
 
     def test_create_user_with_editor_role(
-        self, api_base_url, admin_headers, test_user_email
+        self, api_base_url, admin_user_headers, test_user_email
     ):
         """Test creating a user with editor role"""
         res = requests.post(
             f"{api_base_url}/user/create_user",
-            headers=admin_headers,
+            headers=admin_user_headers,
             json={
                 "name": "Test User",
                 "email": test_user_email,
@@ -260,12 +260,12 @@ class TestUserCreateUser:
         assert user_data["email"] == test_user_email
 
     def test_create_user_with_admin_role(
-        self, api_base_url, admin_headers, test_user_email
+        self, api_base_url, admin_user_headers, test_user_email
     ):
         """Test creating a user with vz-admin role"""
         res = requests.post(
             f"{api_base_url}/user/create_user",
-            headers=admin_headers,
+            headers=admin_user_headers,
             json={
                 "name": "Test User",
                 "email": test_user_email,
@@ -276,11 +276,11 @@ class TestUserCreateUser:
         user_data = res.json()
         assert user_data["email"] == test_user_email
 
-    def test_create_user_with_admin(self, api_base_url, admin_headers, test_user_email):
+    def test_create_user_with_admin(self, api_base_url, admin_user_headers, test_user_email):
         """Test creating a user with admin privileges"""
         res = requests.post(
             f"{api_base_url}/user/create_user",
-            headers=admin_headers,
+            headers=admin_user_headers,
             json={
                 "name": "Test User",
                 "email": test_user_email,
@@ -295,13 +295,13 @@ class TestUserCreateUser:
         assert user_data["email_verified"] is False
 
     def test_create_user_duplicate_email(
-        self, api_base_url, admin_headers, test_user_email
+        self, api_base_url, admin_user_headers, test_user_email
     ):
         """Test creating a user with duplicate email fails"""
         # Create first user
         res1 = requests.post(
             f"{api_base_url}/user/create_user",
-            headers=admin_headers,
+            headers=admin_user_headers,
             json={
                 "name": "Test User",
                 "email": test_user_email,
@@ -313,7 +313,7 @@ class TestUserCreateUser:
         # Try to create duplicate
         res2 = requests.post(
             f"{api_base_url}/user/create_user",
-            headers=admin_headers,
+            headers=admin_user_headers,
             json={
                 "name": "Test User",
                 "email": test_user_email,
@@ -334,21 +334,21 @@ class TestUserUpdateUser:
         )
         assert res.status_code == 401
 
-    def test_update_user_requires_admin(self, api_base_url, headers):
+    def test_update_user_requires_admin(self, api_base_url, editor_user_headers):
         """Test that update user requires admin role"""
         res = requests.put(
             f"{api_base_url}/user/update_user/auth0|123456",
-            headers=headers,
+            headers=editor_user_headers,
             json={"name": "New Name"},
         )
         assert res.status_code == 403
 
-    def test_update_user_with_admin(self, api_base_url, admin_headers):
+    def test_update_user_with_admin(self, api_base_url, admin_user_headers):
         """Test updating a user with admin privileges"""
         # First get a user to update
         list_res = requests.get(
             f"{api_base_url}/user/list_users",
-            headers=admin_headers,
+            headers=admin_user_headers,
             params={"page": 0, "per_page": 1},
         )
         assert list_res.status_code == 200
@@ -362,7 +362,7 @@ class TestUserUpdateUser:
             new_name = f"Updated Name {int(time.time())}"
             res = requests.put(
                 f"{api_base_url}/user/update_user/{user_id}",
-                headers=admin_headers,
+                headers=admin_user_headers,
                 json={"name": new_name},
             )
             assert res.status_code == 200
@@ -373,7 +373,7 @@ class TestUserUpdateUser:
             # Restore original name
             requests.put(
                 f"{api_base_url}/user/update_user/{user_id}",
-                headers=admin_headers,
+                headers=admin_user_headers,
                 json={"name": original_name},
             )
 
@@ -386,18 +386,18 @@ class TestUserUnblockUser:
         res = requests.delete(f"{api_base_url}/user/unblock_user/auth0|123456")
         assert res.status_code == 401
 
-    def test_unblock_user_requires_admin(self, api_base_url, headers):
+    def test_unblock_user_requires_admin(self, api_base_url, editor_user_headers):
         """Test that unblock user requires admin role"""
         res = requests.delete(
-            f"{api_base_url}/user/unblock_user/auth0|123456", headers=headers
+            f"{api_base_url}/user/unblock_user/auth0|123456", headers=editor_user_headers
         )
         assert res.status_code == 403
 
-    def test_unblock_user_with_admin(self, api_base_url, admin_headers):
+    def test_unblock_user_with_admin(self, api_base_url, admin_user_headers):
         """Test unblocking a user with admin privileges"""
         # This will likely return 404 if user isn't blocked, which is fine
         res = requests.delete(
-            f"{api_base_url}/user/unblock_user/auth0|nonexistent", headers=admin_headers
+            f"{api_base_url}/user/unblock_user/auth0|nonexistent", headers=admin_user_headers
         )
         assert res.status_code in [200, 404]
 
@@ -410,14 +410,14 @@ class TestUserDeleteUser:
         res = requests.delete(f"{api_base_url}/user/delete_user/auth0|123456")
         assert res.status_code == 401
 
-    def test_delete_user_requires_admin(self, api_base_url, headers):
+    def test_delete_user_requires_admin(self, api_base_url, editor_user_headers):
         """Test that delete user requires admin role"""
         res = requests.delete(
-            f"{api_base_url}/user/delete_user/auth0|123456", headers=headers
+            f"{api_base_url}/user/delete_user/auth0|123456", headers=editor_user_headers
         )
         assert res.status_code == 403
 
-    def test_delete_user_with_admin(self, api_base_url, admin_headers):
+    def test_delete_user_with_admin(self, api_base_url, admin_user_headers):
         """Test deleting a user with admin privileges"""
         # Create a user to delete
         timestamp = int(time.time())
@@ -425,7 +425,7 @@ class TestUserDeleteUser:
 
         create_res = requests.post(
             f"{api_base_url}/user/create_user",
-            headers=admin_headers,
+            headers=admin_user_headers,
             json={
                 "email": test_email,
                 "app_metadata": {"roles": ["readonly"]},
@@ -437,14 +437,14 @@ class TestUserDeleteUser:
 
         # Delete the user
         delete_res = requests.delete(
-            f"{api_base_url}/user/delete_user/{user_id}", headers=admin_headers
+            f"{api_base_url}/user/delete_user/{user_id}", headers=admin_user_headers
         )
         assert delete_res.status_code == 204
 
-    def test_delete_nonexistent_user(self, api_base_url, admin_headers):
+    def test_delete_nonexistent_user(self, api_base_url, admin_user_headers):
         """Test deleting a user that doesn't exist"""
         fake_id = "auth0|nonexistent123456789"
         res = requests.delete(
-            f"{api_base_url}/user/delete_user/{fake_id}", headers=admin_headers
+            f"{api_base_url}/user/delete_user/{fake_id}", headers=admin_user_headers
         )
         assert res.status_code == 204
