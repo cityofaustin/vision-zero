@@ -385,4 +385,21 @@ to make sure it renders on top is a common fix */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.image-loading {
+  background-color: #e0e0e0;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
 @import "bootstrap/scss/bootstrap.scss";

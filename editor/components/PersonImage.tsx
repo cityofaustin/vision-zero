@@ -1,4 +1,4 @@
-import { Image, Spinner } from "react-bootstrap";
+import { Image } from "react-bootstrap";
 
 interface PersonImageProps {
   onClick?: () => void;
@@ -18,16 +18,18 @@ export default function PersonImage({
 }: PersonImageProps) {
   if (isLoading) {
     return (
-      <div className="d-flex align-items-center justify-content-center me-3">
-        <Spinner animation="border" size="sm" />
-      </div>
+      <div
+        className="me-3 p-1 image-loading rounded"
+        style={{
+          width: 100,
+          height: 100,
+        }}
+      ></div>
     );
-  }
-
-  if (imageUrl) {
+  } else if (imageUrl) {
     return (
       <Image
-        alt="Person image"
+        alt=""
         src={imageUrl}
         height={100}
         width={100}
@@ -40,19 +42,18 @@ export default function PersonImage({
         }}
       />
     );
-  }
-
-  return (
-    <Image
-      alt="placeholder"
-      src={`${BASE_PATH}/assets/img/avatars/placeholder.png`}
-      style={{
-        cursor: "pointer",
-      }}
-      height={100}
-      width={100}
-      className="me-3 p-1 border rounded editable-image"
-      onClick={onClick}
-    />
-  );
+  } else
+    return (
+      <Image
+        alt=""
+        src={`${BASE_PATH}/assets/img/avatars/placeholder.png`}
+        style={{
+          cursor: "pointer",
+        }}
+        height={100}
+        width={100}
+        className="me-3 p-1 border rounded editable-image"
+        onClick={onClick}
+      />
+    );
 }

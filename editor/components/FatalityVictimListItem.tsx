@@ -125,7 +125,7 @@ export default function FatalityVictimListItem({
           imageUrl={imageUrl}
           isLoading={isLoading}
         />
-        <div className="d-flex w-100 flex-column">
+        <div className="d-flex flex-column">
           <div className="pb-1">
             <span className="fw-bold me-2">{victimName}</span>
             <small className="text-secondary">{getPersonType(victim)}</small>
