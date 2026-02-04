@@ -53,8 +53,8 @@ jobs:
           docker compose -f docker-compose-github-actions.yml up -d graphql-engine;
           sleep 10;
           cd database;
-          hasura --skip-update-check --database-name=default migrate apply;
-          hasura metadata apply --skip-update-check --database-name=default;
+          hasura --skip-update-check --database-name default migrate apply;
+          hasura metadata apply --skip-update-check --database-name default;
 
       - name: Generate CREATE VIEW statements
         run: $(pwd)/.github/workflows/export_database_views.sh
