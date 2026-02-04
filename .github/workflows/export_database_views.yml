@@ -54,7 +54,7 @@ jobs:
           sleep 10;
           cd database;
           hasura --skip-update-check --database-name default migrate apply;
-          hasura metadata apply --skip-update-check --database-name default;
+          hasura metadata apply --skip-update-check;
 
       - name: Generate CREATE VIEW statements
         run: $(pwd)/.github/workflows/export_database_views.sh
