@@ -92,11 +92,41 @@ export const formatArrayToString = (value: unknown): string => {
 };
 
 /**
- * Lazily format a user name by lopping off everything after `@`
+ * Format a user name from an email address or other string value.
+ * Attempts to create a readable display name by:
+ * - Extracting the local part of email addresses
+ * - Converting dots to spaces
+ * - Capitalizing words appropriately
+ * - Stripping out numeric suffixes gracefully
  */
-export const formatUserName = (value: unknown): string => {
+export const formatUserNameFromEmail = (value: unknown): string => {
   if (!value || typeof value !== "string") {
     return String(value);
   }
-  return value.split("@")[0];
+
+  // Extract the local part (before @) if it's an email
+  const localPart = value.split("@")[0];
+
+  // Replace dots with spaces
+  let formatted = localPart.replace(/\./g, " ").trim();
+
+  // Capitalize each word (space-separated)
+  formatted = formatted
+    .split(" ")
+    .map((word) => {
+      // Handle hyphenated names by capitalizing each part
+      return word
+        .split("-")
+        .map((part) => {
+          // Capitalize first letter, lowercase the rest
+          return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+        })
+        .join("-");
+    })
+    .join(" ");
+
+  // Strip trailing digits from the entire formatted string (e.g.)
+  formatted = formatted.replace(/\d+$/, "").trim();
+
+  return formatted;
 };
