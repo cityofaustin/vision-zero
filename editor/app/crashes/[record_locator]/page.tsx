@@ -223,14 +223,14 @@ export default function CrashDetailsPage({
       </Row>
       <Row id="fatality" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="F" />
-        <Col sm={12} md={6} className="mb-1">
+        <Col sm={12} md={6} className="mb-3">
           <CrashRecommendationCard
             recommendation={crash.recommendation}
             crash_pk={crash.id}
             onSaveCallback={onSaveCallback}
           />
         </Col>
-        <Col sm={12} md={6} className="mb-1">
+        <Col sm={12} md={6} className="mb-3">
           <NotesCard
             notes={crash.crash_notes || []}
             updateMutation={UPDATE_CRASH_NOTE}
