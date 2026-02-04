@@ -22,7 +22,7 @@ export default function DeleteNoteButton<T extends Record<string, unknown>>({
       <Button
         size="sm"
         className="h-100"
-        variant="outline-secondary"
+        variant="secondary"
         disabled={isMutating}
         onClick={async () => {
           if (window.confirm("Are you sure you want to delete this note?")) {
