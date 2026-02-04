@@ -14,7 +14,7 @@ export default function FatalitiesMapPopupContent({
       <div className="fw-bold fs-6 pb-2 border-bottom">
         {properties?.address_display}
       </div>
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between pt-2">
         <span className="fw-bold">Crash ID</span>
         <Link href={`/fatalities/${properties?.record_locator}`} prefetch={false}>
           {properties?.record_locator}
