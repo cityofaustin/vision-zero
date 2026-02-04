@@ -188,7 +188,7 @@ export default function CrashRecommendationCard({
   );
 
   return (
-    <Card>
+    <Card className="h-100">
       <Card.Header>
         <Card.Title>Fatality Review Board recommendations</Card.Title>
       </Card.Header>
