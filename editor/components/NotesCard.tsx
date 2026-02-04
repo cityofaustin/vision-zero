@@ -1,5 +1,6 @@
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
+import { ListGroup } from "react-bootstrap";
 import { useState } from "react";
 import { LuCirclePlus } from "react-icons/lu";
 import NotesModal from "./NotesModal";
@@ -7,7 +8,7 @@ import AlignedLabel from "@/components/AlignedLabel";
 import DeleteNoteButton from "@/components/DeleteNoteButton";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import { CrashNote } from "@/types/crashNote";
-import { formatDate, formatUserName } from "@/utils/formatters";
+import { formatDate, formatUserNameFromEmail } from "@/utils/formatters";
 import { LuSquarePen } from "react-icons/lu";
 import { LocationNote } from "@/types/locationNote";
 
@@ -53,7 +54,7 @@ export default function NotesCard<T extends CrashNote | LocationNote>({
   };
 
   return (
-    <Card className="h-100">
+    <Card>
       <Card.Header className="d-flex justify-content-between">
         <Card.Title>Notes</Card.Title>
         <AddNoteButton
@@ -63,43 +64,47 @@ export default function NotesCard<T extends CrashNote | LocationNote>({
       </Card.Header>
       <Card.Body>
         {notes.length === 0 && <div className="text-secondary">No notes</div>}
-        {notes.map((note) => {
-          return (
-            <Card className="mb-2" key={note.id}>
-              <Card.Body style={{ whiteSpace: "pre-wrap" }}>
-                {note.text}
-              </Card.Body>
-              <Card.Footer className="d-flex justify-content-between border-top text-secondary">
-                <div>
-                  <small>
-                    <span className="">{formatUserName(note.updated_by)}</span>
-                    <span>{` on `}</span>
-                    <span className="text-nowrap">
-                      {formatDate(note.updated_at)}
-                    </span>
-                  </small>
+        <ListGroup variant="flush">
+          {notes.map((note) => {
+            return (
+              <ListGroup.Item key={note.id} className="py-2 mb-0 pe-0">
+                <div style={{ whiteSpace: "pre-wrap" }} className="pb-0">
+                  {note.text}
                 </div>
-                <div className="d-flex align-self-start">
-                  <DeleteNoteButton
-                    mutation={updateMutation}
-                    record={note}
-                    onSaveCallback={onSaveCallback}
-                  />
-                  <Button
-                    className="ms-2"
-                    size="sm"
-                    onClick={() => setEditNote(note)}
-                  >
-                    <AlignedLabel>
-                      <LuSquarePen className="me-1" />
-                      Edit
-                    </AlignedLabel>
-                  </Button>
+                <div className="d-flex justify-content-between text-secondary">
+                  <div>
+                    <small>
+                      <span className="">
+                        {formatUserNameFromEmail(note.updated_by)}
+                      </span>
+                      <span>{` on `}</span>
+                      <span className="text-nowrap">
+                        {formatDate(note.updated_at)}
+                      </span>
+                    </small>
+                  </div>
+                  <div className="d-flex align-self-start mt-2">
+                    <Button
+                      className="me-1"
+                      size="sm"
+                      onClick={() => setEditNote(note)}
+                    >
+                      <AlignedLabel>
+                        <LuSquarePen />
+                        Edit
+                      </AlignedLabel>
+                    </Button>
+                    <DeleteNoteButton
+                      mutation={updateMutation}
+                      record={note}
+                      onSaveCallback={onSaveCallback}
+                    />
+                  </div>
                 </div>
-              </Card.Footer>
-            </Card>
-          );
-        })}
+              </ListGroup.Item>
+            );
+          })}
+        </ListGroup>
       </Card.Body>
       {editNote && (
         <NotesModal<T>
