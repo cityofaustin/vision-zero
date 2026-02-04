@@ -114,10 +114,9 @@ export default function FatalityVictimListItem({
         victimName={victimName}
         personId={victim.id}
         imageUrl={imageUrl}
-        setImageUrl={setImageUrl}
         isLoading={isLoading}
         setImageVersion={setImageVersion}
-      ></FatalityImageUploadModal>
+      />
       <div className="d-flex align-items-center">
         <PersonImage
           key={`${victim.id}-${imageVersion}`} // Changing this key forces a re-mount

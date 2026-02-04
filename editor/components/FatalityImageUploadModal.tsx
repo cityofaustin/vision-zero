@@ -9,7 +9,6 @@ interface FatalityImageUploadModalProps {
   victimName: string;
   personId: number;
   imageUrl: string | null;
-  setImageUrl: Dispatch<SetStateAction<string | null>>;
   isLoading: boolean;
   setImageVersion: Dispatch<SetStateAction<number>>;
 }
@@ -195,13 +194,18 @@ export default function FatalityImageUploadModal({
                   type="text"
                   placeholder="ex: https://www.legacy.com/us/obituaries/statesman/"
                   {...register("image_source", {
-                    required: true,
+                    required: "Image source is required",
                   })}
                   isInvalid={!!errors.image_source}
                 />
-                <Form.Text className="text-muted">
-                  The URL or description of the original source of the image
-                </Form.Text>
+                {!errors.image_source?.message && (
+                  <Form.Text className="text-muted">
+                    The URL or description of the original source of the image
+                  </Form.Text>
+                )}
+                <Form.Control.Feedback type="invalid">
+                  {errors.image_source?.message}
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
