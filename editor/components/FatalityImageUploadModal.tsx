@@ -42,7 +42,7 @@ export default function FatalityImageUploadModal({
     register,
     handleSubmit,
     reset,
-    formState: { errors, isDirty },
+    formState: { errors },
     watch,
   } = useForm<FormData>({
     mode: "onChange",
@@ -53,7 +53,6 @@ export default function FatalityImageUploadModal({
   });
 
   const file = watch("file");
-  const imageSource = watch("image_source");
 
   // Keeps track of file updates and errors to update preview URL
   useEffect(() => {
@@ -120,13 +119,6 @@ export default function FatalityImageUploadModal({
     }
   };
 
-  const isValid = !errors.file && !errors.image_source;
-  const isFormComplete = () => {
-    return (
-      file?.length > 0 && imageSource && imageSource.trim() !== "" && isValid
-    );
-  };
-
   return (
     <Modal
       show={showModal}
@@ -150,7 +142,7 @@ export default function FatalityImageUploadModal({
                   type="file"
                   accept=".jpg,.jpeg,.png,image/jpeg,image/png"
                   {...register("file", {
-                    required: true,
+                    required: "Image file is required",
                     validate: {
                       fileType: (files) => {
                         if (!files || files.length === 0) return true;
@@ -231,11 +223,7 @@ export default function FatalityImageUploadModal({
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={isSubmitting || !isFormComplete() || !isDirty}
-          >
+          <Button variant="primary" type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Uploading..." : "Save"}
           </Button>
           <Button
