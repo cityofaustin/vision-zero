@@ -1,0 +1,71 @@
+name: Export Moped Views to SQL
+
+on:
+  push:
+    paths:
+      - moped-database/migrations/default/**
+    branches-ignore:
+      - "main"
+      - "production"
+
+jobs:
+  publish-views:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Install SQLFluff
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install sqlfluff
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Set PostgreSQL environment variables
+        run: |
+          echo "PGHOST=localhost" >> $GITHUB_ENV
+          echo "PGPORT=5432" >> $GITHUB_ENV
+          echo "PGDATABASE=moped" >> $GITHUB_ENV
+          echo "PGUSER=moped" >> $GITHUB_ENV
+          echo "PGPASSWORD=moped" >> $GITHUB_ENV
+
+      - name: Install Hasura CLI
+        run: |
+          curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
+
+      - name: "Spin-up the DB stack"
+        run: |
+          export BRANCH_NAME=${GITHUB_REF##*/}
+          echo "SHA: ${GITHUB_SHA}"
+          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
+          echo "GR: ${GITHUB_REF}"
+          echo "PWD: $(pwd)"
+          cd ./moped-database;
+          ./hasura-cluster setenv local;
+          ./hasura-cluster start;
+
+      - name: Generate CREATE VIEW statements
+        run: $(pwd)/.github/workflows/export_database_views.sh
+
+      - name: Run SQLFluff
+        run: |
+          sqlfluff format --config .sqlfluff moped-database/views/*.sql
+
+      - name: Set Git Config
+        run: |
+          git config --local user.email "moped@view.bot"
+          git config --local user.name "Moped View Bot"
+
+      - name: Commit and push changes
+        run: |
+          export BRANCH_NAME=${GITHUB_REF##*/}
+          git add moped-database/views/*
+          git commit -m "🤖 Export view for $BRANCH_NAME" || echo "No changes to commit"
+          git push origin HEAD || echo "No changes to push"
+        continue-on-error: true
