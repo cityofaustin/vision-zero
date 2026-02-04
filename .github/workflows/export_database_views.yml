@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - database/migrations/default/**
+      - .github/workflows/export_database_views.yml
+      - .github/workflows/export_database_views.sh
     branches-ignore:
       - "main"
       - "production"
