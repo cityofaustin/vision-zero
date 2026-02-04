@@ -162,7 +162,7 @@ export default function FatalCrashDetailsPage({
             onSaveCallback={onSaveCallback}
           />
         </Col>
-        <Col>
+        <Col className="mb-3">
           <DataCard<Crash>
             record={crash}
             isValidating={false}
