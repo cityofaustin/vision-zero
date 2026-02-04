@@ -31,9 +31,9 @@ jobs:
         run: |
           echo "PGHOST=localhost" >> $GITHUB_ENV
           echo "PGPORT=5432" >> $GITHUB_ENV
-          echo "PGDATABASE=moped" >> $GITHUB_ENV
-          echo "PGUSER=moped" >> $GITHUB_ENV
-          echo "PGPASSWORD=moped" >> $GITHUB_ENV
+          echo "PGDATABASE=vision_zero" >> $GITHUB_ENV
+          echo "PGUSER=visionzero" >> $GITHUB_ENV
+          echo "PGPASSWORD=visionzero" >> $GITHUB_ENV
 
       - name: Install Hasura CLI
         run: |
@@ -59,8 +59,8 @@ jobs:
 
       - name: Set Git Config
         run: |
-          git config --local user.email "moped@view.bot"
-          git config --local user.name "Moped View Bot"
+          git config --local user.email "visionzero@view.bot"
+          git config --local user.name "Vision Zero View Bot"
 
       - name: Commit and push changes
         run: |
