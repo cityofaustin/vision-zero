@@ -4,6 +4,7 @@ interface PersonImageProps {
   onClick?: () => void;
   imageUrl: string | null;
   isLoading: boolean;
+  isReadOnlyUser: boolean;
 }
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -15,6 +16,7 @@ export default function PersonImage({
   onClick,
   imageUrl,
   isLoading,
+  isReadOnlyUser,
 }: PersonImageProps) {
   if (isLoading) {
     return (
@@ -33,10 +35,9 @@ export default function PersonImage({
         src={imageUrl}
         height={100}
         width={100}
-        className="me-3 p-1 border rounded editable-image"
+        className={`me-3 p-1 border rounded ${!isReadOnlyUser ? "editable-image" : ""}`}
         onClick={onClick}
         style={{
-          cursor: "pointer",
           objectFit: "cover", // crop & maintain aspect ratio
           objectPosition: "center", // centers the crop
         }}
@@ -47,12 +48,9 @@ export default function PersonImage({
       <Image
         alt="Placeholder image"
         src={`${BASE_PATH}/assets/img/avatars/placeholder.png`}
-        style={{
-          cursor: "pointer",
-        }}
         height={100}
         width={100}
-        className="me-3 p-1 border rounded editable-image"
+        className={`me-3 p-1 border rounded ${!isReadOnlyUser ? "editable-image" : ""}`}
         onClick={onClick}
       />
     );
