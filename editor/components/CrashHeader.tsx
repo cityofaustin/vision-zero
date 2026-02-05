@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Crash } from "@/types/crashes";
 import CrashInjuryIndicators from "@/components/CrashInjuryIndicators";
-import { FaPenToSquare } from "react-icons/fa6";
+import { LuSquarePen } from "react-icons/lu";
 import EditCrashAddressModal from "@/components/EditCrashAddressModal";
 import { hasRole } from "@/utils/auth";
 
@@ -41,7 +41,7 @@ export default function CrashHeader({ crash, refetch }: CrashHeaderProps) {
           <span className="fs-3 fw-bold text-uppercase me-2">
             {crash.address_display}
           </span>
-          <FaPenToSquare className="text-muted" />
+          <LuSquarePen className="text-muted" />
         </Button>
       )}
       {crash.crash_injury_metrics_view && (

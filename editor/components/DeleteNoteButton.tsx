@@ -1,7 +1,7 @@
 import Button from "react-bootstrap/Button";
 import { useMutation } from "@/utils/graphql";
 import AlignedLabel from "@/components/AlignedLabel";
-import { FaTrashCan } from "react-icons/fa6";
+import { LuTrash } from "react-icons/lu";
 import { HeaderActionComponentProps } from "@/components/DataCard";
 import PermissionsRequired from "@/components/PermissionsRequired";
 
@@ -21,6 +21,7 @@ export default function DeleteNoteButton<T extends Record<string, unknown>>({
     <PermissionsRequired allowedRoles={allowedDeleteNoteRoles}>
       <Button
         size="sm"
+        className="h-100"
         variant="secondary"
         disabled={isMutating}
         onClick={async () => {
@@ -37,8 +38,8 @@ export default function DeleteNoteButton<T extends Record<string, unknown>>({
         }}
       >
         <AlignedLabel>
-          <FaTrashCan className="me-2" />
-          <span>Delete</span>
+          <LuTrash className="me-2" />
+          Delete
         </AlignedLabel>
       </Button>
     </PermissionsRequired>
