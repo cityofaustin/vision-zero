@@ -29,7 +29,7 @@ const AddNoteButton = ({ onClick }: { onClick: () => void }) => {
     <PermissionsRequired allowedRoles={allowedNoteRoles}>
       <Button size="sm" variant="primary" onClick={onClick}>
         <AlignedLabel>
-          <LuCirclePlus className="me-1" />
+          <LuCirclePlus className="me-2" />
           Add note
         </AlignedLabel>
       </Button>
@@ -85,12 +85,12 @@ export default function NotesCard<T extends CrashNote | LocationNote>({
                   </div>
                   <div className="d-flex align-self-start mt-2">
                     <Button
-                      className="me-1"
+                      className="me-2"
                       size="sm"
                       onClick={() => setEditNote(note)}
                     >
                       <AlignedLabel>
-                        <LuSquarePen />
+                        <LuSquarePen className="me-2" />
                         Edit
                       </AlignedLabel>
                     </Button>

@@ -299,7 +299,7 @@ export default function CrashRecommendationCard({
                 }}
               >
                 <AlignedLabel>
-                  <LuSquarePen className="me-1" />
+                  <LuSquarePen className="me-2" />
                   Edit
                 </AlignedLabel>
               </Button>

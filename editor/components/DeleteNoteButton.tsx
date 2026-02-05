@@ -38,7 +38,7 @@ export default function DeleteNoteButton<T extends Record<string, unknown>>({
         }}
       >
         <AlignedLabel>
-          <LuTrash className="me-1" />
+          <LuTrash className="me-2" />
           Delete
         </AlignedLabel>
       </Button>
