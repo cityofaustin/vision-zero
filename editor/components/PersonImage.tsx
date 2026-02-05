@@ -4,7 +4,7 @@ interface PersonImageProps {
   onClick?: () => void;
   imageUrl: string | null;
   isLoading: boolean;
-  isReadOnlyUser: boolean;
+  isReadOnlyUser: boolean | undefined;
 }
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
