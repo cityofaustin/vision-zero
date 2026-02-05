@@ -35,6 +35,7 @@ export default function FatalityImageUploadModal({
 }: FatalityImageUploadModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const getToken = useGetToken();
 
@@ -56,6 +57,7 @@ export default function FatalityImageUploadModal({
 
   // Keeps track of file updates and errors to update preview URL
   useEffect(() => {
+    setError(null);
     if (file && file.length > 0 && !errors.file) {
       const url = URL.createObjectURL(file[0]);
       setPreviewUrl(url);
@@ -105,7 +107,7 @@ export default function FatalityImageUploadModal({
       setImageVersion((prev) => prev + 1);
       handleClose();
     } catch (err) {
-      console.log(
+      setError(
         err instanceof Error ? err.message : "An unknown error occurred"
       );
     } finally {
@@ -116,6 +118,7 @@ export default function FatalityImageUploadModal({
   const handleClose = () => {
     if (!isSubmitting) {
       setShowModal(false);
+      setError(null);
     }
   };
 
@@ -134,6 +137,11 @@ export default function FatalityImageUploadModal({
       </Modal.Header>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Modal.Body>
+          {error && (
+            <div className="alert alert-danger" role="alert">
+              {error}
+            </div>
+          )}
           <Row className="mb-3">
             <Col>
               <Form.Group controlId="formFile">
@@ -205,7 +213,7 @@ export default function FatalityImageUploadModal({
             <div className="d-flex mt-3 justify-content-center">
               <Image
                 src={previewUrl}
-                alt="Preview"
+                alt="Preview image"
                 style={{ maxWidth: "600px", maxHeight: "600px" }}
                 fluid // Makes image responsive to parent width
               />
@@ -213,7 +221,7 @@ export default function FatalityImageUploadModal({
           )}
           {!errors.file && imageUrl && !previewUrl && !isLoading && (
             <div className="d-flex mt-3 justify-content-center">
-              <Image src={imageUrl} alt="Preview" fluid />
+              <Image src={imageUrl} alt="Preview image" fluid />
             </div>
           )}
           {isLoading && (
