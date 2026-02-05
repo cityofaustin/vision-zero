@@ -1,16 +1,13 @@
 import { Crash } from "@/types/crashes";
 import { Unit } from "@/types/unit";
-import { Card, ListGroupItem, Image, Form } from "react-bootstrap";
-import { getInjuryColorClass } from "@/utils/people";
+import { Card, Form } from "react-bootstrap";
 import FatalityUnitCardFooter from "@/components/FatalityUnitCardFooter";
-import { PeopleListRow } from "@/types/peopleList";
 import { useMemo, useState } from "react";
+import FatalityVictimListItem from "@/components/FatalityVictimListItem";
 
 interface FatalityUnitsCardsProps {
   crash: Crash;
 }
-
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 /** Builds the year make and model string */
 const getUnitYearMakeModel = (unit: Unit) => {
@@ -19,24 +16,6 @@ const getUnitYearMakeModel = (unit: Unit) => {
     "";
   return unitYearMakeModel ? ` | ${unitYearMakeModel}` : "";
 };
-
-/** Returns false if the unit is not a car
- */
-const shouldShowRestraintField = (unit: Unit) =>
-  unit.unit_desc_id === 1 && // motor vehicle
-  unit.veh_body_styl_id !== 71 && // motorycle
-  unit.veh_body_styl_id !== 90; // police motorcycle
-
-/** If person is a cyclist or pedestrian return null bc it would be redundant to render,
- * otherwise return person type label with formatting if needed
- */
-const getPersonType = (victim: PeopleListRow) =>
-  victim.prsn_type_id !== 3 && // pedalcyclist
-  victim.prsn_type_id !== 4 // pedestrian
-    ? victim.prsn_type_id === 5 //mot
-      ? "DRIVER OF MOTORCYCLE" // Reformat this person type bc its really long
-      : victim.prsn_type?.label
-    : null;
 
 /** Process crash data and return an enriched list of unit objects to be rendered in the
  * unit cards. Filters out units that dont have any fatalities, charges, or contrib factors
@@ -99,6 +78,7 @@ const getUnitDisplayData = (crash: Crash, showAllUnits: boolean) => {
  */
 export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
   const [showAllUnits, setShowAllUnits] = useState(true);
+
   const unitDataReadyToRender = useMemo(
     () => getUnitDisplayData(crash, showAllUnits),
     [crash, showAllUnits]
@@ -142,57 +122,15 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
             </Card.Header>
             {unit.hasVictim && (
               <Card.Body>
-                {unit.unitVictims?.map((victim) => (
-                  <ListGroupItem
-                    className="d-flex align-items-center justify-content-between pb-3"
-                    key={victim.id}
-                    style={{ border: "none" }}
-                  >
-                    <div className="d-flex align-items-center">
-                      <Image
-                        alt="placeholder"
-                        className="me-3"
-                        src={`${BASE_PATH}/assets/img/avatars/placeholder.png`}
-                        height="100px"
-                      ></Image>
-                      <div className="d-flex w-100 flex-column">
-                        <div className="pb-1">
-                          <span className="fw-bold me-2">
-                            {victim.prsn_first_name} {victim.prsn_mid_name}{" "}
-                            {victim.prsn_last_name}
-                          </span>
-                          <small className="text-secondary">
-                            {getPersonType(victim)}
-                          </small>
-                        </div>
-                        <span className="pb-1">
-                          {victim.prsn_age
-                            ? `${victim.prsn_age} YEARS OLD - `
-                            : ""}
-                          {victim.drvr_ethncty?.label} {victim.gndr?.label}
-                        </span>
-                        {victim.rest?.label &&
-                          shouldShowRestraintField(unit) && (
-                            <span className="pb-1">
-                              Restraint used: {victim.rest.label}
-                            </span>
-                          )}
-                        {!!victim.prsn_exp_homelessness && (
-                          <span>{"Suspected unhoused"}</span>
-                        )}
-                      </div>
-                    </div>
-                    {victim.injry_sev?.label && (
-                      <div className="ms-2 flex-shrink-0">
-                        <span
-                          className={`${getInjuryColorClass(victim.injry_sev.label)} px-2 py-1 rounded`}
-                        >
-                          {victim.injry_sev?.label}
-                        </span>
-                      </div>
-                    )}
-                  </ListGroupItem>
-                ))}
+                {unit.unitVictims?.map((victim) => {
+                  return (
+                    <FatalityVictimListItem
+                      key={victim.id}
+                      victim={victim}
+                      unit={unit}
+                    />
+                  );
+                })}
               </Card.Body>
             )}
             {(unit.hasCharges || unit.hasContribFactors) && (
