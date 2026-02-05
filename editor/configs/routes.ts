@@ -1,9 +1,6 @@
 import { FaRegHeart, FaCarBurst } from "react-icons/fa6";
 import { RiDashboard3Line } from "react-icons/ri";
-import { LuMapPin } from "react-icons/lu";
-import { LuAmbulance } from "react-icons/lu";
-import { LuCloudUpload } from "react-icons/lu";
-import { LuUsers } from "react-icons/lu";
+import { LuMapPin, LuAmbulance, LuCloudUpload, LuUsers } from "react-icons/lu";
 import { IconType } from "react-icons";
 
 interface Route {
