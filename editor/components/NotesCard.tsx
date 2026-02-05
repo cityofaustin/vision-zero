@@ -21,7 +21,6 @@ interface NotesCardProps<T extends CrashNote | LocationNote> {
   recordId: number | string;
   recordKey: keyof T; // 'crash_pk' or 'location_id';
   onSaveCallback: () => Promise<void>;
-  refetch: () => Promise<void>;
 }
 
 const AddNoteButton = ({ onClick }: { onClick: () => void }) => {

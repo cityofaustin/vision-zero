@@ -191,7 +191,6 @@ export default function FatalCrashDetailsPage({
             onSaveCallback={onSaveCallback}
             recordId={crash.id}
             recordKey="crash_pk"
-            refetch={onSaveCallback}
           />
         </Col>
       </Row>

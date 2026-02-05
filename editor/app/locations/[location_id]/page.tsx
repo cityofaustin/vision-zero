@@ -148,7 +148,6 @@ export default function LocationDetailsPage({
             onSaveCallback={onSaveCallback}
             recordId={location.location_id}
             recordKey="location_id"
-            refetch={onSaveCallback}
           />
         </Col>
       </Row>

@@ -93,6 +93,7 @@ export default function NotesModal<T extends CrashNote | LocationNote>({
           <Form.Group>
             <Form.Control
               as="textarea"
+              aria-label="Note text"
               rows={6}
               placeholder="Enter note text..."
               isInvalid={Boolean(errors.text)}
