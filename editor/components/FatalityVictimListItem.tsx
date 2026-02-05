@@ -143,7 +143,7 @@ export default function FatalityVictimListItem({
             {victim.drvr_ethncty?.label} {victim.gndr?.label}
           </span>
           {victim.rest?.label && shouldShowRestraintField(unit) && (
-            <span className="pb-1">Restraint used: {victim.rest.label}</span>
+            <span className="pb-1">Restraint used: {victim.rest?.label}</span>
           )}
           {!!victim.prsn_exp_homelessness && (
             <span>{"Suspected unhoused"}</span>

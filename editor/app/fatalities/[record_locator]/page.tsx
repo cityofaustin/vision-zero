@@ -17,6 +17,9 @@ import { UPDATE_CRASH } from "@/queries/crash";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import DataCard from "@/components/DataCard";
 import { crashesColumns } from "@/configs/crashesColumns";
+import CrashRecommendationCard from "@/components/CrashRecommendationCard";
+import NotesCard from "@/components/NotesCard";
+import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/crashNotes";
 
 const otherCardColumns = [
   crashesColumns.case_id,
@@ -159,7 +162,7 @@ export default function FatalCrashDetailsPage({
             onSaveCallback={onSaveCallback}
           />
         </Col>
-        <Col>
+        <Col className="mb-3">
           <DataCard<Crash>
             record={crash}
             isValidating={false}
@@ -169,6 +172,25 @@ export default function FatalCrashDetailsPage({
             onSaveCallback={onSaveCallback}
             shouldShowColumnVisibilityPicker={true}
             localStorageKey="crashPageOther"
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col className="mb-3" sm={12} md={12} lg={6}>
+          <CrashRecommendationCard
+            crash_pk={crash.id}
+            onSaveCallback={onSaveCallback}
+            recommendation={crash.recommendation}
+          />
+        </Col>
+        <Col className="mb-3">
+          <NotesCard
+            notes={crash.crash_notes || []}
+            updateMutation={UPDATE_CRASH_NOTE}
+            insertMutation={INSERT_CRASH_NOTE}
+            onSaveCallback={onSaveCallback}
+            recordId={crash.id}
+            recordKey="crash_pk"
           />
         </Col>
       </Row>
