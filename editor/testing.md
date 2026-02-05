@@ -236,7 +236,7 @@ refresh materialized view location_crashes_view;
     - select an image (e.g. use https://placehold.co/), and confirm that the image loads in the modal as a preview
     - Fill in the **Image source** input, save the form
     - Confirm that your uploaded image immediately renders in the victim card
-    - Edit the image by clicking on the victim thumbnail image. Confirm that you cannot submit the form without both selecting an image and filling in the the **Image source** field
+    - Edit the image by clicking on the victim thumbnail image. Confirm that you cannot submit the form without both selecting an image and filling in the  **Image source** field
     - Confirm that you cannot upload an image type that is not JEPG or PNG
 - Confirm that the crash diagram card (second row, leftmost card) renders and functions normally
 - Use the narrative card (second row, middle card) displays the crash narrative.
@@ -285,7 +285,7 @@ refresh materialized view location_crashes_view;
 
 ### User events tracking
 
-Insepct the the `user_events` table in the DB and verify that your recent activity was logged:
+Insepct the `user_events` table in the DB and verify that your recent activity was logged:
 
 ```sql
 select * from user_events;
