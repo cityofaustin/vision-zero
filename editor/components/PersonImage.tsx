@@ -29,7 +29,7 @@ export default function PersonImage({
   } else if (imageUrl) {
     return (
       <Image
-        alt=""
+        alt="Photo of victim"
         src={imageUrl}
         height={100}
         width={100}
@@ -45,7 +45,7 @@ export default function PersonImage({
   } else
     return (
       <Image
-        alt=""
+        alt="Placeholder image"
         src={`${BASE_PATH}/assets/img/avatars/placeholder.png`}
         style={{
           cursor: "pointer",
