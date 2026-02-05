@@ -22,7 +22,7 @@ $danger: $rojo;
 $light: $light-blue;
 $dark: $night;
 
-/* dark mode pallette */
+/* dark mode palette */
 $dark-mode-bg: #0d1117;
 $dark-mode-muted-text: #9198a1;
 $dark-mode-list-item-bg-hover: #656c7633;
@@ -73,10 +73,14 @@ $sidebarWidth: 66px;
   }
 }
 
+/* roughly how tall the top nav is - ymmv */
+.offset-top-nav {
+  margin-top: 3.85rem;
+}
+
 /* Sidebar */
 .app-sidebar {
   position: fixed !important;
-  margin-top: 3.85rem;
   z-index: 1040;
   left: 0;
   top: 0;
@@ -156,7 +160,6 @@ $sidebarWidth: 66px;
   transition: margin-left 0.3s ease-out;
 }
 
-// todo: revist this to use a lighter dark mode color?
 [data-bs-theme="dark"] .bg-light-use-theme {
   background-color: $dark-mode-light-header !important;
 }

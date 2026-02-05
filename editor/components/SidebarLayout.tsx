@@ -101,7 +101,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
       <AppNavBar user={user} logout={logout} />
       {/* Sidebar */}
       <div
-        className={`app-sidebar d-flex flex-column h-100 app-sidebar-${isCollapsed ? "collapsed" : "expanded"}`}
+        className={`app-sidebar offset-top-nav d-flex flex-column h-100 app-sidebar-${isCollapsed ? "collapsed" : "expanded"}`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -125,10 +125,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
         </div>
       </div>
       {/* Main content - essentially a bootstrap "row" — horizontal */}
-      <div
-        className="main-content-pane d-flex flex-grow-1"
-        style={{ marginTop: "3.9rem" }}
-      >
+      <div className="main-content-pane d-flex flex-grow-1 offset-top-nav">
         <div className="flex-grow-1 d-flex flex-column w-100 ">
           {/* vertical container */}
           <main className="flex-grow-1 d-flex flex-column">
