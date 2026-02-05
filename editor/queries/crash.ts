@@ -263,6 +263,7 @@ export const GET_CRASH = gql`
         id
         updated_by
         created_at
+        updated_at
         text
         crash_pk
       }

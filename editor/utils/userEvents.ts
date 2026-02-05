@@ -43,4 +43,3 @@ export function useLogUserEvent() {
 
   return logUserEvent;
 }
-

@@ -130,7 +130,7 @@ export default function UploadNonCr3() {
               download="non_cr3_template.csv"
               className="text-decoration-none ms-3 text-nowrap d-flex align-items-center"
             >
-              <FaFileCsv className="me-1" />
+              <FaFileCsv className="me-2" />
               Download CSV template
             </Link>
           </Col>

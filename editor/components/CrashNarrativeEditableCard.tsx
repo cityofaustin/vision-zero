@@ -11,6 +11,7 @@ import { Crash } from "@/types/crashes";
 import { hasRole, useGetToken } from "@/utils/auth";
 import { useMutation } from "@/utils/graphql";
 import { useAuth0 } from "@auth0/auth0-react";
+import { LuCirclePlus, LuSquarePen } from "react-icons/lu";
 
 interface CrashNarrativeEditableCardProps {
   crash: Crash;
@@ -129,7 +130,7 @@ export default function CrashNarrativeEditableCard({
                 disabled={isSubmitting}
                 onClick={handleSubmit(onSubmit)}
               >
-                Save summary
+                Save
               </Button>
               <Button
                 className="ms-1"
@@ -153,7 +154,17 @@ export default function CrashNarrativeEditableCard({
                   setActiveTab("summary");
                 }}
               >
-                {hasSummary ? "Edit summary" : "Add summary"}
+                {hasSummary ? (
+                  <AlignedLabel>
+                    <LuSquarePen className="me-2" />
+                    Edit summary
+                  </AlignedLabel>
+                ) : (
+                  <AlignedLabel>
+                    <LuCirclePlus className="me-2" />
+                    Add summary
+                  </AlignedLabel>
+                )}
               </Button>
             )
           )}

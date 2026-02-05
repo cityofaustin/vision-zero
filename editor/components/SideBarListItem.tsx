@@ -1,3 +1,4 @@
+import { COLORS } from "@/utils/constants";
 import Link from "next/link";
 import ListGroup from "react-bootstrap/ListGroup";
 import { IconType } from "react-icons";
@@ -22,20 +23,35 @@ export default function SideBarListItem({
 }: SideBarListItemProps) {
   return (
     <ListGroup.Item
-      className={`sidebar-list-item fs-5 py-2 ps-4 ${
-        isCurrentPage ? "sidebar-list-item-current text-black fw-bold" : "text-secondary"
-      }`}
-      style={{ cursor: "pointer", whiteSpace: "nowrap", border: "none" }}
-      action
+      className="p-0 my-1 px-2"
+      style={{
+        cursor: "pointer",
+        whiteSpace: "nowrap",
+        border: "none",
+        borderLeft: isCurrentPage ? `4px solid ${COLORS.primary}` : "none",
+      }}
       as={Link}
       href={href}
     >
-      <>
-        <span>
-          <Icon />
+      <div
+        className={`
+            rounded d-flex align-items-center justify-items-between py-1
+            sidebar-list-item-content ${isCurrentPage ? "sidebar-list-item-current fw-semibold" : ""}
+        `}
+      >
+        {/* This span is load-bearing - it prevents icon resizing when label span unhides */}
+        <span
+          style={{
+            marginLeft: isCurrentPage ? "11px" : "15px",
+            marginRight: "11px",
+          }}
+        >
+          <Icon className="sidebar-list-item-icon my-1" size={24} />
         </span>
-        {!isCollapsed && <span className="ms-3 fs-6">{label}</span>}
-      </>
+        {!isCollapsed && (
+          <span className="fs-5 sidebar-list-item-label">{label}</span>
+        )}
+      </div>
     </ListGroup.Item>
   );
 }

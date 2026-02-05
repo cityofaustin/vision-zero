@@ -3,8 +3,6 @@ import { Form } from "react-bootstrap";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Card } from "react-bootstrap";
 import { Dispatch, ReactNode, SetStateAction } from "react";
-import AlignedLabel from "@/components/AlignedLabel";
-import { MdOutlineLayers } from "react-icons/md";
 
 export interface CustomLayerToggle {
   /**
@@ -50,10 +48,10 @@ export default function MapBasemapControl({
 }: MapBasemapControlProps) {
   return (
     <div className="map-select-basemap-bottom-left">
-      <Card>
+      <Card className="py-1">
         {customLayerToggles && (
           <>
-            <Card.Body className="py-1">
+            <Card.Body className="py-0">
               {customLayerToggles?.map((toggle) => (
                 <Fragment key={toggle.id}>
                   {toggle.sectionHeader && toggle.sectionHeader}
@@ -70,13 +68,10 @@ export default function MapBasemapControl({
             </Card.Body>
           </>
         )}
-        <Card.Header className="pb-0 ">
-          <AlignedLabel>
-            <MdOutlineLayers className="me-2 fs-5" />
+        <Card.Body className="py-0">
+          <div>
             <span className="fs-6 fw-bold">Basemap</span>
-          </AlignedLabel>
-        </Card.Header>
-        <Card.Body className="py-1">
+          </div>
           <Form.Check
             className="fs-6 my-1"
             id={`${controlId}-streets`}

@@ -167,6 +167,7 @@ refresh materialized view location_crashes_view;
 
 - use the **Map** toggle the view the map of crashes at the location
 - verify map popup shows the crash **Type** the **Case ID** (for non-cr3 crashes), the **Crash ID** (hyperlinked, for CR3 crashes)
+- notes card at the bottom of the location page can be used [role: editor, admin] to add, edit, and delete location notes
 
 ### EMS list - `/ems`
 
@@ -222,7 +223,7 @@ refresh materialized view location_crashes_view;
 - Test the column visibility picker to show/hide columns
 - Toggle the map view and click on a point to open it's pop-up card. Click on the hyperlinked crash ID to navigate the crash details page
 
-### Fatalitiy details page - `/fatalities/[record-locator]`
+### Fatality details page - `/fatalities/[record-locator]`
 
 - Page title is `Fatalities <record-locator>`
 - Observe that summary/map card renders normally with hyperlinked crash ID
@@ -231,6 +232,12 @@ refresh materialized view location_crashes_view;
     - Uncheck the **Show all units** toggle to hide units except for those with fatalities
     - Confirm the section header changes from **Units involved** to **Victims** after unchecking the toggle
   - Locate a crash with just one unit/victim. Confirm that the **Show all units** toggle is disabled and the section header says **Victims** (not **Units invovled**)
+  - [role: editor, admin] hover over the victim placeholder image, observe the animated thumbnail expands in size with pointer cursor. Click the thumbnail to open the image upload modal
+    - select an image (e.g. use https://placehold.co/), and confirm that the image loads in the modal as a preview
+    - Fill in the **Image source** input, save the form
+    - Confirm that your uploaded image immediately renders in the victim card
+    - Edit the image by clicking on the victim thumbnail image. Confirm that you cannot submit the form without both selecting an image and filling in the  **Image source** field
+    - Confirm that you cannot upload an image type that is not JEPG or PNG
 - Confirm that the crash diagram card (second row, leftmost card) renders and functions normally
 - Use the narrative card (second row, middle card) displays the crash narrative.
   - [role: editor, admin] Click the **Add summary** button and confirm that the narrative becomes editable
@@ -240,6 +247,7 @@ refresh materialized view location_crashes_view;
   - Confirm that the **Summary** tab has disappeard and only the **Narrative** tab is shown
 - Observe that the **Details** card (second row, rightmost card) looks normal
   - [role: editor, admin] confirm that the LE YTD Fatal Crash, light condition, speed limit, and Object struct fields are editable
+- Observe that the FRB recommendations and notes cards are visible in the third row of card. If you haven't tested these on the crash details page, test them here (role: editor, admin).
 
 ### Top nav
 
@@ -277,7 +285,7 @@ refresh materialized view location_crashes_view;
 
 ### User events tracking
 
-Insepct the the `user_events` table in the DB and verify that your recent activity was logged:
+Insepct the `user_events` table in the DB and verify that your recent activity was logged:
 
 ```sql
 select * from user_events;
