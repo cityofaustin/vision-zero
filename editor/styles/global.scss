@@ -1,18 +1,16 @@
-/*
-* current palette 
-*/
-$baby-powder: #fbfef9;
+/* our custom palette */
+/* remember to update ./utils/constants if you mod these! */
 $night: #131515;
 $moped-blue: #1276d1;
+$light-blue: #f1f6fc;
 $dim-gray: #6b7676;
 $anti-flash-white: #f4f5f6;
 $sea-green: #09814a;
 $rojo: #dd0426;
 $jonquil: #ffd22f;
 $dark-grey: rgb(42.5, 47.5, 52.5);
-$dark-mode-background: #212529;
 
-/* override bootstrap with our palette */
+/* override bootstrap palette with our palette */
 $white: #ffffff;
 $primary: $moped-blue;
 $secondary: $dim-gray;
@@ -20,34 +18,149 @@ $success: $sea-green;
 $info: $moped-blue;
 $warning: $jonquil;
 $danger: $rojo;
-$light: $anti-flash-white;
+$light: $light-blue;
 $dark: $night;
 
-$sidebarWidth: 4.6rem;
+/* dark mode palette */
+$dark-mode-bg: #0d1117;
+$dark-mode-muted-text: #9198a1;
+$dark-mode-list-item-bg-hover: #656c7633;
+$dark-mode-light-header: #151b23;
+$body-bg-dark-inset: #010409; // extra dark color for navbar
+
+$light-mode-list-item-bg-hover: #818b981a; // active and hovered list item
+$gh-light-mode-muted-text: #59636e; // secondary color in header and icon color in menu
+
+/* override bootstrap dark mode vars */
+$body-bg-dark: $dark-mode-bg;
+$border-color-dark: #495057;
+
+/* our custom vars */
+$sidebarWidth: 66px;
 
 // https://isotropic.co/tool/hex-color-to-css-filter/
 .app-brand-img {
   filter: sepia(10%) contrast(130%);
 }
 
-/* dark mode overrides */
 [data-bs-theme="dark"] .app-brand-img {
   filter: invert(100%);
 }
 
-.app-navbar {
-  position: fixed !important;
-  z-index: 1050;
-  top: 0;
+[data-bs-theme="light"] .app-footer {
+  background-color: $light;
+  color: $secondary;
 }
 
-[data-bs-theme="dark"] .app-navbar,
+[data-bs-theme="dark"] .app-footer {
+  border: none !important;
+}
+
+.main-content-pane {
+  margin-left: $sidebarWidth;
+}
+
+/* Navbar */
+.app-navbar {
+  z-index: 1050;
+  position: fixed !important;
+  [data-bs-theme="light"] & {
+    background-color: $light-blue;
+  }
+  [data-bs-theme="dark"] & {
+    background-color: $body-bg-dark-inset;
+  }
+}
+
+/* roughly how tall the top nav is - ymmv */
+.offset-top-nav {
+  margin-top: 3.85rem;
+}
+
+/* Sidebar */
 .app-sidebar {
-  background-color: $dark-mode-background !important;
+  position: fixed !important;
+  z-index: 1040;
+  left: 0;
+  top: 0;
+  height: 100%;
+  transition:
+    width 0.2s ease-out,
+    box-shadow 0.3s ease-out;
+  overflow-x: hidden;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  [data-bs-theme="light"] & {
+    background-color: $light;
+    border-right: 1px solid var(--bs-border-color);
+  }
+  [data-bs-theme="dark"] & {
+    border-right: 1px solid $border-color-dark;
+    background-color: $body-bg-dark-inset;
+  }
+}
+
+.app-sidebar-expanded {
+  width: 15.5rem !important;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.app-sidebar-collapsed {
+  width: $sidebarWidth !important;
+}
+
+.app-sidebar .list-group-item,
+.app-sidebar .list-group-item:active,
+.app-sidebar .list-group-item.active,
+.app-sidebar .list-group-item:focus {
+  // no background color on sidebar list items
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.sidebar-list-item-current,
+.sidebar-list-item-content:hover {
+  [data-bs-theme="light"] & {
+    background-color: $light-mode-list-item-bg-hover;
+  }
+  [data-bs-theme="dark"] & {
+    background-color: $dark-mode-list-item-bg-hover;
+  }
+}
+
+.list-group-item .sidebar-list-item-label {
+  [data-bs-theme="light"] & {
+    color: var(--bs-body-color);
+  }
+  [data-bs-theme="dark"] & {
+    color: $white;
+  }
+}
+
+.sidebar-list-item-icon {
+  [data-bs-theme="light"] & {
+    color: $gh-light-mode-muted-text;
+  }
+  [data-bs-theme="dark"] & {
+    color: $dark-mode-muted-text;
+  }
+}
+
+/* sidebar animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.flex-grow-1 {
+  transition: margin-left 0.3s ease-out;
 }
 
 [data-bs-theme="dark"] .bg-light-use-theme {
-  background-color: $dark-mode-background !important;
+  background-color: $dark-mode-light-header !important;
 }
 
 [data-bs-theme="light"] .bg-light-use-theme {
@@ -67,40 +180,21 @@ $sidebarWidth: 4.6rem;
   background-color: $white !important;
 }
 
-[data-bs-theme="light"] .app-sidebar {
-  background-color: $light !important;
-}
-
-[data-bs-theme="dark"] .app-sidebar {
-  border-right: 1px solid #495057;
-}
-
 [data-bs-theme="dark"] .react-datepicker__calendar-icon {
   fill: $light;
 }
 
-[data-bs-theme="light"] .app-footer {
-  background-color: $light;
-  color: $secondary;
-}
-
-[data-bs-theme="dark"] .app-footer {
-  border: none !important;
-}
-
 [data-bs-theme="dark"] .date-preset-button {
   color: $white;
-  // bs border-color
-  border-color: #495057 !important;
-  // bs tertiary background
-  background-color: $dark-grey;
-
+  border-color: $dark-mode-light-header !important;
+  background-color: $dark-mode-light-header;
   &:hover,
   &:active,
   &:focus,
   &.active {
-    background-color: $secondary !important;
-    border-color: $secondary !important;
+    background-color: $primary !important;
+    border-color: $primary !important;
+    color: $white !important;
   }
 }
 
@@ -113,22 +207,14 @@ $sidebarWidth: 4.6rem;
   &:active,
   &:focus,
   &.active {
-    background-color: $secondary !important;
-    border-color: $secondary !important;
+    background-color: $primary !important;
+    border-color: $primary !important;
+    color: $white !important;
   }
 }
 
-// Sets the style of card headers & footers in the fatalities units card components
-[data-bs-theme="dark"] .fatality-units-card-header-footer {
-  background-color: $dark-grey !important;
-}
-
-[data-bs-theme="light"] .fatality-units-card-header-footer {
-  background-color: $light !important;
-}
-
-// Custom tooltip styles prevent the y-scrollbar from briefly flashing
-// and causing a layout shift
+/* Custom tooltip styles prevent the y-scrollbar from briefly flashing and causing a
+layout shift */
 .tooltip {
   position: fixed !important;
   /* Override Bootstrap's absolute positioning */
@@ -149,87 +235,14 @@ $sidebarWidth: 4.6rem;
 }
 
 [data-bs-theme="dark"] .edit-address-button {
-  background-color: $dark-mode-background !important;
-  border-color: $dark-mode-background !important;
+  background-color: $body-bg-dark !important;
+  border-color: $body-bg-dark !important;
   color: $white;
 
   &:hover {
     background-color: $dark-grey !important;
     border-color: $dark-grey !important;
   }
-}
-
-.app-sidebar {
-  position: fixed !important;
-  margin-top: 3.9rem;
-  z-index: 1040;
-  left: 0;
-  top: 0;
-  height: 100%;
-  transition:
-    width 0.2s ease-out,
-    box-shadow 0.3s ease-out;
-  overflow-x: hidden;
-  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-}
-
-.app-sidebar-expanded {
-  width: 15.5rem !important;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
-}
-
-.app-sidebar-collapsed {
-  width: $sidebarWidth !important;
-}
-
-.main-content-pane {
-  margin-top: 3.9rem;
-  margin-left: $sidebarWidth;
-}
-
-[data-bs-theme="light"] .sidebar-list-item,
-[data-bs-theme="light"] .sidebar-list-item:active,
-[data-bs-theme="light"] .sidebar-list-item:focus {
-  background-color: $light;
-}
-
-[data-bs-theme="dark"] .sidebar-list-item,
-[data-bs-theme="dark"] .sidebar-list-item:active,
-[data-bs-theme="dark"] .sidebar-list-item:focus {
-  background-color: #212529;
-}
-
-[data-bs-theme="light"] .sidebar-list-item-current {
-  //   color: $light !important;
-  background-color: #fff !important;
-}
-
-[data-bs-theme="dark"] .sidebar-list-item-current {
-  color: #fff !important;
-  background-color: #495057 !important;
-}
-
-[data-bs-theme="light"] .sidebar-list-item:hover {
-  color: #000 !important;
-}
-
-[data-bs-theme="dark"] .sidebar-list-item:hover {
-  color: #fff !important;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-// Add transition for main content margin
-.flex-grow-1 {
-  transition: margin-left 0.3s ease-out;
 }
 
 .mapboxgl-map {
@@ -254,16 +267,21 @@ $sidebarWidth: 4.6rem;
   line-height: 1.5rem;
   font-weight: bold;
   color: $white;
+  [data-bs-theme="dark"] & {
+    outline: 1px solid white;
+  }
 }
 
 .react-datepicker__calendar-icon {
   margin-top: 0.2rem;
 }
 
-.card-header {
-  padding: 1rem;
-  border: none !important;
-  background-color: inherit !important;
+[data-bs-theme="dark"] .card-header {
+  background-color: $dark-mode-light-header !important;
+}
+
+[data-bs-theme="light"] .card-header {
+  background-color: $light !important;
 }
 
 h5.card-title {
@@ -290,12 +308,14 @@ to make sure it renders on top is a common fix */
   box-shadow: none !important;
 }
 
-.accordion-button {
-  background-color: none !important;
+[data-bs-theme="light"] .accordion-button,
+[data-bs-theme="light"] .accordion-button:hover {
+  background-color: $light !important;
 }
 
-.accordion-button:hover {
-  background-color: $light !important;
+[data-bs-theme="dark"] .accordion-button,
+[data-bs-theme="dark"] .accordion-button:hover {
+  background-color: $dark-mode-light-header !important;
 }
 
 /* Hide down arrow from dropdown toggle button */
@@ -304,7 +324,7 @@ to make sure it renders on top is a common fix */
 }
 
 /* Push the top-right mapbox control container down to accomodate our custom control */
-.table-map-container>.mapboxgl-ctrl-top-right {
+.table-map-container > .mapboxgl-ctrl-top-right {
   right: 0;
   top: 35px !important;
 }
@@ -315,7 +335,7 @@ to make sure it renders on top is a common fix */
 }
 
 /* Push the top-right mapbox control container down to accomodate our custom control */
-.crash-header-card-body>.mapboxgl-ctrl-top-right {
+.crash-header-card-body > .mapboxgl-ctrl-top-right {
   right: 0;
   top: 35px !important;
 }
@@ -352,7 +372,7 @@ to make sure it renders on top is a common fix */
   margin-bottom: 2.5rem;
 }
 
-.map-select-basemap-bottom-left>.card {
+.map-select-basemap-bottom-left > .card {
   box-shadow: 0 0 0 2px #0000001a;
 }
 

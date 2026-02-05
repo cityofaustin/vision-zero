@@ -63,9 +63,9 @@ const useLayerToggles = (
       {
         id: "cr3_crashes",
         sectionHeader: (
-          <Card.Header className="pb-0">
+          <div className="mb-1">
             <span className="fs-6 fw-bold">Crashes</span>
-          </Card.Header>
+          </div>
         ),
         label: (
           <AlignedLabel>
