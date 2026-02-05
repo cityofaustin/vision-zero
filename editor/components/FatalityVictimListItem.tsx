@@ -5,7 +5,8 @@ import { PeopleListRow } from "@/types/peopleList";
 import { getInjuryColorClass } from "@/utils/people";
 import { useState, useEffect } from "react";
 import { Unit } from "@/types/unit";
-import { useGetToken } from "@/utils/auth";
+import { useGetToken, hasRole } from "@/utils/auth";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface FatalityVictimListItemProps {
   victim: PeopleListRow;
@@ -102,27 +103,35 @@ export default function FatalityVictimListItem({
     fetchImage();
   }, [personId, getToken, imageVersion]);
 
+  const { user } = useAuth0();
+
+  const isReadOnlyUser = user && hasRole(["readonly"], user);
+
   return (
     <ListGroupItem
       className="d-flex align-items-center justify-content-between pb-3"
       key={victim.id}
       style={{ border: "none" }}
     >
-      <FatalityImageUploadModal
-        showModal={showModal}
-        setShowModal={setShowModal}
-        victimName={victimName}
-        personId={victim.id}
-        imageUrl={imageUrl}
-        isLoading={isLoading}
-        setImageVersion={setImageVersion}
-      />
+      {!isReadOnlyUser && (
+        <FatalityImageUploadModal
+          showModal={showModal}
+          setShowModal={setShowModal}
+          victimName={victimName}
+          personId={victim.id}
+          imageUrl={imageUrl}
+          isLoading={isLoading}
+          setImageVersion={setImageVersion}
+        />
+      )}
+
       <div className="d-flex align-items-center">
         <PersonImage
           key={`${victim.id}-${imageVersion}`} // Changing this key forces a re-mount
           onClick={() => setShowModal(true)}
           imageUrl={imageUrl}
           isLoading={isLoading}
+          isReadOnlyUser={isReadOnlyUser}
         />
         <div className="d-flex flex-column">
           <div className="pb-1">

@@ -397,6 +397,7 @@ to make sure it renders on top is a common fix */
 
 /* Used in fatal victim PersonImages*/
 .editable-image {
+  cursor: pointer;
   transition: all 0.2s;
 }
 
