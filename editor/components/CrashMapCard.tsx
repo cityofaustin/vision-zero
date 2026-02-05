@@ -15,6 +15,8 @@ import { useMutation } from "@/utils/graphql";
 import { useResizeObserver } from "@/utils/map";
 import { DEFAULT_MAP_PAN_ZOOM } from "@/configs/map";
 import PermissionsRequired from "@/components/PermissionsRequired";
+import AlignedLabel from "@/components/AlignedLabel";
+import { LuSquarePen } from "react-icons/lu";
 
 const allowedMapEditRoles = ["vz-admin", "editor"];
 
@@ -155,7 +157,14 @@ export default function CrashMapCard({
                   }
                 }}
               >
-                {isEditing ? "Save" : "Edit"}
+                {isEditing ? (
+                  "Save"
+                ) : (
+                  <AlignedLabel>
+                    <LuSquarePen className="me-2" />
+                    Edit
+                  </AlignedLabel>
+                )}
               </Button>
               {isEditing && (
                 <Button

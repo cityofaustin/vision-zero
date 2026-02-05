@@ -1,7 +1,9 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
+import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
 import { useForm } from "react-hook-form";
 import { useQuery, useMutation } from "@/utils/graphql";
@@ -21,6 +23,8 @@ import {
 } from "@/types/recommendation";
 import { useAuth0 } from "@auth0/auth0-react";
 import PermissionsRequired from "@/components/PermissionsRequired";
+import AlignedLabel from "@/components/AlignedLabel";
+import { LuSquarePen } from "react-icons/lu";
 
 const allowedRecommendationEditRoles = ["vz-admin", "editor"];
 
@@ -184,96 +188,109 @@ export default function CrashRecommendationCard({
   );
 
   return (
-    <Card>
+    <Card className="h-100">
       <Card.Header>
         <Card.Title>Fatality Review Board recommendations</Card.Title>
       </Card.Header>
       <Card.Body>
         <Form id="recommendationForm" onSubmit={handleSubmit(onSave)}>
-          <Form.Group className="mb-3">
-            <Form.Label className="fw-bold">Partners</Form.Label>
-            {!isEditing && (
-              <p>
-                {recommendation?.recommendations_partners
-                  ?.map(
-                    (rec_partner) => rec_partner.coordination_partners?.label
-                  )
-                  .join(", ") || "-"}
-              </p>
-            )}
-            {isEditing && isLoadingPartners && <Spinner size="sm" />}
-            {isEditing && partners && (
-              <div style={{ height: "200px", overflowY: "auto" }}>
-                <CrashRecommendationPartners
-                  setValue={setValue}
-                  watch={watch}
-                  partners={partners}
-                />
-              </div>
-            )}
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label className="fw-bold">Status</Form.Label>
-            {isEditing && !isLoadingStatuses && statuses && (
-              <Form.Select
-                {...register("recommendation_status_id", {
-                  // coerce to number or null
-                  setValueAs: (v) => Number(v) || null,
-                })}
-              >
-                <option value="">Select status...</option>
-                {statuses.map((option) => (
-                  <option key={option.id} value={String(option.id)}>
-                    {option.rec_status_desc || "-"}
-                  </option>
-                ))}
-              </Form.Select>
-            )}
-            {isEditing && isLoadingStatuses && <Spinner size="sm" />}
-            {!isEditing && (
-              <p>
-                {recommendation?.atd__recommendation_status_lkp
-                  ?.rec_status_desc || "-"}
-              </p>
-            )}
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label className="fw-bold">Recommendation</Form.Label>
-            {isEditing && (
-              <Form.Control
-                {...register("rec_text", {
-                  // coerce empty fields to null
-                  setValueAs: (v) => v?.trim() || null,
-                })}
-                as="textarea"
-                rows={6}
-                autoFocus={true}
-              />
-            )}
-            {!isEditing && (
-              <p style={{ whiteSpace: "pre-wrap" }}>
-                {recommendation?.rec_text || "-"}
-              </p>
-            )}
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label className="fw-bold">Updates</Form.Label>
-            {isEditing && (
-              <Form.Control
-                {...register("rec_update", {
-                  // coerce empty fields to null
-                  setValueAs: (v) => v?.trim() || null,
-                })}
-                as="textarea"
-                rows={6}
-              />
-            )}
-            {!isEditing && (
-              <p style={{ whiteSpace: "pre-wrap" }}>
-                {recommendation?.rec_update || "-"}
-              </p>
-            )}
-          </Form.Group>
+          <Row>
+            <Col>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-bold">Partners</Form.Label>
+                {!isEditing && (
+                  <p>
+                    {recommendation?.recommendations_partners
+                      ?.map(
+                        (rec_partner) =>
+                          rec_partner.coordination_partners?.label
+                      )
+                      .join(", ") || "-"}
+                  </p>
+                )}
+                {isEditing && isLoadingPartners && <Spinner size="sm" />}
+                {isEditing && partners && (
+                  <div style={{ height: "200px", overflowY: "auto" }}>
+                    <CrashRecommendationPartners
+                      setValue={setValue}
+                      watch={watch}
+                      partners={partners}
+                    />
+                  </div>
+                )}
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-bold">Status</Form.Label>
+                {isEditing && !isLoadingStatuses && statuses && (
+                  <Form.Select
+                    {...register("recommendation_status_id", {
+                      // coerce to number or null
+                      setValueAs: (v) => Number(v) || null,
+                    })}
+                  >
+                    <option value="">Select status...</option>
+                    {statuses.map((option) => (
+                      <option key={option.id} value={String(option.id)}>
+                        {option.rec_status_desc || "-"}
+                      </option>
+                    ))}
+                  </Form.Select>
+                )}
+                {isEditing && isLoadingStatuses && <Spinner size="sm" />}
+                {!isEditing && (
+                  <p>
+                    {recommendation?.atd__recommendation_status_lkp
+                      ?.rec_status_desc || "-"}
+                  </p>
+                )}
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-bold">Recommendation</Form.Label>
+                {isEditing && (
+                  <Form.Control
+                    {...register("rec_text", {
+                      // coerce empty fields to null
+                      setValueAs: (v) => v?.trim() || null,
+                    })}
+                    as="textarea"
+                    rows={6}
+                    autoFocus={true}
+                  />
+                )}
+                {!isEditing && (
+                  <p style={{ whiteSpace: "pre-wrap" }}>
+                    {recommendation?.rec_text || "-"}
+                  </p>
+                )}
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-bold">Updates</Form.Label>
+                {isEditing && (
+                  <Form.Control
+                    {...register("rec_update", {
+                      // coerce empty fields to null
+                      setValueAs: (v) => v?.trim() || null,
+                    })}
+                    as="textarea"
+                    rows={6}
+                  />
+                )}
+                {!isEditing && (
+                  <p style={{ whiteSpace: "pre-wrap" }}>
+                    {recommendation?.rec_update || "-"}
+                  </p>
+                )}
+              </Form.Group>
+            </Col>
+          </Row>
         </Form>
       </Card.Body>
       <PermissionsRequired allowedRoles={allowedRecommendationEditRoles}>
@@ -287,7 +304,10 @@ export default function CrashRecommendationCard({
                   setIsEditing(true);
                 }}
               >
-                Edit
+                <AlignedLabel>
+                  <LuSquarePen className="me-2" />
+                  Edit
+                </AlignedLabel>
               </Button>
             )}
             {isEditing && (
