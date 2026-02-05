@@ -44,6 +44,7 @@ def get_jwt_from_credentials(username, password, domain, client_id):
 
     return response.json()["access_token"]
 
+
 @pytest.fixture(scope="session")
 def read_only_user_headers():
     """Standard user auth headers (readonly)"""
@@ -54,6 +55,7 @@ def read_only_user_headers():
         client_id=os.getenv("CLIENT_ID"),
     )
     return {"Authorization": f"Bearer {token}"}
+
 
 @pytest.fixture(scope="session")
 def editor_user_headers():
@@ -135,7 +137,8 @@ def cleanup_person_image(test_person_id, editor_user_headers):
     try:
         url = f"{API_BASE_URL}/images/person/{test_person_id}"
         requests.delete(url, headers=editor_user_headers)
-    except:
+    except Exception as e:
+        print(f"⚠️ Warning: failed to cleanup person image: {e}")
         pass
 
 
