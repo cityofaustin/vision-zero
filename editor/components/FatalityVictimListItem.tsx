@@ -5,9 +5,10 @@ import { PeopleListRow } from "@/types/peopleList";
 import { getInjuryColorClass } from "@/utils/people";
 import { useState, useEffect } from "react";
 import { Unit } from "@/types/unit";
-import { useGetToken } from "@/utils/auth";
+import { useGetToken, hasRole } from "@/utils/auth";
+import { useAuth0 } from "@auth0/auth0-react";
 
-interface FatalityVictimProps {
+interface FatalityVictimListItemProps {
   victim: PeopleListRow;
   unit: Unit;
 }
@@ -34,7 +35,10 @@ const getPersonType = (victim: PeopleListRow) =>
  * This component is rendered for each victim in the FatalityUnitsCards component.
  * It renders person info, the person image, and person image upload modal
  */
-export default function FatalityVictim({ victim, unit }: FatalityVictimProps) {
+export default function FatalityVictimListItem({
+  victim,
+  unit,
+}: FatalityVictimListItemProps) {
   const [showModal, setShowModal] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   // Used to force a re-mount of PersonImage after new image is uploaded in modal
@@ -99,37 +103,44 @@ export default function FatalityVictim({ victim, unit }: FatalityVictimProps) {
     fetchImage();
   }, [personId, getToken, imageVersion]);
 
+  const { user } = useAuth0();
+
+  const isReadOnlyUser = user && hasRole(["readonly"], user);
+
   return (
     <ListGroupItem
       className="d-flex align-items-center justify-content-between pb-3"
       key={victim.id}
       style={{ border: "none" }}
     >
-      <FatalityImageUploadModal
-        showModal={showModal}
-        setShowModal={setShowModal}
-        victimName={victimName}
-        personId={victim.id}
-        imageUrl={imageUrl}
-        setImageUrl={setImageUrl}
-        isLoading={isLoading}
-        setImageVersion={setImageVersion}
-      ></FatalityImageUploadModal>
+      {!isReadOnlyUser && (
+        <FatalityImageUploadModal
+          showModal={showModal}
+          setShowModal={setShowModal}
+          victimName={victimName}
+          personId={victim.id}
+          imageUrl={imageUrl}
+          isLoading={isLoading}
+          setImageVersion={setImageVersion}
+        />
+      )}
+
       <div className="d-flex align-items-center">
         <PersonImage
           key={`${victim.id}-${imageVersion}`} // Changing this key forces a re-mount
           onClick={() => setShowModal(true)}
           imageUrl={imageUrl}
           isLoading={isLoading}
+          isReadOnlyUser={isReadOnlyUser}
         />
-        <div className="d-flex w-100 flex-column">
+        <div className="d-flex flex-column">
           <div className="pb-1">
             <span className="fw-bold me-2">{victimName}</span>
             <small className="text-secondary">{getPersonType(victim)}</small>
           </div>
           <span className="pb-1">
-            {victim.prsn_age} YEARS OLD - {victim.drvr_ethncty?.label}{" "}
-            {victim.gndr?.label}
+            {victim.prsn_age ? `${victim.prsn_age} YEARS OLD - ` : ""}
+            {victim.drvr_ethncty?.label} {victim.gndr?.label}
           </span>
           {victim.rest?.label && shouldShowRestraintField(unit) && (
             <span className="pb-1">Restraint used: {victim.rest?.label}</span>

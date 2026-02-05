@@ -3,7 +3,7 @@ import { Unit } from "@/types/unit";
 import { Card, Form } from "react-bootstrap";
 import FatalityUnitCardFooter from "@/components/FatalityUnitCardFooter";
 import { useMemo, useState } from "react";
-import FatalityVictim from "@/components/FatalityVictim";
+import FatalityVictimListItem from "@/components/FatalityVictimListItem";
 
 interface FatalityUnitsCardsProps {
   crash: Crash;
@@ -124,7 +124,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
               <Card.Body>
                 {unit.unitVictims?.map((victim) => {
                   return (
-                    <FatalityVictim
+                    <FatalityVictimListItem
                       key={victim.id}
                       victim={victim}
                       unit={unit}
