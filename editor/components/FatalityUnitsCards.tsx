@@ -88,63 +88,71 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
 
   return (
     <>
-      <Card className="p-2 h-100">
-        <div className="px-2 py-1 mb-1 d-flex flex-row justify-content-between">
-          <div className="fs-5 fw-bold">
-            {showAllUnits && !isSingleUnitCrash ? "Units involved" : "Victims"}
-          </div>
-          <Form.Label
-            className="d-flex align-items-center mb-0"
-            style={{ cursor: isSingleUnitCrash ? "auto" : "pointer" }}
-          >
-            <span className="me-2 text-secondary">Show all units</span>
-            <Form.Check
-              type="switch"
-              checked={showAllUnits}
-              disabled={isSingleUnitCrash}
-              onChange={(e) => setShowAllUnits(e.target.checked)}
-              style={{ pointerEvents: "none" }}
-            />
-          </Form.Label>
-        </div>
-        {unitDataReadyToRender?.map((unit, i) => (
-          <Card
-            key={unit.id}
-            className={i < unitDataReadyToRender.length - 1 ? "mb-2" : ""}
-          >
-            <Card.Header className="fatality-units-card-header-footer">
-              <div className="d-flex w-100 justify-content-start align-items-center">
-                <span className="fs-5 fw-bold me-2">Unit {unit.unit_nbr}</span>
-                <span>
-                  {unit.unit_desc?.label} {unit.unitYearMakeModel}
-                </span>
-              </div>
-            </Card.Header>
-            {unit.hasVictim && (
-              <Card.Body>
-                {unit.unitVictims?.map((victim) => {
-                  return (
-                    <FatalityVictimListItem
-                      key={victim.id}
-                      victim={victim}
-                      unit={unit}
-                    />
-                  );
-                })}
-              </Card.Body>
-            )}
-            {(unit.hasCharges || unit.hasContribFactors) && (
-              <FatalityUnitCardFooter
-                hasCharges={unit.hasCharges}
-                hasVictim={unit.hasVictim}
-                hasContribFactors={unit.hasContribFactors}
-                unitCharges={unit.unitCharges}
-                primaryContribFactors={unit.primaryContribFactors}
-                possibleContribFactors={unit.possibleContribFactors}
+      <Card className="h-100">
+        <Card.Header>
+          <div className="d-flex flex-row justify-content-between">
+            <div className="fs-5 fw-bold">
+              {showAllUnits && !isSingleUnitCrash
+                ? "Units involved"
+                : "Victims"}
+            </div>
+            <Form.Label
+              className="d-flex align-items-center mb-0"
+              style={{ cursor: isSingleUnitCrash ? "auto" : "pointer" }}
+            >
+              <span className="me-2 text-secondary">Show all units</span>
+              <Form.Check
+                type="switch"
+                checked={showAllUnits}
+                disabled={isSingleUnitCrash}
+                onChange={(e) => setShowAllUnits(e.target.checked)}
+                style={{ pointerEvents: "none" }}
               />
-            )}
-          </Card>
-        ))}
+            </Form.Label>
+          </div>
+        </Card.Header>
+        <Card.Body>
+          {unitDataReadyToRender?.map((unit, i) => (
+            <Card
+              key={unit.id}
+              className={i < unitDataReadyToRender.length - 1 ? "mb-2" : ""}
+            >
+              <Card.Header className="fatality-units-card-header-footer">
+                <div className="d-flex w-100 justify-content-start align-items-center">
+                  <span className="fs-5 fw-bold me-2">
+                    Unit {unit.unit_nbr}
+                  </span>
+                  <span>
+                    {unit.unit_desc?.label} {unit.unitYearMakeModel}
+                  </span>
+                </div>
+              </Card.Header>
+              {unit.hasVictim && (
+                <Card.Body>
+                  {unit.unitVictims?.map((victim) => {
+                    return (
+                      <FatalityVictimListItem
+                        key={victim.id}
+                        victim={victim}
+                        unit={unit}
+                      />
+                    );
+                  })}
+                </Card.Body>
+              )}
+              {(unit.hasCharges || unit.hasContribFactors) && (
+                <FatalityUnitCardFooter
+                  hasCharges={unit.hasCharges}
+                  hasVictim={unit.hasVictim}
+                  hasContribFactors={unit.hasContribFactors}
+                  unitCharges={unit.unitCharges}
+                  primaryContribFactors={unit.primaryContribFactors}
+                  possibleContribFactors={unit.possibleContribFactors}
+                />
+              )}
+            </Card>
+          ))}
+        </Card.Body>
       </Card>
     </>
   );
