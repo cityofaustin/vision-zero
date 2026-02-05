@@ -82,23 +82,25 @@ export default function NotesCard<T extends CrashNote | LocationNote>({
                       </span>
                     </small>
                   </div>
-                  <div className="d-flex align-self-start mt-2">
-                    <Button
-                      className="me-2"
-                      size="sm"
-                      onClick={() => setEditNote(note)}
-                    >
-                      <AlignedLabel>
-                        <LuSquarePen className="me-2" />
-                        Edit
-                      </AlignedLabel>
-                    </Button>
-                    <DeleteNoteButton
-                      mutation={updateMutation}
-                      record={note}
-                      onSaveCallback={onSaveCallback}
-                    />
-                  </div>
+                  <PermissionsRequired allowedRoles={allowedNoteRoles}>
+                    <div className="d-flex align-self-start mt-2">
+                      <Button
+                        className="me-2"
+                        size="sm"
+                        onClick={() => setEditNote(note)}
+                      >
+                        <AlignedLabel>
+                          <LuSquarePen className="me-2" />
+                          Edit
+                        </AlignedLabel>
+                      </Button>
+                      <DeleteNoteButton
+                        mutation={updateMutation}
+                        record={note}
+                        onSaveCallback={onSaveCallback}
+                      />
+                    </div>
+                  </PermissionsRequired>
                 </div>
               </ListGroup.Item>
             );
