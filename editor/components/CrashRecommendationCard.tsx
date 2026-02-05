@@ -219,6 +219,8 @@ export default function CrashRecommendationCard({
                   </div>
                 )}
               </Form.Group>
+            </Col>
+            <Col>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Status</Form.Label>
                 {isEditing && !isLoadingStatuses && statuses && (
@@ -245,6 +247,8 @@ export default function CrashRecommendationCard({
                 )}
               </Form.Group>
             </Col>
+          </Row>
+          <Row>
             <Col>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Recommendation</Form.Label>
@@ -265,6 +269,8 @@ export default function CrashRecommendationCard({
                   </p>
                 )}
               </Form.Group>
+            </Col>
+            <Col>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-bold">Updates</Form.Label>
                 {isEditing && (
