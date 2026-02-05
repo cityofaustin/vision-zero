@@ -566,24 +566,6 @@ def user_update_user(id):
     return jsonify(response.json()), response.status_code
 
 
-@app.route("/user/unblock_user/<id>", methods=["DELETE"])
-@cross_origin(
-    headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Origin",
-        CORS_URL,
-    ],
-)
-@requires_auth
-@requires_roles(ADMIN_ROLE_NAME)
-def user_unblock_user(id):
-    endpoint = f"https://{AUTH0_DOMAIN}/api/v2/user_blocks/" + id
-    headers = {"Authorization": f"Bearer {get_api_token()}"}
-    response = requests.delete(endpoint, headers=headers)
-    return jsonify(response.json()), response.status_code
-
-
 @app.route("/user/delete_user/<id>", methods=["DELETE"])
 @cross_origin(
     headers=[
