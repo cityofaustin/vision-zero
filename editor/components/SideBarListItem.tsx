@@ -39,7 +39,7 @@ export default function SideBarListItem({
             sidebar-list-item-content ${isCurrentPage ? "sidebar-list-item-current fw-semibold" : ""}
         `}
       >
-        {/* This span is load-bearing - it prevents icon rezing when label span unhides */}
+        {/* This span is load-bearing - it prevents icon resizing when label span unhides */}
         <span
           style={{
             marginLeft: isCurrentPage ? "11px" : "15px",
