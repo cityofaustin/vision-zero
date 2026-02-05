@@ -260,7 +260,7 @@ const fatalitiesListViewFilterCards: FilterGroup[] = [
 ];
 
 export const fatalitiesListViewQueryConfig: QueryConfig = {
-  _version: 1,
+  _version: 2,
   exportable: true,
   exportFilename: "fatalities",
   tableName: "fatalities_view",
