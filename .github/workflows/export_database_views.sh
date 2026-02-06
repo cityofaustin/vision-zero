@@ -31,7 +31,6 @@ function create_view_file() {
 
     # Query the view definition and append to the file
     run_psql -v ON_ERROR_STOP=1 -A -t -c "SELECT 'CREATE OR REPLACE VIEW ' || '$VIEW_NAME' || ' AS ' || pg_get_viewdef('$VIEW_NAME'::regclass, true);" >> database/views/$VIEW_NAME.sql
-    # psql -v ON_ERROR_STOP=1 -A -t -c "SELECT 'CREATE OR REPLACE VIEW ' || '$VIEW_NAME' || ' AS ' || pg_get_viewdef('$VIEW_NAME'::regclass, true);" >> database/views/$VIEW_NAME.sql
 }
 
 # Export the function
@@ -41,7 +40,6 @@ export -f create_view_file
 function populate_views() {
     mkdir -p database/views
     run_psql -v ON_ERROR_STOP=1 -A -t -c "SELECT table_name FROM information_schema.views WHERE table_schema = 'public';" | \
-    # psql -v ON_ERROR_STOP=1 -A -t -c "SELECT table_name FROM information_schema.views WHERE table_schema = 'public';" | \
     grep -v -E '^geo[a-zA-Z]+y_columns$' | \
     xargs -I {} bash -c "create_view_file '{}'"
 }
