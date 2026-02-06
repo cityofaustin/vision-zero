@@ -25,6 +25,7 @@
     "bootstrap": "^4.3.1",
     "chart.js": "^2.9.3",
     "chartjs-plugin-stacked100": "^0.7.1",
+    "chroma-js": "2.4.2",
     "date-fns": "^2.30.0",
     "events-polyfill": "^2.1.2",
     "hookrouter": "^1.2.3",
