@@ -260,7 +260,7 @@ const fatalitiesListViewFilterCards: FilterGroup[] = [
 ];
 
 export const fatalitiesListViewQueryConfig: QueryConfig = {
-  _version: 1,
+  _version: 2,
   exportable: true,
   exportFilename: "fatalities",
   tableName: "fatalities_view",
@@ -292,10 +292,22 @@ export const fatalitiesListViewQueryConfig: QueryConfig = {
   filterCards: fatalitiesListViewFilterCards,
   mapConfig: {
     isActive: false,
+    popupComponentName: "fatalitiesTableMap",
     layerProps: {
       id: "points-layer",
       type: "circle",
       paint: {
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          // zoom is 5 (or less)
+          5,
+          2,
+          // zoom is 20 (or greater)
+          20,
+          10,
+        ],
         "circle-color": "#1276d1",
         "circle-stroke-width": [
           "interpolate",
@@ -303,7 +315,7 @@ export const fatalitiesListViewQueryConfig: QueryConfig = {
           ["zoom"],
           // zoom is 5 (or less)
           5,
-          1,
+          2,
           // zoom is 20 (or greater)
           20,
           3,
