@@ -1,6 +1,6 @@
 # Tests
 
-The API currently has near 100% test coverage. Follow this readme to run the tests.
+Follow this readme to run the API tests. Be sure to write additional tests as you update the API.
 
 ## Run tests
 
@@ -20,16 +20,26 @@ npm run dev
 
 ### Set up test env
 
-TODO: update env template and docs here.
+The tests require read-only, editor, and admin test user credentials. The tests also require Auth0 app metadata so that we can retrieve JWTs during the tests.
 
-In the `./api` directory, create a file called `.env.test` and save your bearer token to `TEST_AUTH_TOKEN`.
+In the `./api` directory, create a file called `.env.test` and populate each value listed below.
 
 ```shell
 # .env.test
-TEST_AUTH_TOKEN="Bearer ...."
+# 1password: Vision Zero Editor (VZE) Test User: Read-only viewer
+READ_ONLY_USER_EMAIL=
+READ_ONLY_USER_PASSWORD=
+# 1password: Vision Zero Editor (VZE) Test User: Editor
+EDITOR_USER_EMAIL=
+EDITOR_USER_PASSWORD=
+# 1password: Vision Zero Editor (VZE) Test User: VZ Admin
+ADMIN_USER_EMAIL=
+ADMIN_USER_PASSWORD=
+# Auth0 staging app metadata
+AUTH0_DOMAIN="atd-datatech.auth0.com"
+CLIENT_ID=2qbqz2sf8L9idBOwn0d5YA9efNgQbL7c
+AUTH0_AUDIENCE=2qbqz2sf8L9idBOwn0d5YA9efNgQbL7c
 ```
-
-This token will expire in 5 minutes. You'll need to grab a fresh token your token expires. You'll know your token is invalid if you hit a `401` error.
 
 ### Run the tests
 
