@@ -11,7 +11,8 @@ CREATE OR REPLACE VIEW unit_types_involved_view AS WITH unit_types AS (
             WHEN
                 units.unit_desc_id = 1
                 AND (
-                    units.veh_body_styl_id = ANY(ARRAY[0, 9, 23, 30, 47, 69, 87, 92, 100, 103, 104, 105, 106, 107, 109])
+                    units.veh_body_styl_id
+                    = ANY(ARRAY[0, 9, 23, 30, 47, 69, 87, 92, 100, 103, 104, 105, 106, 107, 109])
                 )
                 THEN 'Car'::text
             WHEN units.unit_desc_id = 1 AND units.veh_body_styl_id IS NULL THEN 'Car'::text
@@ -34,8 +35,10 @@ distinct_unit_types AS (
 crash_summaries AS (
     SELECT
         distinct_unit_types.crash_pk,
-        ARRAY_AGG(distinct_unit_types.unit_type ORDER BY distinct_unit_types.unit_type) AS unit_types_array,
-        SUM(distinct_unit_types.unit_count)                                             AS total_units
+        ARRAY_AGG(
+            distinct_unit_types.unit_type ORDER BY distinct_unit_types.unit_type
+        )                                   AS unit_types_array,
+        SUM(distinct_unit_types.unit_count) AS total_units
     FROM distinct_unit_types
     GROUP BY distinct_unit_types.crash_pk
 )

@@ -47,11 +47,15 @@ CREATE OR REPLACE VIEW person_injury_metrics_view AS SELECT
         ELSE 0
     END        AS non_injry,
     CASE
-        WHEN people.prsn_injry_sev_id = 4 AND (units.vz_mode_category_id = ANY(ARRAY[1, 2, 4])) THEN 1
+        WHEN
+            people.prsn_injry_sev_id = 4 AND (units.vz_mode_category_id = ANY(ARRAY[1, 2, 4]))
+            THEN 1
         ELSE 0
     END        AS motor_vehicle_fatal_injry,
     CASE
-        WHEN people.prsn_injry_sev_id = 1 AND (units.vz_mode_category_id = ANY(ARRAY[1, 2, 4])) THEN 1
+        WHEN
+            people.prsn_injry_sev_id = 1 AND (units.vz_mode_category_id = ANY(ARRAY[1, 2, 4]))
+            THEN 1
         ELSE 0
     END        AS motor_vehicle_sus_serious_injry,
     CASE
@@ -87,11 +91,15 @@ CREATE OR REPLACE VIEW person_injury_metrics_view AS SELECT
         ELSE 0
     END        AS micromobility_sus_serious_injry,
     CASE
-        WHEN people.prsn_injry_sev_id = 4 AND (units.vz_mode_category_id = ANY(ARRAY[6, 8, 9])) THEN 1
+        WHEN
+            people.prsn_injry_sev_id = 4 AND (units.vz_mode_category_id = ANY(ARRAY[6, 8, 9]))
+            THEN 1
         ELSE 0
     END        AS other_fatal_injry,
     CASE
-        WHEN people.prsn_injry_sev_id = 1 AND (units.vz_mode_category_id = ANY(ARRAY[6, 8, 9])) THEN 1
+        WHEN
+            people.prsn_injry_sev_id = 1 AND (units.vz_mode_category_id = ANY(ARRAY[6, 8, 9]))
+            THEN 1
         ELSE 0
     END        AS other_sus_serious_injry
 FROM people people

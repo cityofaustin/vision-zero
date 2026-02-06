@@ -35,13 +35,15 @@ CREATE OR REPLACE VIEW fatalities_view AS SELECT
     )          AS crash_time_ct,
     row_number()
         OVER (
-            PARTITION BY (extract(YEAR FROM (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text)))
+            PARTITION BY
+                (extract(YEAR FROM (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text)))
             ORDER BY ((crashes.crash_timestamp AT TIME ZONE 'US/Central'::text))
         )
     AS ytd_fatality,
     dense_rank()
         OVER (
-            PARTITION BY (extract(YEAR FROM (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text)))
+            PARTITION BY
+                (extract(YEAR FROM (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text)))
             ORDER BY ((crashes.crash_timestamp AT TIME ZONE 'US/Central'::text)), crashes.id
         )
     AS ytd_fatal_crash,

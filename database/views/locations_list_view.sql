@@ -40,7 +40,8 @@ SELECT
     locations.council_district,
     locations.location_group,
     coalesce(
-        cr3_comp_costs.cr3_comp_costs_total + non_cr3_crash_counts.noncr3_comp_costs_total, 0::bigint
+        cr3_comp_costs.cr3_comp_costs_total + non_cr3_crash_counts.noncr3_comp_costs_total,
+        0::bigint
     )                                                       AS total_est_comp_cost,
     coalesce(
         cr3_crash_counts.crash_count, 0::bigint
@@ -52,5 +53,7 @@ SELECT
     + coalesce(non_cr3_crash_counts.crash_count, 0::bigint) AS crash_count
 FROM locations
 LEFT JOIN cr3_crash_counts ON locations.location_id::text = cr3_crash_counts.location_id
-LEFT JOIN non_cr3_crash_counts ON locations.location_id::text = non_cr3_crash_counts.location_id::text
+LEFT JOIN
+    non_cr3_crash_counts
+    ON locations.location_id::text = non_cr3_crash_counts.location_id::text
 LEFT JOIN cr3_comp_costs ON locations.location_id::text = cr3_comp_costs.location_id;
