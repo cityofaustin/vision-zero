@@ -1,2 +1,7 @@
 [sqruff]
 dialect = postgres
+
+[sqruff:layout:type:alias_expression]
+spacing_before = align
+align_within = select_clause
+align_scope = bracketed
