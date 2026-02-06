@@ -2,7 +2,7 @@
 dialect = postgres
 max_line_length = 100
 
-# NB: The misspelling in the next line for capitalization is intentional
+# NB: The spelling used for capitalisation is using UK English. An 'es' not a 'zee'.
 rules = ambiguous,capitalisation,convention,layout,references
 
 # This causes all the AS aliases to line up.
