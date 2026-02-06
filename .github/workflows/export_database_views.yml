@@ -38,7 +38,7 @@ jobs:
 
       - name: "Spin-up the DB stack"
         run: |
-          export BRANCH_NAME=${GITHUB_REF##*/}
+          export BRANCH_NAME="${GITHUB_REF_NAME}"
           echo "SHA: ${GITHUB_SHA}"
           echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
           echo "GR: ${GITHUB_REF}"
@@ -68,7 +68,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          export BRANCH_NAME=${GITHUB_REF##*/}
+          export BRANCH_NAME="${GITHUB_REF_NAME}"
           git add database/views/*
           git commit -m "🤖 Export view for $BRANCH_NAME" || echo "No changes to commit"
           git push origin HEAD || echo "No changes to push"
