@@ -1,5 +1,10 @@
 [sqruff]
 dialect = postgres
+max_line_length = 120
+
+# NB: The misspelling in the next line for capitalization is intentional
+rules = ambiguous,capitalisation,convention,layout,references
+
 
 [sqruff:layout:type:alias_expression]
 spacing_before = align
