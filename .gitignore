@@ -88,8 +88,8 @@ etl/app/**/*.json
 env
 
 # vim 
-[._]*.s[a-v][a-z]
-[._]*.sw[a-p]
+.*.s[a-v][a-z]
+.*.sw[a-p]
 
 # Zappa API deployment secrets
 zappa_settings.json
