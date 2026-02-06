@@ -1,4 +1,4 @@
-"""Shared pytest fixtures for API integration tests"""
+"""Shared pytest fixtures for API integration tests - pytest automatically loads fixtures from this file"""
 
 import os
 import pytest
@@ -144,31 +144,34 @@ def cleanup_person_image(test_person_id, editor_user_headers):
 
 @pytest.fixture
 def cleanup_test_user(admin_user_headers):
-    """Factory fixture to clean up test users by email after tests."""
-    users_to_cleanup = []
+    """Factory fixture that provides a function to register users for automatic cleanup.
 
-    def _register_cleanup(email):
-        """Register an email for cleanup"""
-        users_to_cleanup.append(email)
+    Usage in tests:
+        def test_example(cleanup_test_user):
+            res = requests.post(...create user...)
+            user_id = res.json()["user_id"]
+            cleanup_test_user(user_id)  # Register for cleanup
+            # User automatically deleted after test finishes
+    """
+    # SETUP PHASE: Runs before test starts
+    user_ids_to_cleanup = []  # List persists for the entire test
 
+    def _register_cleanup(user_id):
+        """Add a user_id to the cleanup list - actual deletion happens later"""
+        user_ids_to_cleanup.append(user_id)
+        return user_id  # Allow chaining if needed
+
+    # PAUSE: pytest runs your test here, giving it the _register_cleanup function
     yield _register_cleanup
 
-    # Cleanup all registered users
-    for email in users_to_cleanup:
+    # TEARDOWN PHASE: Runs after test completes (guaranteed, even if test failed)
+    # Loop through all registered user IDs and delete them
+    for user_id in user_ids_to_cleanup:
         try:
-            list_res = requests.get(
-                f"{API_BASE_URL}/user/list_users",
+            requests.delete(
+                f"{API_BASE_URL}/user/delete_user/{user_id}",
                 headers=admin_user_headers,
-                params={"page": 0, "per_page": 100},
             )
-            if list_res.status_code == 200:
-                users = list_res.json()["users"]
-                for user in users:
-                    if user.get("email") == email:
-                        requests.delete(
-                            f"{API_BASE_URL}/user/delete_user/{user['user_id']}",
-                            headers=admin_user_headers,
-                        )
-                        break
-        except:
-            pass
+        except Exception as e:
+            # Don't fail the test if cleanup fails - just log it
+            print(f"Warning: Failed to cleanup user {user_id}: {e}")

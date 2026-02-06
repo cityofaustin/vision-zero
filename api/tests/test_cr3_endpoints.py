@@ -33,38 +33,29 @@ class TestCR3Download:
         assert "message" in res.json()
 
         # Verify it's a presigned S3 URL
-        url = res.json()["message"]
-        assert "amazonaws.com" in url
-        assert "Signature=" in url
-        assert f"{test_crash_id}.pdf" in url
-
-    def test_download_presigned_url_works(self, api_base_url, editor_user_headers, test_crash_id):
-        """Test that the presigned URL actually works"""
-        res = requests.get(
-            f"{api_base_url}/cr3/download/{test_crash_id}", headers=editor_user_headers
-        )
-        assert res.status_code == 200
-
         presigned_url = res.json()["message"]
+        assert "amazonaws.com" in presigned_url
+        assert "Signature=" in presigned_url
+        assert f"{test_crash_id}.pdf" in presigned_url
 
-        # Try to download from S3
+        # Download and verify content type from S3
         s3_res = requests.get(presigned_url)
-        # If the crash_id exists, we get 200, otherwise 403 or 404
         assert s3_res.status_code == 200
-
-        # Verify it's a PDF (checks content type only)
         assert s3_res.headers.get("Content-Type") == "application/pdf"
 
     def test_download_invalid_crash_id_type(self, api_base_url, editor_user_headers):
         """Test that non-integer crash IDs return 404"""
-        res = requests.get(f"{api_base_url}/cr3/download/abc123", headers=editor_user_headers)
+        res = requests.get(
+            f"{api_base_url}/cr3/download/abc123", headers=editor_user_headers
+        )
         assert res.status_code == 404
 
     def test_download_nonexistent_crash_id(self, api_base_url, editor_user_headers):
         """Test downloading with negative crash ID"""
         non_existent_crash_id = 1
         res = requests.get(
-            f"{api_base_url}/cr3/download/{non_existent_crash_id}", headers=editor_user_headers
+            f"{api_base_url}/cr3/download/{non_existent_crash_id}",
+            headers=editor_user_headers,
         )
 
         assert res.status_code == 200

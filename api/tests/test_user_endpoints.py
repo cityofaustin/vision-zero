@@ -35,14 +35,16 @@ class TestUserCRUD:
     """Test user CRUD operations"""
 
     def test_full_user_lifecycle(
-        self, api_base_url, admin_user_headers, cleanup_test_user
+        self,
+        api_base_url,  # Fixture: provides the base API URL
+        admin_user_headers,  # Fixture: provides authentication headers
+        cleanup_test_user,  # Fixture: cleanup function to ensure created user is deleted on teardown
     ):
         """Create -> read -> update -> delete -> verify"""
         timestamp = int(time.time())
-        email = f"lifecycle_{timestamp}@example.com"
-        cleanup_test_user(email)
+        email = f"dts_test_user_{timestamp}@austintexas.gov"
 
-        # Create
+        # Create a user
         res = requests.post(
             f"{api_base_url}/user/create_user",
             headers=admin_user_headers,
@@ -54,6 +56,9 @@ class TestUserCRUD:
         )
         assert res.status_code == 201
         user_id = res.json()["user_id"]
+
+        # register this user ID for cleanup during teardown
+        cleanup_test_user(user_id)
 
         # Read
         res = requests.get(
@@ -96,26 +101,37 @@ class TestUserCRUD:
 
 
 class TestUserValidation:
-    """Test input validation"""
+    """Test input validation for user creation and updates"""
 
+    # @pytest.mark.parametrize runs this test multiple times with different inputs
+    # Think of it as a "for loop" that creates 3 separate test cases from one function
+    # Each tuple in the list becomes (payload, error_msg) for one test run
     @pytest.mark.parametrize(
         "payload,error_msg",
         [
-            ({"email": "t@t.com"}, "Invalid app_metadata"),
+            # Test case 1: Missing app_metadata entirely
+            ({"email": ""}, "Invalid app_metadata"),
+            # Test case 2: Empty roles array
             (
-                {"email": "t@t.com", "app_metadata": {"roles": []}},
+                {"email": "", "app_metadata": {"roles": []}},
                 "Invalid app_metadata.roles",
             ),
+            # Test case 3: Invalid role name
             (
-                {"email": "t@t.com", "app_metadata": {"roles": ["bad"]}},
+                {"email": "", "app_metadata": {"roles": ["bad"]}},
                 "must be one of",
             ),
         ],
     )
     def test_create_user_validation_errors(
-        self, api_base_url, admin_user_headers, payload, error_msg
+        self,
+        api_base_url,  # Fixture: provides the base API URL
+        admin_user_headers,  # Fixture: provides authentication headers
+        payload,  # Parametrized: the JSON data to send (changes each run)
+        error_msg,  # Parametrized: the expected error message (changes each run)
     ):
-        """Various validation errors return 400"""
+        """Verify that invalid user data returns 400 status with appropriate error messages"""
+        payload["email"] = f"dts_test_user@austintexas.gov"
         res = requests.post(
             f"{api_base_url}/user/create_user",
             headers=admin_user_headers,
@@ -125,19 +141,29 @@ class TestUserValidation:
         assert error_msg in res.json()["error"]
 
     def test_duplicate_email_rejected(
-        self, api_base_url, admin_user_headers, cleanup_test_user
+        self,
+        api_base_url,  # Fixture: provides the base API URL
+        admin_user_headers,  # Fixture: provides authentication headers
+        cleanup_test_user,  # Fixture: provides a function to register users for cleanup
     ):
-        """Cannot create two users with same email"""
-        email = f"dup_{int(time.time())}@example.com"
-        cleanup_test_user(email)
-
+        """Verify that creating two users with the same email returns 409 Conflict"""
+        # Generate unique email to avoid conflicts with other test runs
+        timestamp = int(time.time())
+        email = f"dts_test_user_{timestamp}@austintexas.gov"
         payload = {"email": email, "app_metadata": {"roles": ["readonly"]}}
 
+        # First creation should succeed
         res1 = requests.post(
             f"{api_base_url}/user/create_user", headers=admin_user_headers, json=payload
         )
         assert res1.status_code == 201
+        user_id = res1.json()["user_id"]
 
+        # Register for cleanup AFTER successful creation
+        # This SCHEDULES deletion for after the test (in the fixture's teardown phase)
+        cleanup_test_user(user_id)
+
+        # Second creation with same email should fail with 409 Conflict
         res2 = requests.post(
             f"{api_base_url}/user/create_user", headers=admin_user_headers, json=payload
         )
