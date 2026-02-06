@@ -45,8 +45,9 @@ SELECT
         0::bigint
     ) AS total_est_comp_cost,
     coalesce(cr3_crash_counts.crash_count, 0::bigint) AS cr3_crash_count,
-    coalesce(non_cr3_crash_counts.crash_count, 0::bigint)
-        AS non_cr3_crash_count,
+    coalesce(
+        non_cr3_crash_counts.crash_count, 0::bigint
+    ) AS non_cr3_crash_count,
     coalesce(cr3_crash_counts.crash_count, 0::bigint)
     + coalesce(non_cr3_crash_counts.crash_count, 0::bigint) AS crash_count
 FROM locations

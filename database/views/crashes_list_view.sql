@@ -3,9 +3,9 @@
 CREATE OR REPLACE VIEW crashes_list_view AS WITH geocode_status AS (
     SELECT
         cris.id,
-        unified.latitude IS NOT NULL AND unified.latitude AS is DISTINCT
+        unified.latitude IS NOT NULL AND unified.latitude IS DISTINCT
     FROM cris.latitude
-    unified.longitude IS NOT NULL AND unified.longitude IS DISTINCT FROM cris.longitude AS is_manual_geocode
+    OR unified.longitude IS NOT NULL AND unified.longitude IS DISTINCT FROM cris.longitude AS is_manual_geocode
     FROM crashes_cris cris
     LEFT JOIN crashes unified ON cris.id = unified.id
 )
@@ -78,8 +78,8 @@ SELECT
         )
     ) AS crash_day_of_week
 FROM crashes
-LEFT JOIN lateral(
-    SELECT crash_injury_metrics_view_1.id,
+LEFT JOIN LATERAL (SELECT
+    crash_injury_metrics_view_1.id,
     crash_injury_metrics_view_1.cris_crash_id,
     crash_injury_metrics_view_1.unkn_injry_count,
     crash_injury_metrics_view_1.nonincap_injry_count,
@@ -107,10 +107,9 @@ LEFT JOIN lateral(
     crash_injury_metrics_view_1.years_of_life_lost,
     crash_injury_metrics_view_1.est_comp_cost_crash_based,
     crash_injury_metrics_view_1.est_total_person_comp_cost
-    from crash_injury_metrics_view crash_injury_metrics_view_1
-    where crashes.id = crash_injury_metrics_view_1.id
-    limit 1
-) crash_injury_metrics_view ON TRUE
+FROM crash_injury_metrics_view crash_injury_metrics_view_1
+WHERE crashes.id = crash_injury_metrics_view_1.id
+LIMIT 1) crash_injury_metrics_view ON TRUE
 LEFT JOIN geocode_status ON crashes.id = geocode_status.id
 LEFT JOIN lookups.collsn ON crashes.fhe_collsn_id = collsn.id
 LEFT JOIN

@@ -50,7 +50,7 @@ CREATE OR REPLACE VIEW fatalities_view AS SELECT
                 )
             ORDER BY ((crashes.crash_timestamp AT TIME ZONE 'US/Central'::text))
         )
-        AS ytd_fatality,
+    AS ytd_fatality,
     dense_rank()
         OVER (
             PARTITION BY
@@ -65,7 +65,7 @@ CREATE OR REPLACE VIEW fatalities_view AS SELECT
                 ((crashes.crash_timestamp AT TIME ZONE 'US/Central'::text)),
                 crashes.id
         )
-        AS ytd_fatal_crash,
+    AS ytd_fatal_crash,
     crashes.case_id,
     crashes.law_enforcement_ytd_fatality_num,
     crashes.engineering_area_id

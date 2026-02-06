@@ -3,8 +3,9 @@
 CREATE OR REPLACE VIEW socrata_export_crashes_view AS WITH unit_aggregates AS (
     SELECT
         crashes_1.id,
-        string_agg(DISTINCT mode_categories.label, ' & '::text)
-            AS units_involved
+        string_agg(
+            DISTINCT mode_categories.label, ' & '::text
+        ) AS units_involved
     FROM crashes crashes_1
     LEFT JOIN units ON crashes_1.id = units.crash_pk
     LEFT JOIN
@@ -45,8 +46,7 @@ SELECT
     crashes.private_dr_fl,
     unit_aggregates.units_involved,
     cimv.motor_vehicle_fatality_count AS motor_vehicle_death_count,
-    cimv.motor_vehicle_sus_serious_injry_count
-        AS motor_vehicle_serious_injury_count,
+    cimv.motor_vehicle_sus_serious_injry_count AS motor_vehicle_serious_injury_count,
     cimv.bicycle_fatality_count AS bicycle_death_count,
     cimv.bicycle_sus_serious_injry_count AS bicycle_serious_injury_count,
     cimv.pedestrian_fatality_count AS pedestrian_death_count,
@@ -54,13 +54,13 @@ SELECT
     cimv.motorcycle_fatality_count AS motorcycle_death_count,
     cimv.motorcycle_sus_serious_count AS motorcycle_serious_injury_count,
     cimv.micromobility_fatality_count AS micromobility_death_count,
-    cimv.micromobility_sus_serious_injry_count
-        AS micromobility_serious_injury_count,
+    cimv.micromobility_sus_serious_injry_count AS micromobility_serious_injury_count,
     cimv.other_fatality_count AS other_death_count,
     cimv.other_sus_serious_injry_count AS other_serious_injury_count,
     cimv.years_of_life_lost,
-    to_char(crashes.crash_timestamp, 'YYYY-MM-DD"T"HH24:MI:SS'::text)
-        AS crash_timestamp,
+    to_char(
+        crashes.crash_timestamp, 'YYYY-MM-DD"T"HH24:MI:SS'::text
+    ) AS crash_timestamp,
     to_char(
         (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text),
         'YYYY-MM-DD"T"HH24:MI:SS'::text
@@ -78,8 +78,8 @@ SELECT
     END AS point,
     coalesce(cimv.crash_injry_sev_id = 4, FALSE) AS crash_fatal_fl
 FROM crashes
-LEFT JOIN lateral(
-    SELECT crash_injury_metrics_view.id,
+LEFT JOIN LATERAL (SELECT
+    crash_injury_metrics_view.id,
     crash_injury_metrics_view.cris_crash_id,
     crash_injury_metrics_view.unkn_injry_count,
     crash_injury_metrics_view.nonincap_injry_count,
@@ -107,17 +107,15 @@ LEFT JOIN lateral(
     crash_injury_metrics_view.years_of_life_lost,
     crash_injury_metrics_view.est_comp_cost_crash_based,
     crash_injury_metrics_view.est_total_person_comp_cost
-    from crash_injury_metrics_view
-    where crashes.id = crash_injury_metrics_view.id
-    limit 1
-) cimv ON TRUE
-LEFT JOIN lateral(
-    SELECT unit_aggregates_1.id,
+FROM crash_injury_metrics_view
+WHERE crashes.id = crash_injury_metrics_view.id
+LIMIT 1) cimv ON TRUE
+LEFT JOIN LATERAL (SELECT
+    unit_aggregates_1.id,
     unit_aggregates_1.units_involved
-    from unit_aggregates unit_aggregates_1
-    where crashes.id = unit_aggregates_1.id
-    limit 1
-) unit_aggregates ON TRUE
+FROM unit_aggregates unit_aggregates_1
+WHERE crashes.id = unit_aggregates_1.id
+LIMIT 1) unit_aggregates ON TRUE
 LEFT JOIN locations location ON crashes.location_id = location.location_id::text
 WHERE
     crashes.is_deleted = FALSE

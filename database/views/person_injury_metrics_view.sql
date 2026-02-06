@@ -51,14 +51,14 @@ CREATE OR REPLACE VIEW person_injury_metrics_view AS SELECT
     CASE
         WHEN
             people.prsn_injry_sev_id = 4
-            AND (units.vz_mode_category_id = ANY(array[1, 2, 4]))
+            AND (units.vz_mode_category_id = ANY(ARRAY[1, 2, 4]))
             THEN 1
         ELSE 0
     END AS motor_vehicle_fatal_injry,
     CASE
         WHEN
             people.prsn_injry_sev_id = 1
-            AND (units.vz_mode_category_id = ANY(array[1, 2, 4]))
+            AND (units.vz_mode_category_id = ANY(ARRAY[1, 2, 4]))
             THEN 1
         ELSE 0
     END AS motor_vehicle_sus_serious_injry,
@@ -113,14 +113,14 @@ CREATE OR REPLACE VIEW person_injury_metrics_view AS SELECT
     CASE
         WHEN
             people.prsn_injry_sev_id = 4
-            AND (units.vz_mode_category_id = ANY(array[6, 8, 9]))
+            AND (units.vz_mode_category_id = ANY(ARRAY[6, 8, 9]))
             THEN 1
         ELSE 0
     END AS other_fatal_injry,
     CASE
         WHEN
             people.prsn_injry_sev_id = 1
-            AND (units.vz_mode_category_id = ANY(array[6, 8, 9]))
+            AND (units.vz_mode_category_id = ANY(ARRAY[6, 8, 9]))
             THEN 1
         ELSE 0
     END AS other_sus_serious_injry

@@ -15,7 +15,7 @@ CREATE OR REPLACE VIEW unit_types_involved_view AS WITH unit_types AS (
                 AND (
                     units.veh_body_styl_id
                     = ANY(
-                        array[
+                        ARRAY[
                             0,
                             9,
                             23,

@@ -16,8 +16,9 @@ CREATE OR REPLACE VIEW socrata_export_people_view AS SELECT
     people.prsn_injry_sev_id,
     units.vz_mode_category_id AS mode_id,
     mode_categories.label AS mode_desc,
-    to_char(crashes.crash_timestamp, 'YYYY-MM-DD"T"HH24:MI:SS'::text)
-        AS crash_timestamp,
+    to_char(
+        crashes.crash_timestamp, 'YYYY-MM-DD"T"HH24:MI:SS'::text
+    ) AS crash_timestamp,
     to_char(
         (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text),
         'YYYY-MM-DD"T"HH24:MI:SS'::text
