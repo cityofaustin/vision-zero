@@ -20,9 +20,6 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: Install sqruff
-        uses: quarylabs/install-sqruff-cli-action@main
-
       - name: Install PostgreSQL client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
@@ -56,6 +53,8 @@ jobs:
       - name: Generate CREATE VIEW statements
         run: $(pwd)/.github/workflows/export_database_views.sh --github-action
 
+      - name: Install sqruff
+        uses: quarylabs/install-sqruff-cli-action@main
       - name: Format SQL with sqruff
         run: |
           sqruff fix database/views
