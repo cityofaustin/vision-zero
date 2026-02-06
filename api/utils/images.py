@@ -349,36 +349,42 @@ def _delete_person_image(person_id, s3):
         abort(500, description="Delete failed")
 
 
-def _get_crash_diagram_metadata(crash_id):
+def _get_crash_diagram_metadata(record_locator):
     """Get the crash record diagram metadata for a given crash ID"""
     res = make_hasura_request(
-        query=GET_CRASH_DIAGRAM_METADATA, variables={"id": crash_id}
+        query=GET_CRASH_DIAGRAM_METADATA, variables={"record_locator": record_locator}
     )
-    return res["crashes_by_pk"]["diagram_s3_object_key"]
+    if res["crashes"]:
+        return res["crashes"][0]["diagram_s3_object_key"]
+    # not found
+    return None
 
 
-def _get_crash_diagram_image_url(crash_id, s3):
-    """Get a presigned S3 download URL for the given crash ID"""
-    diagram_obj_key = _get_crash_diagram_metadata(crash_id)
+def _get_crash_diagram_image_url(record_locator, s3):
+    """Get a presigned S3 download URL for the given crash record_locator"""
+    diagram_obj_key = _get_crash_diagram_metadata(record_locator)
 
     if not diagram_obj_key:
-        return jsonify(error=f"No crash diagram found for crash ID: {crash_id}"), 404
+        return (
+            jsonify(error=f"No crash diagram found for crash ID: {record_locator}"),
+            404,
+        )
 
     url = get_presigned_url(diagram_obj_key, s3)
     return jsonify(url=url)
 
 
-def _upsert_crash_diagram_image(crash_id, s3):
+def _upsert_crash_diagram_image(record_locator, s3):
     """Handle a crash diagram image upsert"""
     if "file" not in request.files:
         return jsonify(error="Image file is required"), 400
 
     file = request.files["file"]
-    diagram_original_obj_key = _get_crash_diagram_metadata(crash_id)
+    diagram_original_obj_key = _get_crash_diagram_metadata(record_locator)
 
     # Process and upload the image
     img_without_exif, img_format, ext = validate_and_process_image(file)
-    filename = f"{crash_id}.{ext}"
+    filename = f"{record_locator}.{ext}"
     new_diagram_obj_key = f"{AWS_S3_CRASH_DIAGRAM_LOCATION}/{filename}"
 
     upload_image_to_s3(
@@ -389,7 +395,7 @@ def _upsert_crash_diagram_image(crash_id, s3):
     make_hasura_request(
         query=UPDATE_CRASH_DIAGRAM_METADATA,
         variables={
-            "id": crash_id,
+            "record_locator": record_locator,
             "object": {
                 "diagram_s3_object_key": new_diagram_obj_key,
                 "updated_by": get_user_email(),
@@ -407,12 +413,12 @@ def _upsert_crash_diagram_image(crash_id, s3):
     return jsonify(success=True), 200
 
 
-def _delete_crash_diagram_image(crash_id, s3):
+def _delete_crash_diagram_image(record_locator, s3):
     """Delete a crash diagram from S3 and clear metadata in the db"""
-    diagram_obj_key = _get_crash_diagram_metadata(crash_id)
+    diagram_obj_key = _get_crash_diagram_metadata(record_locator)
 
     if not diagram_obj_key:
-        abort(404, description=f"No crash diagram found for crash ID: {crash_id}")
+        abort(404, description=f"No crash diagram found for crash ID: {record_locator}")
 
     try:
         delete_image_from_s3(diagram_obj_key, s3)
@@ -421,7 +427,7 @@ def _delete_crash_diagram_image(crash_id, s3):
         make_hasura_request(
             query=UPDATE_CRASH_DIAGRAM_METADATA,
             variables={
-                "id": crash_id,
+                "record_locator": record_locator,
                 "object": {
                     "diagram_s3_object_key": None,
                     "updated_by": get_user_email(),

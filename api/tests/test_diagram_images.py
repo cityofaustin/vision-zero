@@ -8,23 +8,17 @@ import os
 
 
 @pytest.fixture
-def test_crash_id():
-    """Test crash ID that should exist in database"""
-    return int(os.getenv("TEST_CRASH_ID", 358192))
-
-
-@pytest.fixture
-def api_url(api_base_url, test_crash_id):
+def api_url(api_base_url, test_crash_record_locator):
     """URL for crash diagram endpoint"""
-    return f"{api_base_url}/images/crash_diagram/{test_crash_id}"
+    return f"{api_base_url}/images/crash_diagram/{test_crash_record_locator}"
 
 
 @pytest.fixture
-def cleanup_crash_diagram(test_crash_id, api_base_url, editor_user_headers):
+def cleanup_crash_diagram(test_crash_record_locator, api_base_url, editor_user_headers):
     """Delete crash diagram after test."""
     yield
     try:
-        url = f"{api_base_url}/images/crash_diagram/{test_crash_id}"
+        url = f"{api_base_url}/images/crash_diagram/{test_crash_record_locator}"
         requests.delete(url, headers=editor_user_headers)
     except Exception as e:
         print(f"⚠️ Warning: failed to cleanup crash diagram: {e}")

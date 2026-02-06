@@ -19,15 +19,15 @@ class TestHealthcheck:
 class TestCR3Download:
     """Tests for CR3 PDF download endpoint"""
 
-    def test_download_requires_auth(self, api_base_url, test_crash_id):
+    def test_download_requires_auth(self, api_base_url, test_crash_record_locator):
         """Test that download endpoint requires authentication"""
-        res = requests.get(f"{api_base_url}/cr3/download/{test_crash_id}")
+        res = requests.get(f"{api_base_url}/cr3/download/{test_crash_record_locator}")
         assert res.status_code == 401
 
-    def test_download_with_auth(self, api_base_url, editor_user_headers, test_crash_id):
+    def test_download_with_auth(self, api_base_url, editor_user_headers, test_crash_record_locator):
         """Test downloading a CR3 PDF with valid auth"""
         res = requests.get(
-            f"{api_base_url}/cr3/download/{test_crash_id}", headers=editor_user_headers
+            f"{api_base_url}/cr3/download/{test_crash_record_locator}", headers=editor_user_headers
         )
         assert res.status_code == 200
         assert "message" in res.json()
@@ -36,7 +36,7 @@ class TestCR3Download:
         presigned_url = res.json()["message"]
         assert "amazonaws.com" in presigned_url
         assert "Signature=" in presigned_url
-        assert f"{test_crash_id}.pdf" in presigned_url
+        assert f"{test_crash_record_locator}.pdf" in presigned_url
 
         # Download and verify content type from S3
         s3_res = requests.get(presigned_url)
