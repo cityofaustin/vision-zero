@@ -63,7 +63,7 @@ jobs:
           templater = raw
           dialect = postgres
           EOF
-          sqruff --config /tmp/.sqruff lint database/views
+          sqruff fix database/views
 
       - name: Set Git Config
         run: |
