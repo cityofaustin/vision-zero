@@ -1,8 +1,8 @@
 diff --git a/node_modules/reaviz/dist/index.js b/node_modules/reaviz/dist/index.js
-index 7495711..308e3f1 100644
+index 2ef112e..8533914 100644
 --- a/node_modules/reaviz/dist/index.js
 +++ b/node_modules/reaviz/dist/index.js
-@@ -196,10 +196,10 @@
+@@ -197,10 +197,10 @@
    function formatValue(value) {
        if (value !== undefined) {
            if (value instanceof Date) {
@@ -15,7 +15,7 @@ index 7495711..308e3f1 100644
            }
            return value;
        }
-@@ -7463,7 +7463,7 @@
+@@ -7355,7 +7355,7 @@
    const weekDays = (() => {
        const base = new Date(Date.UTC(2017, 0, 2));
        return d3Array.range(7).map(() => {
