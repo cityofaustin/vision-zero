@@ -1,4 +1,4 @@
-name: Export Moped Views to SQL
+name: Export Vision Zero Views to SQL
 
 on:
   push:
