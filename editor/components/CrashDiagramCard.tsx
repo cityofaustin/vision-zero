@@ -53,6 +53,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
     recordId: crash.record_locator,
     recordType: "crash_diagram",
   });
+  const [isLoaded, setIsLoaded] = useState(true);
   const [isSaved, setIsSaved] = useState(!!crash.diagram_transform);
   const [isTouched, setIsTouched] = useState(false);
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
@@ -135,7 +136,9 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
           + scroll to zoom
         </div>
       </Card.Header>
-      <Card.Body className="crash-header-card-body text-center d-flex flex-column">
+      <Card.Body
+        className={`crash-header-card-body text-center d-flex flex-column ${!diagramError && !isLoaded ? "image-loading" : ""}`}
+      >
         {!diagramError && imageUrl && (
           <TransformWrapper
             initialScale={defaultValues.scale}
@@ -174,6 +177,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
                 alt="crash diagram"
                 id="crashDiagramImage"
                 onLoad={() => {
+                  setIsLoaded(true);
                   initPositionImage(defaultValues);
                 }}
                 onError={() => {
