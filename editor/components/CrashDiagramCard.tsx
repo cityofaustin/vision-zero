@@ -17,8 +17,7 @@ import {
   RotateControls,
   ZoomResetSaveControls,
 } from "@/components/CrashDiagramControls";
-
-const CR3_DIAGRAM_BASE_URL = process.env.NEXT_PUBLIC_CR3_DIAGRAM_BASE_URL!;
+import { useImage } from "@/utils/images";
 
 interface DiagramAlertProps {
   variant: "info" | "danger" | "success" | "warning";
@@ -50,7 +49,11 @@ const DiagramAlert: React.FC<DiagramAlertProps> = ({
 );
 
 export default function CrashDiagramCard({ crash }: { crash: Crash }) {
-  const [diagramError, setDiagramError] = useState(false);
+  const { imageUrl, error: diagramError } = useImage({
+    recordId: crash.record_locator,
+    recordType: "crash_diagram",
+  });
+  const [isLoaded, setIsLoaded] = useState(true);
   const [isSaved, setIsSaved] = useState(!!crash.diagram_transform);
   const [isTouched, setIsTouched] = useState(false);
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
@@ -133,8 +136,10 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
           + scroll to zoom
         </div>
       </Card.Header>
-      <Card.Body className="crash-header-card-body text-center d-flex flex-column">
-        {!diagramError && (
+      <Card.Body
+        className={`crash-header-card-body text-center d-flex flex-column ${!diagramError && !isLoaded ? "image-loading" : ""}`}
+      >
+        {!diagramError && imageUrl && (
           <TransformWrapper
             initialScale={defaultValues.scale}
             minScale={0.5}
@@ -168,15 +173,15 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               <Image
                 fluid
                 style={{ transform: `rotate(${rotation}deg)` }}
-                src={`${CR3_DIAGRAM_BASE_URL}/${crash.record_locator}.jpeg`}
+                src={imageUrl}
                 alt="crash diagram"
                 id="crashDiagramImage"
                 onLoad={() => {
+                  setIsLoaded(true);
                   initPositionImage(defaultValues);
                 }}
                 onError={() => {
                   console.warn("Error loading CR3 diagram image");
-                  setDiagramError(true);
                 }}
               />
             </TransformComponent>
@@ -205,7 +210,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
           />
         )}
       </Card.Body>
-      {!diagramError && (
+      {!diagramError && imageUrl && (
         <Card.Footer className="text-center">
           <div className="d-flex align-items-center w-100">
             <div className="me-3 text-secondary fs-5">

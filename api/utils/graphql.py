@@ -55,3 +55,20 @@ def make_hasura_request(*, query, variables=None):
         return data["data"]
     except KeyError as err:
         raise HasuraAPIError(data) from err
+
+
+GET_CRASH_DIAGRAM_METADATA = """
+query GetCrashDiagramMetadata($record_locator: String!) {
+  crashes(where: {record_locator: {_eq: $record_locator}}) {
+    diagram_s3_object_key
+  }
+}
+"""
+
+UPDATE_CRASH_DIAGRAM_METADATA = """
+mutation UpdateCrashDiagramMetadata($record_locator: String!, $object: crashes_set_input!) {
+  update_crashes(where: {record_locator: {_eq: $record_locator}}, _set: $object) {
+    affected_rows
+  }
+}
+"""

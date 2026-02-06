@@ -30,6 +30,9 @@ from utils.images import (
     _delete_person_image,
     _get_person_image_url,
     validate_file_size,
+    _get_crash_diagram_image_url,
+    _upsert_crash_diagram_image,
+    _delete_crash_diagram_image,
 )
 
 
@@ -46,7 +49,6 @@ AWS_S3_KEY = getenv("AWS_S3_KEY", "")
 AWS_S3_SECRET = getenv("AWS_S3_SECRET", "")
 AWS_S3_BUCKET_ENV = getenv("AWS_S3_BUCKET_ENV", "")
 AWS_S3_CR3_LOCATION = f"{AWS_S3_BUCKET_ENV}/cr3s/pdfs"
-AWS_S3_PERSON_IMAGE_LOCATION = f"{AWS_S3_BUCKET_ENV}/images/person"
 AWS_S3_BUCKET = getenv("AWS_S3_BUCKET", "")
 
 ADMIN_ROLE_NAME = "vz-admin"
@@ -390,7 +392,7 @@ def healthcheck():
     return jsonify(message=response)
 
 
-@app.route("/cr3/download/<int:crash_id>")
+@app.route("/cr3/download/<record_locator>")
 @cross_origin(
     headers=[
         "Content-Type",
@@ -400,7 +402,7 @@ def healthcheck():
     ],
 )
 @requires_auth
-def download_crash_id(crash_id):
+def download_crash_report(record_locator):
     """A valid access token is required to access this route"""
     # We only care for an integer string, anything else is not safe:
     url = s3.generate_presigned_url(
@@ -408,13 +410,9 @@ def download_crash_id(crash_id):
         ClientMethod="get_object",
         Params={
             "Bucket": AWS_S3_BUCKET,
-            "Key": AWS_S3_CR3_LOCATION + "/" + str(crash_id) + ".pdf",
+            "Key": AWS_S3_CR3_LOCATION + "/" + str(record_locator) + ".pdf",
         },
     )
-
-    # For testing uncomment:
-    # response = "Private Download, CrashID: %s , %s" % (safe_crash_id, url)
-    # return redirect(url, code=302)
     return jsonify(message=url)
 
 
@@ -452,6 +450,43 @@ def modify_person_image(person_id):
         return _upsert_person_image(person_id, s3)
     elif request.method == "DELETE":
         return _delete_person_image(person_id, s3)
+    return jsonify(message="Bad Request"), 400
+
+
+@app.route("/images/crash_diagram/<record_locator>", methods=["GET"])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
+@requires_auth
+# No role requirement - all authenticated users can GET
+def get_crash_diagram_image(record_locator):
+    """Retrieves a crash diagram image URL"""
+    return _get_crash_diagram_image_url(record_locator, s3)
+
+
+@app.route("/images/crash_diagram/<record_locator>", methods=["DELETE", "PUT"])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
+@requires_auth
+@requires_roles(ADMIN_ROLE_NAME, EDITOR_ROLE_NAME)
+@validate_file_size(MAX_IMAGE_SIZE_MEGABYTES)
+def modify_crash_diagram_image(record_locator):
+    """Upserts or deletes a crash diagram image"""
+    if request.method == "PUT":
+        return _upsert_crash_diagram_image(record_locator, s3)
+    elif request.method == "DELETE":
+        return _delete_crash_diagram_image(record_locator, s3)
     return jsonify(message="Bad Request"), 400
 
 
