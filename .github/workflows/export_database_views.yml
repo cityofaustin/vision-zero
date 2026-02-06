@@ -57,7 +57,13 @@ jobs:
         run: $(pwd)/.github/workflows/export_database_views.sh
 
       - name: Lint with sqruff
-        run: sqruff lint database/views
+        run: |
+          cat > /tmp/.sqruff <<'EOF'
+          [sqruff]
+          templater = raw
+          dialect = postgres
+          EOF
+          sqruff --config /tmp/.sqruff lint database/views
 
       - name: Set Git Config
         run: |
