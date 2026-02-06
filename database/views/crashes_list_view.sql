@@ -60,23 +60,12 @@ SELECT
     crash_injury_metrics_view.est_total_person_comp_cost,
     crash_injury_metrics_view.crash_injry_sev_id,
     crash_injury_metrics_view.years_of_life_lost,
-    injry_sev.label AS crash_injry_sev_desc,
-    collsn.label    AS collsn_desc,
+    injry_sev.label                                                                        AS crash_injry_sev_desc,
+    collsn.label                                                                           AS collsn_desc,
     geocode_status.is_manual_geocode,
-    to_char(
-        (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text),
-        'YYYY-MM-DD'::text
-    )               AS crash_date_ct,
-    to_char(
-        (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text),
-        'HH24:MI:SS'::text
-    )               AS crash_time_ct,
-    upper(
-        to_char(
-            (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text),
-            'dy'::text
-        )
-    )               AS crash_day_of_week
+    to_char((crashes.crash_timestamp AT TIME ZONE 'US/Central'::text), 'YYYY-MM-DD'::text) AS crash_date_ct,
+    to_char((crashes.crash_timestamp AT TIME ZONE 'US/Central'::text), 'HH24:MI:SS'::text) AS crash_time_ct,
+    upper(to_char((crashes.crash_timestamp AT TIME ZONE 'US/Central'::text), 'dy'::text))  AS crash_day_of_week
 FROM crashes
 LEFT JOIN LATERAL (SELECT
     crash_injury_metrics_view_1.id,
@@ -112,8 +101,6 @@ WHERE crashes.id = crash_injury_metrics_view_1.id
 LIMIT 1) crash_injury_metrics_view ON TRUE
 LEFT JOIN geocode_status ON crashes.id = geocode_status.id
 LEFT JOIN lookups.collsn ON crashes.fhe_collsn_id = collsn.id
-LEFT JOIN
-    lookups.injry_sev
-    ON crash_injury_metrics_view.crash_injry_sev_id = injry_sev.id
+LEFT JOIN lookups.injry_sev ON crash_injury_metrics_view.crash_injry_sev_id = injry_sev.id
 WHERE crashes.is_deleted = FALSE
 ORDER BY crashes.crash_timestamp DESC;

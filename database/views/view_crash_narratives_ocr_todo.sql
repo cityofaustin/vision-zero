@@ -7,9 +7,6 @@ FROM crashes
 WHERE
     cr3_stored_fl = true
     AND investigator_narrative IS null
-    AND (
-        investigator_narrative_ocr_processed_at IS null
-        OR cr3_processed_at >= investigator_narrative_ocr_processed_at
-    )
+    AND (investigator_narrative_ocr_processed_at IS null OR cr3_processed_at >= investigator_narrative_ocr_processed_at)
     AND updated_at > '2024-09-01 00:00:00+00'::timestamp with time zone
 ORDER BY cr3_processed_at, id;

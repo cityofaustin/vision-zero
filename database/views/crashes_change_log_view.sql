@@ -6,9 +6,7 @@ CREATE OR REPLACE VIEW crashes_change_log_view AS SELECT
     change_log_crashes.record_id            AS crash_pk,
     change_log_crashes.record_id,
     CASE
-        WHEN
-            change_log_crashes.operation_type = 'INSERT'::text
-            THEN 'create'::text
+        WHEN change_log_crashes.operation_type = 'INSERT'::text THEN 'create'::text
         ELSE lower(change_log_crashes.operation_type)
     END                                     AS operation_type,
     change_log_crashes.record_json,
@@ -22,9 +20,7 @@ SELECT
     units.crash_pk,
     change_log_units.record_id,
     CASE
-        WHEN
-            change_log_units.operation_type = 'INSERT'::text
-            THEN 'create'::text
+        WHEN change_log_units.operation_type = 'INSERT'::text THEN 'create'::text
         ELSE lower(change_log_units.operation_type)
     END                                  AS operation_type,
     change_log_units.record_json,
@@ -39,9 +35,7 @@ SELECT
     crashes.id                              AS crash_pk,
     change_log_people.record_id,
     CASE
-        WHEN
-            change_log_people.operation_type = 'INSERT'::text
-            THEN 'create'::text
+        WHEN change_log_people.operation_type = 'INSERT'::text THEN 'create'::text
         ELSE lower(change_log_people.operation_type)
     END                                     AS operation_type,
     change_log_people.record_json,

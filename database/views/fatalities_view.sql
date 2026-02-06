@@ -10,10 +10,7 @@ CREATE OR REPLACE VIEW fatalities_view AS SELECT
     crashes.address_display,
     units.id   AS unit_id,
     concat_ws(
-        ' '::text,
-        people.prsn_first_name,
-        people.prsn_mid_name,
-        people.prsn_last_name
+        ' '::text, people.prsn_first_name, people.prsn_mid_name, people.prsn_last_name
     )          AS victim_name,
     to_char(
         (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text), 'yyyy'::text
@@ -31,39 +28,21 @@ CREATE OR REPLACE VIEW fatalities_view AS SELECT
         ')'
     )          AS location,
     to_char(
-        (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text),
-        'YYYY-MM-DD'::text
+        (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text), 'YYYY-MM-DD'::text
     )          AS crash_date_ct,
     to_char(
-        (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text),
-        'HH24:MI:SS'::text
+        (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text), 'HH24:MI:SS'::text
     )          AS crash_time_ct,
     row_number()
         OVER (
-            PARTITION BY
-                (
-                    extract(
-                        YEAR FROM (
-                            crashes.crash_timestamp AT TIME ZONE 'US/Central'::text
-                        )
-                    )
-                )
+            PARTITION BY (extract(YEAR FROM (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text)))
             ORDER BY ((crashes.crash_timestamp AT TIME ZONE 'US/Central'::text))
         )
     AS ytd_fatality,
     dense_rank()
         OVER (
-            PARTITION BY
-                (
-                    extract(
-                        YEAR FROM (
-                            crashes.crash_timestamp AT TIME ZONE 'US/Central'::text
-                        )
-                    )
-                )
-            ORDER BY
-                ((crashes.crash_timestamp AT TIME ZONE 'US/Central'::text)),
-                crashes.id
+            PARTITION BY (extract(YEAR FROM (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text)))
+            ORDER BY ((crashes.crash_timestamp AT TIME ZONE 'US/Central'::text)), crashes.id
         )
     AS ytd_fatal_crash,
     crashes.case_id,
