@@ -20,11 +20,8 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: Install SQLFluff
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-pip
-          pip3 install sqlfluff
+      - name: Install sqruff
+        uses: quarylabs/install-sqruff-cli-action@main
 
       - name: Install PostgreSQL client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
@@ -59,9 +56,8 @@ jobs:
       - name: Generate CREATE VIEW statements
         run: $(pwd)/.github/workflows/export_database_views.sh
 
-      - name: Run SQLFluff
-        run: |
-          sqlfluff format --config .sqlfluff database/views/*.sql
+      - name: Lint with sqruff
+        run: sqruff lint database/views
 
       - name: Set Git Config
         run: |
