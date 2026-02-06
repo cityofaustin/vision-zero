@@ -60,7 +60,7 @@ jobs:
         uses: quarylabs/install-sqruff-cli-action@7805329baf7cf340e849e254cddc782f08f2d36c
       - name: Format SQL with sqruff
         run: |
-          sqruff fix database/views
+          sqruff fix --format human database/views
         continue-on-error: true
 
       - name: Set Git Config
