@@ -153,7 +153,7 @@ export default function Users() {
                         : ""}
                     </td>
                     <td>{user.logins_count || "0"}</td>
-                    <td>{formatRoleName(user.app_metadata.roles[0])}</td>
+                    <td>{formatRoleName(user.app_metadata?.roles?.[0] || "")}</td>
                   </tr>
                 );
               })}
