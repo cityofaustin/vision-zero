@@ -479,12 +479,13 @@ under the entry named 'DB Docs (dbdocs.io).'
 
 ## Exported database views (`database/views/`)
 
-This repository tracks a set of **exported** SQL view definitions in `database/views/*.sql`.
-These files are **not** the source of truth for view definitions. Instead, views are defined
+This repository tracks a set of **exported** SQL definitions for views in `database/views/*.sql`
+and materialized views in `database/views/materialized/*.sql`.
+These files are **not** the source of truth for view definitions. Instead, views/materialized views are defined
 and versioned through Hasura migrations (`database/migrations/default/**/up.sql`). And as a result,
 the actual source of truth for the current views is actually the database's concept of what they are.
 
-The `database/views/*.sql` files exist so that:
+The `database/views/` SQL export files exist so that:
 
 - View changes are easy to **review in PRs** as plain SQL diffs
 - We have a single, consistent, auto-formatted snapshot of the current view definitions
@@ -497,12 +498,17 @@ That workflow:
 
 - Spins up a disposable Postgres + Hasura stack via `docker-compose-github-actions.yml`
 - Applies migrations and Hasura metadata (so all views exist in the database)
-- Runs `.github/workflows/export_database_views.sh` to export all `public` schema views to disk
-  - Each file is written as `database/views/<view_name>.sql`
+- Runs `.github/workflows/export_database_views.sh` to export all `public` schema views and materialized views to disk
+  - Views are written as `database/views/<view_name>.sql`
   - The file begins with a header comment:
     - `-- Most recent migration: <path/to/migration/up.sql>`
   - The body is generated from Postgres using `pg_get_viewdef(...)` and emitted as a
     `CREATE OR REPLACE VIEW <view_name> AS ...` statement
+  - Materialized views are written as `database/views/materialized/<view_name>.sql`
+    - The file begins with the same `-- Most recent migration: ...` header
+    - The body is emitted as:
+      - `DROP MATERIALIZED VIEW IF EXISTS <view_name>;`
+      - `CREATE MATERIALIZED VIEW <view_name> AS ...`
 - Formats the exported SQL using `sqruff` (configured in `.sqruff`)
 - Commits and pushes any resulting `database/views/*` changes back to the same branch
 
@@ -525,7 +531,7 @@ Prerequisites:
 From the repo root:
 
 ```bash
-# Export current view definitions to database/views/*.sql
+# Export current view/materialized view definitions to database/views/
 ./.github/workflows/export_database_views.sh
 
 # Apply repo SQL formatting rules (best-effort auto-fix)
@@ -537,7 +543,7 @@ Notes:
 - By default, the export script uses `docker compose exec postgis psql ...`. In CI it uses
   the `--github-action` flag so it can call `psql` directly against `localhost` using `PG*`
   environment variables.
-- The script exports all views in the `public` schema (excluding PostGIS helper views like
+- The script exports all views and materialized views in the `public` schema (excluding PostGIS helper views like
   `geometry_columns`/`geography_columns`).
 
 ### Adding or changing a view

@@ -53,7 +53,7 @@ jobs:
           hasura --skip-update-check --database-name default migrate apply;
           hasura metadata apply --skip-update-check;
 
-      - name: Generate CREATE VIEW statements
+      - name: Generate CREATE VIEW + MATERIALIZED VIEW statements
         run: $(pwd)/.github/workflows/export_database_views.sh --github-action
 
       - name: Install sqruff
