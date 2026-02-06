@@ -59,6 +59,7 @@ jobs:
       - name: Format SQL with sqruff
         run: |
           sqruff fix database/views
+        continue-on-error: true
 
       - name: Set Git Config
         run: |
