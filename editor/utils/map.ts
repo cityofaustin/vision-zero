@@ -98,7 +98,6 @@ export const useBasemap = (initialBasemapType: "streets" | "aerial") => {
   };
 };
 
-
 /**
  * An index of functions that transform input data into a geojson feature collection
  */

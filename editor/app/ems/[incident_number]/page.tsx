@@ -27,7 +27,7 @@ import { emsNonCR3Columns } from "@/configs/nonCR3Columns";
 import { emsDataCards } from "@/configs/emsDataCards";
 import { getMutationVariables } from "@/configs/emsRelatedRecordTable";
 import { PeopleListRow } from "@/types/peopleList";
-import { FaTruckMedical } from "react-icons/fa6";
+import { LuAmbulance } from "react-icons/lu";
 import { parseISO, subHours, addHours } from "date-fns";
 import { Crash } from "@/types/crashes";
 import EMSMapCard from "@/components/EMSMapCard";
@@ -248,7 +248,7 @@ export default function EMSDetailsPage({
     <UserEventsLogger eventName="ems_details_view">
       <Row>
         <Col className="d-flex fs-3 align-items-center mb-3">
-          <FaTruckMedical className="me-2" />
+          <LuAmbulance className="me-2" />
           <span>{incident.incident_location_address}</span>
         </Col>
       </Row>

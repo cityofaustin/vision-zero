@@ -136,7 +136,7 @@ export default function DataCard<T extends Record<string, unknown>>({
 
   return (
     <Card>
-      <Card.Header className="d-flex justify-content-between border-none">
+      <Card.Header className="d-flex justify-content-between">
         <Card.Title>{title}</Card.Title>
         {HeaderActionComponent && !isReadOnlyUser && (
           <HeaderActionComponent

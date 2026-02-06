@@ -21,6 +21,7 @@ export const GET_LOCATION = gql`
         id
         updated_by
         created_at
+        updated_at
         text
         location_id
       }
