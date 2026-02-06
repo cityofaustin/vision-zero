@@ -24,7 +24,7 @@ cr3_crash_counts AS (
 non_cr3_crash_counts AS (
     SELECT
         atd_apd_blueform.location_id,
-        count(atd_apd_blueform.location_id) AS crash_count,
+        count(atd_apd_blueform.location_id)         AS crash_count,
         count(atd_apd_blueform.location_id) * 10000 AS noncr3_comp_costs_total
     FROM atd_apd_blueform
     WHERE
@@ -43,11 +43,13 @@ SELECT
         cr3_comp_costs.cr3_comp_costs_total
         + non_cr3_crash_counts.noncr3_comp_costs_total,
         0::bigint
-    ) AS total_est_comp_cost,
-    coalesce(cr3_crash_counts.crash_count, 0::bigint) AS cr3_crash_count,
+    )                                                       AS total_est_comp_cost,
+    coalesce(
+        cr3_crash_counts.crash_count, 0::bigint
+    )                                                       AS cr3_crash_count,
     coalesce(
         non_cr3_crash_counts.crash_count, 0::bigint
-    ) AS non_cr3_crash_count,
+    )                                                       AS non_cr3_crash_count,
     coalesce(cr3_crash_counts.crash_count, 0::bigint)
     + coalesce(non_cr3_crash_counts.crash_count, 0::bigint) AS crash_count
 FROM locations

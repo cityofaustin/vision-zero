@@ -36,10 +36,10 @@ CREATE OR REPLACE VIEW people_list_view AS SELECT
     people.updated_at,
     people.updated_by,
     people.years_of_life_lost,
-    crashes.id AS crash_pk,
+    crashes.id          AS crash_pk,
     crashes.cris_crash_id,
     crashes.crash_timestamp,
-    injry_sev.label AS prsn_injry_sev_desc,
+    injry_sev.label     AS prsn_injry_sev_desc,
     units.unit_nbr,
     units.unit_desc_id,
     mode_category.label AS mode_desc
