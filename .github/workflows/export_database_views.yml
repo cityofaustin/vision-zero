@@ -56,13 +56,8 @@ jobs:
       - name: Generate CREATE VIEW statements
         run: $(pwd)/.github/workflows/export_database_views.sh
 
-      - name: Lint with sqruff
+      - name: Format SQL with sqruff
         run: |
-          cat > /tmp/.sqruff <<'EOF'
-          [sqruff]
-          templater = raw
-          dialect = postgres
-          EOF
           sqruff fix database/views
 
       - name: Set Git Config
