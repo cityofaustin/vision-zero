@@ -54,7 +54,7 @@ jobs:
           hasura metadata apply --skip-update-check;
 
       - name: Generate CREATE VIEW statements
-        run: $(pwd)/.github/workflows/export_database_views.sh
+        run: $(pwd)/.github/workflows/export_database_views.sh --github-action
 
       - name: Format SQL with sqruff
         run: |
