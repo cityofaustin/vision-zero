@@ -304,6 +304,7 @@ def process_pdf(extract_dir, filename, s3_upload, index):
                 "data": {
                     "cr3_processed_at": datetime.now(timezone.utc).isoformat(),
                     "cr3_stored_fl": True,
+                    "diagram_s3_object_key": s3_object_key_diagram
                 },
             },
         )

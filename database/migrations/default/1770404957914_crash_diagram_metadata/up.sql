@@ -1,3 +1,4 @@
+alter table crashes_cris add column diagram_s3_object_key text;
 alter table crashes add column diagram_s3_object_key text;
 
 -- todo: this needs to be a backfill op
