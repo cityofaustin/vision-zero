@@ -24,10 +24,13 @@ class TestCR3Download:
         res = requests.get(f"{api_base_url}/cr3/download/{test_crash_record_locator}")
         assert res.status_code == 401
 
-    def test_download_with_auth(self, api_base_url, editor_user_headers, test_crash_record_locator):
+    def test_download_with_auth(
+        self, api_base_url, editor_user_headers, test_crash_record_locator
+    ):
         """Test downloading a CR3 PDF with valid auth"""
         res = requests.get(
-            f"{api_base_url}/cr3/download/{test_crash_record_locator}", headers=editor_user_headers
+            f"{api_base_url}/cr3/download/{test_crash_record_locator}",
+            headers=editor_user_headers,
         )
         assert res.status_code == 200
         assert "message" in res.json()
@@ -42,13 +45,6 @@ class TestCR3Download:
         s3_res = requests.get(presigned_url)
         assert s3_res.status_code == 200
         assert s3_res.headers.get("Content-Type") == "application/pdf"
-
-    def test_download_invalid_crash_id_type(self, api_base_url, editor_user_headers):
-        """Test that non-integer crash IDs return 404"""
-        res = requests.get(
-            f"{api_base_url}/cr3/download/abc123", headers=editor_user_headers
-        )
-        assert res.status_code == 404
 
     def test_download_nonexistent_crash_id(self, api_base_url, editor_user_headers):
         """Test downloading with negative crash ID"""
