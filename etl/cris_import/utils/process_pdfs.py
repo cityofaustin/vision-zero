@@ -309,7 +309,7 @@ def process_pdf(extract_dir, filename, s3_upload, index):
             },
         )
         # check to make sure that we actually updated a crash record
-        affected_rows = res["update_crashes_cris"]["affected_rows"]
+        affected_rows = res["update_crashes"]["affected_rows"]
         if not affected_rows:
             raise ValueError(
                 f"Crash ID: {cris_crash_id} - CR3 PDF has no matching crash record in the DB. This should never happen."
