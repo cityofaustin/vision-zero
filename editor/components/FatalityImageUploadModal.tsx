@@ -1,7 +1,18 @@
-import { Modal, Button, Form, Row, Col, Image, Spinner } from "react-bootstrap";
+import {
+  Modal,
+  Button,
+  Form,
+  Row,
+  Col,
+  Image,
+  Spinner,
+  CloseButton,
+} from "react-bootstrap";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useGetToken } from "@/utils/auth";
+import AlignedLabel from "@/components/AlignedLabel";
+import { LuTrash } from "react-icons/lu";
 
 interface FatalityImageUploadModalProps {
   showModal: boolean;
@@ -122,6 +133,8 @@ export default function FatalityImageUploadModal({
     }
   };
 
+  const handleDeletePhoto = () => {};
+
   return (
     <Modal
       show={showModal}
@@ -132,8 +145,23 @@ export default function FatalityImageUploadModal({
         reset();
       }}
     >
-      <Modal.Header closeButton>
+      <Modal.Header className="d-flex justify-content-between">
         <Modal.Title>{`Photo | ${victimName}`}</Modal.Title>
+        <div>
+          {!!imageUrl && (
+            <Button
+              className="me-3"
+              variant="outline-secondary"
+              onClick={() => handleDeletePhoto()}
+            >
+              <AlignedLabel>
+                <LuTrash className="me-2" />
+                <span>Delete</span>
+              </AlignedLabel>
+            </Button>
+          )}
+          <CloseButton />
+        </div>
       </Modal.Header>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Modal.Body>
