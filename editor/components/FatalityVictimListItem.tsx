@@ -17,7 +17,7 @@ interface FatalityVictimListItemProps {
  */
 const shouldShowRestraintField = (unit: Unit) =>
   unit.unit_desc_id === 1 && // motor vehicle
-  unit.veh_body_styl_id !== 71 && // motorycle
+  unit.veh_body_styl_id !== 71 && // motorcycle
   unit.veh_body_styl_id !== 90; // police motorcycle
 
 /** If person is a cyclist or pedestrian return null bc it would be redundant to render,
