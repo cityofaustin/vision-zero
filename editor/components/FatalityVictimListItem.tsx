@@ -119,7 +119,7 @@ export default function FatalityVictimListItem({
           setShowModal={setShowModal}
           victimName={victimName}
           personId={victim.id}
-          imageUrl={imageUrl}
+          storedUrl={imageUrl}
           isLoading={isLoading}
           setImageVersion={setImageVersion}
         />

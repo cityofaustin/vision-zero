@@ -19,7 +19,7 @@ interface FatalityImageUploadModalProps {
   setShowModal: Dispatch<SetStateAction<boolean>>;
   victimName: string;
   personId: number;
-  imageUrl: string | null;
+  storedUrl: string | null;
   isLoading: boolean;
   setImageVersion: Dispatch<SetStateAction<number>>;
 }
@@ -40,7 +40,7 @@ export default function FatalityImageUploadModal({
   setShowModal,
   victimName,
   personId,
-  imageUrl,
+  storedUrl,
   isLoading,
   setImageVersion,
 }: FatalityImageUploadModalProps) {
@@ -176,7 +176,7 @@ export default function FatalityImageUploadModal({
       <Modal.Header className="d-flex justify-content-between">
         <Modal.Title>{`Photo | ${victimName}`}</Modal.Title>
         <div>
-          {!!imageUrl && (
+          {!!storedUrl && (
             <Button
               className="me-3"
               variant="outline-secondary"
@@ -282,9 +282,9 @@ export default function FatalityImageUploadModal({
               />
             </div>
           )}
-          {!errors.file && imageUrl && !previewUrl && !isLoading && (
+          {!errors.file && storedUrl && !previewUrl && !isLoading && (
             <div className="d-flex mt-3 justify-content-center">
-              <Image src={imageUrl} alt="Preview image" fluid />
+              <Image src={storedUrl} alt="Preview image" fluid />
             </div>
           )}
           {isLoading && (
