@@ -270,41 +270,6 @@ def get_presigned_url(s3_object_key, s3, expires_in=3600):
     )
 
 
-def check_s3_object_exists(s3_object_key, s3):
-    """Check if an S3 object exists
-
-    Args:
-        s3_object_key: Full S3 object key/path
-        s3: boto3 S3 client
-
-    Returns:
-        bool: True if exists, False otherwise
-    """
-    try:
-        s3.head_object(Bucket=AWS_S3_BUCKET, Key=s3_object_key)
-        return True
-    except s3.exceptions.ClientError:
-        return False
-
-
-def find_existing_image(base_path, record_id, s3):
-    """Find an existing image by checking common extensions
-
-    Args:
-        base_path: S3 base path (e.g., AWS_S3_CRASH_DIAGRAM_LOCATION)
-        record_id: The record ID
-        s3: boto3 S3 client
-
-    Returns:
-        str or None: S3 object key if found, None otherwise
-    """
-    for ext in ["jpg", "png"]:
-        obj_key = f"{base_path}/{record_id}.{ext}"
-        if check_s3_object_exists(obj_key, s3):
-            return obj_key
-    return None
-
-
 def _handle_image_upload(person_id, file, s3):
     """Uploads a person image to S3 after validating and removing EXIF data"""
     img_without_exif, img_format, ext = validate_and_process_image(file)
