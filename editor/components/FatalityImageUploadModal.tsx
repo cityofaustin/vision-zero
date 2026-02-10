@@ -47,6 +47,7 @@ export default function FatalityImageUploadModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const getToken = useGetToken();
 
@@ -65,6 +66,8 @@ export default function FatalityImageUploadModal({
   });
 
   const file = watch("file");
+
+  const url = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${personId}`;
 
   // Keeps track of file updates and errors to update preview URL
   useEffect(() => {
@@ -97,16 +100,13 @@ export default function FatalityImageUploadModal({
       }
 
       const token = await getToken();
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${personId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          method: "PUT",
-          body: formData,
-        }
-      );
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        method: "PUT",
+        body: formData,
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -127,13 +127,41 @@ export default function FatalityImageUploadModal({
   };
 
   const handleClose = () => {
-    if (!isSubmitting) {
+    if (!isSubmitting && !isDeleting) {
       setShowModal(false);
       setError(null);
     }
   };
 
-  const handleDeletePhoto = () => {};
+  /** Deletes the image using the API */
+  const onDeletePhoto = async () => {
+    setIsDeleting(true);
+    const method = "DELETE";
+    const token = await getToken();
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        method,
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || `Failed to delete photo: ${response.status}`
+        );
+      }
+
+      setImageVersion((prev) => prev + 1);
+      handleClose();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "An unknown error occurred"
+      );
+    }
+    setIsDeleting(false);
+  };
 
   return (
     <Modal
@@ -152,7 +180,14 @@ export default function FatalityImageUploadModal({
             <Button
               className="me-3"
               variant="outline-secondary"
-              onClick={() => handleDeletePhoto()}
+              disabled={isDeleting}
+              onClick={() => {
+                if (
+                  window.confirm("Are you sure you want to delete this photo?")
+                ) {
+                  onDeletePhoto();
+                }
+              }}
             >
               <AlignedLabel>
                 <LuTrash className="me-2" />
@@ -160,7 +195,7 @@ export default function FatalityImageUploadModal({
               </AlignedLabel>
             </Button>
           )}
-          <CloseButton />
+          <CloseButton onClick={handleClose} />
         </div>
       </Modal.Header>
       <Form onSubmit={handleSubmit(onSubmit)}>
@@ -259,13 +294,17 @@ export default function FatalityImageUploadModal({
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" type="submit" disabled={isSubmitting}>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={isSubmitting || isDeleting}
+          >
             {isSubmitting ? "Uploading..." : "Save"}
           </Button>
           <Button
             variant="secondary"
             onClick={handleClose}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isDeleting}
           >
             Cancel
           </Button>
