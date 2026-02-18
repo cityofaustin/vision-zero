@@ -1,4 +1,8 @@
 -- Recreate socrata export crashes view without collision type
+
+DROP VIEW public.socrata_export_crashes_view;
+
+
 create or replace view public.socrata_export_crashes_view as
 with unit_aggregates as (
     select
