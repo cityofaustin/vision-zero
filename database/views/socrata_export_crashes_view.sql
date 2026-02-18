@@ -1,4 +1,4 @@
--- Most recent migration: database/migrations/default/1767430748998_crash_address_display_trigger/up.sql
+-- Most recent migration: database/migrations/default/1727451511064_init/up.sql
 
 CREATE OR REPLACE VIEW socrata_export_crashes_view AS WITH unit_aggregates AS (
     SELECT
