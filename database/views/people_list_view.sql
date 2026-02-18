@@ -1,4 +1,4 @@
--- Most recent migration: database/migrations/default/1727451511064_init/up.sql
+-- Most recent migration: database/migrations/default/1742417174000_crash_ems_link/up.sql
 
 CREATE OR REPLACE VIEW people_list_view AS SELECT
     people.id,
