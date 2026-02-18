@@ -1,0 +1,76 @@
+name: Export Vision Zero Views to SQL
+
+on:
+  push:
+    paths:
+      - database/migrations/default/**
+      - .github/workflows/export_database_views.yml
+      - .github/workflows/export_database_views.sh
+      - .sqruff
+    branches-ignore:
+      - "main"
+      - "production"
+
+jobs:
+  publish-views:
+    runs-on: ubuntu-latest
+    permissions:  
+      contents: write  
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Set PostgreSQL environment variables
+        run: |
+          echo "PGHOST=localhost" >> $GITHUB_ENV
+          echo "PGPORT=5432" >> $GITHUB_ENV
+          echo "PGDATABASE=vision_zero" >> $GITHUB_ENV
+          echo "PGUSER=visionzero" >> $GITHUB_ENV
+          echo "PGPASSWORD=visionzero" >> $GITHUB_ENV
+
+      - name: Install Hasura CLI
+        run: |
+          curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
+
+      - name: "Spin-up the database and graphql-engine containers"
+        run: |
+          export BRANCH_NAME="${GITHUB_REF_NAME}"
+          echo "SHA: ${GITHUB_SHA}"
+          echo "ACTION/BRANCH_NAME: ${BRANCH_NAME}"
+          echo "GR: ${GITHUB_REF}"
+          echo "PWD: $(pwd)"
+          docker compose -f docker-compose-github-actions.yml up -d postgis;
+          sleep 10;
+          docker compose -f docker-compose-github-actions.yml up -d graphql-engine;
+          sleep 10;
+          cd database;
+          hasura --skip-update-check --database-name default migrate apply;
+          hasura metadata apply --skip-update-check;
+
+      - name: Generate CREATE VIEW + MATERIALIZED VIEW statements
+        run: $(pwd)/.github/workflows/export_database_views.sh --github-action
+
+      - name: Install sqruff
+        uses: quarylabs/install-sqruff-cli-action@7805329baf7cf340e849e254cddc782f08f2d36c
+      - name: Format SQL with sqruff
+        run: |
+          sqruff fix --format human database/views
+        continue-on-error: true
+
+      - name: Set Git Config
+        run: |
+          git config --local user.email "visionzero@view.bot"
+          git config --local user.name "Vision Zero View Bot"
+
+      - name: Commit and push changes
+        run: |
+          export BRANCH_NAME="${GITHUB_REF_NAME}"
+          git add database/views
+          git commit -m "🤖 Export database views for $BRANCH_NAME" || echo "No changes to commit"
+          git push origin HEAD || echo "No changes to push"

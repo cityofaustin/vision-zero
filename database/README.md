@@ -6,34 +6,44 @@ The design supports an editing environment which enables Vision Zero program sta
 
 ![vision zero data flow](../docs/images/data_flow.png)
 
-- [Data sources](#data-sources)
-  - [TxDOT Crash Records Information System (CRIS)](#txdot-crash-records-information-system-cris)
-    - [Design](#design)
-    - [CRIS Extract configuration and accounts](#cris-extract-configuration-and-accounts)
-    - [CRIS data processing](#cris-data-processing)
-    - [Lookup tables](#lookup-tables)
-      - [Lookup table structure and custom lookup table values](#lookup-table-structure-and-custom-lookup-table-values)
-    - [Charges records](#charges-records)
-    - [Database IDs, CRIS record IDs, and primary keys](#database-ids-cris-record-ids-and-primary-keys)
-    - [User-created crash records, aka "temporary" records](#user-created-crash-records-aka-temporary-records)
-    - [Audit fields](#audit-fields)
-    - [Change logs](#change-logs)
-  - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems-todo)
-  - [Geospatial layers](#geospatial-layers)
-- [Common maintenance tasks](#common-maintenance-tasks)
-  - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
-  - [Add a custom column to `crashes`, `units`, or `people`](#add-a-custom-column-to-crashes-units-or-people)
-  - [Adding a computed or generated field to `crashes`, `units`, or `people`](#adding-a-computed-or-generated-field-to-crashes-units-or-people)
-  - [Refresh lookup tables with the latest CRIS values](#refresh-lookup-tables-with-the-latest-cris-values)
-  - [Add a custom lookup value to a CRIS-managed lookup table (todo)](#add-a-custom-lookup-value-to-a-cris-managed-lookup-table-todo)
-  - [Debugging record triggers](#debugging-record-triggers)
-  - [Parsing change log data](#parsing-change-log-data)
-  - [Creating a new geospatial layer](#creating-a-new-geospatial-layer)
-- [Backups](#backups)
-- [Hasura](#hasura)
-- [Development and deployment](#development-and-deployment)
-  - [Generating migrations and metadata changes](#generating-migrations-and-metadata-changes)
-  - [Merging an approved feature branch](#merging-an-approved-feature-branch)
+- [Vision Zero Database (VZD)](#vision-zero-database-vzd)
+  - [Data sources](#data-sources)
+    - [TxDOT Crash Records Information System (CRIS)](#txdot-crash-records-information-system-cris)
+      - [Design](#design)
+      - [CRIS Extract configuration and accounts](#cris-extract-configuration-and-accounts)
+        - [Extract delivery configuration](#extract-delivery-configuration)
+        - [Extract file configutration](#extract-file-configutration)
+      - [CRIS data processing](#cris-data-processing)
+      - [Lookup tables](#lookup-tables)
+        - [Lookup table structure and custom lookup table values](#lookup-table-structure-and-custom-lookup-table-values)
+      - [Charges records](#charges-records)
+      - [Database IDs, CRIS record IDs, and primary keys](#database-ids-cris-record-ids-and-primary-keys)
+      - [User-created crash records, aka "temporary" records](#user-created-crash-records-aka-temporary-records)
+      - [Audit fields](#audit-fields)
+      - [Change logs](#change-logs)
+    - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems-todo)
+    - [Geospatial layers](#geospatial-layers)
+  - [Common maintenance tasks](#common-maintenance-tasks)
+    - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
+    - [Add a custom column to `crashes`, `units`, or `people`](#add-a-custom-column-to-crashes-units-or-people)
+    - [Adding a computed or generated field to `crashes`, `units`, or `people`](#adding-a-computed-or-generated-field-to-crashes-units-or-people)
+    - [Refresh lookup tables with the latest CRIS values](#refresh-lookup-tables-with-the-latest-cris-values)
+    - [Add a new CRIS lookup table to the database](#add-a-new-cris-lookup-table-to-the-database)
+    - [Add a custom lookup value to a CRIS-managed lookup table (todo)](#add-a-custom-lookup-value-to-a-cris-managed-lookup-table-todo)
+    - [Debugging record triggers](#debugging-record-triggers)
+    - [Parsing change log data](#parsing-change-log-data)
+    - [Creating a new geospatial layer](#creating-a-new-geospatial-layer)
+    - [Updating an existing geospatial layer](#updating-an-existing-geospatial-layer)
+  - [Backups](#backups)
+  - [Hasura](#hasura)
+  - [Development and deployment](#development-and-deployment)
+    - [Generating migrations and metadata changes](#generating-migrations-and-metadata-changes)
+    - [Merging an approved feature branch](#merging-an-approved-feature-branch)
+  - [Database Schema Documentation](#database-schema-documentation)
+  - [Exported database views (`database/views/`)](#exported-database-views-databaseviews)
+    - [How the view export works](#how-the-view-export-works)
+    - [Regenerating view SQL locally](#regenerating-view-sql-locally)
+    - [Adding or changing a view](#adding-or-changing-a-view)
 
 ## Data sources
 
@@ -164,7 +174,7 @@ In addition to the `source` column, constraint checks must be added to tables wh
 
 For example, consider the `lookups.injry_sev` table, which includes a custom value, `KILLED (NON-ATD)`, which is used by staff to override the CRIS-defined injury severity of a person record:
 
-```
+```text
 | id  | label                    | source |
 | --- | ------------------------ | ------ |
 | 0   | UNKNOWN                  | cris   |
@@ -394,7 +404,7 @@ Typically, any foreign key constraint that references the layer should use the `
 
 ### Updating an existing geospatial layer
 
-Use the [ArcGIS Online Layer Helper](/toolbox/load_agol_layer) to update layers in our database from their authoritative source on ArcGIS Online. 
+Use the [ArcGIS Online Layer Helper](/toolbox/load_agol_layer) to update layers in our database from their authoritative source on ArcGIS Online.
 
 After a geospatial layer is updated, you must re-process any records which reference the layer. These updates require manual crafting of SQL statements which mirror the trigger functions that typically set these associations when a record is inserted or updated. For example, after updating the `location` polygons layer, you will need to re-process the `location_id` associations for `crashes`, `atd_apd_blueform`, `ems__incidents`, and `afd__incdents`. See [#26112](https://github.com/cityofaustin/atd-data-tech/issues/26112) as an example of how this can be accomplished.
 
@@ -446,21 +456,104 @@ Once we see that no errors occur when applying the sequence of migrations locall
 
 ## Database Schema Documentation
 
-CI exists to automatically generate a database schema documentation file. This occurs
-when a PR is created and subsequently when a commit is pushed onto a PR'd branch.
-The CI is performed by a GitHub action which does the following:
+CI exists to automatically generate and publish database schema documentation to `dbdocs.io`.
+This is performed by the GitHub Action workflow at `.github/workflows/dbdocs.yml`, which runs
+on pushes to the `main` and `production` branches (and can also be run manually).
+
+At a high level, the workflow does the following:
 
 1. Install the Hasura CLI for `graphql-engine`.
 2. Spin up a postgres database which is initially empty.
-3. Use the `hasura` CLI to deploy migrations, which build up the VZ DB
-4. Install and use the `dbdocs` npm tool to generate a DBML file for the DB
-5. Use the `dbdocs` tool again to upload the documentation to https://dbdocs.io.
+3. Use the `hasura` CLI to deploy migrations, which build up the VZ database schema.
+4. Install and use the `dbdocs` npm tool to generate a DBML file for the database.
+5. Use the `dbdocs` tool again to publish the documentation to `dbdocs.io`.
 
 The documentation can be found at:
 
-- Staging: https://dbdocs.io/transportation.data/Vision-Zero-Staging
-- Production: https://dbdocs.io/transportation.data/Vision-Zero-Production
+- Staging: [Vision Zero Staging docs](https://dbdocs.io/transportation.data/Vision-Zero-Staging)
+- Production: [Vision Zero Production docs](https://dbdocs.io/transportation.data/Vision-Zero-Production)
 
-The integration with https://dbdocs.io requires a token be generated after logging
+The integration with [dbdocs.io](https://dbdocs.io) requires a token be generated after logging
 into the service locally with the `dbdocs` CLI tool. The token is stored in 1Password
 under the entry named 'DB Docs (dbdocs.io).'
+
+## Exported database views (`database/views/`)
+
+This repository tracks a set of **exported** SQL definitions for views in `database/views/*.sql`
+and materialized views in `database/views/materialized/*.sql`.
+These files are **not** the source of truth for view definitions. Instead, views/materialized views are defined
+and versioned through Hasura migrations (`database/migrations/default/**/up.sql`). And as a result,
+the actual source of truth for the current views is actually the database's concept of what they are.
+
+The `database/views/` SQL export files exist so that:
+
+- View changes are easy to **review in PRs** as plain SQL diffs
+- We have a single, consistent, auto-formatted snapshot of the current view definitions
+
+### How the view export works
+
+On feature branches (any branch except `main` and `production`), GitHub Actions runs the
+workflow `.github/workflows/export_database_views.yml` when database migrations change.
+That workflow:
+
+- Spins up a disposable Postgres + Hasura stack via `docker-compose-github-actions.yml`
+- Applies migrations and Hasura metadata (so all views exist in the database)
+- Runs `.github/workflows/export_database_views.sh` to export all `public` schema views and materialized views to disk
+  - Views are written as `database/views/<view_name>.sql`
+  - The file begins with a header comment:
+    - `-- Most recent migration: <path/to/migration/up.sql>`
+  - The body is generated from Postgres using `pg_get_viewdef(...)` and emitted as a
+    `CREATE OR REPLACE VIEW <view_name> AS ...` statement
+  - Materialized views are written as `database/views/materialized/<view_name>.sql`
+    - The file begins with the same `-- Most recent migration: ...` header
+    - The body is emitted as:
+      - `DROP MATERIALIZED VIEW IF EXISTS <view_name>;`
+      - `CREATE MATERIALIZED VIEW <view_name> AS ...`
+- Formats the exported SQL using `sqruff` (configured in `.sqruff`)
+- Commits and pushes any resulting `database/views/*` changes back to the same branch
+
+This is why you may see commits like `🤖 Export database views for <branch>` show up on PRs:
+the workflow is keeping `database/views/` synchronized with the migrations on that branch.
+
+### Regenerating view SQL locally
+
+If you’re changing or adding views and want to update `database/views/` locally (instead of
+waiting for CI to push a bot commit), you can regenerate them with the same script CI uses.
+
+Please note, while you can push changes on these views, but it's a non-op, they will be 
+overwritten. All changes to the views must go through the `graphql-engine` migration process.
+
+Prerequisites:
+
+- The local database stack is running (so `docker compose exec postgis psql ...` works)
+- Migrations have been applied so the views exist in the database
+
+From the repo root:
+
+```bash
+# Export current view/materialized view definitions to database/views/
+./.github/workflows/export_database_views.sh
+
+# Apply repo SQL formatting rules (best-effort auto-fix)
+sqruff fix database/views
+```
+
+Notes:
+
+- By default, the export script uses `docker compose exec postgis psql ...`. In CI it uses
+  the `--github-action` flag so it can call `psql` directly against `localhost` using `PG*`
+  environment variables.
+- The script exports all views and materialized views in the `public` schema (excluding PostGIS helper views like
+  `geometry_columns`/`geography_columns`).
+
+### Adding or changing a view
+
+When updating a view:
+
+- Make the change in a **migration** (e.g. `CREATE OR REPLACE VIEW ...` in an `up.sql`)
+- Ensure Hasura metadata is tracking the view if it needs GraphQL exposure (relationships,
+  permissions, etc.). View metadata lives under:
+  - `database/metadata/databases/default/tables/public_*_view.yaml`
+  - `database/metadata/databases/default/tables/tables.yaml` includes those files
+- Regenerate `database/views/<view>.sql` (locally if you want to peek before a push, or just let CI do it) so reviewers can see the
+  updated definition and the `-- Most recent migration:` breadcrumb
