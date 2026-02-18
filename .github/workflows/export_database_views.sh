@@ -10,10 +10,6 @@ done
 
 export USE_GITHUB_ACTION
 
-# Directory containing this script (and find_view_migration.py)
-EXPORT_SCRIPT_DIR=$(cd -- "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-export EXPORT_SCRIPT_DIR
-
 if ! $USE_GITHUB_ACTION; then
     SCRIPT_DIR=$(cd -- "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
     REPO_ROOT=$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null)
@@ -48,7 +44,7 @@ function create_view_file() {
     local VIEW_NAME=$1
 
     echo "View: $VIEW_NAME"
-    MOST_RECENT_MIGRATION=$(python3 "$EXPORT_SCRIPT_DIR/find_view_migration.py" view "$VIEW_NAME" 2>/dev/null) || true
+    MOST_RECENT_MIGRATION=$(grep -rl --include=up.sql -E "CREATE (OR REPLACE )?VIEW (\"?public\"?.)?\"?$VIEW_NAME\"?" database/migrations/default | sort -V | tail -n 1)
     echo "MOST_RECENT_MIGRATION: $MOST_RECENT_MIGRATION"
 
     # Create the view file with header
@@ -66,7 +62,7 @@ function create_materialized_view_file() {
     local VIEW_NAME=$1
 
     echo "Materialized view: $VIEW_NAME"
-    MOST_RECENT_MIGRATION=$(python3 "$EXPORT_SCRIPT_DIR/find_view_migration.py" materialized "$VIEW_NAME" 2>/dev/null) || true
+    MOST_RECENT_MIGRATION=$(grep -rl --include=up.sql -E "CREATE (OR REPLACE )?MATERIALIZED VIEW( IF NOT EXISTS)? (\"?public\"?.)?\"?$VIEW_NAME\"?" database/migrations/default | sort -V | tail -n 1)
     echo "MOST_RECENT_MIGRATION: $MOST_RECENT_MIGRATION"
 
     mkdir -p database/views/materialized
