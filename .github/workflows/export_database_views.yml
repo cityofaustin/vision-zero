@@ -38,7 +38,7 @@ jobs:
         run: |
           curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
 
-      - name: "Spin-up the DB stack"
+      - name: "Spin-up the database and graphql-engine containers"
         run: |
           export BRANCH_NAME="${GITHUB_REF_NAME}"
           echo "SHA: ${GITHUB_SHA}"

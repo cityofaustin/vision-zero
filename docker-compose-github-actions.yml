@@ -12,7 +12,7 @@ services:
       HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
 
   postgis:
-    image: frankinaustin/postgis:16-3.5
+    image: atddocker/postgis:unified-db
     ports:
       - 5432:5432
     environment:
