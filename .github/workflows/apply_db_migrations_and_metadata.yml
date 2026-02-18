@@ -1,7 +1,6 @@
 #
 # Applies database migrations to staging (main) and production
 #
-
 name: "Applies the migrations to the database"
 
 on:
