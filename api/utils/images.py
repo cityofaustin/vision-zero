@@ -364,6 +364,7 @@ def _upsert_crash_diagram_image(record_locator, s3):
             "object": {
                 "diagram_s3_object_key": new_diagram_obj_key,
                 "updated_by": get_user_email(),
+                "diagram_transform": None
             },
         },
     )
@@ -396,6 +397,7 @@ def _delete_crash_diagram_image(record_locator, s3):
                 "object": {
                     "diagram_s3_object_key": None,
                     "updated_by": get_user_email(),
+                    "diagram_transform": None
                 },
             },
         )
