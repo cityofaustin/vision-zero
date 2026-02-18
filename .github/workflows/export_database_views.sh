@@ -10,11 +10,33 @@ done
 
 export USE_GITHUB_ACTION
 
+if ! $USE_GITHUB_ACTION; then
+    SCRIPT_DIR=$(cd -- "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+    REPO_ROOT=$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null)
+    CURRENT_DIR=$(pwd -P)
+    if [[ "$CURRENT_DIR" != "$REPO_ROOT" ]]; then
+        echo "Error: This script must be run from the repo root when not in GitHub Action mode." >&2
+        echo "  Repo root: $REPO_ROOT" >&2
+        echo "  Current dir: $CURRENT_DIR" >&2
+        exit 1
+    fi
+    # Load DB credentials for local psql (e.g. from .env)
+    if [[ -f "$REPO_ROOT/.env" ]]; then
+        set -a
+        # shellcheck source=/dev/null
+        source "$REPO_ROOT/.env"
+        set +a
+    fi
+    # Defaults matching docker-compose-github-actions.yml if .env not present
+    : "${POSTGRES_USER:=visionzero}"
+    : "${POSTGRES_DB:=vision_zero}"
+fi
+
 function run_psql() {
     if $USE_GITHUB_ACTION; then
         psql "$@"
     else
-        docker compose exec postgis psql "$@"
+        docker compose -f ./docker-compose-github-actions.yml exec postgis psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" "$@"
     fi
 }
 
