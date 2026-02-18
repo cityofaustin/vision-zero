@@ -75,7 +75,8 @@ SELECT
     END                                        AS point,
     coalesce(
         cimv.crash_injry_sev_id = 4, FALSE
-    )                                          AS crash_fatal_fl
+    )                                          AS crash_fatal_fl,
+    collsn.label                               AS collsn_desc
 FROM crashes
 LEFT JOIN LATERAL (SELECT
     crash_injury_metrics_view.id,
@@ -115,6 +116,7 @@ LEFT JOIN LATERAL (SELECT
 FROM unit_aggregates unit_aggregates_1
 WHERE crashes.id = unit_aggregates_1.id
 LIMIT 1) unit_aggregates ON TRUE
+LEFT JOIN lookups.collsn ON crashes.fhe_collsn_id = collsn.id
 LEFT JOIN locations location ON crashes.location_id = location.location_id::text
 WHERE
     crashes.is_deleted = FALSE
