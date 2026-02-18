@@ -1,4 +1,4 @@
--- Add collision type
+-- Add collision type column to socrata export crashes view
 create or replace view public.socrata_export_crashes_view as
 with unit_aggregates as (
     select
