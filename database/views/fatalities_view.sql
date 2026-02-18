@@ -1,4 +1,4 @@
--- Most recent migration: database/migrations/default/1727451511064_init/up.sql
+-- Most recent migration: database/migrations/default/1767430748998_crash_address_display_trigger/up.sql
 
 CREATE OR REPLACE VIEW fatalities_view AS SELECT
     people.id  AS person_id,
