@@ -1,14 +1,25 @@
-import { Modal, Button, Form, Row, Col, Image, Spinner } from "react-bootstrap";
+import {
+  Modal,
+  Button,
+  Form,
+  Row,
+  Col,
+  Image,
+  Spinner,
+  CloseButton,
+} from "react-bootstrap";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useGetToken } from "@/utils/auth";
+import AlignedLabel from "@/components/AlignedLabel";
+import { LuTrash } from "react-icons/lu";
 
 interface FatalityImageUploadModalProps {
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
   victimName: string;
   personId: number;
-  imageUrl: string | null;
+  storedUrl: string | null;
   isLoading: boolean;
   setImageVersion: Dispatch<SetStateAction<number>>;
 }
@@ -29,13 +40,14 @@ export default function FatalityImageUploadModal({
   setShowModal,
   victimName,
   personId,
-  imageUrl,
+  storedUrl,
   isLoading,
   setImageVersion,
 }: FatalityImageUploadModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const getToken = useGetToken();
 
@@ -54,6 +66,8 @@ export default function FatalityImageUploadModal({
   });
 
   const file = watch("file");
+
+  const url = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${personId}`;
 
   // Keeps track of file updates and errors to update preview URL
   useEffect(() => {
@@ -86,21 +100,18 @@ export default function FatalityImageUploadModal({
       }
 
       const token = await getToken();
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${personId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          method: "PUT",
-          body: formData,
-        }
-      );
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        method: "PUT",
+        body: formData,
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          errorData.error || `Upload failed with status: ${response.status}`
+          `Image upload failed: ${errorData.error || errorData.description || response.status}`
         );
       }
 
@@ -116,10 +127,40 @@ export default function FatalityImageUploadModal({
   };
 
   const handleClose = () => {
-    if (!isSubmitting) {
+    if (!isSubmitting && !isDeleting) {
       setShowModal(false);
       setError(null);
     }
+  };
+
+  /** Deletes the image using the API */
+  const onDeletePhoto = async () => {
+    setIsDeleting(true);
+    const method = "DELETE";
+    const token = await getToken();
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        method,
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          `Failed to delete photo: ${errorData.error || errorData.description || response.status}`
+        );
+      }
+
+      setImageVersion((prev) => prev + 1);
+      handleClose();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "An unknown error occurred"
+      );
+    }
+    setIsDeleting(false);
   };
 
   return (
@@ -132,8 +173,30 @@ export default function FatalityImageUploadModal({
         reset();
       }}
     >
-      <Modal.Header closeButton>
+      <Modal.Header className="d-flex justify-content-between">
         <Modal.Title>{`Photo | ${victimName}`}</Modal.Title>
+        <div>
+          {!!storedUrl && (
+            <Button
+              className="me-3"
+              variant="outline-secondary"
+              disabled={isDeleting}
+              onClick={() => {
+                if (
+                  window.confirm("Are you sure you want to delete this photo?")
+                ) {
+                  onDeletePhoto();
+                }
+              }}
+            >
+              <AlignedLabel>
+                <LuTrash className="me-2" />
+                <span>Delete</span>
+              </AlignedLabel>
+            </Button>
+          )}
+          <CloseButton onClick={handleClose} />
+        </div>
       </Modal.Header>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Modal.Body>
@@ -192,6 +255,7 @@ export default function FatalityImageUploadModal({
                 <Form.Label className="fw-bold">Image source</Form.Label>
                 <Form.Control
                   type="text"
+                  data-1p-ignore
                   placeholder="ex: https://www.legacy.com/us/obituaries/statesman/"
                   {...register("image_source", {
                     required: "Image source is required",
@@ -219,9 +283,9 @@ export default function FatalityImageUploadModal({
               />
             </div>
           )}
-          {!errors.file && imageUrl && !previewUrl && !isLoading && (
+          {!errors.file && storedUrl && !previewUrl && !isLoading && (
             <div className="d-flex mt-3 justify-content-center">
-              <Image src={imageUrl} alt="Preview image" fluid />
+              <Image src={storedUrl} alt="Preview image" fluid />
             </div>
           )}
           {isLoading && (
@@ -231,13 +295,17 @@ export default function FatalityImageUploadModal({
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" type="submit" disabled={isSubmitting}>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={isSubmitting || isDeleting}
+          >
             {isSubmitting ? "Uploading..." : "Save"}
           </Button>
           <Button
             variant="secondary"
             onClick={handleClose}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isDeleting}
           >
             Cancel
           </Button>

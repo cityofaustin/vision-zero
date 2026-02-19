@@ -40,10 +40,148 @@ const locationCrashesFiltercards: FilterGroup[] = [
       },
     ],
   },
+  {
+    id: "injuries_filter_card",
+    label: "Injuries",
+    groupOperator: "_or",
+    filterGroups: [
+      {
+        id: "vz_fatality_crashes",
+        label: "Fatal injuries - Vision Zero",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "vz_fatality_crashes",
+            column: "vz_fatality_count",
+            operator: "_gt",
+            value: 0,
+          },
+        ],
+      },
+      {
+        id: "suspected_serious_injury_crashes",
+        label: "Suspected serious injuries",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "suspected_serious_injury_crashes",
+            column: "sus_serious_injry_count",
+            operator: "_gt",
+            value: 0,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "units_filter_card",
+    label: "Units involved",
+    groupOperator: "_or",
+    filterGroups: [
+      {
+        id: "motor_vehicle",
+        label: "Motor vehicle",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "unit_description",
+            column: "unit_desc_id",
+            operator: "_eq",
+            value: 1,
+            relationshipName: "units",
+          },
+          {
+            id: "vehicle_body_style",
+            column: "veh_body_styl_id",
+            operator: "_nin",
+            value: [71, 90],
+            relationshipName: "units",
+          },
+        ],
+      },
+      {
+        id: "motorcycle",
+        label: "Motorcycle",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "unit_description",
+            column: "unit_desc_id",
+            operator: "_eq",
+            value: 1,
+            relationshipName: "units",
+          },
+          {
+            id: "vehicle_body_style",
+            column: "veh_body_styl_id",
+            operator: "_in",
+            value: [71, 90],
+            relationshipName: "units",
+          },
+        ],
+      },
+
+      {
+        id: "cyclist",
+        label: "Cyclist",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "unit_description",
+            column: "unit_desc_id",
+            operator: "_eq",
+            value: 3,
+            relationshipName: "units",
+          },
+        ],
+      },
+      {
+        id: "pedestrian",
+        label: "Pedestrian",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "unit_description",
+            column: "unit_desc_id",
+            operator: "_eq",
+            value: 4,
+            relationshipName: "units",
+          },
+        ],
+      },
+      {
+        id: "scooter_rider",
+        label: "E-scooter rider",
+        groupOperator: "_or",
+        filters: [
+          {
+            id: "unit_description",
+            column: "unit_desc_id",
+            operator: "_eq",
+            value: 77,
+            relationshipName: "units",
+          },
+          {
+            id: "vehicle_body_style",
+            column: "veh_body_styl_id",
+            operator: "_eq",
+            value: 177,
+            relationshipName: "units",
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export const locationCrashesQueryConfig: QueryConfig = {
-  _version: 2,
+  _version: 3,
   exportable: true,
   exportFilename: "location-crashes",
   tableName: "location_crashes_view",

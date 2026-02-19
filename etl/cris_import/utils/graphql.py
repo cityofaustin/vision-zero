@@ -87,8 +87,8 @@ mutation UpdateImportLog($data: _cris_import_log_set_input!, $id: Int!) {
 """
 
 UPDATE_CRASH_CR3_FIELDS = """
-mutation UpdateCrashCR3Fields($cris_crash_id: Int!, $data: crashes_cris_set_input!) {
-    update_crashes_cris(where: { cris_crash_id: { _eq: $cris_crash_id } }, _set: $data) {
+mutation UpdateCrashCR3Fields($cris_crash_id: Int!, $data: crashes_set_input!) {
+    update_crashes(where: { cris_crash_id: { _eq: $cris_crash_id } }, _set: $data) {
         affected_rows
         returning {
         id
