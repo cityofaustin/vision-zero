@@ -5,7 +5,7 @@ import { AllowedPageSize, ExportPageSize } from "@/utils/constants";
  * The types we currently support as filter values
  *
  */
-export type FilterValue = string | number | boolean | number[];
+export type FilterValue = string | number | boolean | number[] | string[];
 
 /**
  * Interface for a single filter that can be
@@ -30,7 +30,8 @@ export interface Filter {
     | "_is_null"
     | "_ilike"
     | "_in"
-    | "_nin";
+    | "_nin"
+    | "_contains";
   /**
    * The filter value
    */

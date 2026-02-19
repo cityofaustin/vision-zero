@@ -17,6 +17,12 @@ export const locationsListViewColumns: ColDataCardDef<LocationsListRow>[] = [
     path: "location_name",
     label: "Location",
     sortable: true,
+    style: {
+      maxWidth: "30rem",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+    },
   },
   {
     path: "cr3_crash_count",
@@ -32,15 +38,16 @@ export const locationsListViewColumns: ColDataCardDef<LocationsListRow>[] = [
     path: "apd_sectors",
     label: "APD sector(s)",
     sortable: false,
+    defaultHidden: true,
   },
   {
     path: "area_eng_areas",
-    label: "Area engineer area(s)",
+    label: "Area engineer",
     sortable: false,
   },
   {
     path: "signal_eng_areas",
-    label: "Signal engineer area(s)",
+    label: "Signal engineer",
     sortable: false,
   },
   {
@@ -52,20 +59,24 @@ export const locationsListViewColumns: ColDataCardDef<LocationsListRow>[] = [
     path: "is_hin",
     label: "High injury network location",
     sortable: true,
+    defaultHidden: true,
   },
   {
     path: "is_signalized",
     label: "Signalized",
     sortable: true,
+    defaultHidden: true,
   },
   {
     path: "location_group",
     label: "Location group",
     sortable: true,
+    defaultHidden: true,
   },
   {
     path: "street_levels",
     label: "Street levels",
     sortable: false,
+    defaultHidden: true,
   },
 ];
