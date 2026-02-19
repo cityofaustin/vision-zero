@@ -177,5 +177,5 @@ def cleanup_test_user(admin_user_headers):
                 headers=admin_user_headers,
             )
         except Exception as e:
-            # Don't fail the test if cleanup fails - just log it
-            print(f"Warning: Failed to cleanup user {user_id}: {e}")
+            print(f"Failed to cleanup user {user_id}")
+            raise e
