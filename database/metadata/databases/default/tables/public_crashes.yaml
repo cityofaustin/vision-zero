@@ -137,6 +137,7 @@ select_permissions:
         - created_at
         - created_by
         - cris_crash_id
+        - diagram_s3_object_key
         - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
@@ -212,8 +213,9 @@ select_permissions:
         - created_at
         - created_by
         - cris_crash_id
-        - engineering_area_id
+        - diagram_s3_object_key
         - diagram_transform
+        - engineering_area_id
         - fhe_collsn_id
         - id
         - in_austin_full_purpose
@@ -287,6 +289,7 @@ select_permissions:
         - created_at
         - created_by
         - cris_crash_id
+        - diagram_s3_object_key
         - diagram_transform
         - engineering_area_id
         - fhe_collsn_id

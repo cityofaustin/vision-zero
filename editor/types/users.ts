@@ -7,7 +7,7 @@
  */
 export type User = {
   app_metadata: {
-    roles: string[];
+    roles?: string[];
   };
   created_at: string;
   email: string;

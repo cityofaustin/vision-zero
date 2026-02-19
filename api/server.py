@@ -30,6 +30,9 @@ from utils.images import (
     _delete_person_image,
     _get_person_image_url,
     validate_file_size,
+    _get_crash_diagram_image_url,
+    _upsert_crash_diagram_image,
+    _delete_crash_diagram_image,
 )
 
 
@@ -46,10 +49,10 @@ AWS_S3_KEY = getenv("AWS_S3_KEY", "")
 AWS_S3_SECRET = getenv("AWS_S3_SECRET", "")
 AWS_S3_BUCKET_ENV = getenv("AWS_S3_BUCKET_ENV", "")
 AWS_S3_CR3_LOCATION = f"{AWS_S3_BUCKET_ENV}/cr3s/pdfs"
-AWS_S3_PERSON_IMAGE_LOCATION = f"{AWS_S3_BUCKET_ENV}/images/person"
 AWS_S3_BUCKET = getenv("AWS_S3_BUCKET", "")
 
 ADMIN_ROLE_NAME = "vz-admin"
+EDITOR_ROLE_NAME = "editor"
 MAX_IMAGE_SIZE_MEGABYTES = 5
 CORS_URL = "*"
 
@@ -320,10 +323,35 @@ def requires_auth(f):
     return decorated
 
 
+def requires_roles(*allowed_roles):
+    """
+    Restrict route access to specific roles.
+
+    Usage:
+        @requires_roles('vz-admin', 'editor')
+    """
+
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            claims = current_user.get("https://hasura.io/jwt/claims", False)
+
+            if not claims:
+                return notAuthorizedError()
+
+            user_roles = claims.get("x-hasura-allowed-roles", [])
+
+            # Check if user has any of the allowed roles
+            if not any(role in user_roles for role in allowed_roles):
+                return notAuthorizedError()
+            return f(*args, **kwargs)
+
+        return decorated_function
+
+    return decorator
+
+
 current_user = LocalProxy(lambda: getattr(g, "current_user", None))
-
-
-# Controllers API
 
 
 @app.route("/")
@@ -364,7 +392,7 @@ def healthcheck():
     return jsonify(message=response)
 
 
-@app.route("/cr3/download/<int:crash_id>")
+@app.route("/cr3/download/<record_locator>")
 @cross_origin(
     headers=[
         "Content-Type",
@@ -374,7 +402,7 @@ def healthcheck():
     ],
 )
 @requires_auth
-def download_crash_id(crash_id):
+def download_crash_report(record_locator):
     """A valid access token is required to access this route"""
     # We only care for an integer string, anything else is not safe:
     url = s3.generate_presigned_url(
@@ -382,17 +410,13 @@ def download_crash_id(crash_id):
         ClientMethod="get_object",
         Params={
             "Bucket": AWS_S3_BUCKET,
-            "Key": AWS_S3_CR3_LOCATION + "/" + str(crash_id) + ".pdf",
+            "Key": AWS_S3_CR3_LOCATION + "/" + str(record_locator) + ".pdf",
         },
     )
-
-    # For testing uncomment:
-    # response = "Private Download, CrashID: %s , %s" % (safe_crash_id, url)
-    # return redirect(url, code=302)
     return jsonify(message=url)
 
 
-@app.route("/images/person/<int:person_id>", methods=["GET", "DELETE", "PUT"])
+@app.route("/images/person/<int:person_id>", methods=["GET"])
 @cross_origin(
     headers=[
         "Content-Type",
@@ -402,33 +426,68 @@ def download_crash_id(crash_id):
     ],
 )
 @requires_auth
+# No role requirement - all authenticated users can GET
+def get_person_image(person_id):
+    """Retrieves a person image URL"""
+    return _get_person_image_url(person_id, s3)
+
+
+@app.route("/images/person/<int:person_id>", methods=["DELETE", "PUT"])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
+@requires_auth
+@requires_roles(ADMIN_ROLE_NAME, EDITOR_ROLE_NAME)
 @validate_file_size(MAX_IMAGE_SIZE_MEGABYTES)
-def person_image(person_id):
-    """Handles person images. Expects a jpeg or png sent in the `file` property"""
-
-    if not person_id:
-        # todo: can this even happen?
-        return jsonify(error="Missing person_id"), 400
-
-    if request.method == "GET":
-        return _get_person_image_url(person_id, s3)
-
-    elif request.method == "PUT":
+def modify_person_image(person_id):
+    """Upserts or deletes a person image"""
+    if request.method == "PUT":
         return _upsert_person_image(person_id, s3)
-
     elif request.method == "DELETE":
         return _delete_person_image(person_id, s3)
-
     return jsonify(message="Bad Request"), 400
 
 
-def has_user_role(role):
-    claims = current_user.get("https://hasura.io/jwt/claims", False)
-    if claims != False:
-        roles = claims.get("x-hasura-allowed-roles")
-        if role in roles:
-            return True
-    return False
+@app.route("/images/crash_diagram/<record_locator>", methods=["GET"])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
+@requires_auth
+# No role requirement - all authenticated users can GET
+def get_crash_diagram_image(record_locator):
+    """Retrieves a crash diagram image URL"""
+    return _get_crash_diagram_image_url(record_locator, s3)
+
+
+@app.route("/images/crash_diagram/<record_locator>", methods=["DELETE", "PUT"])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
+@requires_auth
+@requires_roles(ADMIN_ROLE_NAME, EDITOR_ROLE_NAME)
+@validate_file_size(MAX_IMAGE_SIZE_MEGABYTES)
+def modify_crash_diagram_image(record_locator):
+    """Upserts or deletes a crash diagram image"""
+    if request.method == "PUT":
+        return _upsert_crash_diagram_image(record_locator, s3)
+    elif request.method == "DELETE":
+        return _delete_crash_diagram_image(record_locator, s3)
+    return jsonify(message="Bad Request"), 400
 
 
 @app.route("/user/test")
@@ -442,7 +501,7 @@ def has_user_role(role):
 )
 @requires_auth
 def user_test():
-    return jsonify(message=current_user)
+    return jsonify(message=dict(current_user))
 
 
 @app.route("/user/list_users")
@@ -491,21 +550,36 @@ def user_get_user(id):
 @cross_origin(headers=["Content-Type", "Authorization"])
 @cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
 @requires_auth
+@requires_roles(ADMIN_ROLE_NAME)
 def user_create_user():
-    if has_user_role(ADMIN_ROLE_NAME):
-        json_data = request.json
-        # set the user's password - user will have to reset it for access
-        json_data["password"] = get_secure_password()
-        # set additional user properties
-        json_data["connection"] = "Username-Password-Authentication"
-        json_data["verify_email"] = True
-        json_data["email_verified"] = False
-        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users"
-        headers = {"Authorization": f"Bearer {get_api_token()}"}
-        response = requests.post(endpoint, headers=headers, json=json_data)
-        return jsonify(response.json()), response.status_code
-    else:
-        return notAuthorizedError()
+
+    json_data = request.json
+
+    # validate our custom user metadata
+    app_metadata = json_data.get("app_metadata")
+    if not app_metadata or type(app_metadata) != dict:
+        return jsonify(error="Invalid app_metadata"), 400
+
+    roles = app_metadata.get("roles")
+    if not roles or type(roles) != list or len(roles) != 1:
+        return jsonify(error="Invalid app_metadata.roles"), 400
+
+    if roles[0] not in ["readonly", "editor", "vz-admin"]:
+        return (
+            jsonify(error="Role must be one of 'readonly', 'editor', or 'vz-admin'"),
+            400,
+        )
+
+    # set the user's password - user will have to reset it for access
+    json_data["password"] = get_secure_password()
+    # set additional user properties
+    json_data["connection"] = "Username-Password-Authentication"
+    json_data["verify_email"] = True
+    json_data["email_verified"] = False
+    endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users"
+    headers = {"Authorization": f"Bearer {get_api_token()}"}
+    response = requests.post(endpoint, headers=headers, json=json_data)
+    return jsonify(response.json()), response.status_code
 
 
 @app.route("/user/update_user/<id>", methods=["PUT"])
@@ -518,35 +592,13 @@ def user_create_user():
     ],
 )
 @requires_auth
+@requires_roles(ADMIN_ROLE_NAME)
 def user_update_user(id):
-    if has_user_role(ADMIN_ROLE_NAME):
-        json_data = request.json
-        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
-        headers = {"Authorization": f"Bearer {get_api_token()}"}
-        response = requests.patch(endpoint, headers=headers, json=json_data)
-        return jsonify(response.json()), response.status_code
-    else:
-        return notAuthorizedError()
-
-
-@app.route("/user/unblock_user/<id>", methods=["DELETE"])
-@cross_origin(
-    headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Origin",
-        CORS_URL,
-    ],
-)
-@requires_auth
-def user_unblock_user(id):
-    if has_user_role(ADMIN_ROLE_NAME):
-        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/user_blocks/" + id
-        headers = {"Authorization": f"Bearer {get_api_token()}"}
-        response = requests.delete(endpoint, headers=headers)
-        return jsonify(response.json()), response.status_code
-    else:
-        return notAuthorizedError()
+    json_data = request.json
+    endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
+    headers = {"Authorization": f"Bearer {get_api_token()}"}
+    response = requests.patch(endpoint, headers=headers, json=json_data)
+    return jsonify(response.json()), response.status_code
 
 
 @app.route("/user/delete_user/<id>", methods=["DELETE"])
@@ -559,17 +611,15 @@ def user_unblock_user(id):
     ],
 )
 @requires_auth
+@requires_roles(ADMIN_ROLE_NAME)
 def user_delete_user(id):
-    if has_user_role(ADMIN_ROLE_NAME):
-        endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
-        headers = {"Authorization": f"Bearer {get_api_token()}"}
-        response = requests.delete(endpoint, headers=headers)
-        if response.headers.get("Content-Type") == "application/json":
-            return jsonify(response.json()), response.status_code
-        else:
-            return response.text, response.status_code
+    endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
+    headers = {"Authorization": f"Bearer {get_api_token()}"}
+    response = requests.delete(endpoint, headers=headers)
+    if response.headers.get("Content-Type") == "application/json":
+        return jsonify(response.json()), response.status_code
     else:
-        return notAuthorizedError()
+        return response.text, response.status_code
 
 
 if __name__ == "__main__":
