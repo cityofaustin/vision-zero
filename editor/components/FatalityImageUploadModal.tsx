@@ -111,7 +111,7 @@ export default function FatalityImageUploadModal({
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          `Image upload failed: ${errorData.description || response.status}`
+          `Image upload failed: ${errorData.error || errorData.description || response.status}`
         );
       }
 
@@ -149,7 +149,7 @@ export default function FatalityImageUploadModal({
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          `Failed to delete photo: ${errorData.description || response.status}`
+          `Failed to delete photo: ${errorData.error || errorData.description || response.status}`
         );
       }
 
