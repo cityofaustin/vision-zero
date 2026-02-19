@@ -111,7 +111,7 @@ export default function FatalityImageUploadModal({
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          errorData.error || `Upload failed with status: ${response.status}`
+          `Image upload failed: ${errorData.description || response.status}`
         );
       }
 
@@ -149,7 +149,7 @@ export default function FatalityImageUploadModal({
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          errorData.error || `Failed to delete photo: ${response.status}`
+          `Failed to delete photo: ${errorData.description || response.status}`
         );
       }
 
@@ -255,6 +255,7 @@ export default function FatalityImageUploadModal({
                 <Form.Label className="fw-bold">Image source</Form.Label>
                 <Form.Control
                   type="text"
+                  data-1p-ignore
                   placeholder="ex: https://www.legacy.com/us/obituaries/statesman/"
                   {...register("image_source", {
                     required: "Image source is required",
