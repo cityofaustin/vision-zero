@@ -181,7 +181,7 @@ const locationCrashesFiltercards: FilterGroup[] = [
 ];
 
 export const locationCrashesQueryConfig: QueryConfig = {
-  _version: 2,
+  _version: 3,
   exportable: true,
   exportFilename: "location-crashes",
   tableName: "location_crashes_view",
