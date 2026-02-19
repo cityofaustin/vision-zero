@@ -9,8 +9,8 @@ import io
 
 API_BASE_URL = os.getenv("API_BASE_URL", "http://cr3-user-api:5000")
 
-"""The crash ID must exist in your local DB and the crash must have a CR3 and diagram saved in
-the /dev/ directory of S3"""
+"""The crash ID must exist in your local DB and the crash must have a crash report pdf and
+diagram saved in the /dev/ directory of S3"""
 TEST_CRASH_RECORD_LOCATOR = str(os.getenv("TEST_CRASH_RECORD_LOCATOR", "19437355"))
 
 """The person ID must exist your local DB"""
