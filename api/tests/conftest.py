@@ -8,8 +8,12 @@ import io
 
 
 API_BASE_URL = os.getenv("API_BASE_URL", "http://cr3-user-api:5000")
-# these IDs must exist in your local DB
-TEST_CRASH_ID = os.getenv("TEST_CRASH_ID", 13668443)
+
+"""The crash ID must exist in your local DB and the crash must have a crash report pdf and
+diagram saved in the /dev/ directory of S3"""
+TEST_CRASH_RECORD_LOCATOR = str(os.getenv("TEST_CRASH_RECORD_LOCATOR", "19437355"))
+
+"""The person ID must exist your local DB"""
 TEST_PERSON_ID = os.getenv("TEST_PERSON_ID", 102580)
 
 
@@ -82,9 +86,9 @@ def admin_user_headers():
 
 
 @pytest.fixture
-def test_crash_id():
+def test_crash_record_locator():
     """Test crash ID that should exist in S3"""
-    return TEST_CRASH_ID
+    return TEST_CRASH_RECORD_LOCATOR
 
 
 @pytest.fixture
