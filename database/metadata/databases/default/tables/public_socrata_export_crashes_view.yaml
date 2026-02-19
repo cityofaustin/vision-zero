@@ -9,6 +9,7 @@ select_permissions:
         - bicycle_death_count
         - bicycle_serious_injury_count
         - case_id
+        - collsn_desc
         - crash_fatal_fl
         - crash_sev_id
         - crash_speed_limit
@@ -62,6 +63,7 @@ select_permissions:
         - bicycle_death_count
         - bicycle_serious_injury_count
         - case_id
+        - collsn_desc
         - crash_fatal_fl
         - crash_sev_id
         - crash_speed_limit
@@ -115,6 +117,7 @@ select_permissions:
         - bicycle_death_count
         - bicycle_serious_injury_count
         - case_id
+        - collsn_desc
         - crash_fatal_fl
         - crash_sev_id
         - crash_speed_limit
