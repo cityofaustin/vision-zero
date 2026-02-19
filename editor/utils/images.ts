@@ -84,7 +84,7 @@ export function useImage({
     };
 
     fetchImage();
-  }, [recordId, getToken, imageVersion, refetchCounter]);
+  }, [recordId, getToken, imageVersion, refetchCounter, recordType]);
 
   const refetch = () => setRefetchCounter((c) => c + 1);
 
