@@ -27,3 +27,21 @@ export const UPDATE_CRASH_NOTE = gql`
     }
   }
 `;
+
+/**
+ * Reassign all notes from one crash to another (for temp crash transfer).
+ */
+export const TRANSFER_CRASH_NOTES = gql`
+  mutation TransferCrashNotes(
+    $sourceCrashId: Int!
+    $targetCrashId: Int!
+    $updated_by: String!
+  ) {
+    update_crash_notes(
+      where: { crash_pk: { _eq: $sourceCrashId } }
+      _set: { crash_pk: $targetCrashId, updated_by: $updated_by }
+    ) {
+      affected_rows
+    }
+  }
+`;
