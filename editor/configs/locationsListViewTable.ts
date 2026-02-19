@@ -16,9 +16,9 @@ const locationsListViewFiltercards: FilterGroup[] = [
         filters: [
           {
             id: "in_austin_full_purpose",
-            column: "council_district",
-            operator: "_gt",
-            value: 0,
+            column: "council_districts",
+            operator: "_is_null",
+            value: false,
           },
         ],
       },
@@ -42,7 +42,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
 ];
 
 export const locationsListViewQueryConfig: QueryConfig = {
-  _version: 2,
+  _version: 3,
   exportable: true,
   exportFilename: "locations",
   tableName: "locations_list_view",
