@@ -1,10 +1,11 @@
--- Most recent migration: database/migrations/default/1767430748998_crash_address_display_trigger/up.sql
+-- Most recent migration: database/migrations/default/1771445809119_update_location_crashes_view/up.sql
 
 DROP MATERIALIZED VIEW IF EXISTS location_crashes_view;
 
 CREATE MATERIALIZED VIEW location_crashes_view AS SELECT
     crashes.record_locator,
     crashes.cris_crash_id,
+    crashes.id                                   AS crash_pk,
     'CR3'::text                                  AS type,
     crashes.location_id,
     crashes.case_id,
@@ -87,6 +88,7 @@ UNION ALL
 SELECT
     null::text                                                                        AS record_locator,
     aab.form_id                                                                       AS cris_crash_id,
+    null::integer                                                                     AS crash_pk,
     'NON-CR3'::text                                                                   AS type,
     aab.location_id,
     aab.case_id::text                                                                 AS case_id,
