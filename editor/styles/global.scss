@@ -412,7 +412,6 @@ to make sure it renders on top is a common fix */
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     opacity: 1;
@@ -421,6 +420,10 @@ to make sure it renders on top is a common fix */
   50% {
     opacity: 0.5;
   }
+}
+
+.dropdown-menu {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 @import "bootstrap/scss/bootstrap.scss";
