@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ColDataCardDef } from "@/types/types";
 import { LocationsListRow } from "@/types/locationsList";
-import { formatArrayToString } from "@/utils/formatters";
+import { formatArrayToString, formatYesNoString } from "@/utils/formatters";
 
 export const locationsListViewColumns: ColDataCardDef<LocationsListRow>[] = [
   {
@@ -65,18 +65,14 @@ export const locationsListViewColumns: ColDataCardDef<LocationsListRow>[] = [
     label: "High injury network location",
     sortable: true,
     defaultHidden: true,
+    valueFormatter: formatYesNoString,
   },
   {
     path: "is_signalized",
     label: "Signalized",
     sortable: true,
     defaultHidden: true,
-  },
-  {
-    path: "location_group",
-    label: "Location group",
-    sortable: true,
-    defaultHidden: true,
+    valueFormatter: formatYesNoString,
   },
   {
     path: "street_levels",

@@ -164,6 +164,90 @@ const locationsListViewFiltercards: FilterGroup[] = [
       },
     ],
   },
+  // street levels
+  {
+    id: "street_levels_filter_card",
+    label: "Street level",
+    groupOperator: "_or",
+    filterGroups: [
+      {
+        id: "street_leavels_1",
+        label: "1",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "street_leavels_1",
+            column: "street_levels",
+            operator: "_contains",
+            value: [1],
+          },
+        ],
+      },
+      {
+        id: "street_leavels_2",
+        label: "2",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "street_leavels_2",
+            column: "street_levels",
+            operator: "_contains",
+            value: [2],
+          },
+        ],
+      },
+      {
+        id: "street_leavels_3",
+        label: "3",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "street_leavels_3",
+            column: "street_levels",
+            operator: "_contains",
+            value: [3],
+          },
+        ],
+      },
+      {
+        id: "street_leavels_4",
+        label: "4",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "street_leavels_4",
+            column: "street_levels",
+            operator: "_contains",
+            value: [1],
+          },
+        ],
+      },
+      {
+        id: "street_leavels_5",
+        label: "5",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "street_leavels_5",
+            column: "street_levels",
+            operator: "_contains",
+            value: [5],
+          },
+        ],
+      },
+    ],
+  },
+  // jurisdiction
   {
     id: "geography_filter_card",
     label: "Jurisdiction",
