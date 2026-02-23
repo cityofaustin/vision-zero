@@ -20,6 +20,7 @@ import {
 } from "@/components/CrashDiagramControls";
 import { useImage } from "@/utils/images";
 import { hasRole } from "@/utils/auth";
+import CrashDiagramUploadModal from "@/components/CrashDiagramUploadModal";
 import { useAuth0 } from "@auth0/auth0-react";
 
 interface DiagramAlertProps {
@@ -62,7 +63,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   const [isLoaded, setIsLoaded] = useState(true);
   const [isSaved, setIsSaved] = useState(!!crash.diagram_transform);
   const [isTouched, setIsTouched] = useState(false);
-  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
 
   const defaultValues = useMemo(() => {
@@ -137,6 +138,13 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
 
   return (
     <Card className="h-100">
+      {!isReadOnlyUser && (
+        <CrashDiagramUploadModal
+          showModal={showModal}
+          setShowModal={setShowModal}
+          recordLocator={crash.record_locator}
+        />
+      )}
       <Card.Header>
         <Card.Title>Diagram</Card.Title>
         <div className="text-secondary fw-light">
@@ -209,7 +217,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             }
             button={
               !isReadOnlyUser ? (
-                <Button onClick={() => setShowUploadModal(true)}>
+                <Button onClick={() => setShowModal(true)}>
                   Upload crash diagram
                 </Button>
               ) : null
