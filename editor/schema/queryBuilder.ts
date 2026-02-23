@@ -12,6 +12,7 @@ const FilterValue = z.union([
   z.number(),
   z.boolean(),
   z.array(z.number()),
+  z.array(z.string()),
 ]);
 
 const Filter = z.object({
@@ -27,6 +28,7 @@ const Filter = z.object({
     "_ilike",
     "_in",
     "_nin",
+    "_contains",
   ]),
   value: FilterValue,
   column: z.string(),
