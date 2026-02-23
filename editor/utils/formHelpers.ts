@@ -135,7 +135,6 @@ export const renderColumnValue = <T extends Record<string, unknown>>(
     );
   }
 
-  // todo: this should probably be a valueFormatter? 😵‍💫
   if (column.inputType === "yes_no") {
     return formatYesNoString(record[column.path]);
   }
