@@ -247,6 +247,28 @@ const locationsListViewFiltercards: FilterGroup[] = [
       },
     ],
   },
+    {
+    id: "high_inj_net",
+    label: "High injury network",
+    groupOperator: "_and",
+    filterGroups: [
+      {
+        id: "high_inj_net_true",
+        label: "High injury network locations only",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "high_inj_net_true",
+            column: "is_hin",
+            operator: "_eq",
+            value: true,
+          },
+        ],
+      },
+    ],
+  },
   // jurisdiction
   {
     id: "geography_filter_card",
