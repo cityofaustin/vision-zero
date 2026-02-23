@@ -172,7 +172,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
     filterGroups: [
       {
         id: "street_leavels_1",
-        label: "1",
+        label: "1 - Local streets",
         groupOperator: "_and",
         enabled: false,
         inverted: false,
@@ -187,7 +187,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
       },
       {
         id: "street_leavels_2",
-        label: "2",
+        label: "2 - Collector streets",
         groupOperator: "_and",
         enabled: false,
         inverted: false,
@@ -202,7 +202,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
       },
       {
         id: "street_leavels_3",
-        label: "3",
+        label: "3 - Minor or major arterials",
         groupOperator: "_and",
         enabled: false,
         inverted: false,
@@ -217,7 +217,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
       },
       {
         id: "street_leavels_4",
-        label: "4",
+        label: "4 - Major arterials or frontage roads",
         groupOperator: "_and",
         enabled: false,
         inverted: false,
@@ -232,7 +232,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
       },
       {
         id: "street_leavels_5",
-        label: "5",
+        label: "5 -  Highways and freeways ",
         groupOperator: "_and",
         enabled: false,
         inverted: false,
