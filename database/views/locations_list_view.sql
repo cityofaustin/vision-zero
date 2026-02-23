@@ -37,8 +37,14 @@ non_cr3_crash_counts AS (
 SELECT
     locations.location_id,
     locations.location_name,
-    locations.council_district,
+    locations.council_districts,
     locations.location_group,
+    locations.is_signalized,
+    locations.signal_eng_areas,
+    locations.area_eng_areas,
+    locations.street_levels,
+    locations.apd_sectors,
+    locations.is_hin,
     coalesce(
         cr3_comp_costs.cr3_comp_costs_total + non_cr3_crash_counts.noncr3_comp_costs_total,
         0::bigint
