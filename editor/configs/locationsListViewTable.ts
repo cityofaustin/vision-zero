@@ -1,9 +1,6 @@
 import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
 import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
-// -- NORTH, CENTRAL, SOUTH
-// {CENTRAL,NORTHEAST,NORTHWEST}{SOUTH}
-
 const locationsListViewFiltercards: FilterGroup[] = [
   // area_eng_areas
   {
@@ -247,7 +244,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
       },
     ],
   },
-    {
+  {
     id: "high_inj_net",
     label: "High injury network",
     groupOperator: "_and",
