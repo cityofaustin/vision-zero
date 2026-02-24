@@ -371,6 +371,24 @@ export const GET_CRASH_RECOMMENDATION_BY_ID = gql`
   }
 `;
 
+/**
+ * Fetch target crash fatalities (people with fatal injury severity) for photo transfer.
+ */
+export const GET_TARGET_CRASH_FATALITY = gql`
+  query GetTargetCrashFatality($id: Int!) {
+    crashes(where: { id: { _eq: $id }, is_deleted: { _eq: false } }) {
+      id
+      people_list_view(
+        where: { prsn_injry_sev_id: { _eq: 4 } }
+        order_by: { unit_nbr: asc, prsn_nbr: asc }
+      ) {
+        id
+        prsn_injry_sev_id
+      }
+    }
+  }
+`;
+
 export const UPDATE_CRASH = gql`
   mutation update_crashes($id: Int!, $updates: crashes_set_input) {
     update_crashes(where: { id: { _eq: $id } }, _set: $updates) {

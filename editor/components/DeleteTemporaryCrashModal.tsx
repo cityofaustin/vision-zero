@@ -13,6 +13,7 @@ import {
   CRASH_TRANSFER_SEARCH,
   DELETE_CRIS_CRASH,
   GET_CRASH_RECOMMENDATION_BY_ID,
+  GET_TARGET_CRASH_FATALITY,
   UPDATE_CRASH,
 } from "@/queries/crash";
 import {
@@ -21,6 +22,7 @@ import {
 } from "@/queries/recommendations";
 import { TRANSFER_CRASH_NOTES } from "@/queries/crashNotes";
 import { useQuery, useMutation } from "@/utils/graphql";
+import { useGetToken } from "@/utils/auth";
 
 /** Display labels for card fields (match crashesColumns in configs/crashesColumns.tsx).
  * The keys are the DB column names for Summary, Flags, and Other card fields.
@@ -136,6 +138,62 @@ export default function DeleteTemporaryCrashModal({
 
   const targetRecommendation = targetCrashData?.[0]?.recommendation ?? null;
 
+  // Fetch target crash fatalities for photo transfer eligibility
+  const { data: targetFatalityData } = useQuery<{
+    id: number;
+    people_list_view: { id: number; prsn_injry_sev_id: number | null }[];
+  }>({
+    query: show && selectedTarget ? GET_TARGET_CRASH_FATALITY : null,
+    variables: { id: selectedTarget?.id ?? 0 },
+    typename: "crashes",
+  });
+  const targetFatalities = targetFatalityData?.[0]?.people_list_view ?? [];
+  const targetFatalityPersonId =
+    targetFatalities.length === 1 ? targetFatalities[0].id : null;
+
+  const getToken = useGetToken();
+
+  // Temp crash fatalities (fatal injury severity = 4)
+  const tempFatalities = useMemo(
+    () =>
+      crash.people_list_view?.filter((p) => p.prsn_injry_sev_id === 4) ?? [],
+    [crash.people_list_view]
+  );
+  const tempFatalityId =
+    tempFatalities.length > 0 ? tempFatalities[0].id : null;
+
+  // Detect photo existence via the API (same path the fatalities page uses)
+  const [hasPhotoToTransfer, setHasPhotoToTransfer] = useState(false);
+  useEffect(() => {
+    if (!show || !tempFatalityId) {
+      setHasPhotoToTransfer(false);
+      return;
+    }
+    let cancelled = false;
+    const checkPhoto = async () => {
+      try {
+        const token = await getToken();
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${tempFatalityId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (!cancelled) setHasPhotoToTransfer(res.ok);
+      } catch {
+        if (!cancelled) setHasPhotoToTransfer(false);
+      }
+    };
+    checkPhoto();
+    return () => {
+      cancelled = true;
+    };
+  }, [show, tempFatalityId, getToken]);
+
+  const shouldTransferPhoto =
+    !!selectedTarget &&
+    tempFatalities.length > 0 &&
+    targetFatalities.length === 1 &&
+    hasPhotoToTransfer;
+
   const { mutate: mutateDeleteCrash, loading: isDeleting } =
     useMutation(DELETE_CRIS_CRASH);
   const { mutate: mutateTransferNotes } = useMutation(TRANSFER_CRASH_NOTES);
@@ -170,12 +228,16 @@ export default function DeleteTemporaryCrashModal({
       const label = CARD_FIELD_LABELS[fieldKey] ?? fieldKey;
       items.push(label);
     }
+    if (shouldTransferPhoto) {
+      items.push("Victim photo");
+    }
     return items;
   }, [
     crash.crash_notes,
     crash.recommendation,
     crash.diagram_transform,
     editedCardFields,
+    shouldTransferPhoto,
   ]);
 
   const handleClose = useCallback(() => {
@@ -269,6 +331,24 @@ export default function DeleteTemporaryCrashModal({
         );
       }
 
+      // Transfer victim photo via API
+      if (shouldTransferPhoto && tempFatalityId && targetFatalityPersonId) {
+        const token = await getToken();
+        const photoRes = await fetch(
+          `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${tempFatalityId}/transfer/${targetFatalityPersonId}`,
+          {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (!photoRes.ok) {
+          const errBody = await photoRes.json().catch(() => null);
+          throw new Error(
+            errBody?.error ?? `Photo transfer failed (${photoRes.status})`
+          );
+        }
+      }
+
       await mutateDeleteCrash({ id: crash.id, updated_by: user.email });
       handleClose();
       router.push(`/crashes/${targetRecordLocator}`);
@@ -284,6 +364,10 @@ export default function DeleteTemporaryCrashModal({
     selectedTarget,
     targetRecommendation,
     user?.email,
+    shouldTransferPhoto,
+    tempFatalityId,
+    targetFatalityPersonId,
+    getToken,
     mutateDeleteCrash,
     mutateTransferNotes,
     mutateUpdateCrash,
