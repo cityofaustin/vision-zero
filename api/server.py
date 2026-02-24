@@ -56,6 +56,7 @@ ADMIN_ROLE_NAME = "vz-admin"
 EDITOR_ROLE_NAME = "editor"
 MAX_IMAGE_SIZE_MEGABYTES = 5
 CORS_URL = "*"
+CORS_HEADERS = ["Content-Type", "Authorization", "Access-Control-Allow-Origin", CORS_URL]
 
 app = Flask(__name__)
 
@@ -394,14 +395,7 @@ def healthcheck():
 
 
 @app.route("/cr3/download/<record_locator>")
-@cross_origin(
-    headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Origin",
-        CORS_URL,
-    ],
-)
+@cross_origin(headers=CORS_HEADERS)
 @requires_auth
 def download_crash_report(record_locator):
     """A valid access token is required to access this route"""
@@ -418,14 +412,7 @@ def download_crash_report(record_locator):
 
 
 @app.route("/images/person/<int:person_id>", methods=["GET"])
-@cross_origin(
-    headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Origin",
-        CORS_URL,
-    ],
-)
+@cross_origin(headers=CORS_HEADERS)
 @requires_auth
 # No role requirement - all authenticated users can GET
 def get_person_image(person_id):
@@ -434,14 +421,7 @@ def get_person_image(person_id):
 
 
 @app.route("/images/person/<int:person_id>", methods=["DELETE", "PUT"])
-@cross_origin(
-    headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Origin",
-        CORS_URL,
-    ],
-)
+@cross_origin(headers=CORS_HEADERS)
 @requires_auth
 @requires_roles(ADMIN_ROLE_NAME, EDITOR_ROLE_NAME)
 @validate_file_size(MAX_IMAGE_SIZE_MEGABYTES)
@@ -458,14 +438,7 @@ def modify_person_image(person_id):
     "/images/person/<int:source_person_id>/transfer/<int:target_person_id>",
     methods=["POST"],
 )
-@cross_origin(
-    headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Origin",
-        CORS_URL,
-    ],
-)
+@cross_origin(headers=CORS_HEADERS)
 @requires_auth
 def transfer_person_image(source_person_id, target_person_id):
     """Transfers a person image from one person record to another"""
@@ -473,14 +446,7 @@ def transfer_person_image(source_person_id, target_person_id):
 
 
 @app.route("/images/crash_diagram/<record_locator>", methods=["GET"])
-@cross_origin(
-    headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Origin",
-        CORS_URL,
-    ],
-)
+@cross_origin(headers=CORS_HEADERS)
 @requires_auth
 def get_crash_diagram_image(record_locator):
     """Retrieves a crash diagram image URL"""
@@ -488,14 +454,7 @@ def get_crash_diagram_image(record_locator):
 
 
 @app.route("/images/crash_diagram/<record_locator>", methods=["DELETE", "PUT"])
-@cross_origin(
-    headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Origin",
-        CORS_URL,
-    ],
-)
+@cross_origin(headers=CORS_HEADERS)
 @requires_auth
 @requires_roles(ADMIN_ROLE_NAME, EDITOR_ROLE_NAME)
 @validate_file_size(MAX_IMAGE_SIZE_MEGABYTES)
@@ -509,28 +468,14 @@ def modify_crash_diagram_image(record_locator):
 
 
 @app.route("/user/test")
-@cross_origin(
-    headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Origin",
-        CORS_URL,
-    ],
-)
+@cross_origin(headers=CORS_HEADERS)
 @requires_auth
 def user_test():
     return jsonify(message=dict(current_user))
 
 
 @app.route("/user/list_users")
-@cross_origin(
-    headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Origin",
-        CORS_URL,
-    ],
-)
+@cross_origin(headers=CORS_HEADERS)
 @requires_auth
 def user_list_users():
     page = request.args.get("page")
@@ -548,14 +493,7 @@ def user_list_users():
 
 
 @app.route("/user/get_user/<id>")
-@cross_origin(
-    headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Origin",
-        CORS_URL,
-    ],
-)
+@cross_origin(headers=CORS_HEADERS)
 @requires_auth
 def user_get_user(id):
     endpoint = f"https://{AUTH0_DOMAIN}/api/v2/users/" + id
@@ -565,8 +503,7 @@ def user_get_user(id):
 
 
 @app.route("/user/create_user", methods=["POST"])
-@cross_origin(headers=["Content-Type", "Authorization"])
-@cross_origin(headers=["Access-Control-Allow-Origin", CORS_URL])
+@cross_origin(headers=CORS_HEADERS)
 @requires_auth
 @requires_roles(ADMIN_ROLE_NAME)
 def user_create_user():
@@ -601,14 +538,7 @@ def user_create_user():
 
 
 @app.route("/user/update_user/<id>", methods=["PUT"])
-@cross_origin(
-    headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Origin",
-        CORS_URL,
-    ],
-)
+@cross_origin(headers=CORS_HEADERS)
 @requires_auth
 @requires_roles(ADMIN_ROLE_NAME)
 def user_update_user(id):
@@ -620,14 +550,7 @@ def user_update_user(id):
 
 
 @app.route("/user/delete_user/<id>", methods=["DELETE"])
-@cross_origin(
-    headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Origin",
-        CORS_URL,
-    ],
-)
+@cross_origin(headers=CORS_HEADERS)
 @requires_auth
 @requires_roles(ADMIN_ROLE_NAME)
 def user_delete_user(id):
