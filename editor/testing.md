@@ -238,6 +238,7 @@ refresh materialized view location_crashes_view;
     - Confirm that your uploaded image immediately renders in the victim card
     - Edit the image by clicking on the victim thumbnail image. Confirm that you cannot submit the form without both selecting an image and filling in the  **Image source** field
     - Confirm that you cannot upload an image type that is not JEPG or PNG
+    - Delete the victim photo by using the **Delete** button in the image upload modal header
 - Confirm that the crash diagram card (second row, leftmost card) renders and functions normally
 - Use the narrative card (second row, middle card) displays the crash narrative.
   - [role: editor, admin] Click the **Add summary** button and confirm that the narrative becomes editable

@@ -6,6 +6,7 @@ query SocrataExportCrashes($limit: Int!, $minId: Int!) {
     bicycle_death_count
     bicycle_serious_injury_count
     case_id
+    collsn_desc
     crash_timestamp
     crash_timestamp_ct
     crash_fatal_fl

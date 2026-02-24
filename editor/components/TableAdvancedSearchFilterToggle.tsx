@@ -76,7 +76,6 @@ export default function TableAdvancedSearchFilterToggle({
           width: "350px",
           // todo: set this based on window size
           maxHeight: "550px",
-          overflowY: "scroll",
           overflowX: "hidden",
         }}
       >
