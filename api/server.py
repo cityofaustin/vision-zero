@@ -458,7 +458,6 @@ def modify_person_image(person_id):
     "/images/person/<int:source_person_id>/transfer/<int:target_person_id>",
     methods=["POST"],
 )
-@app.route("/images/crash_diagram/<record_locator>", methods=["GET"])
 @cross_origin(
     headers=[
         "Content-Type",
@@ -473,14 +472,16 @@ def transfer_person_image(source_person_id, target_person_id):
     return _transfer_person_image(source_person_id, target_person_id, s3)
 
 
-def has_user_role(role):
-    claims = current_user.get("https://hasura.io/jwt/claims", False)
-    if claims != False:
-        roles = claims.get("x-hasura-allowed-roles")
-        if role in roles:
-            return True
-    return False
-# No role requirement - all authenticated users can GET
+@app.route("/images/crash_diagram/<record_locator>", methods=["GET"])
+@cross_origin(
+    headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        CORS_URL,
+    ],
+)
+@requires_auth
 def get_crash_diagram_image(record_locator):
     """Retrieves a crash diagram image URL"""
     return _get_crash_diagram_image_url(record_locator, s3)
