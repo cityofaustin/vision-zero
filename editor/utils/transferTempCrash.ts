@@ -67,7 +67,7 @@ export async function executeTransfer(config: TransferConfig): Promise<void> {
 
   const cardUpdates: Record<string, unknown> = {};
   for (const key of editedCardFields) {
-    if (key in crash) {
+    if (key in crash && crash[key] != null && crash[key] !== "") {
       cardUpdates[key] = crash[key];
     }
   }
