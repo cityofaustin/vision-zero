@@ -221,9 +221,6 @@ export default function DeleteTemporaryCrashModal({
     if (crash.recommendation) {
       items.push("Fatality Review Board recommendations");
     }
-    if (crash.diagram_transform) {
-      items.push("Crash diagram");
-    }
     for (const fieldKey of editedCardFields) {
       const label = CARD_FIELD_LABELS[fieldKey] ?? fieldKey;
       items.push(label);
@@ -235,7 +232,6 @@ export default function DeleteTemporaryCrashModal({
   }, [
     crash.crash_notes,
     crash.recommendation,
-    crash.diagram_transform,
     editedCardFields,
     shouldTransferPhoto,
   ]);
@@ -311,15 +307,11 @@ export default function DeleteTemporaryCrashModal({
         }
       }
 
-      // Transfer only Summary/Flags/Other fields that have change-log history, plus diagram
       const cardUpdates: Record<string, unknown> = {};
       for (const key of editedCardFields) {
         if (key in crash) {
           cardUpdates[key] = crash[key];
         }
-      }
-      if (crash.diagram_transform) {
-        cardUpdates.diagram_transform = crash.diagram_transform;
       }
       if (Object.keys(cardUpdates).length > 0) {
         await mutateUpdateCrash(
