@@ -48,7 +48,7 @@ export default function CrashSearchTypeahead({
       typename: "crashes",
     });
 
-  const hits = searchResults ?? [];
+  const results = searchResults ?? [];
 
   return (
     <Form.Group className="mb-3">
