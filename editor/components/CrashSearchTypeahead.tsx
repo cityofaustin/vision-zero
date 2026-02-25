@@ -35,6 +35,7 @@ export default function CrashSearchTypeahead({
     if (!selected) setSearchInput("");
   }, [selected]);
 
+  // Search pattern for SQL LIKE query after user has typed at least 2 characters
   const searchPattern = useMemo(
     () => (searchInput.trim().length >= 2 ? `%${searchInput.trim()}%` : null),
     [searchInput]
@@ -85,25 +86,25 @@ export default function CrashSearchTypeahead({
             className="list-group position-absolute w-100 mt-1 shadow-sm"
             style={{ zIndex: 1050, maxHeight: "240px", overflowY: "auto" }}
           >
-            {hits.length === 0 && !isSearching && (
+            {results.length === 0 && !isSearching && (
               <li className="list-group-item text-muted">No crashes found</li>
             )}
-            {hits.map((hit) => (
+            {results.map((result) => (
               <li
-                key={hit.id}
+                key={result.id}
                 className="list-group-item list-group-item-action"
                 role="button"
                 onMouseDown={(e) => {
                   e.preventDefault();
-                  onSelect(hit);
+                  onSelect(result);
                   setSearchInput("");
                   setShowDropdown(false);
                 }}
               >
-                <strong>{hit.record_locator}</strong>
-                {hit.address_display && (
+                <strong>{result.record_locator}</strong>
+                {result.address_display && (
                   <span className="text-muted ms-2">
-                    {hit.address_display}
+                    {result.address_display}
                   </span>
                 )}
               </li>
