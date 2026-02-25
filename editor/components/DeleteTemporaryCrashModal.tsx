@@ -8,9 +8,7 @@ import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Crash } from "@/types/crashes";
-import { Recommendation } from "@/types/recommendation";
 import {
-  CRASH_TRANSFER_SEARCH,
   DELETE_CRIS_CRASH,
   GET_CRASH_RECOMMENDATION_BY_ID,
   GET_TARGET_CRASH_FATALITY,
@@ -23,9 +21,13 @@ import {
 import { TRANSFER_CRASH_NOTES } from "@/queries/crashNotes";
 import { useQuery, useMutation } from "@/utils/graphql";
 import { useGetToken } from "@/utils/auth";
+import CrashSearchTypeahead, {
+  CrashSearchHit,
+} from "./CrashSearchTypeahead";
+import { executeTransfer } from "@/utils/transferTempCrash";
 
-/** Display labels for card fields (match crashesColumns in configs/crashesColumns.tsx).
- * The keys are the DB column names for Summary, Flags, and Other card fields.
+/** Display labels for card fields.
+ * The keys are the DB column names for transferable fields.
  */
 const CARD_FIELD_LABELS: Record<string, string> = {
   case_id: "Case ID",
@@ -44,14 +46,14 @@ const CARD_FIELD_LABELS: Record<string, string> = {
   crash_speed_limit: "Speed limit",
   obj_struck_id: "Object struck",
   law_enforcement_ytd_fatality_num: "Law Enforcement YTD Fatal Crash",
-  latitude: "Latitude",
-  longitude: "Longitude",
+  latitude: "Crash location",
+  longitude: "Crash location",
 };
 
 const CHANGE_LOG_KEYS_TO_IGNORE = ["updated_at", "updated_by", "position"];
 
 /**
- * Returns the set of Summary/Flags/Other field names that have a record of being
+ * Returns the set of field names that have a record of being
  * edited on this crash (from change logs where record_type === 'crash').
  */
 function getEditedCardFieldsFromChangeLogs(
@@ -79,11 +81,38 @@ function getEditedCardFieldsFromChangeLogs(
   ) as Set<keyof Crash>;
 }
 
-export type CrashTransferSearchHit = {
-  id: number;
-  record_locator: string;
-  address_display: string | null;
-};
+/**
+ * Build the human-readable list of items that will be transferred.
+ * Deduplicates labels (e.g. latitude + longitude both map to "Crash location").
+ */
+function buildTransferItemsList(
+  crash: Crash,
+  editedCardFields: Set<keyof Crash>,
+  shouldTransferPhoto: boolean
+): string[] {
+  const items: string[] = [];
+
+  if ((crash.crash_notes?.length ?? 0) > 0) {
+    items.push(`Notes (${crash.crash_notes!.length})`);
+  }
+  if (crash.recommendation) {
+    items.push("Fatality Review Board recommendations");
+  }
+
+  const seen = new Set<string>();
+  for (const fieldKey of editedCardFields) {
+    const label = CARD_FIELD_LABELS[fieldKey] ?? fieldKey;
+    if (!seen.has(label)) {
+      seen.add(label);
+      items.push(label);
+    }
+  }
+
+  if (shouldTransferPhoto) {
+    items.push("Victim photo");
+  }
+  return items;
+}
 
 interface DeleteTemporaryCrashModalProps {
   show: boolean;
@@ -92,8 +121,8 @@ interface DeleteTemporaryCrashModalProps {
 }
 
 /**
- * Modal shown when deleting a temporary crash. Lets the user transfer notes,
- * recommendation, and diagram to another (non-temp) crash, or skip transfer.
+ * Modal shown when deleting a temporary crash. Lets the user transfer updated fields
+ * and victim photo to another (non-temp) crash, or skip transfer.
  */
 export default function DeleteTemporaryCrashModal({
   show,
@@ -102,28 +131,14 @@ export default function DeleteTemporaryCrashModal({
 }: DeleteTemporaryCrashModalProps) {
   const router = useRouter();
   const { user } = useAuth0();
+  const getToken = useGetToken();
 
   const [skipTransfer, setSkipTransfer] = useState(false);
-  const [searchInput, setSearchInput] = useState("");
   const [selectedTarget, setSelectedTarget] =
-    useState<CrashTransferSearchHit | null>(null);
-  const [showDropdown, setShowDropdown] = useState(false);
+    useState<CrashSearchHit | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const searchPattern = useMemo(
-    () => (searchInput.trim().length >= 2 ? `%${searchInput.trim()}%` : null),
-    [searchInput]
-  );
-
-  const { data: searchResults, isLoading: isSearching } =
-    useQuery<CrashTransferSearchHit>({
-      query: show && searchPattern ? CRASH_TRANSFER_SEARCH : null,
-      variables: {
-        searchPattern,
-        currentCrashId: crash.id,
-      },
-      typename: "crashes",
-    });
+  // --- Target crash data ---
 
   const { data: targetCrashData } = useQuery<{
     id: number;
@@ -137,10 +152,8 @@ export default function DeleteTemporaryCrashModal({
     variables: { id: selectedTarget?.id ?? 0 },
     typename: "crashes",
   });
-
   const targetRecommendation = targetCrashData?.[0]?.recommendation ?? null;
 
-  // Fetch target crash fatalities for photo transfer eligibility
   const { data: targetFatalityData } = useQuery<{
     id: number;
     people_list_view: { id: number; prsn_injry_sev_id: number | null }[];
@@ -153,7 +166,7 @@ export default function DeleteTemporaryCrashModal({
   const targetFatalityPersonId =
     targetFatalities.length === 1 ? targetFatalities[0].id : null;
 
-  const getToken = useGetToken();
+  // --- Temp crash photo detection ---
 
   // Temp crash fatalities (fatal injury severity = 4)
   const tempFatalities = useMemo(
@@ -196,6 +209,8 @@ export default function DeleteTemporaryCrashModal({
     targetFatalities.length === 1 &&
     hasPhotoToTransfer;
 
+  // --- Mutations ---
+
   const { mutate: mutateDeleteCrash, loading: isDeleting } =
     useMutation(DELETE_CRIS_CRASH);
   const { mutate: mutateTransferNotes } = useMutation(TRANSFER_CRASH_NOTES);
@@ -207,7 +222,8 @@ export default function DeleteTemporaryCrashModal({
     DELETE_RECOMMENDATION_MUTATION
   );
 
-  const isSubmitting = isDeleting;
+  // --- Derived state ---
+
   const canDelete = skipTransfer || !!selectedTarget;
 
   const editedCardFields = useMemo(
@@ -215,34 +231,16 @@ export default function DeleteTemporaryCrashModal({
     [crash.change_logs, crash.id]
   );
 
-  const transferItems = useMemo(() => {
-    const items: string[] = [];
-    if ((crash.crash_notes?.length ?? 0) > 0) {
-      items.push(`Notes (${crash.crash_notes!.length})`);
-    }
-    if (crash.recommendation) {
-      items.push("Fatality Review Board recommendations");
-    }
-    for (const fieldKey of editedCardFields) {
-      const label = CARD_FIELD_LABELS[fieldKey] ?? fieldKey;
-      items.push(label);
-    }
-    if (shouldTransferPhoto) {
-      items.push("Victim photo");
-    }
-    return items;
-  }, [
-    crash.crash_notes,
-    crash.recommendation,
-    editedCardFields,
-    shouldTransferPhoto,
-  ]);
+  const transferItems = useMemo(
+    () => buildTransferItemsList(crash, editedCardFields, shouldTransferPhoto),
+    [crash, editedCardFields, shouldTransferPhoto]
+  );
+
+  // --- Handlers ---
 
   const handleClose = useCallback(() => {
     setSkipTransfer(false);
-    setSearchInput("");
     setSelectedTarget(null);
-    setShowDropdown(false);
     setSubmitError(null);
     onHide();
   }, [onHide]);
@@ -261,87 +259,25 @@ export default function DeleteTemporaryCrashModal({
 
     setSubmitError(null);
     try {
-      if ((crash.crash_notes?.length ?? 0) > 0) {
-        await mutateTransferNotes({
-          sourceCrashId: crash.id,
-          targetCrashId: targetId,
-          updated_by: user.email,
-        });
-      }
-
-      if (crash.recommendation) {
-        const targetRec = targetRecommendation;
-        if (targetRec) {
-          const tempRec = crash.recommendation as Recommendation;
-          const partnerPksToDelete = (
-            targetRec.recommendations_partners ?? []
-          ).map((p) => p.id);
-          const partnersToAdd = (tempRec.recommendations_partners ?? [])
-            .filter((p) => p.coordination_partners?.id ?? p.partner_id != null)
-            .map((p) => ({
-              recommendation_id: targetRec.id,
-              partner_id: p.coordination_partners?.id ?? p.partner_id,
-            }));
-          await mutateUpdateRec(
-            {
-              id: targetRec.id,
-              record: {
-                rec_text: tempRec.rec_text,
-                rec_update: tempRec.rec_update,
-                recommendation_status_id: tempRec.recommendation_status_id,
-              },
-              partnerPksToDelete,
-              partnersToAdd,
-            },
-            { skip_updated_by_setter: true }
-          );
-          await mutateDeleteRec({ id: tempRec.id });
-        } else {
-          await mutateUpdateRec(
-            {
-              id: crash.recommendation.id,
-              record: { crash_pk: targetId },
-              partnerPksToDelete: [],
-              partnersToAdd: [],
-            },
-            { skip_updated_by_setter: true }
-          );
-        }
-      }
-
-      const cardUpdates: Record<string, unknown> = {};
-      for (const key of editedCardFields) {
-        if (key in crash) {
-          cardUpdates[key] = crash[key];
-        }
-      }
-      if (Object.keys(cardUpdates).length > 0) {
-        await mutateUpdateCrash(
-          {
-            id: targetId,
-            updates: cardUpdates as Record<string, unknown>,
-          },
-          { skip_updated_by_setter: true }
-        );
-      }
-
-      // Transfer victim photo via API
-      if (shouldTransferPhoto && tempFatalityId && targetFatalityPersonId) {
-        const token = await getToken();
-        const photoRes = await fetch(
-          `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${tempFatalityId}/transfer/${targetFatalityPersonId}`,
-          {
-            method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        if (!photoRes.ok) {
-          const errBody = await photoRes.json().catch(() => null);
-          throw new Error(
-            errBody?.error ?? `Photo transfer failed (${photoRes.status})`
-          );
-        }
-      }
+      await executeTransfer({
+        crash,
+        targetCrashId: targetId,
+        editedCardFields,
+        targetRecommendation,
+        photo: {
+          shouldTransfer: shouldTransferPhoto,
+          sourcePersonId: tempFatalityId,
+          targetPersonId: targetFatalityPersonId,
+        },
+        userEmail: user.email,
+        getToken,
+        mutations: {
+          transferNotes: mutateTransferNotes,
+          updateCrash: mutateUpdateCrash,
+          updateRecommendation: mutateUpdateRec,
+          deleteRecommendation: mutateDeleteRec,
+        },
+      });
 
       await mutateDeleteCrash({ id: crash.id, updated_by: user.email });
       handleClose();
@@ -382,13 +318,12 @@ export default function DeleteTemporaryCrashModal({
 
   useEffect(() => {
     if (!show) return;
-    setSearchInput("");
     setSelectedTarget(null);
     setSkipTransfer(false);
     setSubmitError(null);
   }, [show]);
 
-  const hits = searchResults ?? [];
+  // --- Render ---
 
   return (
     <Modal show={show} onHide={handleClose} centered>
@@ -402,71 +337,12 @@ export default function DeleteTemporaryCrashModal({
             choose to delete without transferring any data.
           </p>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Transfer data to crash</Form.Label>
-            <div className="position-relative">
-              <Form.Control
-                type="text"
-                placeholder="Search by Crash ID or primary address..."
-                value={
-                  selectedTarget
-                    ? `${selectedTarget.record_locator} – ${selectedTarget.address_display ?? ""}`
-                    : searchInput
-                }
-                onChange={(e) => {
-                  setSearchInput(selectedTarget ? "" : e.target.value);
-                  if (selectedTarget) setSelectedTarget(null);
-                  setShowDropdown(true);
-                }}
-                onFocus={() => searchInput.length >= 2 && setShowDropdown(true)}
-                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                autoComplete="off"
-              />
-              {isSearching && (
-                <Spinner
-                  size="sm"
-                  className="position-absolute top-50 end-0 translate-middle-y me-2"
-                  style={{ position: "absolute" }}
-                />
-              )}
-              {showDropdown && searchPattern && !selectedTarget && (
-                <ul
-                  className="list-group position-absolute w-100 mt-1 shadow-sm"
-                  style={{
-                    zIndex: 1050,
-                    maxHeight: "240px",
-                    overflowY: "auto",
-                  }}
-                >
-                  {hits.length === 0 && !isSearching && (
-                    <li className="list-group-item text-muted">
-                      No crashes found
-                    </li>
-                  )}
-                  {hits.map((hit) => (
-                    <li
-                      key={hit.id}
-                      className="list-group-item list-group-item-action"
-                      role="button"
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        setSelectedTarget(hit);
-                        setSearchInput("");
-                        setShowDropdown(false);
-                      }}
-                    >
-                      <strong>{hit.record_locator}</strong>
-                      {hit.address_display && (
-                        <span className="text-muted ms-2">
-                          {hit.address_display}
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </Form.Group>
+          <CrashSearchTypeahead
+            excludeCrashId={crash.id}
+            selected={selectedTarget}
+            onSelect={setSelectedTarget}
+            disabled={!show || skipTransfer}
+          />
 
           {selectedTarget && transferItems.length > 0 && (
             <div className="mb-3 p-2 bg-light rounded">
@@ -487,12 +363,7 @@ export default function DeleteTemporaryCrashModal({
             onChange={(e) => {
               const checked = e.target.checked;
               setSkipTransfer(checked);
-              if (checked) {
-                // Clear the transfer target when toggle is turned on
-                setSearchInput("");
-                setSelectedTarget(null);
-                setShowDropdown(false);
-              }
+              if (checked) setSelectedTarget(null);
             }}
             className="mb-3"
           />
@@ -507,16 +378,16 @@ export default function DeleteTemporaryCrashModal({
           <Button
             variant="secondary"
             onClick={handleClose}
-            disabled={isSubmitting}
+            disabled={isDeleting}
           >
             Cancel
           </Button>
           <Button
             variant="danger"
             type="submit"
-            disabled={!canDelete || isSubmitting}
+            disabled={!canDelete || isDeleting}
           >
-            {isSubmitting ? (
+            {isDeleting ? (
               <>
                 <Spinner size="sm" className="me-2" />
                 Deleting…
