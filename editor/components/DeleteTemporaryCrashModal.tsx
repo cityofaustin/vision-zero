@@ -44,6 +44,8 @@ const CARD_FIELD_LABELS: Record<string, string> = {
   crash_speed_limit: "Speed limit",
   obj_struck_id: "Object struck",
   law_enforcement_ytd_fatality_num: "Law Enforcement YTD Fatal Crash",
+  latitude: "Latitude",
+  longitude: "Longitude",
 };
 
 const CHANGE_LOG_KEYS_TO_IGNORE = ["updated_at", "updated_by", "position"];
