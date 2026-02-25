@@ -136,6 +136,9 @@ export default function DeleteTemporaryCrashModal({
 
   // --- Target crash data ---
 
+  // Fetch the target crash's recommendation (if any) to determine
+  // whether to overwrite or re-point during transfer.
+  // `?? 0` is a dummy fallback — the query is skipped when selectedTarget is null.
   const { data: targetCrashData } = useQuery<{
     id: number;
     record_locator: string;
@@ -148,8 +151,10 @@ export default function DeleteTemporaryCrashModal({
     variables: { id: selectedTarget?.id ?? 0 },
     typename: "crashes",
   });
+  // useQuery returns an array; grab the first (and only) result
   const targetRecommendation = targetCrashData?.[0]?.recommendation ?? null;
 
+  // Fetch fatalities on the target crash to determine photo transfer eligibility.
   const { data: targetFatalityData } = useQuery<{
     id: number;
     people_list_view: { id: number; prsn_injry_sev_id: number | null }[];
@@ -159,6 +164,8 @@ export default function DeleteTemporaryCrashModal({
     typename: "crashes",
   });
   const targetFatalities = targetFatalityData?.[0]?.people_list_view ?? [];
+  // Photo transfer requires exactly one fatality on the target so the
+  // recipient is unambiguous. Skip if zero or multiple.
   const targetFatalityPersonId =
     targetFatalities.length === 1 ? targetFatalities[0].id : null;
 
@@ -173,7 +180,7 @@ export default function DeleteTemporaryCrashModal({
   const tempFatalityId =
     tempFatalities.length > 0 ? tempFatalities[0].id : null;
 
-  // Detect photo existence via the API (same path the fatalities page uses)
+  // Detect photo existence via the API
   const [hasPhotoToTransfer, setHasPhotoToTransfer] = useState(false);
   useEffect(() => {
     if (!show || !tempFatalityId) {
