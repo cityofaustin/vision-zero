@@ -47,3 +47,11 @@ export const UPDATE_RECOMMENDATION_MUTATION = gql`
     }
   }
 `;
+
+export const DELETE_RECOMMENDATION_MUTATION = gql`
+  mutation DeleteRecommendation($id: Int!) {
+    delete_recommendations_by_pk(id: $id) {
+      id
+    }
+  }
+`;

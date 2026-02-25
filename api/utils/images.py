@@ -8,6 +8,7 @@ from PIL import Image
 from utils.graphql import (
     make_hasura_request,
     GET_PERSON_IMAGE_METADATA,
+    GET_PERSON_IMAGE_METADATA_FULL,
     UPDATE_PERSON_IMAGE_METADATA,
     GET_CRASH_DIAGRAM_METADATA,
     UPDATE_CRASH_DIAGRAM_METADATA,
@@ -282,6 +283,56 @@ def _handle_image_upload(person_id, file, s3):
     )
 
     return new_image_obj_key
+
+
+def _transfer_person_image(source_person_id, target_person_id, s3):
+    """Transfer an image from one person record to another.
+
+    Copies the S3 object to a new key for the target person and updates the
+    target person's image metadata in the database.
+    """
+    source_obj_key, source_original_filename = _get_person_image_metadata(
+        source_person_id
+    )
+
+    if not source_obj_key:
+        abort(
+            404,
+            description=f"No image found for source person ID: {source_person_id}",
+        )
+
+    source_image_source = make_hasura_request(
+        query=GET_PERSON_IMAGE_METADATA_FULL,
+        variables={"person_id": source_person_id},
+    )["people_by_pk"]["image_source"]
+
+    ext = source_obj_key.rsplit(".", 1)[-1] if "." in source_obj_key else "jpg"
+    target_obj_key = f"{AWS_S3_PERSON_IMAGE_LOCATION}/{target_person_id}.{ext}"
+
+    try:
+        s3.copy_object(
+            Bucket=AWS_S3_BUCKET,
+            CopySource={"Bucket": AWS_S3_BUCKET, "Key": source_obj_key},
+            Key=target_obj_key,
+        )
+    except Exception as e:
+        current_app.logger.exception(str(e))
+        abort(500, description="Failed to copy image in S3")
+
+    make_hasura_request(
+        query=UPDATE_PERSON_IMAGE_METADATA,
+        variables={
+            "person_id": target_person_id,
+            "object": {
+                "image_s3_object_key": target_obj_key,
+                "image_source": source_image_source,
+                "image_original_filename": source_original_filename,
+                "updated_by": get_user_email(),
+            },
+        },
+    )
+
+    return jsonify(success=True), 200
 
 
 def _delete_person_image(person_id, s3):

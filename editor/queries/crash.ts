@@ -319,6 +319,76 @@ export const CRASH_NAV_SEARCH = gql`
   }
 `;
 
+/**
+ * Type-ahead search for selecting a crash to transfer data to when deleting a temp crash.
+ * Only returns non-temp, non-deleted crashes (excludes current crash).
+ */
+export const CRASH_TRANSFER_SEARCH = gql`
+  query CrashTransferSearch(
+    $searchPattern: String!
+    $currentCrashId: Int!
+  ) {
+    crashes(
+      where: {
+        _and: [
+          { id: { _neq: $currentCrashId } }
+          { is_deleted: { _eq: false } }
+          { is_temp_record: { _eq: false } }
+          {
+            _or: [
+              { record_locator: { _ilike: $searchPattern } }
+              { address_display: { _ilike: $searchPattern } }
+            ]
+          }
+        ]
+      }
+      limit: 20
+      order_by: { record_locator: asc }
+    ) {
+      id
+      record_locator
+      address_display
+    }
+  }
+`;
+
+/**
+ * Fetch a crash by id with recommendation for transfer flow (overwrite or move).
+ */
+export const GET_CRASH_RECOMMENDATION_BY_ID = gql`
+  query GetCrashRecommendationById($id: Int!) {
+    crashes(where: { id: { _eq: $id }, is_deleted: { _eq: false } }) {
+      id
+      record_locator
+      recommendation {
+        id
+        recommendations_partners {
+          id
+          partner_id
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * Fetch target crash fatalities (people with fatal injury severity) for photo transfer.
+ */
+export const GET_TARGET_CRASH_FATALITY = gql`
+  query GetTargetCrashFatality($id: Int!) {
+    crashes(where: { id: { _eq: $id }, is_deleted: { _eq: false } }) {
+      id
+      people_list_view(
+        where: { prsn_injry_sev_id: { _eq: 4 } }
+        order_by: { unit_nbr: asc, prsn_nbr: asc }
+      ) {
+        id
+        prsn_injry_sev_id
+      }
+    }
+  }
+`;
+
 export const UPDATE_CRASH = gql`
   mutation update_crashes($id: Int!, $updates: crashes_set_input) {
     update_crashes(where: { id: { _eq: $id } }, _set: $updates) {
