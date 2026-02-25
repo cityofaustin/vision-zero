@@ -6,7 +6,7 @@ import Spinner from "react-bootstrap/Spinner";
 import { CRASH_TRANSFER_SEARCH } from "@/queries/crash";
 import { useQuery } from "@/utils/graphql";
 
-export type CrashSearchHit = {
+export type CrashSearchResult = {
   id: number;
   record_locator: string;
   address_display: string | null;
@@ -14,8 +14,8 @@ export type CrashSearchHit = {
 
 interface CrashSearchTypeaheadProps {
   excludeCrashId: number;
-  selected: CrashSearchHit | null;
-  onSelect: (hit: CrashSearchHit | null) => void;
+  selected: CrashSearchResult | null;
+  onSelect: (hit: CrashSearchResult | null) => void;
   disabled?: boolean;
 }
 
@@ -41,7 +41,7 @@ export default function CrashSearchTypeahead({
   );
 
   const { data: searchResults, isLoading: isSearching } =
-    useQuery<CrashSearchHit>({
+    useQuery<CrashSearchResult>({
       query: !disabled && searchPattern ? CRASH_TRANSFER_SEARCH : null,
       variables: { searchPattern, currentCrashId: excludeCrashId },
       typename: "crashes",

@@ -22,7 +22,7 @@ import { TRANSFER_CRASH_NOTES } from "@/queries/crashNotes";
 import { useQuery, useMutation } from "@/utils/graphql";
 import { useGetToken } from "@/utils/auth";
 import CrashSearchTypeahead, {
-  CrashSearchHit,
+  CrashSearchResult,
 } from "./CrashSearchTypeahead";
 import { executeTransfer } from "@/utils/transferTempCrash";
 
@@ -135,7 +135,7 @@ export default function DeleteTemporaryCrashModal({
 
   const [skipTransfer, setSkipTransfer] = useState(false);
   const [selectedTarget, setSelectedTarget] =
-    useState<CrashSearchHit | null>(null);
+    useState<CrashSearchResult | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   // --- Target crash data ---
