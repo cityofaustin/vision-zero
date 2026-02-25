@@ -99,14 +99,10 @@ function buildTransferItemsList(
     items.push("Fatality Review Board recommendations");
   }
 
-  const seen = new Set<string>();
-  for (const fieldKey of editedCardFields) {
-    const label = CARD_FIELD_LABELS[fieldKey] ?? fieldKey;
-    if (!seen.has(label)) {
-      seen.add(label);
-      items.push(label);
-    }
-  }
+  const fieldLabels = new Set(
+    [...editedCardFields].map((key) => CARD_FIELD_LABELS[key] ?? key)
+  );
+  items.push(...fieldLabels);
 
   if (shouldTransferPhoto) {
     items.push("Victim photo");
