@@ -26,26 +26,11 @@ import CrashSearchTypeahead, {
 } from "./CrashSearchTypeahead";
 import { executeTransfer } from "@/utils/transferTempCrash";
 
-/** Display labels for card fields.
- * The keys are the DB column names for transferable fields.
+/**
+ * Only crash location (lat/lon) is transferred as card data.
+ * Notes, FRB recommendations, and victim photo are transferred separately.
  */
-const CARD_FIELD_LABELS: Record<string, string> = {
-  case_id: "Case ID",
-  crash_timestamp: "Crash date",
-  fhe_collsn_id: "Collision type",
-  rpt_city_id: "City",
-  private_dr_fl: "Private drive",
-  at_intrsct_fl: "At intersection",
-  active_school_zone_fl: "Active school zone",
-  onsys_fl: "On TxDOT highway system",
-  rr_relat_fl: "Railroad related",
-  road_constr_zone_fl: "Road construction zone",
-  schl_bus_fl: "School bus",
-  toll_road_fl: "Toll road/lane",
-  light_cond_id: "Light condition",
-  crash_speed_limit: "Speed limit",
-  obj_struck_id: "Object struck",
-  law_enforcement_ytd_fatality_num: "Law Enforcement YTD Fatal Crash",
+const TRANSFERABLE_CARD_FIELDS: Record<string, string> = {
   latitude: "Crash location",
   longitude: "Crash location",
 };
@@ -78,7 +63,7 @@ function getEditedCardFieldsFromChangeLogs(
     }
   }
 
-  const allowedSet = new Set(Object.keys(CARD_FIELD_LABELS));
+  const allowedSet = new Set(Object.keys(TRANSFERABLE_CARD_FIELDS));
   return new Set(
     [...edited].filter((k) => allowedSet.has(k as keyof Crash))
   ) as Set<keyof Crash>;
@@ -103,7 +88,7 @@ function buildTransferItemsList(
   }
 
   const fieldLabels = new Set(
-    [...editedCardFields].map((key) => CARD_FIELD_LABELS[key] ?? key)
+    [...editedCardFields].map((key) => TRANSFERABLE_CARD_FIELDS[key] ?? key)
   );
   items.push(...fieldLabels);
 
