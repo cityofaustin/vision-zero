@@ -12,24 +12,11 @@ const VZV_ENDPOINT = process.env.NEXT_PUBLIC_VZV_ENDPOINT || "";
 
 const dashboardLinks: DashboardLinkCardProps[] = [
   {
-    title: "Arterial Management Division Overview",
-    description: "Top location overview, by collision types and modes",
-    href: "https://app.powerbigov.us/links/GACOsce5fi?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare",
-    icon: FaChartPie,
-  },
-  {
     title: "Vision Zero Viewer",
     description:
       "Our public-facing dashboard with official Vision Zero statistics",
     href: "https://visionzero.austin.gov/viewer/",
     icon: FaMap,
-  },
-  {
-    title: "Emerging Hotspots and Bond Locations",
-    description:
-      "Track crash impact of Vision Zero Bond Projects and changing crash trends",
-    href: "https://app.powerbigov.us/links/RmMrnaSMLp?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare",
-    icon: FaChartPie,
   },
   {
     title: "Crash Data by Location",
@@ -38,9 +25,9 @@ const dashboardLinks: DashboardLinkCardProps[] = [
     icon: FaMap,
   },
   {
-    title: "High Injury Roadways",
-    description: "Each High Injury Roadway by Polygon with various statistics",
-    href: "https://app.powerbigov.us/links/pdguGuhSGE?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare",
+    title: "Key Metrics",
+    description: "",
+    href: "https://app.powerbigov.us/links/JznhTDu8kc?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare",
     icon: FaChartPie,
   },
   {
