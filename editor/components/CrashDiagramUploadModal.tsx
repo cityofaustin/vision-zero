@@ -29,7 +29,7 @@ export default function CrashDiagramUploadModal({
   const {
     register,
     handleSubmit,
-    // reset,
+    reset,
     formState: { errors },
   } = useForm<FormData>({
     mode: "onChange",
@@ -90,9 +90,9 @@ export default function CrashDiagramUploadModal({
       show={showModal}
       size="lg"
       onHide={handleClose}
-      // onExited={() => {
-      //   reset();
-      // }}
+      onExited={() => {
+        reset();
+      }}
     >
       <Modal.Header className="d-flex justify-content-between">
         <Modal.Title>{`Upload crash diagram`}</Modal.Title>
