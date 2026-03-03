@@ -100,3 +100,5 @@ env_file
 # Example CSV inputs for crash narrative flagging
 !toolbox/crash_narrative_flagging/example_input.csv
 !toolbox/crash_narrative_flagging/example_output.csv
+
+.ipynb_checkpoints
