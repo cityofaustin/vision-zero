@@ -171,6 +171,11 @@ export const GET_CRASH = gql`
           id
           label
         }
+        rpt_autonomous_level_engaged_id
+        autonomous_level_engaged {
+          id
+          label
+        }
       }
       unit_types_involved {
         unit_types_involved

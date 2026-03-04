@@ -61,7 +61,7 @@ export const ALL_UNIT_COLUMNS = {
   },
   autonomous_unit: {
     path: "autonomous_unit.label",
-    label: "Autonomous Unit",
+    label: "Autonomous unit",
     relationship: {
       tableSchema: "lookups",
       tableName: "autonomous_unit",
@@ -69,6 +69,17 @@ export const ALL_UNIT_COLUMNS = {
       idColumnName: "id",
       labelColumnName: "label",
     },
+  },
+  autonomous_level_engaged: {
+    path: "autonomous_level_engaged.label",
+    label: "Autonomous level engaged",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "autonomous_level_engaged",
+      foreignKey: "rpt_autonomous_level_engaged_id",
+      idColumnName: "id",
+      labelColumnName: "label"
+    }
   },
   trvl_dir: {
     path: "trvl_dir.label",

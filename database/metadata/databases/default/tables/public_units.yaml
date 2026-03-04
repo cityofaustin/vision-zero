@@ -2,6 +2,9 @@ table:
   name: units
   schema: public
 object_relationships:
+  - name: autonomous_level_engaged
+    using:
+      foreign_key_constraint_on: rpt_autonomous_level_engaged_id
   - name: autonomous_unit
     using:
       foreign_key_constraint_on: autonomous_unit_id

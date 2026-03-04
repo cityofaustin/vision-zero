@@ -25,4 +25,5 @@ export type Unit = {
   autonomous_unit: LookupTableOption | null;
   autonomous_unit_id: number | null;
   autonomous_level_engaged: LookupTableOption | null;
+  rpt_autonomous_level_engaged_id: number | null;
 };
