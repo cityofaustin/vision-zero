@@ -59,6 +59,17 @@ export const ALL_UNIT_COLUMNS = {
     editable: false,
     inputType: "select",
   },
+  autonomous_unit: {
+    path: "autonomous_unit.label",
+    label: "Autonomous Unit",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "autonomous_unit",
+      foreignKey: "autonomous_unit_id",
+      idColumnName: "id",
+      labelColumnName: "label",
+    },
+  },
   trvl_dir: {
     path: "trvl_dir.label",
     label: "Direction",

@@ -22,4 +22,7 @@ export type Unit = {
   veh_hnr_fl: boolean | null;
   movt: LookupTableOption | null;
   movement_id: number | null;
+  autonomous_unit: LookupTableOption | null;
+  autonomous_unit_id: number | null;
+  autonomous_level_engaged: LookupTableOption | null;
 };

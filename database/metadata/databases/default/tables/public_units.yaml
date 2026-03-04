@@ -2,6 +2,9 @@ table:
   name: units
   schema: public
 object_relationships:
+  - name: autonomous_unit
+    using:
+      foreign_key_constraint_on: autonomous_unit_id
   - name: contrib_factr
     using:
       foreign_key_constraint_on: contrib_factr_1_id
