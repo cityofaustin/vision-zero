@@ -117,7 +117,6 @@ export default function ImageUploadModal({
       refetch();
       handleClose();
     } catch (err) {
-      console.log("an error happened");
       setError(
         err instanceof Error ? err.message : "An unknown error occurred"
       );
