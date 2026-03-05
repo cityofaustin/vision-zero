@@ -22,7 +22,7 @@ import {
 import AlignedLabel from "@/components/AlignedLabel";
 import { useImage } from "@/utils/images";
 import { hasRole } from "@/utils/auth";
-import CrashDiagramUploadModal from "@/components/CrashDiagramUploadModal";
+import ImageUploadModal from "@/components/ImageUploadModal";
 import { useAuth0 } from "@auth0/auth0-react";
 
 interface DiagramAlertProps {
@@ -62,6 +62,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
     imageUrl,
     error: diagramError,
     refetch,
+    isLoading,
   } = useImage({
     recordId: crash.record_locator,
     recordType: "crash_diagram",
@@ -145,11 +146,17 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   return (
     <Card className="h-100">
       {!isReadOnlyUser && (
-        <CrashDiagramUploadModal
+        <ImageUploadModal
           showModal={showModal}
           setShowModal={setShowModal}
-          recordLocator={crash.record_locator}
+          storedUrl={imageUrl}
+          title={`Upload crash diagram`}
+          url={`${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/crash_diagram/${crash.record_locator}`}
           refetch={refetch}
+          defaultValues={{
+            file: undefined,
+          }}
+          isLoading={isLoading}
         />
       )}
       <Card.Header>

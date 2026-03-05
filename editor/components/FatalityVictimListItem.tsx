@@ -1,11 +1,12 @@
 import { ListGroupItem } from "react-bootstrap";
-import FatalityImageUploadModal from "@/components/FatalityImageUploadModal";
+import ImageUploadModal from "@/components/ImageUploadModal";
 import PersonImage from "@/components/PersonImage";
 import { PeopleListRow } from "@/types/peopleList";
 import { getInjuryColorClass } from "@/utils/people";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Unit } from "@/types/unit";
-import { useGetToken, hasRole } from "@/utils/auth";
+import { hasRole } from "@/utils/auth";
+import { useImage } from "@/utils/images";
 import { useAuth0 } from "@auth0/auth0-react";
 
 interface FatalityVictimListItemProps {
@@ -40,12 +41,6 @@ export default function FatalityVictimListItem({
   unit,
 }: FatalityVictimListItemProps) {
   const [showModal, setShowModal] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  // Used to force a re-mount of PersonImage after new image is uploaded in modal
-  const [imageVersion, setImageVersion] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const getToken = useGetToken();
 
   const victimName = [
     victim.prsn_first_name,
@@ -57,51 +52,10 @@ export default function FatalityVictimListItem({
 
   const personId = victim.id;
 
-  // Tries to fetch the person image from the API and sets the url state
-  useEffect(() => {
-    const fetchImage = async () => {
-      if (!personId) {
-        setImageUrl(null);
-        setIsLoading(false);
-        return;
-      }
-
-      setIsLoading(true);
-
-      try {
-        const token = await getToken();
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${personId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        // No image exists
-        if (response.status === 404) {
-          setImageUrl(null);
-          setIsLoading(false);
-          return;
-        }
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-        setImageUrl(data.url);
-        setIsLoading(false);
-      } catch (err) {
-        console.error("Error fetching person image:", err);
-        setImageUrl(null);
-        setIsLoading(false);
-      }
-    };
-
-    fetchImage();
-  }, [personId, getToken, imageVersion]);
+  const { imageUrl, refetch, isLoading } = useImage({
+    recordId: personId,
+    recordType: "person",
+  });
 
   const { user } = useAuth0();
 
@@ -114,20 +68,24 @@ export default function FatalityVictimListItem({
       style={{ border: "none" }}
     >
       {!isReadOnlyUser && (
-        <FatalityImageUploadModal
+        <ImageUploadModal
           showModal={showModal}
           setShowModal={setShowModal}
-          victimName={victimName}
-          personId={victim.id}
+          title={`Photo | ${victimName}`}
           storedUrl={imageUrl}
           isLoading={isLoading}
-          setImageVersion={setImageVersion}
+          url={`${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${personId}`}
+          refetch={refetch}
+          defaultValues={{
+            file: undefined,
+            image_source: "",
+          }}
         />
       )}
 
       <div className="d-flex align-items-center">
         <PersonImage
-          key={`${victim.id}-${imageVersion}`} // Changing this key forces a re-mount
+          key={`${victim.id}`}
           onClick={() => setShowModal(true)}
           imageUrl={imageUrl}
           isLoading={isLoading}
