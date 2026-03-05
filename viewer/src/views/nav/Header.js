@@ -142,7 +142,6 @@ const Header = () => {
                       >
                         <Button
                           className={`nav-button inactive-nav-button mx-xs-0 mx-lg-2`}
-                          active={currentPath === config.url}
                           style={{ pointerEvents: "none" }}
                         >
                           {config.icon}
