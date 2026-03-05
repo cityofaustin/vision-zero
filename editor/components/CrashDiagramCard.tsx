@@ -4,6 +4,7 @@ import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import { FaRotate } from "react-icons/fa6";
+import { FaRegPenToSquare } from "react-icons/fa6";
 import {
   TransformWrapper,
   TransformComponent,
@@ -18,6 +19,7 @@ import {
   RotateControls,
   ZoomResetSaveControls,
 } from "@/components/CrashDiagramControls";
+import AlignedLabel from "@/components/AlignedLabel";
 import { useImage } from "@/utils/images";
 import { hasRole } from "@/utils/auth";
 import CrashDiagramUploadModal from "@/components/CrashDiagramUploadModal";
@@ -56,7 +58,11 @@ const DiagramAlert: React.FC<DiagramAlertProps> = ({
 );
 
 export default function CrashDiagramCard({ crash }: { crash: Crash }) {
-  const { imageUrl, error: diagramError } = useImage({
+  const {
+    imageUrl,
+    error: diagramError,
+    refetch,
+  } = useImage({
     recordId: crash.record_locator,
     recordType: "crash_diagram",
   });
@@ -143,10 +149,25 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
           showModal={showModal}
           setShowModal={setShowModal}
           recordLocator={crash.record_locator}
+          refetch={refetch}
         />
       )}
       <Card.Header>
-        <Card.Title>Diagram</Card.Title>
+        <Card.Title className="d-flex justify-content-between mb-0">
+          Diagram
+          {!isReadOnlyUser && crash.is_temp_record && imageUrl && (
+            <Button
+              size="sm"
+              variant="outline-primary"
+              onClick={() => setShowModal(true)}
+            >
+              <AlignedLabel>
+                <FaRegPenToSquare className="me-2" />
+                <span>Edit diagram</span>
+              </AlignedLabel>
+            </Button>
+          )}
+        </Card.Title>
         <div className="text-secondary fw-light">
           Use{" "}
           <span className="font-monospace rounded border px-1 bg-light-use-theme">
