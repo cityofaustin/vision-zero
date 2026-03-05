@@ -307,7 +307,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
 ];
 
 export const locationsListViewQueryConfig: QueryConfig = {
-  _version: 4,
+  _version: 6,
   exportable: true,
   exportFilename: "locations",
   tableName: "locations_list_view",
