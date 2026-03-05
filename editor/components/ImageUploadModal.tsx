@@ -19,7 +19,7 @@ interface ImageUploadModalProps {
   setShowModal: Dispatch<SetStateAction<boolean>>;
   title: string;
   storedUrl: string | null;
-  isLoading?: boolean;
+  isLoading: boolean;
   url: string;
   refetch: () => void;
   defaultValues: { file: undefined; image_source?: string };
