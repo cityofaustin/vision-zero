@@ -168,14 +168,14 @@ const locationsListViewFiltercards: FilterGroup[] = [
     groupOperator: "_or",
     filterGroups: [
       {
-        id: "street_leavels_1",
+        id: "street_levels_1",
         label: "1 - Local streets",
         groupOperator: "_and",
         enabled: false,
         inverted: false,
         filters: [
           {
-            id: "street_leavels_1",
+            id: "street_levels_1",
             column: "street_levels",
             operator: "_contains",
             value: [1],
@@ -183,14 +183,14 @@ const locationsListViewFiltercards: FilterGroup[] = [
         ],
       },
       {
-        id: "street_leavels_2",
+        id: "street_levels_2",
         label: "2 - Collector streets",
         groupOperator: "_and",
         enabled: false,
         inverted: false,
         filters: [
           {
-            id: "street_leavels_2",
+            id: "street_levels_2",
             column: "street_levels",
             operator: "_contains",
             value: [2],
@@ -198,14 +198,14 @@ const locationsListViewFiltercards: FilterGroup[] = [
         ],
       },
       {
-        id: "street_leavels_3",
+        id: "street_levels_3",
         label: "3 - Minor or major arterials",
         groupOperator: "_and",
         enabled: false,
         inverted: false,
         filters: [
           {
-            id: "street_leavels_3",
+            id: "street_levels_3",
             column: "street_levels",
             operator: "_contains",
             value: [3],
@@ -213,14 +213,14 @@ const locationsListViewFiltercards: FilterGroup[] = [
         ],
       },
       {
-        id: "street_leavels_4",
+        id: "street_levels_4",
         label: "4 - Major arterials or frontage roads",
         groupOperator: "_and",
         enabled: false,
         inverted: false,
         filters: [
           {
-            id: "street_leavels_4",
+            id: "street_levels_4",
             column: "street_levels",
             operator: "_contains",
             value: [1],
@@ -228,14 +228,14 @@ const locationsListViewFiltercards: FilterGroup[] = [
         ],
       },
       {
-        id: "street_leavels_5",
+        id: "street_levels_5",
         label: "5 -  Highways and freeways ",
         groupOperator: "_and",
         enabled: false,
         inverted: false,
         filters: [
           {
-            id: "street_leavels_5",
+            id: "street_levels_5",
             column: "street_levels",
             operator: "_contains",
             value: [5],
@@ -299,6 +299,164 @@ const locationsListViewFiltercards: FilterGroup[] = [
             column: "location_group",
             operator: "_eq",
             value: 1,
+          },
+        ],
+      },
+    ],
+  },
+  // council district
+  {
+    id: "council_districts_filter_card",
+    label: "Council district",
+    groupOperator: "_or",
+    filterGroups: [
+      {
+        id: "council_districts_1",
+        label: "1",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "council_districts_1",
+            column: "council_districts",
+            operator: "_contains",
+            value: [1],
+          },
+        ],
+      },
+      {
+        id: "council_districts_2",
+        label: "2",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "council_districts_2",
+            column: "council_districts",
+            operator: "_contains",
+            value: [2],
+          },
+        ],
+      },
+      {
+        id: "council_districts_3",
+        label: "3",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "council_districts_3",
+            column: "council_districts",
+            operator: "_contains",
+            value: [3],
+          },
+        ],
+      },
+      {
+        id: "council_districts_4",
+        label: "4",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "council_districts_4",
+            column: "council_districts",
+            operator: "_contains",
+            value: [1],
+          },
+        ],
+      },
+      {
+        id: "council_districts_5",
+        label: "5",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "council_districts_5",
+            column: "council_districts",
+            operator: "_contains",
+            value: [5],
+          },
+        ],
+      },
+{
+        id: "council_districts_6",
+        label: "6",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "council_districts_6",
+            column: "council_districts",
+            operator: "_contains",
+            value: [6],
+          },
+        ],
+      },
+{
+        id: "council_districts_7",
+        label: "7",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "council_districts_7",
+            column: "council_districts",
+            operator: "_contains",
+            value: [7],
+          },
+        ],
+      },
+{
+        id: "council_districts_8",
+        label: "8",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "council_districts_5",
+            column: "council_districts",
+            operator: "_contains",
+            value: [8],
+          },
+        ],
+      },
+{
+        id: "council_districts_9",
+        label: "9",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "council_districts_5",
+            column: "council_districts",
+            operator: "_contains",
+            value: [9],
+          },
+        ],
+      },
+{
+        id: "council_districts_10",
+        label: "10",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "council_districts_10",
+            column: "council_districts",
+            operator: "_contains",
+            value: [10],
           },
         ],
       },
