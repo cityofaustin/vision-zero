@@ -26,7 +26,8 @@ const dashboardLinks: DashboardLinkCardProps[] = [
   },
   {
     title: "Key Metrics",
-    description: "",
+    description:
+      "Collection of internal dashboards enabling a wide range of crash analysis",
     href: "https://app.powerbigov.us/links/JznhTDu8kc?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare",
     icon: FaChartPie,
   },
