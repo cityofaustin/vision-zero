@@ -7,6 +7,8 @@ interface CrashDiagramUploadModalProps {
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
   recordLocator: string;
+  /** Refetches the diagram image */
+  refetch: () => void;
 }
 
 interface FormData {
@@ -16,10 +18,14 @@ interface FormData {
 const MAX_SIZE_MB = 5;
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
+/**
+ * Modal that allows a user to upload a crash diagram
+ */
 export default function CrashDiagramUploadModal({
   showModal,
   setShowModal,
   recordLocator,
+  refetch,
 }: CrashDiagramUploadModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +48,6 @@ export default function CrashDiagramUploadModal({
 
   /**  Uploads the image to the API */
   const onSubmit = async (data: FormData) => {
-    console.log(data.file[0], "this is the file");
     setIsSubmitting(true);
     try {
       const formData = new FormData();
@@ -61,13 +66,12 @@ export default function CrashDiagramUploadModal({
       });
 
       if (!response.ok) {
-        console.log("we are here");
         const errorData = await response.json();
         throw new Error(
           `Diagram upload failed: ${errorData.error || errorData.description || response.status}`
         );
       }
-
+      refetch();
       handleClose();
     } catch (err) {
       setError(
