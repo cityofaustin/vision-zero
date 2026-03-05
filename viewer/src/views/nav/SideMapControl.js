@@ -336,10 +336,10 @@ const SideMapControl = ({ type }) => {
 
   return (
     <StyledCard>
-      <h3 className="h4 card-title">
+      <h2 className="h4 card-title">
         Traffic Crashes{" "}
         <InfoPopover config={popoverConfig.map.trafficCrashes} />
-      </h3>
+      </h2>
       <Card className="p-3 card-body">
         <Label className="section-title">
           <h3 className="h5">Filters</h3>
