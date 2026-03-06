@@ -1,5 +1,3 @@
--- Most recent migration: database/migrations/default/1767430748998_crash_address_display_trigger/up.sql
-
 CREATE OR REPLACE VIEW locations_list_view AS WITH cr3_comp_costs AS (
     SELECT
         crashes_list_view.location_id,
@@ -37,14 +35,8 @@ non_cr3_crash_counts AS (
 SELECT
     locations.location_id,
     locations.location_name,
-    locations.council_districts,
+    locations.council_district,
     locations.location_group,
-    locations.is_signalized,
-    locations.signal_eng_areas,
-    locations.area_eng_areas,
-    locations.street_levels,
-    locations.apd_sectors,
-    locations.is_hin,
     coalesce(
         cr3_comp_costs.cr3_comp_costs_total + non_cr3_crash_counts.noncr3_comp_costs_total,
         0::bigint

@@ -8,5 +8,12 @@ export type Location = {
   geometry: MultiPolygon | null;
   street_levels: string[] | null;
   locations_list_view: LocationsListRow | null;
-  location_notes: LocationNote[]
+  location_notes: LocationNote[];
+  apd_sectors?: string[];
+  area_eng_areas?: string[];
+  council_districts?: number[];
+  is_hin?: boolean;
+  is_signalized?: boolean;
+  location_group?: number;
+  signal_eng_areas?: string[];
 };

@@ -42,11 +42,18 @@ const quoteWrapAndEscape = (value: string): FilterValue =>
   `"${value.replaceAll('"', '\\"')}"`;
 
 /**
- * Create a string representation of an array of numbers
- * [1, 2]  => "[1, 2]"
+ * Create a string representation of an array of numbers or strings.
+ * [1, 2]        => "[1, 2]"
+ * ["1", "2"]    => '["1", "2"]'
  */
-const arrayToStringRep = (arr: number[]): string => {
-  return `[${arr}]`;
+const arrayToStringRep = (arr: number[] | string[]): string => {
+  if (arr.length === 0) return "[]";
+  let items: number[] | string[] = [];
+  if (typeof arr[0] === "string") {
+    // add literal quotes to array values
+    items = arr.map((val) => `"${val}"`);
+  } else arr;
+  return `[${items.join(", ")}]`;
 };
 
 /**
