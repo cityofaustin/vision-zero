@@ -4,7 +4,7 @@ import { A, usePath } from "hookrouter";
 
 import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
-import { navConfig, trackPageEvent } from "../../constants/nav";
+import { navConfig } from "../../constants/nav";
 import { responsive } from "../../constants/responsive";
 import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -142,8 +142,7 @@ const Header = () => {
                       >
                         <Button
                           className={`nav-button inactive-nav-button mx-xs-0 mx-lg-2`}
-                          onClick={() => trackPageEvent(config.eventKey)}
-                          active={currentPath === config.url}
+                          style={{ pointerEvents: "none" }}
                         >
                           {config.icon}
                           <span className="pl-2">{config.title}</span>
