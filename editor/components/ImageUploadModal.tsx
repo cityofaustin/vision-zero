@@ -14,14 +14,15 @@ import { useGetToken } from "@/utils/auth";
 import AlignedLabel from "@/components/AlignedLabel";
 import { LuTrash } from "react-icons/lu";
 
-interface FatalityImageUploadModalProps {
+interface ImageUploadModalProps {
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
-  victimName: string;
-  personId: number;
+  title: string;
   storedUrl: string | null;
   isLoading: boolean;
-  setImageVersion: Dispatch<SetStateAction<number>>;
+  url: string;
+  refetch: () => void;
+  defaultValues: { file: undefined; image_source?: string };
 }
 
 interface FormData {
@@ -33,17 +34,18 @@ const MAX_SIZE_MB = 5;
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
 /**
- * The modal interface for uploading a fatality victim photo.
+ * The modal interface for uploading a photo to our API endpoint.
  */
-export default function FatalityImageUploadModal({
+export default function ImageUploadModal({
   showModal,
   setShowModal,
-  victimName,
-  personId,
+  title,
   storedUrl,
   isLoading,
-  setImageVersion,
-}: FatalityImageUploadModalProps) {
+  url,
+  refetch,
+  defaultValues,
+}: ImageUploadModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -59,15 +61,12 @@ export default function FatalityImageUploadModal({
     watch,
   } = useForm<FormData>({
     mode: "onChange",
-    defaultValues: {
-      file: undefined,
-      image_source: "",
-    },
+    defaultValues: defaultValues,
   });
 
   const file = watch("file");
 
-  const url = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${personId}`;
+  const needsImageSource = defaultValues.hasOwnProperty("image_source");
 
   // Keeps track of file updates and errors to update preview URL
   useEffect(() => {
@@ -115,7 +114,7 @@ export default function FatalityImageUploadModal({
         );
       }
 
-      setImageVersion((prev) => prev + 1);
+      refetch();
       handleClose();
     } catch (err) {
       setError(
@@ -153,7 +152,7 @@ export default function FatalityImageUploadModal({
         );
       }
 
-      setImageVersion((prev) => prev + 1);
+      refetch();
       handleClose();
     } catch (err) {
       setError(
@@ -174,7 +173,7 @@ export default function FatalityImageUploadModal({
       }}
     >
       <Modal.Header className="d-flex justify-content-between">
-        <Modal.Title>{`Photo | ${victimName}`}</Modal.Title>
+        <Modal.Title>{title}</Modal.Title>
         <div>
           {!!storedUrl && (
             <Button
@@ -250,28 +249,30 @@ export default function FatalityImageUploadModal({
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
-            <Col>
-              <Form.Group controlId="formImageSource">
-                <Form.Label className="fw-bold">Image source</Form.Label>
-                <Form.Control
-                  type="text"
-                  data-1p-ignore
-                  placeholder="ex: https://www.legacy.com/us/obituaries/statesman/"
-                  {...register("image_source", {
-                    required: "Image source is required",
-                  })}
-                  isInvalid={!!errors.image_source}
-                />
-                {!errors.image_source?.message && (
-                  <Form.Text className="text-muted">
-                    The URL or description of the original source of the image
-                  </Form.Text>
-                )}
-                <Form.Control.Feedback type="invalid">
-                  {errors.image_source?.message}
-                </Form.Control.Feedback>
-              </Form.Group>
-            </Col>
+            {needsImageSource && (
+              <Col>
+                <Form.Group controlId="formImageSource">
+                  <Form.Label className="fw-bold">Image source</Form.Label>
+                  <Form.Control
+                    type="text"
+                    data-1p-ignore
+                    placeholder="ex: https://www.legacy.com/us/obituaries/statesman/"
+                    {...register("image_source", {
+                      required: "Image source is required",
+                    })}
+                    isInvalid={!!errors.image_source}
+                  />
+                  {!errors.image_source?.message && (
+                    <Form.Text className="text-muted">
+                      The URL or description of the original source of the image
+                    </Form.Text>
+                  )}
+                  <Form.Control.Feedback type="invalid">
+                    {errors.image_source?.message}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+            )}
           </Row>
           {!errors.file && previewUrl && (
             <div className="d-flex mt-3 justify-content-center">
