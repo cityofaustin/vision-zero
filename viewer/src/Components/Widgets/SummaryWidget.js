@@ -109,10 +109,10 @@ const SummaryWidget = ({
             />
           </span>
           <div className="d-flex flex-column widget-header-text">
-            <span className="mb-0">
+            <span className="mb-0 h5">
               {text} {infoPopover}
             </span>
-            <span className="text-muted">{`in ${currentYear}`}</span>
+            <span className="text-muted h5">{`in ${currentYear}`}</span>
           </div>
         </div>
       </CardBody>
