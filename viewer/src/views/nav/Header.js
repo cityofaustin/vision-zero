@@ -48,7 +48,12 @@ const Header = () => {
       margin-right: 5px;
       :hover {
         background: ${colors.info};
+        color: ${colors.white};
       }
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: normal;
     }
 
     .sidedrawer-toggle {
@@ -138,15 +143,15 @@ const Header = () => {
                       <NavLink
                         tag={A}
                         href={config.url}
-                        className="pr-0 pl-2 mr-0 ml-2"
+                        className="pr-0 pl-2 mr-0 ml-2 "
+                        style={{ color: "#fff" }}
                       >
-                        <Button
-                          className={`nav-button inactive-nav-button mx-xs-0 mx-lg-2`}
-                          style={{ pointerEvents: "none" }}
+                        <span
+                          className={`btn nav-button inactive-nav-button mx-xs-0 mx-lg-2`}
                         >
                           {config.icon}
                           <span className="pl-2">{config.title}</span>
-                        </Button>
+                        </span>
                       </NavLink>
                     </NavItem>
                   )
