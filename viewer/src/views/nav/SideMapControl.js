@@ -336,13 +336,15 @@ const SideMapControl = ({ type }) => {
 
   return (
     <StyledCard>
-      <h2 className="h4 card-title">
+      <span className="h4 card-title" style={{ display: "block" }}>
         Traffic Crashes{" "}
         <InfoPopover config={popoverConfig.map.trafficCrashes} />
-      </h2>
+      </span>
       <Card className="p-3 card-body">
         <Label className="section-title">
-          <h3 className="h5">Filters</h3>
+          <span className="h5" style={{ display: "block" }}>
+            Filters
+          </span>
         </Label>
         {/* Create a button group for each group of mapFilters */}
         {Object.entries(mapFiltersConfig).map(([group, groupParameters], i) => (
