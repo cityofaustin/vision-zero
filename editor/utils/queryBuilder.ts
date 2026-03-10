@@ -52,7 +52,9 @@ const arrayToStringRep = (arr: number[] | string[]): string => {
   if (typeof arr[0] === "string") {
     // add literal quotes to array values
     items = arr.map((val) => `"${val}"`);
-  } else arr;
+  } else {
+    items = arr;
+  } 
   return `[${items.join(", ")}]`;
 };
 
