@@ -1,6 +1,7 @@
 -- Most recent migration: database/migrations/default/1727451511064_init/up.sql
 
-CREATE OR REPLACE VIEW socrata_export_people_view AS SELECT
+CREATE OR REPLACE VIEW socrata_export_people_view AS
+SELECT
     people.id,
     people.unit_id,
     crashes.id                AS crash_pk,
