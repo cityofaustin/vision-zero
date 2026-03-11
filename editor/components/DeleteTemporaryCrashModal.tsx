@@ -55,7 +55,10 @@ function getEditedCardFieldsFromChangeLogs(
     for (const key of Object.keys(newVal)) {
       if (CHANGE_LOG_KEYS_TO_IGNORE.includes(key)) continue;
 
-      const hasValueChanged = (oldVal?.[key] ?? null) !== (newVal[key] ?? null);
+      const oldValue = oldVal?.[key] ?? null;
+      const newValue = newVal[key] ?? null;
+      const hasValueChanged =
+        newValue !== null && newValue !== "" && oldValue !== newValue;
 
       if (hasValueChanged) {
         edited.add(key);
