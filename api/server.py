@@ -433,15 +433,14 @@ def modify_person_image(person_id):
         return _delete_person_image(person_id, s3)
     return jsonify(message="Bad Request"), 400
 
-
 @app.route(
-    "/images/person/<int:source_person_id>/transfer/<int:target_person_id>",
+    "/images/person/<int:source_person_id>/copy/<int:target_person_id>",
     methods=["POST"],
 )
 @cross_origin(headers=CORS_HEADERS)
 @requires_auth
-def transfer_person_image(source_person_id, target_person_id):
-    """Transfers a person image from one person record to another"""
+def copy_person_image(source_person_id, target_person_id):
+    """Copy a person image from one person record to another"""
     return _transfer_person_image(source_person_id, target_person_id, s3)
 
 
