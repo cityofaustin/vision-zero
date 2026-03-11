@@ -97,12 +97,13 @@ def _get_person_image_metadata(person_id):
     return (
         res["people_by_pk"]["image_s3_object_key"],
         res["people_by_pk"]["image_original_filename"],
+        res["people_by_pk"]["image_source"],
     )
 
 
 def _get_person_image_url(person_id, s3):
     """Get a presigned S3 download URL for the given person record ID"""
-    image_obj_key, image_original_filename = _get_person_image_metadata(person_id)
+    image_obj_key, _, _ = _get_person_image_metadata(person_id)
 
     if not image_obj_key:
         return jsonify(error=f"No image found for person ID: {person_id}"), 404
@@ -130,8 +131,8 @@ def _upsert_person_image(person_id, s3):
     """
     has_file = "file" in request.files
     image_source = request.form.get("image_source")
-    image_original_obj_key, image_original_filename = _get_person_image_metadata(
-        person_id
+    image_original_obj_key, image_original_filename, image_original_source = (
+        _get_person_image_metadata(person_id)
     )
     is_new = not image_original_obj_key
 
@@ -291,8 +292,8 @@ def _transfer_person_image(source_person_id, target_person_id, s3):
     Copies the S3 object to a new key for the target person and updates the
     target person's image metadata in the database.
     """
-    source_obj_key, source_original_filename = _get_person_image_metadata(
-        source_person_id
+    source_obj_key, source_original_filename, source_image_source = (
+        _get_person_image_metadata(source_person_id)
     )
 
     if not source_obj_key:
@@ -337,7 +338,7 @@ def _transfer_person_image(source_person_id, target_person_id, s3):
 
 def _delete_person_image(person_id, s3):
     """Delete an image from S3 and nullify its metadata in the db"""
-    image_obj_key, image_original_filename = _get_person_image_metadata(person_id)
+    image_obj_key, _, _ = _get_person_image_metadata(person_id)
 
     if not image_obj_key:
         abort(404, description=f"No image found for person ID: {person_id}")
