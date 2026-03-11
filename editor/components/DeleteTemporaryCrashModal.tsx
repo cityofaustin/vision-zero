@@ -311,17 +311,24 @@ export default function DeleteTemporaryCrashModal({
       </Modal.Header>
       <Form onSubmit={handleSubmit}>
         <Modal.Body>
-          <p className="text-muted">
-            Transfer data to another crash so updated fields are preserved, or
-            choose to delete without transferring any data.
-          </p>
-
-          <CrashSearchTypeahead
-            excludeCrashId={crash.id}
-            selected={selectedTarget}
-            onSelect={setSelectedTarget}
-            disabled={!show || skipTransfer}
-          />
+          {!hasAnythingToTransfer ? (
+            <div className="mb-3 p-2 bg-light rounded">
+              No transferrable data was found on this temporary crash record.
+            </div>
+          ) : (
+            <>
+              <p className="text-muted">
+                Transfer data to another crash so updated fields are preserved,
+                or choose to delete without transferring any data.
+              </p>
+              <CrashSearchTypeahead
+                excludeCrashId={crash.id}
+                selected={selectedTarget}
+                onSelect={setSelectedTarget}
+                disabled={!showModal || skipTransfer}
+              />
+            </>
+          )}
 
           {selectedTarget && transferItems.length > 0 && (
             <div className="mb-3 p-2 bg-light rounded">
@@ -334,18 +341,20 @@ export default function DeleteTemporaryCrashModal({
             </div>
           )}
 
-          <Form.Check
-            type="switch"
-            id="skip-transfer"
-            label="I don't want to transfer data"
-            checked={skipTransfer}
-            onChange={(e) => {
-              const checked = e.target.checked;
-              setSkipTransfer(checked);
-              if (checked) setSelectedTarget(null);
-            }}
-            className="mb-3"
-          />
+          {hasAnythingToTransfer && (
+            <Form.Check
+              type="switch"
+              id="skip-transfer"
+              label="I don't want to transfer data"
+              checked={skipTransfer}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                setSkipTransfer(checked);
+                if (checked) setSelectedTarget(null);
+              }}
+              className="mb-3"
+            />
+          )}
 
           {submitError && (
             <div className="alert alert-danger py-2" role="alert">
