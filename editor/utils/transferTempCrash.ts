@@ -108,14 +108,18 @@ async function transferRecommendation(
   deleteRec: MutateFn
 ): Promise<void> {
   if (targetRec) {
-    const partnerPksToDelete = (targetRec.recommendations_partners ?? []).map(
-      (p) => p.id
+    const existingPartnerIds = new Set(
+      (targetRec.recommendations_partners ?? [])
+        .map((p) => p.partner_id)
+        .filter((id): id is number => id != null)
     );
     const partnersToAdd = (sourceRec.recommendations_partners ?? [])
-      .filter((p) => p.coordination_partners?.id ?? p.partner_id != null)
-      .map((p) => ({
+      .map((p) => p.coordination_partners?.id ?? p.partner_id)
+      .filter((id): id is number => id != null)
+      .filter((id) => !existingPartnerIds.has(id))
+      .map((partner_id) => ({
         recommendation_id: targetRec.id,
-        partner_id: p.coordination_partners?.id ?? p.partner_id,
+        partner_id,
       }));
     await updateRec(
       {
@@ -126,7 +130,7 @@ async function transferRecommendation(
           recommendation_status_id: sourceRec.recommendation_status_id,
           updated_by: userEmail,
         },
-        partnerPksToDelete,
+        partnerPksToDelete: [],
         partnersToAdd,
       }
     );
