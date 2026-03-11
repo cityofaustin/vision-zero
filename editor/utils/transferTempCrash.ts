@@ -60,6 +60,7 @@ export async function executeTransfer(config: TransferConfig): Promise<void> {
       crash.recommendation as Recommendation,
       targetCrashId,
       targetRecommendation,
+      userEmail,
       mutations.updateRecommendation,
       mutations.deleteRecommendation
     );
@@ -72,10 +73,7 @@ export async function executeTransfer(config: TransferConfig): Promise<void> {
     }
   }
   if (Object.keys(cardUpdates).length > 0) {
-    await mutations.updateCrash(
-      { id: targetCrashId, updates: cardUpdates },
-      { skip_updated_by_setter: true }
-    );
+    await mutations.updateCrash({ id: targetCrashId, updates: cardUpdates });
   }
 
   if (photo.shouldTransfer && photo.sourcePersonId && photo.targetPersonId) {
@@ -105,6 +103,7 @@ async function transferRecommendation(
   sourceRec: Recommendation,
   targetCrashId: number,
   targetRec: TargetRecommendation | null,
+  userEmail: string,
   updateRec: MutateFn,
   deleteRec: MutateFn
 ): Promise<void> {
@@ -125,22 +124,21 @@ async function transferRecommendation(
           rec_text: sourceRec.rec_text,
           rec_update: sourceRec.rec_update,
           recommendation_status_id: sourceRec.recommendation_status_id,
+          updated_by: userEmail,
         },
         partnerPksToDelete,
         partnersToAdd,
-      },
-      { skip_updated_by_setter: true }
+      }
     );
     await deleteRec({ id: sourceRec.id });
   } else {
     await updateRec(
       {
         id: sourceRec.id,
-        record: { crash_pk: targetCrashId },
+        record: { crash_pk: targetCrashId, updated_by: userEmail },
         partnerPksToDelete: [],
         partnersToAdd: [],
-      },
-      { skip_updated_by_setter: true }
+      }
     );
   }
 }
