@@ -26,16 +26,10 @@ import CrashSearchTypeahead, {
 } from "./CrashSearchTypeahead";
 import { executeTransfer } from "@/utils/transferTempCrash";
 
-/**
- * Only crash location (lat/lon) is transferred as card data.
- * Notes, FRB recommendations, and victim photo are transferred separately.
- */
 const TRANSFERABLE_CARD_FIELDS: Record<string, string> = {
   latitude: "Crash location",
   longitude: "Crash location",
 };
-
-const CHANGE_LOG_KEYS_TO_IGNORE = ["updated_at", "updated_by", "position"];
 
 /**
  * Returns the set of field names that have a record of being
@@ -53,8 +47,6 @@ function getEditedCardFieldsFromChangeLogs(
     const { old: oldVal, new: newVal } = log.record_json;
     if (!newVal) continue;
     for (const key of Object.keys(newVal)) {
-      if (CHANGE_LOG_KEYS_TO_IGNORE.includes(key)) continue;
-
       const oldValue = oldVal?.[key] ?? null;
       const newValue = newVal[key] ?? null;
       const hasValueChanged =
