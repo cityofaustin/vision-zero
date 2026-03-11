@@ -109,7 +109,7 @@ interface DeleteTemporaryCrashModalProps {
  * and victim photo to another (non-temp) crash, or skip transfer.
  */
 export default function DeleteTemporaryCrashModal({
-  show,
+  show: showModal,
   onHide,
   crash,
 }: DeleteTemporaryCrashModalProps) {
@@ -135,7 +135,7 @@ export default function DeleteTemporaryCrashModal({
       recommendations_partners: { id: number; partner_id: number | null }[];
     } | null;
   }>({
-    query: show && selectedTarget ? GET_CRASH_RECOMMENDATION_BY_ID : null,
+    query: showModal && selectedTarget ? GET_CRASH_RECOMMENDATION_BY_ID : null,
     variables: { id: selectedTarget?.id ?? 0 },
     typename: "crashes",
   });
@@ -147,7 +147,7 @@ export default function DeleteTemporaryCrashModal({
     id: number;
     people_list_view: { id: number; prsn_injry_sev_id: number | null }[];
   }>({
-    query: show && selectedTarget ? GET_TARGET_CRASH_FATALITY : null,
+    query: showModal && selectedTarget ? GET_TARGET_CRASH_FATALITY : null,
     variables: { id: selectedTarget?.id ?? 0 },
     typename: "crashes",
   });
@@ -171,7 +171,7 @@ export default function DeleteTemporaryCrashModal({
   // Detect photo existence via the API
   const [hasPhotoToTransfer, setHasPhotoToTransfer] = useState(false);
   useEffect(() => {
-    if (!show || !tempFatalityId) {
+    if (!showModal || !tempFatalityId) {
       setHasPhotoToTransfer(false);
       return;
     }
@@ -192,7 +192,7 @@ export default function DeleteTemporaryCrashModal({
     return () => {
       cancelled = true;
     };
-  }, [show, tempFatalityId, getToken]);
+  }, [showModal, tempFatalityId, getToken]);
 
   const shouldTransferPhoto =
     !!selectedTarget &&
@@ -317,7 +317,7 @@ export default function DeleteTemporaryCrashModal({
   // --- Render ---
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
+    <Modal show={showModal} onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>Delete temporary crash record</Modal.Title>
       </Modal.Header>
