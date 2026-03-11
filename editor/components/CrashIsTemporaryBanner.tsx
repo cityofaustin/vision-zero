@@ -51,11 +51,13 @@ export default function CrashIsTemporaryBanner({
           </span>
         </PermissionsRequired>
       </Alert>
-      <DeleteTemporaryCrashModal
-        show={showDeleteModal}
-        onHide={() => setShowDeleteModal(false)}
-        crash={crash}
-      />
+      {showDeleteModal && (
+        <DeleteTemporaryCrashModal
+          show={showDeleteModal}
+          onHide={() => setShowDeleteModal(false)}
+          crash={crash}
+        />
+      )}
     </>
   );
 }
