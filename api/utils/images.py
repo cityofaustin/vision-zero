@@ -92,12 +92,13 @@ def strip_exif(img):
 def _get_person_image_metadata(person_id):
     """Get the person record image metadata for a given person record ID"""
     res = make_hasura_request(
-        query=GET_PERSON_IMAGE_METADATA, variables={"person_id": person_id}
+        query=GET_PERSON_IMAGE_METADATA_FULL, variables={"person_id": person_id}
     )
     return (
         res["people_by_pk"]["image_s3_object_key"],
         res["people_by_pk"]["image_original_filename"],
-        res["people_by_pk"]["image_source"],
+        # Use .get for safety in case older rows/schema don't include this yet.
+        res["people_by_pk"].get("image_source"),
     )
 
 
