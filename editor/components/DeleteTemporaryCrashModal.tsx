@@ -307,13 +307,6 @@ export default function DeleteTemporaryCrashModal({
     [canDelete, runTransferThenDelete]
   );
 
-  useEffect(() => {
-    if (!show) return;
-    setSelectedTarget(null);
-    setSkipTransfer(false);
-    setSubmitError(null);
-  }, [show]);
-
   // --- Render ---
 
   return (
