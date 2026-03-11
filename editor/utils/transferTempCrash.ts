@@ -79,7 +79,7 @@ export async function executeTransfer(config: TransferConfig): Promise<void> {
   if (photo.shouldTransfer && photo.sourcePersonId && photo.targetPersonId) {
     const token = await getToken();
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${photo.sourcePersonId}/transfer/${photo.targetPersonId}`,
+      `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${photo.sourcePersonId}/copy/${photo.targetPersonId}`,
       {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
