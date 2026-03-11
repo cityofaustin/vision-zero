@@ -327,6 +327,7 @@ export const CRASH_TRANSFER_SEARCH = gql`
   query CrashTransferSearch(
     $searchPattern: String!
     $currentCrashId: Int!
+    $minCrashTimestamp: timestamptz!
   ) {
     crashes(
       where: {
@@ -334,6 +335,7 @@ export const CRASH_TRANSFER_SEARCH = gql`
           { id: { _neq: $currentCrashId } }
           { is_deleted: { _eq: false } }
           { is_temp_record: { _eq: false } }
+          { crash_timestamp: { _gte: $minCrashTimestamp } }
           {
             _or: [
               { record_locator: { _ilike: $searchPattern } }

@@ -35,16 +35,28 @@ export default function CrashSearchTypeahead({
     if (!selected) setSearchInput("");
   }, [selected]);
 
+  // Constrain address search by time to reduce result count
+  const minCrashTimestamp = useMemo(() => {
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    return oneYearAgo.toISOString();
+  }, []);
+
   // Search pattern for SQL LIKE query after user has typed at least 2 characters
   const searchPattern = useMemo(
-    () => (searchInput.trim().length >= 2 ? `%${searchInput.trim()}%` : null),
+    () =>
+      searchInput.trim().length >= 2 ? `%${searchInput.trim()}%` : null,
     [searchInput]
   );
 
   const { data: searchResults, isLoading: isSearching } =
     useQuery<CrashSearchResult>({
       query: !disabled && searchPattern ? CRASH_TRANSFER_SEARCH : null,
-      variables: { searchPattern, currentCrashId: excludeCrashId },
+      variables: {
+        searchPattern,
+        currentCrashId: excludeCrashId,
+        minCrashTimestamp,
+      },
       typename: "crashes",
     });
 
