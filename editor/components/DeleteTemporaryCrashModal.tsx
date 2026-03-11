@@ -210,8 +210,6 @@ export default function DeleteTemporaryCrashModal({
 
   // --- Derived state ---
 
-  const canDelete = skipTransfer || !!selectedTarget;
-
   const editedCardFields = useMemo(
     () => getEditedCardFieldsFromChangeLogs(crash.change_logs, crash.id),
     [crash.change_logs, crash.id]
@@ -221,6 +219,10 @@ export default function DeleteTemporaryCrashModal({
     () => buildTransferItemsList(crash, editedCardFields, shouldTransferPhoto),
     [crash, editedCardFields, shouldTransferPhoto]
   );
+
+  const hasAnythingToTransfer = transferItems.length > 0;
+
+  const canDelete = !hasAnythingToTransfer || skipTransfer || !!selectedTarget;
 
   // --- Handlers ---
 
