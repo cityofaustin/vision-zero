@@ -302,12 +302,9 @@ def _transfer_person_image(source_person_id, target_person_id, s3):
             description=f"No image found for source person ID: {source_person_id}",
         )
 
-    source_image_source = make_hasura_request(
-        query=GET_PERSON_IMAGE_METADATA_FULL,
-        variables={"person_id": source_person_id},
-    )["people_by_pk"]["image_source"]
-
-    ext = source_obj_key.rsplit(".", 1)[-1] if "." in source_obj_key else "jpg"
+    if "." not in source_obj_key:
+        abort(500, description="Source image object key missing file extension")
+    ext = source_obj_key.rsplit(".", 1)[-1]
     target_obj_key = f"{AWS_S3_PERSON_IMAGE_LOCATION}/{target_person_id}.{ext}"
 
     try:
