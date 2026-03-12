@@ -9,7 +9,6 @@ export interface EMSMapPopupContentProps {
 export default function EMSMapPopupContent({
   properties,
 }: EMSMapPopupContentProps) {
-  console.log(properties)
   return (
     <div className="h-100 m-1 px-1" style={{ minWidth: "135px" }}>
       <div className="fw-bold fs-6 pb-2 border-bottom">
@@ -17,7 +16,7 @@ export default function EMSMapPopupContent({
       </div>
       <div className="d-flex justify-content-between pt-2">
         <span className="fw-bold">Incident</span>
-        <Link href={`/fatalities/${properties?.record_locator}`} prefetch={false}>
+        <Link href={`/ems/${properties?.incident_number}`} prefetch={false}>
           {properties?.incident_number}
         </Link>
       </div>
