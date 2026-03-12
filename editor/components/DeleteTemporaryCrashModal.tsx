@@ -189,6 +189,9 @@ export default function DeleteTemporaryCrashModal({
     };
   }, [showModal, tempFatalityId, getToken]);
 
+  const hasVictimPhotoToTransfer =
+    tempFatalities.length > 0 && hasPhotoToTransfer;
+
   const shouldTransferPhoto =
     !!selectedTarget &&
     tempFatalities.length > 0 &&
@@ -220,7 +223,11 @@ export default function DeleteTemporaryCrashModal({
     [crash, editedCardFields, shouldTransferPhoto]
   );
 
-  const hasAnythingToTransfer = transferItems.length > 0;
+  const hasAnythingToTransfer =
+    (crash.crash_notes?.length ?? 0) > 0 || // any notes?
+    !!crash.recommendation || // any FRB recommendations?
+    editedCardFields.size > 0 || // any edited card fields?
+    hasVictimPhotoToTransfer; // any victim photo?
 
   const canDelete = !hasAnythingToTransfer || skipTransfer || !!selectedTarget;
 
