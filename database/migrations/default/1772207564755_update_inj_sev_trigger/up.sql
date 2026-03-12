@@ -63,12 +63,6 @@ BEGIN
         NEW.patient_injry_sev_reason = 'The patient GCS was less than or equal to 13 at any time during the patient encounter';
 
     -- begin set of conditions moved from above
-    when (lower(NEW.pcr_patient_acuity_final) = 'emergent (yellow)' and lower(NEW.pcr_outcome) in ('transported', 'care transferred')) then
-        NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'The patient acuity level was yellow and the patient was transported or had care transferred to another entity';
-    when (lower(NEW.pcr_patient_acuity_initial) = 'emergent (yellow)' and lower(NEW.pcr_patient_acuity_final) is NULL and lower(NEW.pcr_outcome) in ('transported', 'care transferred')) then
-        NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'The patient acuity level was yellow and the patient was transported or had care transferred to another entity';
     when (lower(NEW.pcr_transport_priority) like 'delta%') then
         NEW.patient_injry_sev_id = 1;
         NEW.patient_injry_sev_reason = 'The transport priority was listed as "' || NEW.pcr_transport_priority || '"';
@@ -96,6 +90,13 @@ BEGIN
     when (lower(NEW.pcr_outcome) in ('transported', 'care transferred')) then
         NEW.patient_injry_sev_id = 2;
         NEW.patient_injry_sev_reason = 'The patient was transported to a hospital or their care was transferred to another entity';
+    -- next two conditions moved from serious injury to minor injury
+    when (lower(NEW.pcr_patient_acuity_final) = 'emergent (yellow)' and lower(NEW.pcr_outcome) in ('transported', 'care transferred')) then
+        NEW.patient_injry_sev_id = 1;
+        NEW.patient_injry_sev_reason = 'The patient acuity level was yellow and the patient was transported or had care transferred to another entity';
+    when (lower(NEW.pcr_patient_acuity_initial) = 'emergent (yellow)' and lower(NEW.pcr_patient_acuity_final) is NULL and lower(NEW.pcr_outcome) in ('transported', 'care transferred')) then
+        NEW.patient_injry_sev_id = 1;
+        NEW.patient_injry_sev_reason = 'The patient acuity level was yellow and the patient was transported or had care transferred to another entity';
     --
     -- possible injuries
     --
