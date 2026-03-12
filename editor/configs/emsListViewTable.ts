@@ -436,7 +436,7 @@ const emsListViewFilterCards: FilterGroup[] = [
 ];
 
 export const emsListViewQueryConfig: QueryConfig = {
-  _version: 1,
+  _version: 2,
   exportable: true,
   exportFilename: "ems_patient_care_records",
   tableName: "ems__incidents",
@@ -465,4 +465,39 @@ export const emsListViewQueryConfig: QueryConfig = {
     }),
   },
   filterCards: emsListViewFilterCards,
+  mapConfig: {
+    isActive: false,
+    layerProps: {
+      id: "points-layer",
+      type: "circle",
+      paint: {
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          // zoom is 5 (or less)
+          5,
+          2,
+          // zoom is 20 (or greater)
+          20,
+          10,
+        ],
+        "circle-color": "#1276d1",
+        "circle-stroke-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          // zoom is 5 (or less)
+          5,
+          1,
+          // zoom is 20 (or greater)
+          20,
+          3,
+        ],
+        "circle-stroke-color": "#fff",
+      },
+    },
+    geojsonTransformerName: "latLon",
+    defaultBasemap: "streets",
+  },
 };
