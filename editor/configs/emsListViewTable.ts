@@ -467,6 +467,7 @@ export const emsListViewQueryConfig: QueryConfig = {
   filterCards: emsListViewFilterCards,
   mapConfig: {
     isActive: false,
+    popupComponentName: "emsTableMap",
     layerProps: {
       id: "points-layer",
       type: "circle",
