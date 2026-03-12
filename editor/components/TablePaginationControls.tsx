@@ -6,7 +6,8 @@ import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Spinner from "react-bootstrap/Spinner";
 import Tooltip from "react-bootstrap/Tooltip";
-import { FaAngleLeft, FaAngleRight, FaDownload } from "react-icons/fa6";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+import { LuDownload } from "react-icons/lu";
 import AlignedLabel from "./AlignedLabel";
 import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
 import TablePageSizeSelector from "@/components/TablePageSizeSelector";
@@ -173,7 +174,7 @@ export default function TablePaginationControls({
             title="Download results"
           >
             <AlignedLabel>
-              <FaDownload />
+              <LuDownload className="fs-5" />
             </AlignedLabel>
           </Button>
         </OverlayTrigger>

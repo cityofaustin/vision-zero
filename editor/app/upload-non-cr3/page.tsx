@@ -19,11 +19,11 @@ import {
   NonCr3ValidationError,
 } from "@/types/nonCr3";
 import {
-  FaFileCsv,
-  FaCircleCheck,
-  FaCircleInfo,
-  FaTriangleExclamation,
-} from "react-icons/fa6";
+  LuCircleCheck,
+  LuFileSpreadsheet,
+  LuInfo,
+  LuTriangleAlert,
+} from "react-icons/lu";
 import { useDocumentTitle } from "@/utils/documentTitle";
 
 const MAX_ERRORS_TO_DISPLAY = 50;
@@ -130,7 +130,7 @@ export default function UploadNonCr3() {
               download="non_cr3_template.csv"
               className="text-decoration-none ms-3 text-nowrap d-flex align-items-center"
             >
-              <FaFileCsv className="me-2" />
+              <LuFileSpreadsheet className="me-2" />
               Download CSV template
             </Link>
           </Col>
@@ -142,7 +142,7 @@ export default function UploadNonCr3() {
             <Col>
               <Alert variant="info">
                 <AlignedLabel>
-                  <FaCircleInfo className="me-2" />
+                  <LuInfo className="me-2" />
                   {`${data.length.toLocaleString()} records will be imported`}
                 </AlignedLabel>
               </Alert>
@@ -181,7 +181,7 @@ export default function UploadNonCr3() {
           {success && (
             <Alert variant="success">
               <AlignedLabel>
-                <FaCircleCheck className="me-2" />
+                <LuCircleCheck className="me-2" />
                 <span>Records successfully imported</span>
               </AlignedLabel>
             </Alert>
@@ -189,7 +189,7 @@ export default function UploadNonCr3() {
           {validationErrors && (
             <Alert variant="danger" className="d-flex justify-content-between">
               <AlignedLabel>
-                <FaTriangleExclamation className="me-2" />
+                <LuTriangleAlert className="me-2" />
                 <span>
                   Your file is invalid — please correct the below errors and try
                   again
@@ -200,7 +200,7 @@ export default function UploadNonCr3() {
           {uploadError && (
             <Alert variant="danger" className="d-flex justify-content-between">
               <AlignedLabel>
-                <FaTriangleExclamation className="me-2" />
+                <LuTriangleAlert className="me-2" />
                 <span>
                   There was an error uploading your file - please try again.
                 </span>
