@@ -62,7 +62,10 @@ export default function CrashSearchTypeahead({
       typename: "crashes",
     });
 
-  const results = searchResults ?? [];
+  const results = useMemo(
+    () => searchResults ?? [],
+    [searchResults]
+  );
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
