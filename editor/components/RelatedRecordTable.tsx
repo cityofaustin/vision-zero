@@ -253,7 +253,7 @@ export default function RelatedRecordTable<
               setIsColVisibilityLocalStorageLoaded={
                 setIsColVisibilityLocalStorageLoaded
               }
-            ></TableColumnVisibilityMenu>
+            />
           )}
         </div>
       </Card.Header>

@@ -166,6 +166,16 @@ export const GET_CRASH = gql`
           vz_fatality_count
           sus_serious_injry_count
         }
+        autonomous_unit_id
+        autonomous_unit {
+          id
+          label
+        }
+        rpt_autonomous_level_engaged_id
+        autonomous_level_engaged {
+          id
+          label
+        }
       }
       unit_types_involved {
         unit_types_involved
