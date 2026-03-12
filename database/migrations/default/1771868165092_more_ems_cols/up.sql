@@ -45,13 +45,13 @@ comment on column ems__incidents.mvc_form_safety_devices is 'PCR Form - MVC: Lis
 comment on column ems__incidents.mvc_form_seat_row_number is 'PCR Form - MVC: Row number of the seat occupied by the patient in the vehicle at the time of the collision';
 comment on column ems__incidents.mvc_form_vehicle_type is 'PCR Form - MVC: The type of vehicle that the patient was in at the time of the collision (eg Automobile, ATV, Motorcycle, etc)';
 comment on column ems__incidents.mvc_form_weather is 'PCR Form - MVC: General description of the weather at the time of the collision (eg Clear, Rain, Overcast, etc)';
-comment on column ems__incidents.pcr_additional_agencies is 'A comma-delimmted list of agency types that were also on scene for the incident, as documented by the EMS provider in the PCR';
+comment on column ems__incidents.pcr_additional_agencies is 'A comma-delimited list of agency types that were also on scene for the incident, as documented by the EMS provider in the PCR';
 comment on column ems__incidents.pcr_transport_priority is 'The transport priority if applicable. Typically this will be Code 1 (no lights/sirens) or Code 3 (lights and sirens), and can generally be used to determine the urgency of the transport. Other (legacy) transport priorities may include specific transport priority levels (such as Alpha, Bravo, Charlie, Delta, and Echo), which may be prefixed/suffixed with a ''3'' to indicate Code 3 transport. Transport priority levels without a ''3'' prefix/suffix should be considered Code 1 transports (no lights/sirens)';
 comment on column ems__incidents.pcr_patient_acuity_initial is 'The patient acuity level at the start of the patient encounter, as determined and documented by the EMS provider at in the PCR. Note: this is different than the calculated Acuity Level that is based on documented procedures/vitals, etc';
 comment on column ems__incidents.pcr_patient_acuity_final is 'The patient acuity level at the end of the patient encounter, as determined and documented by the EMS provider in the PCR. Note: this is different than the calculated Acuity Level that is based on documented procedures/vitals, etc';
-comment on column ems__incidents.unparsed_apd_incident_numbers is 'The raw comma-delimitted string of APD case IDs that potentially match this incident. Potential matching is simply based on the time the incident was dispatched';
+comment on column ems__incidents.unparsed_apd_incident_numbers is 'The raw comma-delimited string of APD case IDs that potentially match this incident. Potential matching is simply based on the time the incident was dispatched';
 comment on column ems__incidents.apd_incident_numbers is 'A list of all APD case IDs linked to the EMS incident, whether directly or indirectly. Potential matching is simply based on the time the incident was dispatched';
-comment on column ems__incidents.geometry is 'PostGIS geometry column generated automatically from the incidnet latitude and longitude';
+comment on column ems__incidents.geometry is 'PostGIS geometry column generated automatically from the incident latitude and longitude';
 comment on column ems__incidents.austin_full_purpose is 'If the incident occured within the Austin Full Purpose jurisdiction, as determined by intersecting the incident geometry with the geo.jurisdictions layer';
 comment on column ems__incidents.location_id is 'Foreign key referencing the locations.location_id of the location polygon that intersects with the incident geomtery';
 comment on column ems__incidents.latitude is 'The incident latitude';
@@ -69,7 +69,7 @@ comment on column ems__incidents.pcr_injury_place is 'General description of the
 comment on column ems__incidents.pcr_injury_primary is 'General description of how the patient was injured (eg Motorvehicle Accident, Bicycle Accident, etc)';
 comment on column ems__incidents.pcr_patient_care_transferred_to is 'The agency or agency type that patient care was transferred to, in cases where the EMS provider(s) transferred care to another unit or agency';
 comment on column ems__incidents.pcr_patient_condition_at_destination is 'General description of the patient''s condition on arriving at the transport destination, if applicable';
-comment on column ems__incidents.pcr_patient_injured is 'General description of the patient''s condition on arriving at the transport destination, if applicable';
+comment on column ems__incidents.pcr_patient_injured is 'Boolean column which indicates if a patient was injured based on any injuries listed in the patient electronic health record';
 comment on column ems__incidents.trauma_form_criteria_injury_mechanisms is 'PCR Form - Trauma: List of present mechanisms of injury associated with trauma triage';
 comment on column ems__incidents.trauma_form_criteria_injury_patterns is 'PCR Form - Trauma: List of present injury patterns associated with trauma triage';
 comment on column ems__incidents.trauma_form_criteria_provider_judgement is 'PCR Form - Trauma: List of provider judgements, special considerations associated with trauma triage';
