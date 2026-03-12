@@ -7,7 +7,26 @@ COLUMNS = {
         },
         "cols_to_delete": ["incident_date_received", "incident_time_received"],
         # we assume EMS records do not change upstream, per Lynn C. at EMS
-        "update_columns": [],
+        "update_columns": [
+            # todo - remove these before merge!
+            "flag_patient_age_estimated",
+            "flag_patient_deceased",
+            "flag_patient_gcs_lte_13",
+            "pcr_alcohol_drug_usage",
+            "pcr_injury_mechanism",
+            "pcr_injury_place",
+            "pcr_injury_primary",
+            "pcr_patient_care_transferred_to",
+            "pcr_patient_condition_at_destination",
+            "pcr_patient_injured",
+            "trauma_form_criteria_injury_mechanisms",
+            "trauma_form_criteria_injury_patterns",
+            "trauma_form_criteria_provider_judgement",
+            "trauma_form_criteria_vital_signs",
+            "trauma_form_trauma_activation",
+            "trauma_form_trauma_level",
+            "trauma_form_trauma_level_description",
+        ],
     },
     "afd": {
         "cols_to_rename": {
