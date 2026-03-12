@@ -121,28 +121,23 @@ async function transferRecommendation(
         recommendation_id: targetRec.id,
         partner_id,
       }));
-    await updateRec(
-      {
-        id: targetRec.id,
-        record: {
-          rec_text: sourceRec.rec_text,
-          rec_update: sourceRec.rec_update,
-          recommendation_status_id: sourceRec.recommendation_status_id,
-          updated_by: userEmail,
-        },
-        partnerPksToDelete: [],
-        partnersToAdd,
-      }
-    );
+    await updateRec({
+      id: targetRec.id,
+      record: {
+        rec_text: sourceRec.rec_text,
+        rec_update: sourceRec.rec_update,
+        recommendation_status_id: sourceRec.recommendation_status_id,
+      },
+      partnerPksToDelete: [],
+      partnersToAdd,
+    });
     await deleteRec({ id: sourceRec.id });
   } else {
-    await updateRec(
-      {
-        id: sourceRec.id,
-        record: { crash_pk: targetCrashId, updated_by: userEmail },
-        partnerPksToDelete: [],
-        partnersToAdd: [],
-      }
-    );
+    await updateRec({
+      id: sourceRec.id,
+      record: { crash_pk: targetCrashId },
+      partnerPksToDelete: [],
+      partnersToAdd: [],
+    });
   }
 }
