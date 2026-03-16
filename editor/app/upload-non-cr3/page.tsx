@@ -97,7 +97,7 @@ export default function UploadNonCr3() {
 
   return (
     <div className="h-100 d-flex flex-column">
-      <div className="fs-3 fw-bold">Upload Non-CR3 records</div>
+      <div className="fs-3 fw-bold mb-3">Upload Non-CR3 records</div>
 
       {!data && (
         <Row>
