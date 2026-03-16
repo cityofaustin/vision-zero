@@ -37,7 +37,7 @@ export default function CopyValueButton({
     >
       <Button
         onClick={handleCopyValue}
-        className="d-flex align-items-baseline edit-address-button mt-1 px-1"
+        className="d-flex align-items-baseline edit-address-button my-1 px-1"
       >
         {!isCopyClicked && <LuCopy className="text-muted" />}
         {isCopyClicked && <LuCheck className="text-success" />}
