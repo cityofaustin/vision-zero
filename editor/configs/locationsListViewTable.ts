@@ -107,7 +107,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
         ],
       },
       {
-        id: "signal_eng_areas_soutb",
+        id: "signal_eng_areas_south",
         label: "South",
         groupOperator: "_and",
         enabled: false,
