@@ -73,12 +73,10 @@ export default function AppBreadCrumb() {
             );
           } else {
             return (
-              <>
-                <span key={crumb.label} className="text-secondary me-2">
-                  {crumb.label}
-                </span>
+              <Fragment key={crumb.label}>
+                <span className="text-secondary me-2">{crumb.label}</span>
                 <CopyValueButton tooltipLabel="Copy" value={crumb.label} />
-              </>
+              </Fragment>
             );
           }
         })}
