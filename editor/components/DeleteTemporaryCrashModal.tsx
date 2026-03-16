@@ -380,15 +380,19 @@ export default function DeleteTemporaryCrashModal({
             Cancel
           </Button>
           <Button
-            variant="danger"
+            variant={hasAnythingToTransfer && selectedTarget ? "primary" : "danger"}
             type="submit"
             disabled={!canDelete || isDeleting}
           >
             {isDeleting ? (
               <>
                 <Spinner size="sm" className="me-2" />
-                Deleting…
+                {hasAnythingToTransfer && selectedTarget
+                  ? "Deleting and transferring…"
+                  : "Deleting…"}
               </>
+            ) : hasAnythingToTransfer && selectedTarget ? (
+              "Delete and transfer data"
             ) : (
               "Delete"
             )}
