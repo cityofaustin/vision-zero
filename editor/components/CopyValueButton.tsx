@@ -10,7 +10,7 @@ interface CopyValueButtonProps {
 }
 
 /**
- * Compent provides a button UI to copy an aribtrary value to the clipboard
+ * Component that provides an animated button UI to copy an aribtrary value to the clipboard
  */
 export default function CopyValueButton({
   value,
