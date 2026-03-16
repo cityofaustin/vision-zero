@@ -38,7 +38,7 @@ export default function CrashHeader({ crash, refetch }: CrashHeaderProps) {
         ) : (
           <Button
             onClick={() => setShowEditAddressModal(true)}
-            className="d-flex align-items-baseline edit-address-button"
+            className="d-flex align-items-center edit-address-button"
           >
             <span className="fs-3 fw-bold text-uppercase me-2 text-nowrap">
               {crash.address_display}
