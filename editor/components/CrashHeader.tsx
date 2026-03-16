@@ -32,7 +32,7 @@ export default function CrashHeader({ crash, refetch }: CrashHeaderProps) {
     <Row className="d-flex justify-content-between align-items-center mb-3">
       <Col className="d-flex align-items-center">
         {isReadOnlyUser ? (
-          <span className="fs-3 fw-bold text-uppercase">
+          <span className="fs-3 fw-bold text-uppercase me-2">
             {crash.address_display}
           </span>
         ) : (
