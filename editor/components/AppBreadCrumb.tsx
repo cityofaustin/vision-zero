@@ -1,7 +1,6 @@
 import { useMemo, Fragment } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import Col from "react-bootstrap/Col";
 import { routes } from "@/configs/routes";
 import CopyValueButton from "@/components/CopyValueButton";
 
