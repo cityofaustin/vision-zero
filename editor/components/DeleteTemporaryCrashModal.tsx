@@ -321,7 +321,7 @@ export default function DeleteTemporaryCrashModal({
       <Form onSubmit={handleSubmit}>
         <Modal.Body>
           {!hasAnythingToTransfer ? (
-            <div className="mb-3 p-2 bg-light rounded">
+            <div className="mb-3 p-2 bg-light-use-theme rounded">
               No transferrable data was found on this temporary crash record.
             </div>
           ) : (
@@ -340,7 +340,7 @@ export default function DeleteTemporaryCrashModal({
           )}
 
           {selectedTarget && transferItems.length > 0 && (
-            <div className="mb-3 p-2 bg-light rounded">
+            <div className="mb-3 p-2 bg-light-use-theme rounded">
               <strong>The following will be transferred:</strong>
               <ul className="mb-0 mt-1">
                 {transferItems.map((item) => (
