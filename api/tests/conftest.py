@@ -14,8 +14,10 @@ diagram saved in the /dev/ directory of S3"""
 TEST_CRASH_RECORD_LOCATOR = str(os.getenv("TEST_CRASH_RECORD_LOCATOR", "19437355"))
 
 """The person IDs must exist in your local DB (from replicate-db snapshot)"""
-TEST_PERSON_ID = os.getenv("TEST_PERSON_ID", 4637603)
-TEST_TARGET_PERSON_ID = os.getenv("TEST_TARGET_PERSON_ID", 4637602)
+# person from deleted temp record
+TEST_PERSON_ID = os.getenv("TEST_PERSON_ID", 4591054)
+# person from corresponding CR3 record (CRIS crash ID: 21025531)
+TEST_TARGET_PERSON_ID = os.getenv("TEST_TARGET_PERSON_ID", 4592394)
 
 
 @pytest.fixture
