@@ -74,12 +74,9 @@ export default function FatalityVictimListItem({
           title={`Photo | ${victimName}`}
           storedUrl={imageUrl}
           isLoading={isLoading}
-          url={`${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${personId}`}
           refetch={refetch}
-          defaultValues={{
-            file: undefined,
-            image_source: "",
-          }}
+          imageType="person"
+          recordId={personId}
         />
       )}
 

@@ -20,9 +20,9 @@ interface ImageUploadModalProps {
   title: string;
   storedUrl: string | null;
   isLoading: boolean;
-  url: string;
   refetch: () => void;
-  defaultValues: { file: undefined; image_source?: string };
+  imageType: "person" | "crash_diagram";
+  recordId: number | string;
 }
 
 interface FormData {
@@ -42,9 +42,9 @@ export default function ImageUploadModal({
   title,
   storedUrl,
   isLoading,
-  url,
   refetch,
-  defaultValues,
+  imageType,
+  recordId,
 }: ImageUploadModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -61,12 +61,15 @@ export default function ImageUploadModal({
     watch,
   } = useForm<FormData>({
     mode: "onChange",
-    defaultValues: defaultValues,
+    defaultValues: {
+      file: undefined,
+      image_source: "",
+    },
   });
 
   const file = watch("file");
 
-  const needsImageSource = defaultValues.hasOwnProperty("image_source");
+  const url = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/${imageType}/${recordId}`;
 
   // Keeps track of file updates and errors to update preview URL
   useEffect(() => {
@@ -249,7 +252,7 @@ export default function ImageUploadModal({
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
-            {needsImageSource && (
+            {imageType === "person" && (
               <Col>
                 <Form.Group controlId="formImageSource">
                   <Form.Label className="fw-bold">Image source</Form.Label>

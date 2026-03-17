@@ -4,7 +4,7 @@ import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import { FaRotate } from "react-icons/fa6";
-import { FaRegPenToSquare } from "react-icons/fa6";
+import { LuSquarePen } from "react-icons/lu";
 import {
   TransformWrapper,
   TransformComponent,
@@ -151,12 +151,10 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
           setShowModal={setShowModal}
           storedUrl={imageUrl}
           title={`Upload crash diagram`}
-          url={`${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/crash_diagram/${crash.record_locator}`}
           refetch={refetch}
-          defaultValues={{
-            file: undefined,
-          }}
           isLoading={isLoading}
+          imageType="crash_diagram"
+          recordId={crash.record_locator}
         />
       )}
       <Card.Header>
@@ -169,7 +167,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
               onClick={() => setShowModal(true)}
             >
               <AlignedLabel>
-                <FaRegPenToSquare className="me-2" />
+                <LuSquarePen className="me-2" />
                 <span>Edit diagram</span>
               </AlignedLabel>
             </Button>
@@ -240,7 +238,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             message={
               <>
                 <i className="fa fa-info-circle" />
-                Crash diagrams are not available for temporary crash records
+                This temporary crash record does not have a diagram
               </>
             }
             button={
