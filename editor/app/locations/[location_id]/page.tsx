@@ -16,7 +16,7 @@ import { locationCardColumns } from "@/configs/locationDataCard";
 import { locationCrashesColumns } from "@/configs/locationCrashesColumns";
 import { locationCrashesQueryConfig } from "@/configs/locationCrashesTable";
 import AlignedLabel from "@/components/AlignedLabel";
-import { FaCircleInfo } from "react-icons/fa6";
+import { LuInfo } from "react-icons/lu";
 import NotesCard from "@/components/NotesCard";
 import {
   INSERT_LOCATION_NOTE,
@@ -115,7 +115,7 @@ export default function LocationDetailsPage({
               <Card.Title>Crashes</Card.Title>
               <Card.Subtitle className="fw-light text-secondary">
                 <AlignedLabel>
-                  <FaCircleInfo className="me-2" />
+                  <LuInfo className="me-2 text-secondary" />
                   <span>
                     The data in this table is refreshed on an hourly basis
                   </span>
