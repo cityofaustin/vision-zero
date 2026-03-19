@@ -205,7 +205,7 @@ def combine_date_time_fields(
         if not input_date_string or not input_time_string:
             continue
 
-        # parse a date string that looks like '12/22/2023'
+        # parse a date string that looks like '2023-12-22'
         year, month, day = input_date_string.split("-")
         hour, minute, second = input_time_string.split(":")
 
