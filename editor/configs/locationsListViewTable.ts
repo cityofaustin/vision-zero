@@ -131,7 +131,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
     filterGroups: [
       {
         id: "is_signalized_yes",
-        label: "Yes",
+        label: "Signalized",
         groupOperator: "_and",
         enabled: false,
         inverted: false,
@@ -140,21 +140,6 @@ const locationsListViewFiltercards: FilterGroup[] = [
             id: "is_signalized_yes",
             column: "is_signalized",
             operator: "_eq",
-            value: true,
-          },
-        ],
-      },
-      {
-        id: "is_signalized_no",
-        label: "No",
-        groupOperator: "_and",
-        enabled: false,
-        inverted: false,
-        filters: [
-          {
-            id: "is_signalized_no",
-            column: "is_signalized",
-            operator: "_neq",
             value: true,
           },
         ],
@@ -385,7 +370,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
           },
         ],
       },
-{
+      {
         id: "council_districts_6",
         label: "6",
         groupOperator: "_and",
@@ -400,7 +385,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
           },
         ],
       },
-{
+      {
         id: "council_districts_7",
         label: "7",
         groupOperator: "_and",
@@ -415,7 +400,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
           },
         ],
       },
-{
+      {
         id: "council_districts_8",
         label: "8",
         groupOperator: "_and",
@@ -430,7 +415,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
           },
         ],
       },
-{
+      {
         id: "council_districts_9",
         label: "9",
         groupOperator: "_and",
@@ -445,7 +430,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
           },
         ],
       },
-{
+      {
         id: "council_districts_10",
         label: "10",
         groupOperator: "_and",
