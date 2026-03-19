@@ -21,7 +21,7 @@ export default function CopyValueButton({
   const handleCopyValue = () => {
     navigator.clipboard.writeText(String(value)).then(() => {
       setIsCopyClicked(true);
-      const copiedStateTime = 1000;
+      const copiedStateTime = 2000;
       setTimeout(() => setIsCopyClicked(false), copiedStateTime);
     });
   };

@@ -42,7 +42,7 @@ export default function Users() {
     // only display the copied button state for a moment
     navigator.clipboard.writeText(userEmails).then(() => {
       setCopyUserEmailsClicked(true);
-      const copiedStateTime = 1000;
+      const copiedStateTime = 2000;
       setTimeout(() => setCopyUserEmailsClicked(false), copiedStateTime);
     });
   }, [users]);
