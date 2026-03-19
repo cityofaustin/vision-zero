@@ -49,6 +49,7 @@ export default function EMS() {
            */
           contextFilters={isDeletedFilter}
           filtersEventName="ems_list_filters_toggle"
+          mapEventName="ems_list_map_toggle"
         />
       </div>
     </UserEventsLogger>
