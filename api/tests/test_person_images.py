@@ -231,3 +231,34 @@ def test_delete_nonexistent(api_url, editor_user_headers):
 
     res = requests.delete(api_url, headers=editor_user_headers)
     assert res.status_code == 404
+
+
+def test_copy_person_image(
+    api_base_url,
+    test_person_id,
+    test_target_person_id,
+    editor_user_headers,
+    test_image_jpg,
+    cleanup_person_image,
+    cleanup_target_person_image,
+):
+    """Test copying an image from one person record to another."""
+    source_url = f"{api_base_url}/images/person/{test_person_id}"
+    target_url = f"{api_base_url}/images/person/{test_target_person_id}"
+
+    # Upload image to source person
+    files = {"file": test_image_jpg}
+    data = {"image_source": "test_source"}
+    res = requests.put(source_url, files=files, headers=editor_user_headers, data=data)
+    assert res.status_code == 201
+
+    # Copy image to target person
+    copy_url = f"{api_base_url}/images/person/{test_person_id}/copy/{test_target_person_id}"
+    res = requests.post(copy_url, headers=editor_user_headers)
+    assert res.status_code == 200
+    assert res.json()["success"] is True
+
+    # Target should now have an image
+    res = requests.get(target_url, headers=editor_user_headers)
+    assert res.status_code == 200
+    assert "url" in res.json()

@@ -8,6 +8,7 @@ from PIL import Image
 from utils.graphql import (
     make_hasura_request,
     GET_PERSON_IMAGE_METADATA,
+    GET_PERSON_IMAGE_METADATA_FULL,
     UPDATE_PERSON_IMAGE_METADATA,
     GET_CRASH_DIAGRAM_METADATA,
     UPDATE_CRASH_DIAGRAM_METADATA,
@@ -91,17 +92,19 @@ def strip_exif(img):
 def _get_person_image_metadata(person_id):
     """Get the person record image metadata for a given person record ID"""
     res = make_hasura_request(
-        query=GET_PERSON_IMAGE_METADATA, variables={"person_id": person_id}
+        query=GET_PERSON_IMAGE_METADATA_FULL, variables={"person_id": person_id}
     )
     return (
         res["people_by_pk"]["image_s3_object_key"],
         res["people_by_pk"]["image_original_filename"],
+        # Use .get for safety in case older rows/schema don't include this yet.
+        res["people_by_pk"].get("image_source"),
     )
 
 
 def _get_person_image_url(person_id, s3):
     """Get a presigned S3 download URL for the given person record ID"""
-    image_obj_key, image_original_filename = _get_person_image_metadata(person_id)
+    image_obj_key, _, _ = _get_person_image_metadata(person_id)
 
     if not image_obj_key:
         return jsonify(error=f"No image found for person ID: {person_id}"), 404
@@ -129,8 +132,8 @@ def _upsert_person_image(person_id, s3):
     """
     has_file = "file" in request.files
     image_source = request.form.get("image_source")
-    image_original_obj_key, image_original_filename = _get_person_image_metadata(
-        person_id
+    image_original_obj_key, image_original_filename, image_original_source = (
+        _get_person_image_metadata(person_id)
     )
     is_new = not image_original_obj_key
 
@@ -284,9 +287,56 @@ def _handle_image_upload(person_id, file, s3):
     return new_image_obj_key
 
 
+def _transfer_person_image(source_person_id, target_person_id, s3):
+    """Transfer an image from one person record to another.
+
+    Copies the S3 object to a new key for the target person and updates the
+    target person's image metadata in the database.
+    """
+    source_obj_key, source_original_filename, source_image_source = (
+        _get_person_image_metadata(source_person_id)
+    )
+
+    if not source_obj_key:
+        abort(
+            404,
+            description=f"No image found for source person ID: {source_person_id}",
+        )
+
+    if "." not in source_obj_key:
+        abort(500, description="Source image object key missing file extension")
+    ext = source_obj_key.rsplit(".", 1)[-1]
+    target_obj_key = f"{AWS_S3_PERSON_IMAGE_LOCATION}/{target_person_id}.{ext}"
+
+    try:
+        s3.copy_object(
+            Bucket=AWS_S3_BUCKET,
+            CopySource={"Bucket": AWS_S3_BUCKET, "Key": source_obj_key},
+            Key=target_obj_key,
+        )
+    except Exception as e:
+        current_app.logger.exception(str(e))
+        abort(500, description="Failed to copy image in S3")
+
+    make_hasura_request(
+        query=UPDATE_PERSON_IMAGE_METADATA,
+        variables={
+            "person_id": target_person_id,
+            "object": {
+                "image_s3_object_key": target_obj_key,
+                "image_source": source_image_source,
+                "image_original_filename": source_original_filename,
+                "updated_by": get_user_email(),
+            },
+        },
+    )
+
+    return jsonify(success=True), 200
+
+
 def _delete_person_image(person_id, s3):
     """Delete an image from S3 and nullify its metadata in the db"""
-    image_obj_key, image_original_filename = _get_person_image_metadata(person_id)
+    image_obj_key, _, _ = _get_person_image_metadata(person_id)
 
     if not image_obj_key:
         abort(404, description=f"No image found for person ID: {person_id}")
