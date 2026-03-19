@@ -35,6 +35,9 @@ const SideDrawerContent = ({ type }) => {
   return (
     <div className="side-menu">
       <StyledDrawerHeader>
+        <h1 className="sr-only">
+          Vision Zero Map -- Help Austin reach zero traffic deaths
+        </h1>
         <img
           className="vz-logo"
           src={LOGO_URL}
