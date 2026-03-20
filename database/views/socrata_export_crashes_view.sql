@@ -78,44 +78,48 @@ SELECT
     )                                          AS crash_fatal_fl,
     collsn.label                               AS collsn_desc
 FROM crashes
-LEFT JOIN LATERAL (SELECT
-    crash_injury_metrics_view.id,
-    crash_injury_metrics_view.cris_crash_id,
-    crash_injury_metrics_view.unkn_injry_count,
-    crash_injury_metrics_view.nonincap_injry_count,
-    crash_injury_metrics_view.poss_injry_count,
-    crash_injury_metrics_view.non_injry_count,
-    crash_injury_metrics_view.sus_serious_injry_count,
-    crash_injury_metrics_view.tot_injry_count,
-    crash_injury_metrics_view.fatality_count,
-    crash_injury_metrics_view.vz_fatality_count,
-    crash_injury_metrics_view.law_enf_fatality_count,
-    crash_injury_metrics_view.cris_fatality_count,
-    crash_injury_metrics_view.motor_vehicle_fatality_count,
-    crash_injury_metrics_view.motor_vehicle_sus_serious_injry_count,
-    crash_injury_metrics_view.motorcycle_fatality_count,
-    crash_injury_metrics_view.motorcycle_sus_serious_count,
-    crash_injury_metrics_view.bicycle_fatality_count,
-    crash_injury_metrics_view.bicycle_sus_serious_injry_count,
-    crash_injury_metrics_view.pedestrian_fatality_count,
-    crash_injury_metrics_view.pedestrian_sus_serious_injry_count,
-    crash_injury_metrics_view.micromobility_fatality_count,
-    crash_injury_metrics_view.micromobility_sus_serious_injry_count,
-    crash_injury_metrics_view.other_fatality_count,
-    crash_injury_metrics_view.other_sus_serious_injry_count,
-    crash_injury_metrics_view.crash_injry_sev_id,
-    crash_injury_metrics_view.years_of_life_lost,
-    crash_injury_metrics_view.est_comp_cost_crash_based,
-    crash_injury_metrics_view.est_total_person_comp_cost
-FROM crash_injury_metrics_view
-WHERE crashes.id = crash_injury_metrics_view.id
-LIMIT 1) cimv ON TRUE
-LEFT JOIN LATERAL (SELECT
-    unit_aggregates_1.id,
-    unit_aggregates_1.units_involved
-FROM unit_aggregates unit_aggregates_1
-WHERE crashes.id = unit_aggregates_1.id
-LIMIT 1) unit_aggregates ON TRUE
+LEFT JOIN LATERAL (
+    SELECT
+        crash_injury_metrics_view.id,
+        crash_injury_metrics_view.cris_crash_id,
+        crash_injury_metrics_view.unkn_injry_count,
+        crash_injury_metrics_view.nonincap_injry_count,
+        crash_injury_metrics_view.poss_injry_count,
+        crash_injury_metrics_view.non_injry_count,
+        crash_injury_metrics_view.sus_serious_injry_count,
+        crash_injury_metrics_view.tot_injry_count,
+        crash_injury_metrics_view.fatality_count,
+        crash_injury_metrics_view.vz_fatality_count,
+        crash_injury_metrics_view.law_enf_fatality_count,
+        crash_injury_metrics_view.cris_fatality_count,
+        crash_injury_metrics_view.motor_vehicle_fatality_count,
+        crash_injury_metrics_view.motor_vehicle_sus_serious_injry_count,
+        crash_injury_metrics_view.motorcycle_fatality_count,
+        crash_injury_metrics_view.motorcycle_sus_serious_count,
+        crash_injury_metrics_view.bicycle_fatality_count,
+        crash_injury_metrics_view.bicycle_sus_serious_injry_count,
+        crash_injury_metrics_view.pedestrian_fatality_count,
+        crash_injury_metrics_view.pedestrian_sus_serious_injry_count,
+        crash_injury_metrics_view.micromobility_fatality_count,
+        crash_injury_metrics_view.micromobility_sus_serious_injry_count,
+        crash_injury_metrics_view.other_fatality_count,
+        crash_injury_metrics_view.other_sus_serious_injry_count,
+        crash_injury_metrics_view.crash_injry_sev_id,
+        crash_injury_metrics_view.years_of_life_lost,
+        crash_injury_metrics_view.est_comp_cost_crash_based,
+        crash_injury_metrics_view.est_total_person_comp_cost
+    FROM crash_injury_metrics_view
+    WHERE crashes.id = crash_injury_metrics_view.id
+    LIMIT 1
+) cimv ON TRUE
+LEFT JOIN LATERAL (
+    SELECT
+        unit_aggregates_1.id,
+        unit_aggregates_1.units_involved
+    FROM unit_aggregates unit_aggregates_1
+    WHERE crashes.id = unit_aggregates_1.id
+    LIMIT 1
+) unit_aggregates ON TRUE
 LEFT JOIN lookups.collsn ON crashes.fhe_collsn_id = collsn.id
 LEFT JOIN locations location ON crashes.location_id = location.location_id::text
 WHERE

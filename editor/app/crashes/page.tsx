@@ -4,12 +4,12 @@ import Button from "react-bootstrap/Button";
 import UserEventsLogger from "@/components/UserEventsLogger";
 import AlignedLabel from "@/components/AlignedLabel";
 import CreateCrashRecordModal from "@/components/CreateCrashRecordModal";
-import { FaCirclePlus } from "react-icons/fa6";
 import { crashesListViewColumns } from "@/configs/crashesListViewColumns";
 import { crashesListViewQueryConfig } from "@/configs/crashesListViewTable";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import TableWrapper from "@/components/TableWrapper";
 import { useDocumentTitle } from "@/utils/documentTitle";
+import { LuCirclePlus } from "react-icons/lu";
 
 const localStorageKey = "crashesListViewQueryConfig";
 
@@ -38,7 +38,7 @@ export default function Crashes() {
               onClick={() => setShowNewUserModal(true)}
             >
               <AlignedLabel>
-                <FaCirclePlus className="me-2" />
+                <LuCirclePlus className="me-2" />
                 <span>Create</span>
               </AlignedLabel>
             </Button>

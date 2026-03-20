@@ -236,6 +236,14 @@ export const ALL_EMS_COLUMNS = {
     path: "person.unit_nbr",
     label: "Unit",
   },
+  latitude: {
+    path: "latitude",
+    label: "Latitude"
+  },
+  longitude: {
+    path: "longitude",
+    label: "Longitude"
+  },
   mvc_form_position_in_vehicle: {
     path: "mvc_form_position_in_vehicle",
     label: "Position in vehicle",
@@ -293,4 +301,6 @@ export const emsListViewColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
   ALL_EMS_COLUMNS.cris_crash_id,
   ALL_EMS_COLUMNS.non_cr3_match_status,
   ALL_EMS_COLUMNS.atd_apd_blueform_case_id,
+  ALL_EMS_COLUMNS.latitude,
+  ALL_EMS_COLUMNS.longitude,
 ];

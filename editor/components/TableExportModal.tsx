@@ -7,7 +7,7 @@ import { useQuery } from "@/utils/graphql";
 import { useLogUserEvent } from "@/utils/userEvents";
 import { unparse } from "papaparse";
 import AlignedLabel from "./AlignedLabel";
-import { FaCircleInfo, FaDownload } from "react-icons/fa6";
+import { LuDownload, LuInfo } from "react-icons/lu";
 import { formatFileTimestamp } from "@/utils/formatters";
 import { getRecordValue } from "@/utils/formHelpers";
 import { ColDataCardDef } from "@/types/types";
@@ -147,7 +147,7 @@ export default function TableExportModal<T extends Record<string, unknown>>({
           variant="info"
           className="d-flex justify-content-between align-items-center"
         >
-          <FaCircleInfo className="me-3 fs-4" />
+          <LuInfo className="me-3 fs-4" />
           <div>
             You are about to download{" "}
             <span className="fw-bold">{`${totalRecordCount.toLocaleString()} `}</span>
@@ -173,7 +173,7 @@ export default function TableExportModal<T extends Record<string, unknown>>({
             onClick={onClose}
           >
             <AlignedLabel>
-              <FaDownload className="me-2" />
+              <LuDownload className="me-2" />
               Download
             </AlignedLabel>
           </Button>

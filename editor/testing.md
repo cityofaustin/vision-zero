@@ -48,22 +48,37 @@ The below features should be tested with each role. Features with role-based acc
 - Download modal: use Download button to save exported data
 - Open downloaded data in CSV editor and verify it has no rendering or formatting issues
 
-### Create temporary crash record
+### Temporary crash records
 
 - [role: editor, admin] Use **Create crash record** button to open crash record form
 - Cannot complete **Create crash record** without populating Case ID, Crash date, Primary address, and at least one unit
 - Add multiple units with at least one fatality and one injury
 - Submit form and verify crashes list updates with the newly created record
 - On crashes list, the **Temporary records only** filter switch shows only temporary records
-- Verify that crash details page of the temp record reflects units + people injuries correctly
-- Delete temporary crash record
+- Navigate to the crash details page for a temp record and verify that crash details page of the temp record reflects units + people injuries correctly
+- [role: readonly] Verify the crash diagram component displays an alert message that says **This temporary crash record does not have a diagram**
+- [role: editor, admin] 
+  - Verify the crash diagram component displays an alert message as well as a button to upload a crash diagram
+  - Click the **Upload crash diagram** button to open the diagram upload modal
+  - Select an image (e.g. use https://placehold.co/), and confirm that the image loads in the modal as a preview
+  - Click the **Save** button to save your image, then confirm that your uploaded image immediately renders in the crash diagram component
+  - In the diagram component header, use the **Edit diagram** button to re-open the image upload modal. Upload a new image, save, and confirm it renders properly in the diagram component card.
+  - Use the **Edit diagram** button once again to open the diagram image upload modal. Now use the **Delete** button in the modal header to delete the diagram image. Click **OK** to confirm that you want to delete the image, and then verify that you diagram image has been deleted and the crash diagram component once again presents a button to upload a diagram.
+- At the top of the temporary record crash details page, veryif there is a yellow alert banner indicating the record is a temp record. 
+- [role: editor, admin] Use the **Delete** button inside the alert banner to open the delete temp record modal
+  - The modal shoudl display a message that says **No transferrable data was found on this temporary crash record.**
+  - Click the cancel button, then edit the temp crash's Fatality Review Board Recommendation and use the **Notes** widget to add a note.
+  -  Use the **Delete** button inside the alert banner to open the delete temp record modal. Confirm you cannot proceed until you toggle the **I don't want to transfer data** button or you select a crash for data transfer.
+  -  Use the crash search to select crash. Note that the modal displays **The following will be transferred** and lists the FRB recommendations and notes.
+  -  Click the **Delete and transfer data button**. Verify that the page redirects to the crash details page of the crash you selected with the FRB recommendations and notes populated with the same data from your temp crash
+  - Note that crash victim images can also be transfered via this process, but this is only possible when the temp record and target crash record each have exactly one fatality. Test this by creating a temp record with one fatality, add a victim image using the fatality details page, then, when deleting the temp record, select a crash with exactly one fatality
 - After deleting temporary crash, use back button to navigate to it's details page and verify 404 page shows
 
 ### Crash details - `/crashes/[record_locator]`
 
-- Breadcrumb shows below navbar with Crash ID
+- Breadcrumb shows below navbar with Crash ID. Use copy button to the right of crash ID to copy it to the clipboard.
 - Verify page `<title>` element is formatted as `<record-locator> - <crash-address>` (check how the title is rendered in your browser tab)
-- Crash address header looks correct
+- Crash address header looks correct. Use copy button to copy the crash address to the clipboard
 - [role: editor, admin] Click crash address to edit form inputs. Use **Swap addresses** button to swap primary and secondary address inputs. Confirm changes save correctly.
 - Crash injury widget reflects injuries from **People** card (test by editing person injuries)
 - Temporary record banner is visible for (temp crashes only)

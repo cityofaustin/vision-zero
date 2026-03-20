@@ -1,6 +1,7 @@
 -- Most recent migration: database/migrations/default/1727451511064_init/up.sql
 
-CREATE OR REPLACE VIEW unit_injury_metrics_view AS SELECT
+CREATE OR REPLACE VIEW unit_injury_metrics_view AS
+SELECT
     units.id,
     units.crash_pk,
     COALESCE(SUM(person_injury_metrics_view.unkn_injry), 0::bigint)         AS unkn_injry_count,

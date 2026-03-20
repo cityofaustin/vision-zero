@@ -102,7 +102,7 @@ export default function CrashDetailsPage({
       }
       {
         // show alert if crash is a temp record
-        crash.is_temp_record && <CrashIsTemporaryBanner crashId={crash.id} />
+        crash.is_temp_record && <CrashIsTemporaryBanner crash={crash} />
       }
       <Row>
         <Col sm={12} md={6} lg={4} className="mb-3">
