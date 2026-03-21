@@ -2,7 +2,9 @@ import React, { useState, useRef, useMemo } from "react";
 import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
+import Button from "react-bootstrap/Button";
 import { FaRotate } from "react-icons/fa6";
+import { LuSquarePen } from "react-icons/lu";
 import {
   TransformWrapper,
   TransformComponent,
@@ -17,7 +19,11 @@ import {
   RotateControls,
   ZoomResetSaveControls,
 } from "@/components/CrashDiagramControls";
+import AlignedLabel from "@/components/AlignedLabel";
 import { useImage } from "@/utils/images";
+import { hasRole } from "@/utils/auth";
+import ImageUploadModal from "@/components/ImageUploadModal";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface DiagramAlertProps {
   variant: "info" | "danger" | "success" | "warning";
@@ -26,12 +32,14 @@ interface DiagramAlertProps {
     href: string;
     text: string;
   };
+  button?: React.ReactNode;
 }
 
 const DiagramAlert: React.FC<DiagramAlertProps> = ({
   variant,
   message,
   link,
+  button,
 }) => (
   <Alert variant={variant} className="mt-3">
     {message}
@@ -45,17 +53,24 @@ const DiagramAlert: React.FC<DiagramAlertProps> = ({
         .
       </p>
     )}
+    {button && <div className="mt-2">{button}</div>}
   </Alert>
 );
 
 export default function CrashDiagramCard({ crash }: { crash: Crash }) {
-  const { imageUrl, error: diagramError } = useImage({
+  const {
+    imageUrl,
+    error: diagramError,
+    refetch,
+    isLoading,
+  } = useImage({
     recordId: crash.record_locator,
     recordType: "crash_diagram",
   });
   const [isLoaded, setIsLoaded] = useState(true);
   const [isSaved, setIsSaved] = useState(!!crash.diagram_transform);
   const [isTouched, setIsTouched] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
 
   const defaultValues = useMemo(() => {
@@ -124,10 +139,40 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
     }
   };
 
+  const { user } = useAuth0();
+
+  const isReadOnlyUser = user && hasRole(["readonly"], user);
+
   return (
     <Card className="h-100">
+      {!isReadOnlyUser && (
+        <ImageUploadModal
+          showModal={showModal}
+          setShowModal={setShowModal}
+          storedUrl={imageUrl}
+          title={`Upload crash diagram`}
+          refetch={refetch}
+          isLoading={isLoading}
+          imageType="crash_diagram"
+          recordId={crash.record_locator}
+        />
+      )}
       <Card.Header>
-        <Card.Title>Diagram</Card.Title>
+        <Card.Title className="d-flex justify-content-between mb-0">
+          Diagram
+          {!isReadOnlyUser && crash.is_temp_record && imageUrl && (
+            <Button
+              size="sm"
+              variant="outline-primary"
+              onClick={() => setShowModal(true)}
+            >
+              <AlignedLabel>
+                <LuSquarePen className="me-2" />
+                <span>Edit diagram</span>
+              </AlignedLabel>
+            </Button>
+          )}
+        </Card.Title>
         <div className="text-secondary fw-light">
           Use{" "}
           <span className="font-monospace rounded border px-1 bg-light-use-theme">
@@ -193,8 +238,15 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             message={
               <>
                 <i className="fa fa-info-circle" />
-                Crash diagrams are not available for temporary crash records
+                This temporary crash record does not have a diagram
               </>
+            }
+            button={
+              !isReadOnlyUser ? (
+                <Button onClick={() => setShowModal(true)}>
+                  Upload crash diagram
+                </Button>
+              ) : null
             }
           />
         )}

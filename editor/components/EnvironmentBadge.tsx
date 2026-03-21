@@ -1,6 +1,6 @@
 import Alert from "react-bootstrap/Alert";
-import { FaCircleInfo } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
+import { LuInfo } from "react-icons/lu";
 
 /**
  * Banner that displays environment information when not in production
@@ -15,11 +15,7 @@ export default function EnvironmentBadge() {
   return (
     <Alert variant={isLocal ? "warning" : "info"} className="my-auto py-0">
       <AlignedLabel>
-        {isLocal ? (
-          <FaCircleInfo className="me-2" />
-        ) : (
-          <FaCircleInfo className="me-2" />
-        )}
+        <LuInfo className="me-2" />
         <span className="text-capitalize">{`${environment} environment`}</span>
       </AlignedLabel>
     </Alert>

@@ -16,6 +16,16 @@ query GetPersonImage($person_id: Int!) {
 }
 """
 
+GET_PERSON_IMAGE_METADATA_FULL = """
+query GetPersonImageFull($person_id: Int!) {
+  people_by_pk(id: $person_id) {
+    image_s3_object_key
+    image_source
+    image_original_filename
+  }
+}
+"""
+
 
 UPDATE_PERSON_IMAGE_METADATA = """
 mutation UpdatePersonImage($person_id: Int!, $object: people_set_input!) {

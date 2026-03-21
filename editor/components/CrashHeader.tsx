@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Crash } from "@/types/crashes";
 import CrashInjuryIndicators from "@/components/CrashInjuryIndicators";
 import { LuSquarePen } from "react-icons/lu";
 import EditCrashAddressModal from "@/components/EditCrashAddressModal";
 import { hasRole } from "@/utils/auth";
+import CopyValueButton from "@/components/CopyValueButton";
 
 interface CrashHeaderProps {
   crash: Crash;
@@ -28,24 +29,32 @@ export default function CrashHeader({ crash, refetch }: CrashHeaderProps) {
   const isReadOnlyUser = user && hasRole(["readonly"], user);
 
   return (
-    <div className="d-flex justify-content-between mb-3">
-      {isReadOnlyUser ? (
-        <span className="fs-3 fw-bold text-uppercase">
-          {crash.address_display}
-        </span>
-      ) : (
-        <Button
-          onClick={() => setShowEditAddressModal(true)}
-          className="d-flex align-items-baseline edit-address-button"
-        >
+    <Row className="d-flex justify-content-between align-items-center mb-3">
+      <Col className="d-flex align-items-center">
+        {isReadOnlyUser ? (
           <span className="fs-3 fw-bold text-uppercase me-2">
             {crash.address_display}
           </span>
-          <LuSquarePen className="text-muted" />
-        </Button>
-      )}
+        ) : (
+          <Button
+            onClick={() => setShowEditAddressModal(true)}
+            className="d-flex align-items-center edit-address-button"
+          >
+            <span className="fs-3 fw-bold text-uppercase me-2 text-nowrap">
+              {crash.address_display}
+            </span>
+            <LuSquarePen className="text-muted" />
+          </Button>
+        )}
+        <CopyValueButton
+          tooltipLabel="Copy address"
+          value={String(crash.address_display || "")}
+        />
+      </Col>
       {crash.crash_injury_metrics_view && (
-        <CrashInjuryIndicators injuries={crash.crash_injury_metrics_view} />
+        <Col xs="auto">
+          <CrashInjuryIndicators injuries={crash.crash_injury_metrics_view} />
+        </Col>
       )}
       <EditCrashAddressModal
         crashId={crash.id}
@@ -54,6 +63,6 @@ export default function CrashHeader({ crash, refetch }: CrashHeaderProps) {
         onSaveCallback={onSaveCallback}
         crash={crash}
       ></EditCrashAddressModal>
-    </div>
+    </Row>
   );
 }

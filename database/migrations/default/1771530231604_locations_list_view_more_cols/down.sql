@@ -1,5 +1,3 @@
--- Most recent migration: database/migrations/default/1767430748998_crash_address_display_trigger/up.sql
-
 CREATE OR REPLACE VIEW locations_list_view AS WITH cr3_comp_costs AS (
     SELECT
         crashes_list_view.location_id,

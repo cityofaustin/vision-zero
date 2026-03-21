@@ -130,3 +130,13 @@ export const formatUserNameFromEmail = (value: unknown): string => {
 
   return formatted;
 };
+
+/**
+ * Convert truthy values to 'Yes', `null` and `undefined` to "", and
+ * any other falsey value to "No"
+ */
+export const formatYesNoString = (value: unknown): string => {
+  if (value === null || value === undefined) return "";
+  return value ? "Yes" : "No";
+};
+

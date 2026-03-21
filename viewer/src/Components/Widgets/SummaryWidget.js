@@ -56,22 +56,10 @@ const SummaryWidget = ({
       bottom: 1px;
     }
 
-    .widget-header-text > h3 {
+    .widget-header-text > span {
       font-size: 1.2em;
     }
   `;
-
-  const renderIcon = () => (
-    <span className="fa-layers fa-3x fa-fw widget-icon">
-      <FontAwesomeIcon icon={faCircle} color={backgroundColor} />
-      <FontAwesomeIcon
-        icon={icon}
-        inverse
-        transform="shrink-6"
-        color={colors.white}
-      />
-    </span>
-  );
 
   const renderFooterBasedOnChange = (currentYearTotal, lastYearTotal) => {
     const icon =
@@ -111,12 +99,20 @@ const SummaryWidget = ({
           </Col>
         </Row>
         <div className="text-left d-flex flex-row">
-          {renderIcon()}
+          <span className="fa-layers fa-3x fa-fw widget-icon">
+            <FontAwesomeIcon icon={faCircle} color={backgroundColor} />
+            <FontAwesomeIcon
+              icon={icon}
+              inverse
+              transform="shrink-6"
+              color={colors.white}
+            />
+          </span>
           <div className="d-flex flex-column widget-header-text">
-            <h3 className="h5 mb-0">
+            <span className="mb-0 h5">
               {text} {infoPopover}
-            </h3>
-            <h3 className="h5 text-muted">{`in ${currentYear}`}</h3>
+            </span>
+            <span className="text-muted h5">{`in ${currentYear}`}</span>
           </div>
         </div>
       </CardBody>

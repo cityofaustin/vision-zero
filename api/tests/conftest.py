@@ -13,8 +13,11 @@ API_BASE_URL = os.getenv("API_BASE_URL", "http://cr3-user-api:5000")
 diagram saved in the /dev/ directory of S3"""
 TEST_CRASH_RECORD_LOCATOR = str(os.getenv("TEST_CRASH_RECORD_LOCATOR", "19437355"))
 
-"""The person ID must exist your local DB"""
-TEST_PERSON_ID = os.getenv("TEST_PERSON_ID", 102580)
+"""The person IDs must exist in your local DB (from replicate-db snapshot)"""
+# person from deleted temp record
+TEST_PERSON_ID = os.getenv("TEST_PERSON_ID", 4591054)
+# person from corresponding CR3 record (CRIS crash ID: 21025531)
+TEST_TARGET_PERSON_ID = os.getenv("TEST_TARGET_PERSON_ID", 4592394)
 
 
 @pytest.fixture
@@ -98,6 +101,12 @@ def test_person_id():
 
 
 @pytest.fixture
+def test_target_person_id():
+    """Second person ID used for image copy tests. Must exist in the DB."""
+    return int(TEST_TARGET_PERSON_ID)
+
+
+@pytest.fixture
 def test_image_jpg():
     """Create a 500x500 JPEG test image."""
     img = Image.new("RGB", (500, 500), color="blue")
@@ -143,6 +152,18 @@ def cleanup_person_image(test_person_id, editor_user_headers):
         requests.delete(url, headers=editor_user_headers)
     except Exception as e:
         print(f"⚠️ Warning: failed to cleanup person image: {e}")
+        pass
+
+
+@pytest.fixture
+def cleanup_target_person_image(test_target_person_id, editor_user_headers):
+    """Delete target person image after test."""
+    yield
+    try:
+        url = f"{API_BASE_URL}/images/person/{test_target_person_id}"
+        requests.delete(url, headers=editor_user_headers)
+    except Exception as e:
+        print(f"⚠️ Warning: failed to cleanup target person image: {e}")
         pass
 
 

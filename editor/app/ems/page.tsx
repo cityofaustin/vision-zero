@@ -5,9 +5,9 @@ import { emsListViewColumns } from "@/configs/emsColumns";
 import TableWrapper from "@/components/TableWrapper";
 import UserEventsLogger from "@/components/UserEventsLogger";
 import { emsListViewQueryConfig } from "@/configs/emsListViewTable";
-import { FaCircleInfo } from "react-icons/fa6";
 import { useDocumentTitle } from "@/utils/documentTitle";
 import { Filter } from "@/types/queryBuilder";
+import { LuInfo } from "react-icons/lu";
 
 const localStorageKey = "emsListQueryConfig";
 
@@ -33,7 +33,7 @@ export default function EMS() {
         </div>
         <div className="fw-light text-secondary mb-2">
           <AlignedLabel>
-            <FaCircleInfo className="me-2" />
+            <LuInfo className="me-2" />
             <span>
               EMS analysis is currently in beta. Data may be inaccurate or change
               significantly as we continue to refine the system.
@@ -49,6 +49,7 @@ export default function EMS() {
            */
           contextFilters={isDeletedFilter}
           filtersEventName="ems_list_filters_toggle"
+          mapEventName="ems_list_map_toggle"
         />
       </div>
     </UserEventsLogger>

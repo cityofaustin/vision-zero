@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { ColDataCardDef, InputType } from "@/types/types";
+import { formatYesNoString } from "@/utils/formatters";
 
 /**
  * Retrieve a value from an object given a dot-noted path string.
@@ -84,15 +85,6 @@ const renderValueToString = (value: unknown): string => {
 };
 
 /**
- * Convert truthy values to 'Yes', `null` and `undefined` to "", and
- * any other falsey value to "No"
- */
-const renderYesNoString = (value: unknown): string => {
-  if (value === null || value === undefined) return "";
-  return value ? "Yes" : "No";
-};
-
-/**
  * Get a columns's value from a record
  * @param record - the record object
  * @param column - the column definition
@@ -143,9 +135,8 @@ export const renderColumnValue = <T extends Record<string, unknown>>(
     );
   }
 
-  // todo: this should probably be a valueFormatter? 😵‍💫
   if (column.inputType === "yes_no") {
-    return renderYesNoString(record[column.path]);
+    return formatYesNoString(record[column.path]);
   }
 
   return renderValueToString(getRecordValue(record, column));

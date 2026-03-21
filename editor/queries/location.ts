@@ -14,6 +14,12 @@ export const GET_LOCATION = gql`
         non_cr3_crash_count
         total_est_comp_cost
       }
+      apd_sectors
+      area_eng_areas
+      signal_eng_areas
+      council_districts
+      is_signalized
+      is_hin
       location_notes(
         where: { is_deleted: { _eq: false } }
         order_by: { created_at: asc }

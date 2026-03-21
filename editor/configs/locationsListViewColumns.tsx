@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ColDataCardDef } from "@/types/types";
 import { LocationsListRow } from "@/types/locationsList";
+import { locationColumns } from "@/configs/locationColumns";
 
 export const locationsListViewColumns: ColDataCardDef<LocationsListRow>[] = [
   {
@@ -17,6 +18,12 @@ export const locationsListViewColumns: ColDataCardDef<LocationsListRow>[] = [
     path: "location_name",
     label: "Location",
     sortable: true,
+    style: {
+      maxWidth: "30rem",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+    },
   },
   {
     path: "cr3_crash_count",
@@ -28,4 +35,11 @@ export const locationsListViewColumns: ColDataCardDef<LocationsListRow>[] = [
     label: "Non-CR3 crashes",
     sortable: true,
   },
+  locationColumns.area_eng_areas,
+  locationColumns.signal_eng_areas,
+  locationColumns.is_signalized,
+  locationColumns.council_districts,
+  { ...locationColumns.street_level, defaultHidden: true },
+  { ...locationColumns.apd_sectors, defaultHidden: true },
+  { ...locationColumns.is_hin, defaultHidden: true },
 ];
