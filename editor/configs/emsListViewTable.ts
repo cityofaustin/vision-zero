@@ -352,7 +352,7 @@ const emsListViewFilterCards: FilterGroup[] = [
         groupOperator: "_and",
         enabled: false,
         filters: [
-           {
+          {
             id: "low_quality",
             column: "person_match_score",
             operator: "_lt",
@@ -436,7 +436,7 @@ const emsListViewFilterCards: FilterGroup[] = [
 ];
 
 export const emsListViewQueryConfig: QueryConfig = {
-  _version: 2,
+  _version: 3,
   exportable: true,
   exportFilename: "ems_patient_care_records",
   tableName: "ems__incidents",
@@ -447,13 +447,13 @@ export const emsListViewQueryConfig: QueryConfig = {
   searchFilter: {
     id: "search",
     value: "",
-    column: "incident_number",
+    column: "incident_location_address",
     operator: "_ilike",
     wildcard: true,
   },
   searchFields: [
-    { label: "Incident number", value: "incident_number" },
     { label: "Incident address", value: "incident_location_address" },
+    { label: "Incident number", value: "incident_number" },
     { label: "APD Case IDs", value: "unparsed_apd_incident_numbers" },
   ],
   dateFilter: {
