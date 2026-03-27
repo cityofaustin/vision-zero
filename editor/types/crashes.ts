@@ -25,6 +25,8 @@ export type Crash = {
   diagram_transform: CrashDiagramOrientation | null;
   ems__incidents: EMSPatientCareRecord[] | null;
   fhe_collsn_id: number | null;
+  investigat_agency_id: number | null;
+  agency: LookupTableOption | null;
   id: number;
   in_austin_full_purpose: boolean;
   investigator_narrative: string | null;
@@ -42,6 +44,7 @@ export type Crash = {
   record_locator: string;
   recommendation: Recommendation | null;
   road_constr_zone_fl: boolean | null;
+  road_constr_zone_wrkr_fl: boolean | null;
   rpt_block_num: string | null;
   rpt_city_id: number | null;
   city: LookupTableOption | null;
