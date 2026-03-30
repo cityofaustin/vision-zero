@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
@@ -100,6 +100,11 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
   } = useForm({
     defaultValues,
   });
+
+  // Reset form when crash changes (like after breadcrumb navigation)
+  useEffect(() => {
+    reset(defaultValues);
+  }, [crash.id, reset, defaultValues]);
 
   const { mutate } = useMutation(UPDATE_CRASH);
 
