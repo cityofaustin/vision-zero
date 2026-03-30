@@ -26,14 +26,14 @@ from werkzeug.local import LocalProxy
 
 
 from utils.images import (
-    _upsert_person_image,
-    _delete_person_image,
-    _get_person_image_url,
-    _transfer_person_image,
+    copy_person_image as copy_person_image_handler,
+    delete_crash_diagram_image,
+    delete_person_image,
+    get_crash_diagram_image_url,
+    get_person_image_url,
+    upsert_crash_diagram_image,
+    upsert_person_image,
     validate_file_size,
-    _get_crash_diagram_image_url,
-    _upsert_crash_diagram_image,
-    _delete_crash_diagram_image,
 )
 
 
@@ -417,7 +417,7 @@ def download_crash_report(record_locator):
 # No role requirement - all authenticated users can GET
 def get_person_image(person_id):
     """Retrieves a person image URL"""
-    return _get_person_image_url(person_id, s3)
+    return get_person_image_url(person_id, s3)
 
 
 @app.route("/images/person/<int:person_id>", methods=["DELETE", "PUT"])
@@ -428,9 +428,9 @@ def get_person_image(person_id):
 def modify_person_image(person_id):
     """Upserts or deletes a person image"""
     if request.method == "PUT":
-        return _upsert_person_image(person_id, s3)
+        return upsert_person_image(person_id, s3)
     elif request.method == "DELETE":
-        return _delete_person_image(person_id, s3)
+        return delete_person_image(person_id, s3)
     return jsonify(message="Bad Request"), 400
 
 @app.route(
@@ -441,7 +441,7 @@ def modify_person_image(person_id):
 @requires_auth
 def copy_person_image(source_person_id, target_person_id):
     """Copy a person image from one person record to another"""
-    return _transfer_person_image(source_person_id, target_person_id, s3)
+    return copy_person_image_handler(source_person_id, target_person_id, s3)
 
 
 @app.route("/images/crash_diagram/<record_locator>", methods=["GET"])
@@ -449,7 +449,7 @@ def copy_person_image(source_person_id, target_person_id):
 @requires_auth
 def get_crash_diagram_image(record_locator):
     """Retrieves a crash diagram image URL"""
-    return _get_crash_diagram_image_url(record_locator, s3)
+    return get_crash_diagram_image_url(record_locator, s3)
 
 
 @app.route("/images/crash_diagram/<record_locator>", methods=["DELETE", "PUT"])
@@ -460,9 +460,9 @@ def get_crash_diagram_image(record_locator):
 def modify_crash_diagram_image(record_locator):
     """Upserts or deletes a crash diagram image"""
     if request.method == "PUT":
-        return _upsert_crash_diagram_image(record_locator, s3)
+        return upsert_crash_diagram_image(record_locator, s3)
     elif request.method == "DELETE":
-        return _delete_crash_diagram_image(record_locator, s3)
+        return delete_crash_diagram_image(record_locator, s3)
     return jsonify(message="Bad Request"), 400
 
 
