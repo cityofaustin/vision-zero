@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
@@ -35,6 +35,11 @@ interface DiagramAlertProps {
   button?: React.ReactNode;
 }
 
+interface CrashDiagramCardProps {
+  crash: Crash;
+  crashRefetch: () => Promise<unknown>;
+}
+
 const DiagramAlert: React.FC<DiagramAlertProps> = ({
   variant,
   message,
@@ -57,7 +62,10 @@ const DiagramAlert: React.FC<DiagramAlertProps> = ({
   </Alert>
 );
 
-export default function CrashDiagramCard({ crash }: { crash: Crash }) {
+export default function CrashDiagramCard({
+  crash,
+  crashRefetch,
+}: CrashDiagramCardProps) {
   const {
     imageUrl,
     error: diagramError,
@@ -101,11 +109,6 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
     defaultValues,
   });
 
-  // Reset form when crash changes (like after breadcrumb navigation)
-  useEffect(() => {
-    reset(defaultValues);
-  }, [crash.id, reset, defaultValues]);
-
   const { mutate } = useMutation(UPDATE_CRASH);
 
   const onSave: SubmitHandler<CrashDiagramOrientation> = async (data) => {
@@ -114,6 +117,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
       updates: { diagram_transform: data },
     });
 
+    crashRefetch();
     // do not clear values from form, but clear dirty state to hide saved button
     reset(data, { keepDirty: false });
     setIsTouched(false);

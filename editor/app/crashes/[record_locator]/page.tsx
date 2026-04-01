@@ -117,7 +117,7 @@ export default function CrashDetailsPage({
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
-          <CrashDiagramCard crash={crash} />
+          <CrashDiagramCard crash={crash} crashRefetch={refetch} />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
           <CrashNarrativeCard crash={crash} />

@@ -154,7 +154,7 @@ export default function FatalCrashDetailsPage({
       </Row>
       <Row>
         <Col className="mb-3" sm={12} md={6} lg={4}>
-          <CrashDiagramCard crash={crash} />
+          <CrashDiagramCard crash={crash} crashRefetch={refetch} />
         </Col>
         <Col className="mb-3" sm={12} md={6} lg={4}>
           <CrashNarrativeEditableCard
