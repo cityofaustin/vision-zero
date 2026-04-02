@@ -6,6 +6,7 @@ export const crashDataCards = {
     crashesColumns.crash_timestamp,
     crashesColumns.collsn,
     crashesColumns.city,
+    crashesColumns.agency,
   ],
   flags: [
     crashesColumns.private_dr_fl,
@@ -13,9 +14,10 @@ export const crashDataCards = {
     crashesColumns.active_school_zone_fl,
     crashesColumns.onsys_fl,
     crashesColumns.rr_relat_fl,
-    crashesColumns.road_constr_zone_fl,
     crashesColumns.schl_bus_fl,
     crashesColumns.toll_road_fl,
+    crashesColumns.road_constr_zone_fl,
+    crashesColumns.road_constr_zone_wrkr_fl,
   ],
   other: [
     crashesColumns.light_cond,

@@ -55,6 +55,11 @@ export const GET_CRASH = gql`
         id
         label
       }
+      investigat_agency_id
+      agency {
+        id
+        label
+      }
       rpt_hwy_num
       rpt_street_pfx
       rpt_street_name
@@ -80,6 +85,7 @@ export const GET_CRASH = gql`
       onsys_fl
       private_dr_fl
       road_constr_zone_fl
+      road_constr_zone_wrkr_fl
       rr_relat_fl
       schl_bus_fl
       toll_road_fl

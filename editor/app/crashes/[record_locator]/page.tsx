@@ -150,7 +150,7 @@ export default function CrashDetailsPage({
           <DataCard<Crash>
             record={crash}
             isValidating={isValidating}
-            title="Other"
+            title="Details"
             columns={crashDataCards.other}
             mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
