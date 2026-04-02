@@ -21,7 +21,7 @@ const dashboardLinks: DashboardLinkCardProps[] = [
   {
     title: "Crash Data by Location",
     description: "Based on Vision Zero location polygons",
-    href: "https://austin.maps.arcgis.com/apps/webappviewer/index.html?id=981b687bb68d465cab737792bbf56198",
+    href: "https://experience.arcgis.com/experience/4d642c739efe472b8a86c11be5f1b1dc",
     icon: FaMap,
   },
   {
