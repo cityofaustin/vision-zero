@@ -2,6 +2,9 @@ table:
   name: crashes
   schema: public
 object_relationships:
+  - name: agency
+    using:
+      foreign_key_constraint_on: investigat_agency_id
   - name: atd_txdot_location
     using:
       foreign_key_constraint_on: location_id
