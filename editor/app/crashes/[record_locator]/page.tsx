@@ -117,7 +117,7 @@ export default function CrashDetailsPage({
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
-          <CrashDiagramCard crash={crash} />
+          <CrashDiagramCard crash={crash} crashRefetch={refetch} />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
           <CrashNarrativeCard crash={crash} />
@@ -150,7 +150,7 @@ export default function CrashDetailsPage({
           <DataCard<Crash>
             record={crash}
             isValidating={isValidating}
-            title="Other"
+            title="Details"
             columns={crashDataCards.other}
             mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}

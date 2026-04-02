@@ -89,7 +89,7 @@ def strip_exif(img):
     return img_without_exif
 
 
-def _get_person_image_metadata(person_id):
+def get_person_image_metadata(person_id):
     """Get the person record image metadata for a given person record ID"""
     res = make_hasura_request(
         query=GET_PERSON_IMAGE_METADATA_FULL, variables={"person_id": person_id}
@@ -102,9 +102,9 @@ def _get_person_image_metadata(person_id):
     )
 
 
-def _get_person_image_url(person_id, s3):
+def get_person_image_url(person_id, s3):
     """Get a presigned S3 download URL for the given person record ID"""
-    image_obj_key, _, _ = _get_person_image_metadata(person_id)
+    image_obj_key, _, _ = get_person_image_metadata(person_id)
 
     if not image_obj_key:
         return jsonify(error=f"No image found for person ID: {person_id}"), 404
@@ -113,7 +113,7 @@ def _get_person_image_url(person_id, s3):
     return jsonify(url=url)
 
 
-def _upsert_person_image(person_id, s3):
+def upsert_person_image(person_id, s3):
     """Handle a person image upsert.
 
     If the person record does not have any image metadata in the DB, the image is
@@ -133,7 +133,7 @@ def _upsert_person_image(person_id, s3):
     has_file = "file" in request.files
     image_source = request.form.get("image_source")
     image_original_obj_key, image_original_filename, image_original_source = (
-        _get_person_image_metadata(person_id)
+        get_person_image_metadata(person_id)
     )
     is_new = not image_original_obj_key
 
@@ -273,7 +273,7 @@ def get_presigned_url(s3_object_key, s3, expires_in=3600):
     )
 
 
-def _handle_image_upload(person_id, file, s3):
+def handle_image_upload(person_id, file, s3):
     """Uploads a person image to S3 after validating and removing EXIF data"""
     img_without_exif, img_format, ext = validate_and_process_image(file)
 
@@ -287,14 +287,14 @@ def _handle_image_upload(person_id, file, s3):
     return new_image_obj_key
 
 
-def _transfer_person_image(source_person_id, target_person_id, s3):
-    """Transfer an image from one person record to another.
+def copy_person_image(source_person_id, target_person_id, s3):
+    """Copy a person image from one record to another.
 
     Copies the S3 object to a new key for the target person and updates the
     target person's image metadata in the database.
     """
     source_obj_key, source_original_filename, source_image_source = (
-        _get_person_image_metadata(source_person_id)
+        get_person_image_metadata(source_person_id)
     )
 
     if not source_obj_key:
@@ -334,9 +334,9 @@ def _transfer_person_image(source_person_id, target_person_id, s3):
     return jsonify(success=True), 200
 
 
-def _delete_person_image(person_id, s3):
+def delete_person_image(person_id, s3):
     """Delete an image from S3 and nullify its metadata in the db"""
-    image_obj_key, _, _ = _get_person_image_metadata(person_id)
+    image_obj_key, _, _ = get_person_image_metadata(person_id)
 
     if not image_obj_key:
         abort(404, description=f"No image found for person ID: {person_id}")
@@ -364,7 +364,7 @@ def _delete_person_image(person_id, s3):
         abort(500, description="Delete failed")
 
 
-def _get_crash_diagram_metadata(record_locator):
+def get_crash_diagram_metadata(record_locator):
     """Get the crash record diagram metadata for a given crash ID"""
     res = make_hasura_request(
         query=GET_CRASH_DIAGRAM_METADATA, variables={"record_locator": record_locator}
@@ -375,9 +375,9 @@ def _get_crash_diagram_metadata(record_locator):
     return None
 
 
-def _get_crash_diagram_image_url(record_locator, s3):
+def get_crash_diagram_image_url(record_locator, s3):
     """Get a presigned S3 download URL for the given crash record_locator"""
-    diagram_obj_key = _get_crash_diagram_metadata(record_locator)
+    diagram_obj_key = get_crash_diagram_metadata(record_locator)
 
     if not diagram_obj_key:
         return (
@@ -389,13 +389,13 @@ def _get_crash_diagram_image_url(record_locator, s3):
     return jsonify(url=url)
 
 
-def _upsert_crash_diagram_image(record_locator, s3):
+def upsert_crash_diagram_image(record_locator, s3):
     """Handle a crash diagram image upsert"""
     if "file" not in request.files:
         return jsonify(error="Image file is required"), 400
 
     file = request.files["file"]
-    diagram_original_obj_key = _get_crash_diagram_metadata(record_locator)
+    diagram_original_obj_key = get_crash_diagram_metadata(record_locator)
 
     # Process and upload the image
     img_without_exif, img_format, ext = validate_and_process_image(file)
@@ -429,9 +429,9 @@ def _upsert_crash_diagram_image(record_locator, s3):
     return jsonify(success=True), 200
 
 
-def _delete_crash_diagram_image(record_locator, s3):
+def delete_crash_diagram_image(record_locator, s3):
     """Delete a crash diagram from S3 and clear metadata in the db"""
-    diagram_obj_key = _get_crash_diagram_metadata(record_locator)
+    diagram_obj_key = get_crash_diagram_metadata(record_locator)
 
     if not diagram_obj_key:
         abort(404, description=f"No crash diagram found for crash ID: {record_locator}")

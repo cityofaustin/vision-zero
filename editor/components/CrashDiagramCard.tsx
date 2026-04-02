@@ -35,6 +35,11 @@ interface DiagramAlertProps {
   button?: React.ReactNode;
 }
 
+interface CrashDiagramCardProps {
+  crash: Crash;
+  crashRefetch: () => Promise<unknown>;
+}
+
 const DiagramAlert: React.FC<DiagramAlertProps> = ({
   variant,
   message,
@@ -57,7 +62,10 @@ const DiagramAlert: React.FC<DiagramAlertProps> = ({
   </Alert>
 );
 
-export default function CrashDiagramCard({ crash }: { crash: Crash }) {
+export default function CrashDiagramCard({
+  crash,
+  crashRefetch,
+}: CrashDiagramCardProps) {
   const {
     imageUrl,
     error: diagramError,
@@ -109,6 +117,7 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
       updates: { diagram_transform: data },
     });
 
+    crashRefetch();
     // do not clear values from form, but clear dirty state to hide saved button
     reset(data, { keepDirty: false });
     setIsTouched(false);

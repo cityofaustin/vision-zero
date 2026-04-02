@@ -2,7 +2,7 @@
 
 ![Vision Zero Viewer](docs/images/vzv.png)
 
-The Vision Zero Crash Data System is a suite of tools which support the City of Austin's [Vision Zero program](https://www.austintexas.gov/department/vision-zero), which seeks to reduce people hurt or killed by traffic crashes in Austin, TX.
+The Vision Zero Crash Data System is a suite of tools which support the City of Austin's [Vision Zero program](https://www.austintexas.gov/transportation-public-works/programs/vision-zero), which seeks to reduce people hurt or killed by traffic crashes in Austin, TX.
 
 The system has a primary focus on storing, editing, and analyzing traffic crash data, and comprises these core components:
 
