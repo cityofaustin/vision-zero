@@ -30,7 +30,7 @@ import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 import MapGeocoder from "./Geocoder/Geocoder";
 import { arcgisToGeoJSON } from "@terraformer/arcgis";
 
-export const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
+export const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
 const Map = () => {
   // Set initial map config
