@@ -273,7 +273,7 @@ def get_presigned_url(s3_object_key, s3, expires_in=3600):
     )
 
 
-def _handle_image_upload(person_id, file, s3):
+def handle_image_upload(person_id, file, s3):
     """Uploads a person image to S3 after validating and removing EXIF data"""
     img_without_exif, img_format, ext = validate_and_process_image(file)
 
@@ -468,3 +468,4 @@ _get_crash_diagram_metadata = get_crash_diagram_metadata
 _get_crash_diagram_image_url = get_crash_diagram_image_url
 _upsert_crash_diagram_image = upsert_crash_diagram_image
 _delete_crash_diagram_image = delete_crash_diagram_image
+_handle_image_upload = handle_image_upload
