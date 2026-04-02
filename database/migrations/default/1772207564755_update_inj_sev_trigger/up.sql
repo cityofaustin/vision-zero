@@ -54,14 +54,13 @@ BEGIN
         NEW.patient_injry_sev_reason = 'The provider listed the impression: "' || NEW.pcr_provider_impression_secondary || '"';
     when (NEW.flag_patient_gcs_lte_13 = 1 and NEW.trauma_form_trauma_level IN ('Red', 'Level 1', 'Yellow', 'Level 2')) then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'The patient GCS was less than or equal to 13 at any time during the patient encounter and the trauma level was listed as "' || NEW.trauma_form_trauma_level || '"';
+        NEW.patient_injry_sev_reason = 'The patient''s GCS was less than or equal to 13 at any time during the patient encounter and the trauma level was listed as "' || NEW.trauma_form_trauma_level || '"';
     when (NEW.pcr_transport_priority = 'Code 3' and NEW.trauma_form_trauma_level IN ('Red', 'Level 1', 'Yellow', 'Level 2')) then
         NEW.patient_injry_sev_id = 1;
-        NEW.patient_injry_sev_reason = 'The transport priority was listed as "Code 3" the trauma level was listed as "' || NEW.trauma_form_trauma_level || '"';
+        NEW.patient_injry_sev_reason = 'The transport priority was listed as "Code 3" and the trauma level was listed as "' || NEW.trauma_form_trauma_level || '"';
     when (
         NEW.pcr_transport_priority = 'Code 3'
         and NEW.trauma_form_criteria_injury_mechanisms IS NOT NULL
-        and NEW.trauma_form_criteria_injury_mechanisms != 'Crash Death in Same Passenger Compartment'
     ) then
         NEW.patient_injry_sev_id = 1;
         NEW.patient_injry_sev_reason = 'The transport priority was listed as "Code 3" and the trauma injury mechanisms included "' || NEW.trauma_form_criteria_injury_mechanisms || '"';
@@ -87,10 +86,10 @@ BEGIN
         NEW.patient_injry_sev_id = 2;
         NEW.patient_injry_sev_reason = 'The patient was transported to a hospital or their care was transferred to another entity';
     when (lower(NEW.pcr_patient_acuity_final) = 'emergent (yellow)' and lower(NEW.pcr_outcome) in ('transported', 'care transferred')) then
-        NEW.patient_injry_sev_id = 1;
+        NEW.patient_injry_sev_id = 2;
         NEW.patient_injry_sev_reason = 'The patient acuity level was yellow and the patient was transported or had care transferred to another entity';
     when (lower(NEW.pcr_patient_acuity_initial) = 'emergent (yellow)' and lower(NEW.pcr_patient_acuity_final) is NULL and lower(NEW.pcr_outcome) in ('transported', 'care transferred')) then
-        NEW.patient_injry_sev_id = 1;
+        NEW.patient_injry_sev_id = 2;
         NEW.patient_injry_sev_reason = 'The patient acuity level was yellow and the patient was transported or had care transferred to another entity';
     --
     -- possible injuries
