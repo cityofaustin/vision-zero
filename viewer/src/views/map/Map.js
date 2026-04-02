@@ -327,6 +327,49 @@ const Map = () => {
     }
   }, [isMapTypeSet]);
 
+  // useEffect(() => {
+  //   if (!map) return;
+
+  //   map.on("load", () => {
+  //     const container = mapRef.current;
+  //     if (!container) return;
+
+  //     // Fix 1: Add role="listitem" to attribution links
+  //     const attrList = container.querySelector(".mapboxgl-ctrl-attrib-inner");
+  //     if (attrList) {
+  //       attrList.querySelectorAll("a").forEach((a) => {
+  //         a.setAttribute("role", "listitem");
+  //       });
+  //     }
+
+  //     // Fix 2: Add a visually hidden label to the attribution toggle button
+  //     const toggleBtn = container.querySelector(".mapboxgl-ctrl-attrib-button");
+  //     if (toggleBtn) {
+  //       const hiddenLabel = document.createElement("span");
+  //       hiddenLabel.textContent = "Toggle attribution";
+  //       hiddenLabel.setAttribute("aria-hidden", "true"); // aria-label on button already covers AT
+  //       hiddenLabel.style.cssText = `
+  //       position: absolute;
+  //       width: 1px;
+  //       height: 1px;
+  //       padding: 0;
+  //       margin: -1px;
+  //       overflow: hidden;
+  //       clip: rect(0,0,0,0);
+  //       white-space: nowrap;
+  //       border: 0;
+  //     `;
+  //       toggleBtn.appendChild(hiddenLabel);
+  //     }
+
+  //     // Fix 3: Align aria-label with visible text on "Improve this map" link
+  //     const improveLink = container.querySelector(".mapbox-improve-map");
+  //     if (improveLink) {
+  //       improveLink.setAttribute("aria-label", "Improve this map");
+  //     }
+  //   });
+  // }, [map]);
+
   return (
     <ReactMapGL
       {...viewport}
@@ -338,6 +381,48 @@ const Map = () => {
       interactiveLayerIds={interactiveLayerIds}
       onClick={_onSelectCrashPoint}
       ref={mapRef}
+      onLoad={() => {
+        // Fix accessibility issues inside mapbox attribution
+        const map = mapRef.current?.getMap();
+        const container = map?.getContainer();
+        if (!container) return;
+
+        // Add role="listitem" to attribution links
+        const attrList = container.querySelector(".mapboxgl-ctrl-attrib-inner");
+        if (attrList) {
+          attrList.querySelectorAll("a").forEach((a) => {
+            a.setAttribute("role", "listitem");
+          });
+        }
+
+        // Add a visually hidden label to the attribution toggle button
+        const toggleBtn = container.querySelector(
+          ".mapboxgl-ctrl-attrib-button"
+        );
+        if (toggleBtn) {
+          const hiddenLabel = document.createElement("span");
+          hiddenLabel.textContent = "Toggle attribution";
+          hiddenLabel.setAttribute("aria-hidden", "true");
+          hiddenLabel.style.cssText = `
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0,0,0,0);
+          white-space: nowrap;
+          border: 0;
+        `;
+          toggleBtn.appendChild(hiddenLabel);
+        }
+
+        // Align aria-label with visible text on "Improve this map" link
+        const improveLink = container.querySelector(".mapbox-improve-map");
+        if (improveLink) {
+          improveLink.setAttribute("aria-label", "Improve this map");
+        }
+      }}
     >
       {/* Provide empty source and layer as target for beforeId params to set order of layers */}
       {baseSourceAndLayer}
