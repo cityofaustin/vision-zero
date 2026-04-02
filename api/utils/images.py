@@ -456,16 +456,3 @@ def delete_crash_diagram_image(record_locator, s3):
     except Exception as e:
         current_app.logger.exception(str(e))
         abort(500, description="Delete failed")
-
-
-# Temporary compatibility aliases (remove after downstream imports are updated)
-_get_person_image_metadata = get_person_image_metadata
-_get_person_image_url = get_person_image_url
-_upsert_person_image = upsert_person_image
-_delete_person_image = delete_person_image
-_transfer_person_image = copy_person_image
-_get_crash_diagram_metadata = get_crash_diagram_metadata
-_get_crash_diagram_image_url = get_crash_diagram_image_url
-_upsert_crash_diagram_image = upsert_crash_diagram_image
-_delete_crash_diagram_image = delete_crash_diagram_image
-_handle_image_upload = handle_image_upload
