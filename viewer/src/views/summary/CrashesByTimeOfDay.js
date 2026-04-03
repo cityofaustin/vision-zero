@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { format, parseISO, sub } from "date-fns";
 import clonedeep from "lodash.clonedeep";
@@ -21,7 +21,6 @@ import {
   summaryCurrentYearStartDate,
   summaryCurrentYearEndDate,
   yearsArray,
-  dataStartDate,
   dataEndDate,
 } from "../../constants/time";
 import { crashEndpointUrl } from "./queries/socrataQueries";
@@ -31,8 +30,11 @@ import ColorSpinner from "../../Components/Spinner/ColorSpinner";
 
 const dayOfWeekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+// format time at 1AM, 12PM, etc
+const hourFormat = "ha";
+
 const hourBlockArray = [...Array(24).keys()].map((hour) =>
-  format(new Date().setHours(hour), "hha")
+  format(new Date().setHours(hour), hourFormat)
 );
 
 /**
@@ -62,9 +64,10 @@ const buildDataArray = () => {
 const calculateHourBlockTotals = (records, crashType) => {
   const dataArray = buildDataArray();
 
+  console.log("RECORDZ", records);
   records.forEach((record) => {
     const recordDateTime = parseISO(record.crash_timestamp_ct);
-    const recordHour = format(recordDateTime, "hha");
+    const recordHour = format(recordDateTime, hourFormat);
     const recordDay = format(recordDateTime, "E");
 
     const hourData = dataArray.find((hour) => hour.key === recordHour).data;
@@ -95,7 +98,10 @@ const calculateHourBlockTotals = (records, crashType) => {
  */
 const getFatalitiesByYearsAgoUrl = (activeTab, crashType) => {
   // subtract years ago (based on activeTab) from current year
-  const yearsAgoDate = format(sub(parseISO(summaryCurrentYearStartDate), { years: activeTab }), "yyyy");
+  const yearsAgoDate = format(
+    sub(parseISO(summaryCurrentYearStartDate), { years: activeTab }),
+    "yyyy"
+  );
   let queryUrl =
     activeTab === 0
       ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_timestamp_ct between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
@@ -103,14 +109,26 @@ const getFatalitiesByYearsAgoUrl = (activeTab, crashType) => {
   return queryUrl;
 };
 
+function getMaxCrashCount(formattedData) {
+  let max = 0;
+  for (const hour of formattedData) {
+    for (const day of hour.data) {
+      if (day.data === null) continue;
+      if (day.data > max) max = day.data;
+    }
+  }
+  return max;
+}
+
+const formatValue = (d) => {
+  const value = d.data.value ? d.data.value : 0;
+  return value;
+};
+
 const CrashesByTimeOfDay = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [crashType, setCrashType] = useState([]);
   const [heatmapData, setHeatmapData] = useState([]);
-  const [heatmapDataWithPlaceholder, setHeatmapDataWithPlaceholder] = useState(
-    []
-  );
-  const [maxForLegend, setMaxForLegend] = useState(null);
 
   const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
@@ -125,71 +143,10 @@ const CrashesByTimeOfDay = () => {
     });
   }, [activeTab, crashType]);
 
-  // Query to find maximum day total per crash type
-  useEffect(() => {
-    if (maxForLegend) return;
-
-    const maxQuery = `
-    SELECT date_extract_dow(crash_timestamp_ct) as day, date_extract_hh(crash_timestamp_ct) as hour, date_extract_y(crash_timestamp_ct) as year, SUM(death_cnt) as death, SUM(sus_serious_injry_cnt) as serious, serious + death as all 
-    WHERE crash_timestamp_ct BETWEEN '${format(
-      dataStartDate,
-      "yyyy-MM-dd"
-    )}' and '${summaryCurrentYearEndDate}' 
-    GROUP BY day, hour, year 
-    ORDER BY year 
-    |> 
-    SELECT max(death) as fatalities, max(serious) as seriousInjuries, max(all) as fatalitiesAndSeriousInjuries
-    `;
-
-    axios
-      .get(crashEndpointUrl + `?$query=` + encodeURIComponent(maxQuery))
-      .then((res) => {
-        setMaxForLegend(res.data[0]);
-      });
-  }, [maxForLegend, crashType]);
-
-  // When crashType changes, add a placeholder column containing max values to weight each year consistently
-  useEffect(() => {
-    const lastRecordInHeatmapData = heatmapData[heatmapData.length - 1];
-    const isPlaceholderArraySet =
-      lastRecordInHeatmapData && lastRecordInHeatmapData.key === "";
-
-    if (!maxForLegend || heatmapData.length === 0 || isPlaceholderArraySet)
-      return;
-
-    const placeholderArray = heatmapData[0].data.map((data, i) => ({
-      key: dayOfWeekArray[i],
-      data: maxForLegend[crashType.name],
-      // Add this metadata to find which cells to hide in the callback ref below
-      metadata: { isPlaceholder: true },
-    }));
-
-    const placeholderObjForChartWeighting = {
-      key: "",
-      data: placeholderArray,
-    };
-
-    const updatedWeightingData = [
-      ...heatmapData,
-      placeholderObjForChartWeighting,
-    ];
-
-    setHeatmapDataWithPlaceholder(updatedWeightingData);
-  }, [maxForLegend, heatmapData, crashType]);
-
-  // Hide placeholder cells with a callback ref
-  const heatmapCellRef = useCallback((node) => {
-    // Look for the isPlaceholder metadata that we placed there to identify the cells to hide
-    if (node?.props?.data?.metadata?.isPlaceholder) {
-      // Update the cell's style to hide it and its tooltip
-      node.rect.current.style.visibility = "hidden";
-    }
-  }, []);
-
-  const formatValue = (d) => {
-    const value = d.data.value ? d.data.value : 0;
-    return value;
-  };
+  const maxForLegend = useMemo(
+    () => getMaxCrashCount(heatmapData),
+    [heatmapData]
+  );
 
   // Set styles to override Bootstrap default styling
   const StyledButton = styled.div`
@@ -223,7 +180,7 @@ const CrashesByTimeOfDay = () => {
           <hr />
         </Col>
       </Row>
-      {!!heatmapDataWithPlaceholder.length > 0 ? (
+      {!!heatmapData.length > 0 ? (
         <div>
           <Row className="text-center">
             <Col className="pb-2">
@@ -251,23 +208,25 @@ const CrashesByTimeOfDay = () => {
             </Col>
           </Row>
           <Row className="h-auto">
-            <Col id="demographics-heatmap" className="pl-4">
+            <Col id="demographics-heatmap">
               <Heatmap
                 height={267}
-                data={heatmapDataWithPlaceholder}
+                margins={[0, 0, 0, 15]}
+                data={heatmapData}
                 series={
                   <HeatmapSeries
-                    colorScheme={[
-                      colors.intensity2Of5,
-                      colors.intensity3Of5,
-                      colors.intensity4Of5,
-                      colors.viridis1Of6Highest,
-                    ]}
+                  colorScheme={[
+                    "#dadaeb","#9e9ac8", "#6a51a3", "#3f007d"
+                  ]}
+                    // colorScheme={[
+                    //   colors.intensity2Of5,
+                    //   colors.intensity3Of5,
+                    //   colors.intensity4Of5,
+                    //   colors.viridis1Of6Highest,
+                    // ]}   
                     emptyColor={colors.intensity1Of5Lowest}
                     cell={
                       <HeatmapCell
-                        // This ref is needed to hide placeholder cells
-                        ref={heatmapCellRef}
                         tooltip={
                           <ChartTooltip
                             content={(d) =>
@@ -306,7 +265,7 @@ const CrashesByTimeOfDay = () => {
               {!!maxForLegend && (
                 <SequentialLegend
                   data={[
-                    { key: "Max", data: maxForLegend[crashType.name] },
+                    { key: "Max", data: maxForLegend },
                     { key: "Min", data: 0 },
                   ]}
                   orientation="horizontal"
