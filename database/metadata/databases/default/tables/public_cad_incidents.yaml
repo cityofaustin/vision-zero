@@ -1,0 +1,3 @@
+table:
+  name: cad_incidents
+  schema: public
