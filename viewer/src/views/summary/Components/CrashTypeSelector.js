@@ -7,7 +7,7 @@ import { colors } from "../../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeartbeat, faMedkit } from "@fortawesome/free-solid-svg-icons";
 
-const CRASH_TYPES = {
+export const CRASH_TYPES = {
   fatalitiesAndSeriousInjuries: {
     name: "fatalitiesAndSeriousInjuries",
     textString: "Fatalities and Serious Injuries",

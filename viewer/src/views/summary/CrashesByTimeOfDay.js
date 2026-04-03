@@ -3,7 +3,7 @@ import axios from "axios";
 import { format, parseISO } from "date-fns";
 import clonedeep from "lodash.clonedeep";
 
-import CrashTypeSelector from "./Components/CrashTypeSelector";
+import CrashTypeSelector, { CRASH_TYPES } from "./Components/CrashTypeSelector";
 import { Row, Col, Container, Button } from "reactstrap";
 import styled from "styled-components";
 import classnames from "classnames";
@@ -49,12 +49,19 @@ const buildDataArray = () => {
 };
 
 /**
+ * Container to store fetched data by crash type
+ */
+const chartDataStore = Object.keys(CRASH_TYPES).reduce((prev, crashType) => {
+  prev[crashType] = {};
+  return prev;
+}, {});
+
+/**
  * Calculate the figures to populate the heatmap cells
  * @param {*} records - Array of crash records returned from the Socrata query
  * @param {Object} crashType - Object containing query and name details (see CrashTypeSelector component)
  * @returns
  */
-
 const calculateHourBlockTotals = (records, crashType) => {
   const dataArray = buildDataArray();
   records.forEach((record) => {
@@ -120,17 +127,24 @@ const CrashesByTimeOfDay = () => {
   const [crashType, setCrashType] = useState({});
   const [heatmapData, setHeatmapData] = useState([]);
 
-  const toggle = (year) => {
-    if (activeYear !== year) setActiveYear(year);
-  };
-
   useEffect(() => {
     if (!crashType.queryStringCrash) return;
 
-    axios.get(getFatalitiesByYearsAgoUrl(activeYear, crashType)).then((res) => {
-      const formattedData = calculateHourBlockTotals(res.data, crashType);
-      setHeatmapData(formattedData);
-    });
+    if (!chartDataStore[crashType.name][activeYear]) {
+      // we have not fetched this data yet, so do that
+      setHeatmapData([]);
+      axios
+        .get(getFatalitiesByYearsAgoUrl(activeYear, crashType))
+        .then((res) => {
+          const formattedData = calculateHourBlockTotals(res.data, crashType);
+          // save fetched data for re-use
+          chartDataStore[crashType.name][activeYear] = formattedData;
+          setHeatmapData(formattedData);
+        });
+    } else {
+      // we already fetched this data
+      setHeatmapData(chartDataStore[crashType.name][activeYear]);
+    }
   }, [activeYear, crashType]);
 
   const maxForLegend = useMemo(
@@ -150,7 +164,6 @@ const CrashesByTimeOfDay = () => {
     }
   `;
 
-  console.log("crashType", crashType)
   return (
     <Container className="m-0 p-0">
       <Row>
@@ -171,43 +184,44 @@ const CrashesByTimeOfDay = () => {
           <hr />
         </Col>
       </Row>
-      {!!heatmapData.length > 0 ? (
-        <div>
-          <Row className="text-center">
-            <Col className="pb-2">
-              <StyledButton>
-                <Button
-                  key="all_years"
-                  className={classnames(
-                    { active: activeYear === "all_years" },
-                    "year-selector"
-                  )}
-                  onClick={() => {
-                    toggle("all_years");
-                  }}
-                >
-                  All
-                </Button>
-                {yearsArray // Calculate years ago for each year in data window
-                  .map((year) => (
-                    <Button
-                      key={year}
-                      className={classnames(
-                        { active: activeYear === year },
-                        "year-selector"
-                      )}
-                      onClick={() => {
-                        toggle(year);
-                      }}
-                    >
-                      {year}
-                    </Button>
-                  ))}
-              </StyledButton>
-            </Col>
-          </Row>
-          <Row className="h-auto">
-            <Col id="demographics-heatmap">
+
+      <div>
+        <Row className="text-center">
+          <Col className="pb-2">
+            <StyledButton>
+              <Button
+                key="all_years"
+                className={classnames(
+                  { active: activeYear === "all_years" },
+                  "year-selector"
+                )}
+                onClick={() => {
+                  setActiveYear("all_years");
+                }}
+              >
+                All
+              </Button>
+              {yearsArray // Calculate years ago for each year in data window
+                .map((year) => (
+                  <Button
+                    key={year}
+                    className={classnames(
+                      { active: activeYear === year },
+                      "year-selector"
+                    )}
+                    onClick={() => {
+                      setActiveYear(year);
+                    }}
+                  >
+                    {year}
+                  </Button>
+                ))}
+            </StyledButton>
+          </Col>
+        </Row>
+        <Row className="h-auto">
+          <Col id="demographics-heatmap">
+            {!!heatmapData.length > 0 ? (
               <Heatmap
                 height={267}
                 margins={[0, 0, 0, 15]}
@@ -269,28 +283,28 @@ const CrashesByTimeOfDay = () => {
                   />
                 }
               />
-            </Col>
-          </Row>
-          <Row>
-            <Col className="py-2">
-              {!!maxForLegend && (
-                <SequentialLegend
-                  data={[
-                    { key: "Max", data: maxForLegend },
-                    { key: "Min", data: 0 },
-                  ]}
-                  orientation="horizontal"
-                  colorScheme={[colors.intensity1Of7, colors.intensity6Of7]}
-                />
-              )}
-            </Col>
-          </Row>
-        </div>
-      ) : (
-        <h1>
-          <ColorSpinner />
-        </h1>
-      )}
+            ) : (
+              <h1>
+                <ColorSpinner />
+              </h1>
+            )}
+          </Col>
+        </Row>
+        <Row>
+          <Col className="py-2">
+            {!!maxForLegend && (
+              <SequentialLegend
+                data={[
+                  { key: "Max", data: maxForLegend },
+                  { key: "Min", data: 0 },
+                ]}
+                orientation="horizontal"
+                colorScheme={[colors.intensity1Of7, colors.intensity6Of7]}
+              />
+            )}
+          </Col>
+        </Row>
+      </div>
     </Container>
   );
 };
