@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { format, parseISO, sub } from "date-fns";
 import clonedeep from "lodash.clonedeep";
@@ -215,15 +215,12 @@ const CrashesByTimeOfDay = () => {
                 data={heatmapData}
                 series={
                   <HeatmapSeries
-                  colorScheme={[
-                    "#dadaeb","#9e9ac8", "#6a51a3", "#3f007d"
-                  ]}
-                    // colorScheme={[
-                    //   colors.intensity2Of5,
-                    //   colors.intensity3Of5,
-                    //   colors.intensity4Of5,
-                    //   colors.viridis1Of6Highest,
-                    // ]}   
+                    colorScheme={[
+                      colors.intensity2Of5,
+                      colors.intensity3Of5,
+                      colors.intensity4Of5,
+                      colors.viridis1Of6Highest,
+                    ]}
                     emptyColor={colors.intensity1Of5Lowest}
                     cell={
                       <HeatmapCell
