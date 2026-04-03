@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
-import { format, parseISO, sub } from "date-fns";
+import { format, parseISO } from "date-fns";
 import clonedeep from "lodash.clonedeep";
 
 import CrashTypeSelector from "./Components/CrashTypeSelector";
@@ -17,14 +17,8 @@ import {
   LinearXAxisTickSeries,
   LinearXAxisTickLabel,
 } from "reaviz";
-import {
-  summaryCurrentYearStartDate,
-  summaryCurrentYearEndDate,
-  yearsArray,
-  dataEndDate,
-} from "../../constants/time";
+import { yearsArray } from "../../constants/time";
 import { crashEndpointUrl } from "./queries/socrataQueries";
-import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 import ColorSpinner from "../../Components/Spinner/ColorSpinner";
 
@@ -63,8 +57,6 @@ const buildDataArray = () => {
 
 const calculateHourBlockTotals = (records, crashType) => {
   const dataArray = buildDataArray();
-
-  console.log("RECORDZ", records);
   records.forEach((record) => {
     const recordDateTime = parseISO(record.crash_timestamp_ct);
     const recordHour = format(recordDateTime, hourFormat);
@@ -92,20 +84,18 @@ const calculateHourBlockTotals = (records, crashType) => {
 
 /**
  * Generate the query url for the Socrata query based on the active tab and crash type
- * @param {Number} activeTab - The active tab index that corresponds to year option selected
+ * @param {Number | "all_years"} activeYear - The active year selected in the cart. Either a year number of "all_years"
  * @param {Object} crashType - Object containing query and name details (see CrashTypeSelector component)
  * @returns {String} The query url for the Socrata query
  */
-const getFatalitiesByYearsAgoUrl = (activeTab, crashType) => {
-  // subtract years ago (based on activeTab) from current year
-  const yearsAgoDate = format(
-    sub(parseISO(summaryCurrentYearStartDate), { years: activeTab }),
-    "yyyy"
-  );
-  let queryUrl =
-    activeTab === 0
-      ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_timestamp_ct between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
-      : `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_timestamp_ct between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+const getFatalitiesByYearsAgoUrl = (activeYear, crashType) => {
+  const queryStartYear =
+    activeYear === "all_years" ? yearsArray[0] : activeYear;
+
+  const queryEndYear =
+    activeYear === "all_years" ? yearsArray.at(-1) : activeYear;
+
+  let queryUrl = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_timestamp_ct between '${queryStartYear}-01-01T00:00:00' and '${queryEndYear}-12-31T23:59:59'`;
   return queryUrl;
 };
 
@@ -126,22 +116,22 @@ const formatValue = (d) => {
 };
 
 const CrashesByTimeOfDay = () => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [crashType, setCrashType] = useState([]);
+  const [activeYear, setActiveYear] = useState(yearsArray.at(-1));
+  const [crashType, setCrashType] = useState({});
   const [heatmapData, setHeatmapData] = useState([]);
 
-  const toggle = (tab) => {
-    if (activeTab !== tab) setActiveTab(tab);
+  const toggle = (year) => {
+    if (activeYear !== year) setActiveYear(year);
   };
 
   useEffect(() => {
     if (!crashType.queryStringCrash) return;
 
-    axios.get(getFatalitiesByYearsAgoUrl(activeTab, crashType)).then((res) => {
+    axios.get(getFatalitiesByYearsAgoUrl(activeYear, crashType)).then((res) => {
       const formattedData = calculateHourBlockTotals(res.data, crashType);
       setHeatmapData(formattedData);
     });
-  }, [activeTab, crashType]);
+  }, [activeYear, crashType]);
 
   const maxForLegend = useMemo(
     () => getMaxCrashCount(heatmapData),
@@ -160,6 +150,7 @@ const CrashesByTimeOfDay = () => {
     }
   `;
 
+  console.log("crashType", crashType)
   return (
     <Container className="m-0 p-0">
       <Row>
@@ -185,23 +176,31 @@ const CrashesByTimeOfDay = () => {
           <Row className="text-center">
             <Col className="pb-2">
               <StyledButton>
-                {yearsArray() // Calculate years ago for each year in data window
-                  .map((year) => {
-                    const currentYear = parseInt(format(dataEndDate, "yyyy"));
-                    return currentYear - year;
-                  })
-                  .map((yearsAgo) => (
+                <Button
+                  key="all_years"
+                  className={classnames(
+                    { active: activeYear === "all_years" },
+                    "year-selector"
+                  )}
+                  onClick={() => {
+                    toggle("all_years");
+                  }}
+                >
+                  All
+                </Button>
+                {yearsArray // Calculate years ago for each year in data window
+                  .map((year) => (
                     <Button
-                      key={yearsAgo}
+                      key={year}
                       className={classnames(
-                        { active: activeTab === yearsAgo },
+                        { active: activeYear === year },
                         "year-selector"
                       )}
                       onClick={() => {
-                        toggle(yearsAgo);
+                        toggle(year);
                       }}
                     >
-                      {getYearsAgoLabel(yearsAgo)}
+                      {year}
                     </Button>
                   ))}
               </StyledButton>
@@ -216,20 +215,35 @@ const CrashesByTimeOfDay = () => {
                 series={
                   <HeatmapSeries
                     colorScheme={[
-                      colors.intensity2Of5,
-                      colors.intensity3Of5,
-                      colors.intensity4Of5,
-                      colors.viridis1Of6Highest,
+                      colors.intensity1Of7,
+                      colors.intensity2Of7,
+                      colors.intensity3Of7,
+                      colors.intensity4Of7,
+                      colors.intensity5Of7,
+                      colors.intensity6Of7,
+                      colors.intensity7Of7,
                     ]}
-                    emptyColor={colors.intensity1Of5Lowest}
+                    emptyColor={colors.intensity0Of7}
                     cell={
                       <HeatmapCell
                         tooltip={
                           <ChartTooltip
-                            content={(d) =>
-                              `${d.x} ∙
-                          ${formatValue(d)}`
-                            }
+                            content={(d) => (
+                              <div
+                                // attempt to match react-charts tooltip style
+                                style={{
+                                  backgroundColor: "rgba(10, 10, 10, 0.8)",
+                                  color: "#fff",
+                                  padding: 5,
+                                  borderRadius: 5,
+                                }}
+                              >
+                                <span className="font-weight-bold">{`${d.x}`}</span>
+                                <div>
+                                  <span>{`${formatValue(d)} crash${!d.y || d.y > 1 ? "es" : ""}`}</span>
+                                </div>
+                              </div>
+                            )}
                           />
                         }
                       />
@@ -266,10 +280,7 @@ const CrashesByTimeOfDay = () => {
                     { key: "Min", data: 0 },
                   ]}
                   orientation="horizontal"
-                  colorScheme={[
-                    colors.intensity1Of5Lowest,
-                    colors.viridis1Of6Highest,
-                  ]}
+                  colorScheme={[colors.intensity1Of7, colors.intensity6Of7]}
                 />
               )}
             </Col>
