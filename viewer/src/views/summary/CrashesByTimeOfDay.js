@@ -1,9 +1,9 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
-import { format, parseISO, sub } from "date-fns";
+import { format, parseISO } from "date-fns";
 import clonedeep from "lodash.clonedeep";
 
-import CrashTypeSelector from "./Components/CrashTypeSelector";
+import CrashTypeSelector, { CRASH_TYPES } from "./Components/CrashTypeSelector";
 import { Row, Col, Container, Button } from "reactstrap";
 import styled from "styled-components";
 import classnames from "classnames";
@@ -17,22 +17,18 @@ import {
   LinearXAxisTickSeries,
   LinearXAxisTickLabel,
 } from "reaviz";
-import {
-  summaryCurrentYearStartDate,
-  summaryCurrentYearEndDate,
-  yearsArray,
-  dataStartDate,
-  dataEndDate,
-} from "../../constants/time";
+import { yearsArray } from "../../constants/time";
 import { crashEndpointUrl } from "./queries/socrataQueries";
-import { getYearsAgoLabel } from "./helpers/helpers";
 import { colors } from "../../constants/colors";
 import ColorSpinner from "../../Components/Spinner/ColorSpinner";
 
 const dayOfWeekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+// format time at 1AM, 12PM, etc
+const hourFormat = "ha";
+
 const hourBlockArray = [...Array(24).keys()].map((hour) =>
-  format(new Date().setHours(hour), "hha")
+  format(new Date().setHours(hour), hourFormat)
 );
 
 /**
@@ -53,18 +49,24 @@ const buildDataArray = () => {
 };
 
 /**
+ * Container to store fetched data by crash type
+ */
+const chartDataStore = Object.keys(CRASH_TYPES).reduce((prev, crashType) => {
+  prev[crashType] = {};
+  return prev;
+}, {});
+
+/**
  * Calculate the figures to populate the heatmap cells
  * @param {*} records - Array of crash records returned from the Socrata query
  * @param {Object} crashType - Object containing query and name details (see CrashTypeSelector component)
  * @returns
  */
-
 const calculateHourBlockTotals = (records, crashType) => {
   const dataArray = buildDataArray();
-
   records.forEach((record) => {
     const recordDateTime = parseISO(record.crash_timestamp_ct);
-    const recordHour = format(recordDateTime, "hha");
+    const recordHour = format(recordDateTime, hourFormat);
     const recordDay = format(recordDateTime, "E");
 
     const hourData = dataArray.find((hour) => hour.key === recordHour).data;
@@ -89,107 +91,66 @@ const calculateHourBlockTotals = (records, crashType) => {
 
 /**
  * Generate the query url for the Socrata query based on the active tab and crash type
- * @param {Number} activeTab - The active tab index that corresponds to year option selected
+ * @param {Number | "all_years"} activeYear - The active year selected in the cart. Either a year number of "all_years"
  * @param {Object} crashType - Object containing query and name details (see CrashTypeSelector component)
  * @returns {String} The query url for the Socrata query
  */
-const getFatalitiesByYearsAgoUrl = (activeTab, crashType) => {
-  // subtract years ago (based on activeTab) from current year
-  const yearsAgoDate = format(sub(parseISO(summaryCurrentYearStartDate), { years: activeTab }), "yyyy");
-  let queryUrl =
-    activeTab === 0
-      ? `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_timestamp_ct between '${summaryCurrentYearStartDate}T00:00:00' and '${summaryCurrentYearEndDate}T23:59:59'`
-      : `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_timestamp_ct between '${yearsAgoDate}-01-01T00:00:00' and '${yearsAgoDate}-12-31T23:59:59'`;
+const getFatalitiesByYearsAgoUrl = (activeYear, crashType) => {
+  const queryStartYear =
+    activeYear === "all_years" ? yearsArray[0] : activeYear;
+
+  const queryEndYear =
+    activeYear === "all_years" ? yearsArray.at(-1) : activeYear;
+
+  let queryUrl = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_timestamp_ct between '${queryStartYear}-01-01T00:00:00' and '${queryEndYear}-12-31T23:59:59'`;
   return queryUrl;
 };
 
-const CrashesByTimeOfDay = () => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [crashType, setCrashType] = useState([]);
-  const [heatmapData, setHeatmapData] = useState([]);
-  const [heatmapDataWithPlaceholder, setHeatmapDataWithPlaceholder] = useState(
-    []
-  );
-  const [maxForLegend, setMaxForLegend] = useState(null);
+function getMaxCrashCount(formattedData) {
+  let max = 0;
+  for (const hour of formattedData) {
+    for (const day of hour.data) {
+      if (day.data === null) continue;
+      if (day.data > max) max = day.data;
+    }
+  }
+  return max;
+}
 
-  const toggle = (tab) => {
-    if (activeTab !== tab) setActiveTab(tab);
-  };
+const formatValue = (d) => {
+  const value = d.data.value ? d.data.value : 0;
+  return value;
+};
+
+const CrashesByTimeOfDay = () => {
+  const [activeYear, setActiveYear] = useState(yearsArray.at(-1));
+  const [crashType, setCrashType] = useState({});
+  const [heatmapData, setHeatmapData] = useState([]);
 
   useEffect(() => {
     if (!crashType.queryStringCrash) return;
 
-    axios.get(getFatalitiesByYearsAgoUrl(activeTab, crashType)).then((res) => {
-      const formattedData = calculateHourBlockTotals(res.data, crashType);
-      setHeatmapData(formattedData);
-    });
-  }, [activeTab, crashType]);
-
-  // Query to find maximum day total per crash type
-  useEffect(() => {
-    if (maxForLegend) return;
-
-    const maxQuery = `
-    SELECT date_extract_dow(crash_timestamp_ct) as day, date_extract_hh(crash_timestamp_ct) as hour, date_extract_y(crash_timestamp_ct) as year, SUM(death_cnt) as death, SUM(sus_serious_injry_cnt) as serious, serious + death as all 
-    WHERE crash_timestamp_ct BETWEEN '${format(
-      dataStartDate,
-      "yyyy-MM-dd"
-    )}' and '${summaryCurrentYearEndDate}' 
-    GROUP BY day, hour, year 
-    ORDER BY year 
-    |> 
-    SELECT max(death) as fatalities, max(serious) as seriousInjuries, max(all) as fatalitiesAndSeriousInjuries
-    `;
-
-    axios
-      .get(crashEndpointUrl + `?$query=` + encodeURIComponent(maxQuery))
-      .then((res) => {
-        setMaxForLegend(res.data[0]);
-      });
-  }, [maxForLegend, crashType]);
-
-  // When crashType changes, add a placeholder column containing max values to weight each year consistently
-  useEffect(() => {
-    const lastRecordInHeatmapData = heatmapData[heatmapData.length - 1];
-    const isPlaceholderArraySet =
-      lastRecordInHeatmapData && lastRecordInHeatmapData.key === "";
-
-    if (!maxForLegend || heatmapData.length === 0 || isPlaceholderArraySet)
-      return;
-
-    const placeholderArray = heatmapData[0].data.map((data, i) => ({
-      key: dayOfWeekArray[i],
-      data: maxForLegend[crashType.name],
-      // Add this metadata to find which cells to hide in the callback ref below
-      metadata: { isPlaceholder: true },
-    }));
-
-    const placeholderObjForChartWeighting = {
-      key: "",
-      data: placeholderArray,
-    };
-
-    const updatedWeightingData = [
-      ...heatmapData,
-      placeholderObjForChartWeighting,
-    ];
-
-    setHeatmapDataWithPlaceholder(updatedWeightingData);
-  }, [maxForLegend, heatmapData, crashType]);
-
-  // Hide placeholder cells with a callback ref
-  const heatmapCellRef = useCallback((node) => {
-    // Look for the isPlaceholder metadata that we placed there to identify the cells to hide
-    if (node?.props?.data?.metadata?.isPlaceholder) {
-      // Update the cell's style to hide it and its tooltip
-      node.rect.current.style.visibility = "hidden";
+    if (!chartDataStore[crashType.name][activeYear]) {
+      // we have not fetched this data yet, so do that
+      setHeatmapData([]);
+      axios
+        .get(getFatalitiesByYearsAgoUrl(activeYear, crashType))
+        .then((res) => {
+          const formattedData = calculateHourBlockTotals(res.data, crashType);
+          // save fetched data for re-use
+          chartDataStore[crashType.name][activeYear] = formattedData;
+          setHeatmapData(formattedData);
+        });
+    } else {
+      // we already fetched this data
+      setHeatmapData(chartDataStore[crashType.name][activeYear]);
     }
-  }, []);
+  }, [activeYear, crashType]);
 
-  const formatValue = (d) => {
-    const value = d.data.value ? d.data.value : 0;
-    return value;
-  };
+  const maxForLegend = useMemo(
+    () => getMaxCrashCount(heatmapData),
+    [heatmapData]
+  );
 
   // Set styles to override Bootstrap default styling
   const StyledButton = styled.div`
@@ -223,57 +184,80 @@ const CrashesByTimeOfDay = () => {
           <hr />
         </Col>
       </Row>
-      {!!heatmapDataWithPlaceholder.length > 0 ? (
-        <div>
-          <Row className="text-center">
-            <Col className="pb-2">
-              <StyledButton>
-                {yearsArray() // Calculate years ago for each year in data window
-                  .map((year) => {
-                    const currentYear = parseInt(format(dataEndDate, "yyyy"));
-                    return currentYear - year;
-                  })
-                  .map((yearsAgo) => (
-                    <Button
-                      key={yearsAgo}
-                      className={classnames(
-                        { active: activeTab === yearsAgo },
-                        "year-selector"
-                      )}
-                      onClick={() => {
-                        toggle(yearsAgo);
-                      }}
-                    >
-                      {getYearsAgoLabel(yearsAgo)}
-                    </Button>
-                  ))}
-              </StyledButton>
-            </Col>
-          </Row>
-          <Row className="h-auto">
-            <Col id="demographics-heatmap" className="pl-4">
+
+      <div>
+        <Row className="text-center">
+          <Col className="pb-2">
+            <StyledButton>
+              <Button
+                key="all_years"
+                className={classnames(
+                  { active: activeYear === "all_years" },
+                  "year-selector"
+                )}
+                onClick={() => {
+                  setActiveYear("all_years");
+                }}
+              >
+                All
+              </Button>
+              {yearsArray // Calculate years ago for each year in data window
+                .map((year) => (
+                  <Button
+                    key={year}
+                    className={classnames(
+                      { active: activeYear === year },
+                      "year-selector"
+                    )}
+                    onClick={() => {
+                      setActiveYear(year);
+                    }}
+                  >
+                    {year}
+                  </Button>
+                ))}
+            </StyledButton>
+          </Col>
+        </Row>
+        <Row className="h-auto">
+          <Col id="demographics-heatmap">
+            {!!heatmapData.length > 0 ? (
               <Heatmap
                 height={267}
-                data={heatmapDataWithPlaceholder}
+                margins={[0, 0, 0, 15]}
+                data={heatmapData}
                 series={
                   <HeatmapSeries
                     colorScheme={[
-                      colors.intensity2Of5,
-                      colors.intensity3Of5,
-                      colors.intensity4Of5,
-                      colors.viridis1Of6Highest,
+                      colors.intensity1Of7,
+                      colors.intensity2Of7,
+                      colors.intensity3Of7,
+                      colors.intensity4Of7,
+                      colors.intensity5Of7,
+                      colors.intensity6Of7,
+                      colors.intensity7Of7,
                     ]}
-                    emptyColor={colors.intensity1Of5Lowest}
+                    emptyColor={colors.intensity0Of7}
                     cell={
                       <HeatmapCell
-                        // This ref is needed to hide placeholder cells
-                        ref={heatmapCellRef}
                         tooltip={
                           <ChartTooltip
-                            content={(d) =>
-                              `${d.x} ∙
-                          ${formatValue(d)}`
-                            }
+                            content={(d) => (
+                              <div
+                                // attempt to match react-charts tooltip style
+                                style={{
+                                  backgroundColor: "rgba(10, 10, 10, 0.8)",
+                                  color: "#fff",
+                                  padding: 5,
+                                  borderRadius: 5,
+                                }}
+                              >
+                                <span className="font-weight-bold">{`${d.x}`}</span>
+                                <div>
+                                  <span>{`${formatValue(d)} crash${!d.y || d.y > 1 ? "es" : ""}`}</span>
+                                </div>
+                              </div>
+                            )}
                           />
                         }
                       />
@@ -299,31 +283,28 @@ const CrashesByTimeOfDay = () => {
                   />
                 }
               />
-            </Col>
-          </Row>
-          <Row>
-            <Col className="py-2">
-              {!!maxForLegend && (
-                <SequentialLegend
-                  data={[
-                    { key: "Max", data: maxForLegend[crashType.name] },
-                    { key: "Min", data: 0 },
-                  ]}
-                  orientation="horizontal"
-                  colorScheme={[
-                    colors.intensity1Of5Lowest,
-                    colors.viridis1Of6Highest,
-                  ]}
-                />
-              )}
-            </Col>
-          </Row>
-        </div>
-      ) : (
-        <h1>
-          <ColorSpinner />
-        </h1>
-      )}
+            ) : (
+              <h1>
+                <ColorSpinner />
+              </h1>
+            )}
+          </Col>
+        </Row>
+        <Row>
+          <Col className="py-2">
+            {!!maxForLegend && (
+              <SequentialLegend
+                data={[
+                  { key: "Max", data: maxForLegend },
+                  { key: "Min", data: 0 },
+                ]}
+                orientation="horizontal"
+                colorScheme={[colors.intensity1Of7, colors.intensity6Of7]}
+              />
+            )}
+          </Col>
+        </Row>
+      </div>
     </Container>
   );
 };

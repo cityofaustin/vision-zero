@@ -68,7 +68,3 @@ export const getSummaryYearsOfLifeLost = (data, prevYear, currentYear) => {
     { [prevYear]: 0, [currentYear]: 0 }
   ); // start with a count at 0 years
 };
-
-export const getYearsAgoLabel = (yearsAgo) => {
-  return format(sub(dataEndDate, { years: yearsAgo }), "yyyy");
-};

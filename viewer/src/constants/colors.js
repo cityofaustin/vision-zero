@@ -1,8 +1,12 @@
 export const colors = {
-  intensity1Of5Lowest: "#f3f4ff",
-  intensity2Of5: "#c6c8e1",
-  intensity3Of5: "#9a9cc2",
-  intensity4Of5: "#6d6fa4",
+  intensity0Of7: "#eeeffb",
+  intensity1Of7: "#E4E5F5",
+  intensity2Of7: "#BEC0E3",
+  intensity3Of7: "#9B9DCF",
+  intensity4Of7: "#5C5FA0",
+  intensity5Of7: "#404385",
+  intensity6Of7: "#33377E",
+  intensity7Of7: "#7A7DB9",
   // Use viridis1Of6Highest in place of intensity5Of5Highest (they are the same)
   viridis1Of6Highest: "#404385",
   viridis2Of6: "#2a788d",
