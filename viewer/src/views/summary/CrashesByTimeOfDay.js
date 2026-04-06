@@ -126,7 +126,6 @@ function getMaxCrashCount(formattedData) {
  * @returns
  */
 const formatCrashCount = (crashCount) => {
-  console.log(crashCount);
   return `${crashCount} crash${!crashCount || crashCount > 1 ? "es" : ""}`;
 };
 
