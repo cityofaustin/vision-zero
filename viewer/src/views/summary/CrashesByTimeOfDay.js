@@ -22,7 +22,7 @@ import { crashEndpointUrl } from "./queries/socrataQueries";
 import { colors } from "../../constants/colors";
 import ColorSpinner from "../../Components/Spinner/ColorSpinner";
 
-const dayOfWeekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const dayOfWeekArray = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 // format time at 1AM, 12PM, etc
 const hourFormat = "ha";
