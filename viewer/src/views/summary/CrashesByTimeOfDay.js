@@ -91,7 +91,7 @@ const calculateHourBlockTotals = (records, crashType) => {
 
 /**
  * Generate the query url for the Socrata query based on the active tab and crash type
- * @param {Number | "all_years"} activeYear - The active year selected in the cart. Either a year number of "all_years"
+ * @param {Number | "all_years"} activeYear - The active year selected in the chart. Either a year number or "all_years"
  * @param {Object} crashType - Object containing query and name details (see CrashTypeSelector component)
  * @returns {String} The query url for the Socrata query
  */
@@ -106,6 +106,9 @@ const getFatalitiesByYearsAgoUrl = (activeYear, crashType) => {
   return queryUrl;
 };
 
+/**
+ * Find the maximum number of crashes that occurs in a single hour block
+ */
 function getMaxCrashCount(formattedData) {
   let max = 0;
   for (const hour of formattedData) {
@@ -117,9 +120,14 @@ function getMaxCrashCount(formattedData) {
   return max;
 }
 
-const formatValue = (d) => {
-  const value = d.data.value ? d.data.value : 0;
-  return value;
+/**
+ * Format the crash count like "0 crashes" or "1 crash", etc
+ * @param {Integer} crashCount
+ * @returns
+ */
+const formatCrashCount = (crashCount) => {
+  console.log(crashCount);
+  return `${crashCount} crash${!crashCount || crashCount > 1 ? "es" : ""}`;
 };
 
 const CrashesByTimeOfDay = () => {
@@ -242,7 +250,7 @@ const CrashesByTimeOfDay = () => {
                       <HeatmapCell
                         tooltip={
                           <ChartTooltip
-                            content={(d) => (
+                            content={({ y: crashCount, x: label }) => (
                               <div
                                 // attempt to match react-charts tooltip style
                                 style={{
@@ -252,9 +260,13 @@ const CrashesByTimeOfDay = () => {
                                   borderRadius: 5,
                                 }}
                               >
-                                <span className="font-weight-bold">{`${d.x}`}</span>
+                                <span className="font-weight-bold">
+                                  {label}
+                                </span>
                                 <div>
-                                  <span>{`${formatValue(d)} crash${!d.y || d.y > 1 ? "es" : ""}`}</span>
+                                  <span>
+                                    {formatCrashCount(crashCount || 0)}
+                                  </span>
                                 </div>
                               </div>
                             )}
