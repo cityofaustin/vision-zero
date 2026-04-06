@@ -1,4 +1,5 @@
 export const colors = {
+  // Color scale anchored on #404385
   intensity0Of7: "#eeeffb",
   intensity1Of7: "#E4E5F5",
   intensity2Of7: "#BEC0E3",
