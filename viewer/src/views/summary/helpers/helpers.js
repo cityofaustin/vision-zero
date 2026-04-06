@@ -1,7 +1,4 @@
-import { sub, format } from "date-fns";
-
 import { lifespanYears } from "../../../constants/calc";
-import { dataEndDate } from "../../../constants/time";
 // Helpers to handle Socrata responses for Summary view components
 
 const calcFieldTotalsFromRecords = (data, prevYear, currentYear, field) =>
