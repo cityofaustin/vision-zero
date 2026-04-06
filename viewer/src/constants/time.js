@@ -9,8 +9,11 @@ export const ROLLING_YEARS_OF_DATA = 4;
 export const MONTHS_AGO =
   process.env.REACT_APP_VZV_ENVIRONMENT === "PREVIEW" ? 1 : 2;
 
+// Last date of records that should be referenced in VZV (the last day of the month that is MONTHS_AGO months ago)
+export const dataEndDate = sub(new Date(), { days: 14 });
+
 // Create array of ints of last n years
-export const yearsArray = () => {
+const getYearsArray = () => {
   let years = [];
   let year = parseInt(format(dataEndDate, "yyyy"));
   for (let i = 0; i <= ROLLING_YEARS_OF_DATA; i++) {
@@ -19,6 +22,8 @@ export const yearsArray = () => {
   return years;
 };
 
+export const yearsArray = getYearsArray();
+
 // First date of records that should be referenced in VZV (start of first year in rolling window)
 export const dataStartDate = startOfYear(
   sub(new Date(), {
@@ -26,9 +31,6 @@ export const dataStartDate = startOfYear(
     years: ROLLING_YEARS_OF_DATA,
   })
 );
-
-// Last date of records that should be referenced in VZV (the last day of the month that is MONTHS_AGO months ago)
-export const dataEndDate = sub(new Date(), { days: 14 });
 
 // Summary time data
 export const summaryCurrentYearStartDate = format(
