@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Popup } from "react-map-gl";
 import { Button } from "react-bootstrap";
 import { TableMapPopupContentProps } from "./TableMapPopupContent";
 import { GeoJsonProperties } from "geojson";
 import { LuSquareArrowLeft, LuSquareArrowRight } from "react-icons/lu";
+import { COLORS } from "@/utils/constants";
 
 interface PopupWrapperProps {
   latitude: number;
@@ -21,18 +22,22 @@ export default function PopupWrapper({
   onClose,
 }: PopupWrapperProps) {
   const selectedFeaturesLength = selectedFeatures?.length;
-  console.log(selectedFeaturesLength);
-  const [activeFeature, setActiveFeature] = useState(0);
+  const [activeFeatureIndex, setActiveFeatureIndex] = useState(0);
 
   const handleNext = () =>
-    activeFeature === selectedFeaturesLength - 1
-      ? setActiveFeature(0)
-      : setActiveFeature(activeFeature + 1);
+    activeFeatureIndex === selectedFeaturesLength - 1
+      ? setActiveFeatureIndex(0)
+      : setActiveFeatureIndex(activeFeatureIndex + 1);
 
   const handlePrevious = () =>
-    activeFeature === 0
-      ? setActiveFeature(selectedFeaturesLength - 1)
-      : setActiveFeature(activeFeature - 1);
+    activeFeatureIndex === 0
+      ? setActiveFeatureIndex(selectedFeaturesLength - 1)
+      : setActiveFeatureIndex(activeFeatureIndex - 1);
+
+  // reset popup active feature to first element if viewing new array of popups
+  useEffect(() => {
+    setActiveFeatureIndex(0);
+  }, [selectedFeatures]);
 
   if (selectedFeaturesLength > 1) {
     return (
@@ -44,7 +49,7 @@ export default function PopupWrapper({
         onClose={onClose}
       >
         <PopupContent
-          properties={selectedFeatures[activeFeature]?.properties}
+          properties={selectedFeatures[activeFeatureIndex]?.properties}
         />
         <div className="d-flex align-items-center justify-content-between border-top m-2">
           <Button
@@ -52,13 +57,13 @@ export default function PopupWrapper({
             variant="link"
             onClick={handlePrevious}
           >
-            <LuSquareArrowLeft color="#1276d1" />
+            <LuSquareArrowLeft color={COLORS.primary} />
           </Button>{" "}
           <span>
-            {activeFeature + 1}/{selectedFeaturesLength}
+            {activeFeatureIndex + 1}/{selectedFeaturesLength}
           </span>
           <Button className="border-0 px-0" variant="link" onClick={handleNext}>
-            <LuSquareArrowRight color="#1276d1" />
+            <LuSquareArrowRight color={COLORS.primary} />
           </Button>{" "}
         </div>
       </Popup>
