@@ -25,21 +25,15 @@ export default function PopupWrapper({
   console.log(selectedFeaturesLength);
   const [activeFeature, setActiveFeature] = useState(0);
 
-  const handleNext = () => {
-    if (activeFeature === selectedFeaturesLength - 1) {
-      setActiveFeature(0);
-    } else {
-      setActiveFeature(activeFeature + 1);
-    }
-  };
+  const handleNext = () =>
+    activeFeature === selectedFeaturesLength - 1
+      ? setActiveFeature(0)
+      : setActiveFeature(activeFeature + 1);
 
-  const handlePrevious = () => {
-    if (activeFeature === 0) {
-      setActiveFeature(selectedFeaturesLength - 1);
-    } else {
-      setActiveFeature(activeFeature - 1);
-    }
-  };
+  const handlePrevious = () =>
+    activeFeature === 0
+      ? setActiveFeature(selectedFeaturesLength - 1)
+      : setActiveFeature(activeFeature - 1);
 
   if (selectedFeaturesLength > 1) {
     return (
@@ -50,8 +44,10 @@ export default function PopupWrapper({
         closeOnClick={false}
         onClose={onClose}
       >
-        <PopupContent properties={selectedFeatures[activeFeature]?.properties} />
-        <div className="d-flex align-items-center">
+        <PopupContent
+          properties={selectedFeatures[activeFeature]?.properties}
+        />
+        <div className="d-flex align-items-center justify-content-between">
           <Button className="border-0" variant="link" onClick={handlePrevious}>
             <LuSquareArrowLeft className="text-muted" />
           </Button>{" "}
@@ -65,6 +61,8 @@ export default function PopupWrapper({
       </Popup>
     );
   }
+
+  /** Only one popup, display with no navigation */
   return (
     <Popup
       latitude={latitude}
