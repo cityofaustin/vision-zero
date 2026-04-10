@@ -46,15 +46,19 @@ export default function PopupWrapper({
         <PopupContent
           properties={selectedFeatures[activeFeature]?.properties}
         />
-        <div className="d-flex align-items-center justify-content-between">
-          <Button className="border-0" variant="link" onClick={handlePrevious}>
-            <LuSquareArrowLeft className="text-muted" />
+        <div className="d-flex align-items-center justify-content-between border-top m-2">
+          <Button
+            className="border-0 px-0"
+            variant="link"
+            onClick={handlePrevious}
+          >
+            <LuSquareArrowLeft color="#1276d1" />
           </Button>{" "}
           <span>
             {activeFeature + 1}/{selectedFeaturesLength}
           </span>
-          <Button className="border-0" variant="link" onClick={handleNext}>
-            <LuSquareArrowRight className="text-muted" />
+          <Button className="border-0 px-0" variant="link" onClick={handleNext}>
+            <LuSquareArrowRight color="#1276d1" />
           </Button>{" "}
         </div>
       </Popup>
