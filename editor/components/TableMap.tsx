@@ -81,10 +81,9 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
     }
   }, [geojsonBounds, mapRef]);
 
-  const [selectedFeature, setSelectedFeature] = useState<GeoJSONFeature | null>(
-    null
-  );
-  const [selectedFeatures, setSelectedFeatures] = useState<GeoJSONFeature[]|null>(null)
+  const [selectedFeatures, setSelectedFeatures] = useState<
+    GeoJSONFeature[] | null
+  >(null);
   const [cursor, setCursor] = useState("grab");
 
   const onMouseEnter = useCallback(() => {
@@ -117,11 +116,9 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       onClick={(e) => {
         e.originalEvent.stopPropagation();
         if (e.features?.length) {
-          setSelectedFeatures(e.features)
-          setSelectedFeature(e.features[0]);
+          setSelectedFeatures(e.features);
         } else {
-          setSelectedFeature(null);
-          setSelectedFeatures(null)
+          setSelectedFeatures(null);
         }
       }}
       // conditionally include props from mapConfig
@@ -143,12 +140,11 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       />
       {selectedFeatures && selectedFeatures.length > 0 && (
         <PopupWrapper
-          longitude={selectedFeature?.properties?.longitude}
-          latitude={selectedFeature?.properties?.latitude}
-          // featureProperties={selectedFeature.properties}
+          longitude={selectedFeatures[0]?.properties?.longitude}
+          latitude={selectedFeatures[0]?.properties?.latitude}
           selectedFeatures={selectedFeatures}
           PopupContent={PopupComponent}
-          onClose={() => setSelectedFeature(null)}
+          onClose={() => setSelectedFeatures(null)}
         />
       )}
     </MapGL>
