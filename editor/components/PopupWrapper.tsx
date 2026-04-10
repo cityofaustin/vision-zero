@@ -8,7 +8,7 @@ import { LuSquareArrowLeft, LuSquareArrowRight } from "react-icons/lu";
 interface PopupWrapperProps {
   latitude: number;
   longitude: number;
-  featureProperties: GeoJsonProperties;
+  selectedFeatures: GeoJsonProperties[];
   PopupContent: React.ComponentType<TableMapPopupContentProps>;
   onClose: () => void;
 }
@@ -16,12 +16,11 @@ interface PopupWrapperProps {
 export default function PopupWrapper({
   latitude,
   longitude,
-  featureProperties,
   selectedFeatures,
   PopupContent,
   onClose,
 }: PopupWrapperProps) {
-  const selectedFeaturesLength = selectedFeatures.length;
+  const selectedFeaturesLength = selectedFeatures?.length;
   console.log(selectedFeaturesLength);
   const [activeFeature, setActiveFeature] = useState(0);
 
@@ -71,7 +70,7 @@ export default function PopupWrapper({
       closeOnClick={false}
       onClose={onClose}
     >
-      <PopupContent properties={featureProperties} />
+      <PopupContent properties={selectedFeatures[0]?.properties} />
     </Popup>
   );
 }

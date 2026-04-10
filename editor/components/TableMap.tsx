@@ -141,11 +141,11 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
         setBasemapType={setBasemapType}
         controlId="tableMap"
       />
-      {selectedFeature && (
+      {selectedFeatures && selectedFeatures.length > 0 && (
         <PopupWrapper
           longitude={selectedFeature?.properties?.longitude}
           latitude={selectedFeature?.properties?.latitude}
-          featureProperties={selectedFeature.properties}
+          // featureProperties={selectedFeature.properties}
           selectedFeatures={selectedFeatures}
           PopupContent={PopupComponent}
           onClose={() => setSelectedFeature(null)}
