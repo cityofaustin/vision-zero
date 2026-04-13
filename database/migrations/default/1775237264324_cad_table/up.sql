@@ -9,8 +9,8 @@ CREATE TABLE cad_incidents (
     call_disposition text,
     final_problem text,
     incident_type text,
+    incident_group_id integer,
     initial_problem text,
-    match_status text NOT NULL DEFAULT 'unprocessed',
     master_incident_id integer unique,
     master_incident_number text,
     priority_description text,
@@ -24,6 +24,15 @@ CREATE TABLE cad_incidents (
     location_id text,
     in_austin_full_purpose boolean
 );
+
+
+CREATE TABLE cad_incident_groups (
+    id serial PRIMARY KEY,    
+    incident_group_id integer NOT NULL,
+    master_incident_id integer NOT NULL,
+    UNIQUE (incident_group_id, master_incident_id)
+);
+
 
 ALTER TABLE cad_incidents
     ADD CONSTRAINT cad_incidents_location_id_fkey FOREIGN KEY (location_id) REFERENCES public.locations(location_id) ON UPDATE CASCADE ON DELETE SET NULL;
@@ -41,7 +50,6 @@ CREATE INDEX idx_cad_incidents_match_status ON cad_incidents (match_status);
 comment on table cad_incidents is 'This dataset contains information on both 911 calls (usually referred to as Calls for Service or Dispatched Incidents) and officer-initiated incidents related to traffic crashes as recorded in the Austin public safety Computer Aided Dispatch (CAD) system. Data is provided by the public safety enterprise data team after approval by AFD, ATCEMS, and APD';
 
 comment on column cad_incidents.address is 'The incident address';
-
 
 CREATE OR REPLACE FUNCTION cad_incidents_set_spatial_attributes ()
 RETURNS trigger AS $$
@@ -97,18 +105,3 @@ CREATE OR REPLACE TRIGGER trigger_cad_incidents_set_spatial_attributes
     BEFORE INSERT OR UPDATE OF latitude, longitude ON cad_incidents
     FOR EACH ROW EXECUTE FUNCTION cad_incidents_set_spatial_attributes();
 
-CREATE TABLE cad_incident_links (
-    id                  serial PRIMARY KEY,
-    incident_id_a       integer NOT NULL REFERENCES cad_incidents (master_incident_id),
-    incident_id_b       integer NOT NULL REFERENCES cad_incidents (master_incident_id),
-    distance_m          float NOT NULL,
-    delta_minutes       float NOT NULL,
-    created_at          timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT no_duplicate_pairs CHECK (incident_id_a < incident_id_b),
-    CONSTRAINT unique_pair UNIQUE (incident_id_a, incident_id_b)
-);
-
--- CREATE INDEX idx_cad_incident_links_super_incident_id
---     ON cad_incident_links (super_incident_id);
-CREATE INDEX idx_cad_incident_links_a ON cad_incident_links (incident_id_a);
-CREATE INDEX idx_cad_incident_links_b ON cad_incident_links (incident_id_b);
