@@ -76,12 +76,6 @@ export default function FatalCrashDetailsPage({
 
   return (
     <>
-      {
-        // show alert if crash is a temp record, hide delete button on fatalities pages
-        crash.is_temp_record && (
-          <CrashIsTemporaryBanner crash={crash} allowDelete={false} />
-        )
-      }
       <Row>
         <div className="d-flex justify-content-between align-items-center mb-3">
           <span className="fs-3 fw-bold text-uppercase">
@@ -99,6 +93,12 @@ export default function FatalCrashDetailsPage({
           </span>
         </div>
       </Row>
+      {
+        // show alert if crash is a temp record, hide delete button on fatalities pages
+        crash.is_temp_record && (
+          <CrashIsTemporaryBanner crash={crash} allowDelete={false} />
+        )
+      }
       <Row>
         <Col className="mb-3" sm={12} md={6}>
           <Card className="h-100">
