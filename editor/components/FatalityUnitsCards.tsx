@@ -140,11 +140,14 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                   })}
                 </Card.Body>
               )}
-              {(unit.hasCharges || unit.hasContribFactors) && (
+              {(unit.hasCharges ||
+                unit.hasContribFactors ||
+                crash.is_temp_record) && (
                 <FatalityUnitCardFooter
                   hasCharges={unit.hasCharges}
                   hasVictim={unit.hasVictim}
                   hasContribFactors={unit.hasContribFactors}
+                  isTempRecord={crash.is_temp_record}
                   unitCharges={unit.unitCharges}
                   primaryContribFactors={unit.primaryContribFactors}
                   possibleContribFactors={unit.possibleContribFactors}
