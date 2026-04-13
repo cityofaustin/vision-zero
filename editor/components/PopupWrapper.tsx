@@ -39,18 +39,18 @@ export default function PopupWrapper({
     setActiveFeatureIndex(0);
   }, [selectedFeatures]);
 
-  if (selectedFeaturesLength > 1) {
-    return (
-      <Popup
-        latitude={latitude}
-        longitude={longitude}
-        // The popup won't render after multiple map feature click without this prop being false :/
-        closeOnClick={false}
-        onClose={onClose}
-      >
-        <PopupContent
-          properties={selectedFeatures[activeFeatureIndex]?.properties}
-        />
+  return (
+    <Popup
+      latitude={latitude}
+      longitude={longitude}
+      // The popup won't render after multiple map feature click without this prop being false :/
+      closeOnClick={false}
+      onClose={onClose}
+    >
+      <PopupContent
+        properties={selectedFeatures[activeFeatureIndex]?.properties}
+      />
+      {selectedFeaturesLength > 1 && (
         <div className="d-flex align-items-center justify-content-between border-top m-2">
           <Button
             className="border-0 px-0"
@@ -66,20 +66,7 @@ export default function PopupWrapper({
             <LuSquareArrowRight color={COLORS.primary} />
           </Button>{" "}
         </div>
-      </Popup>
-    );
-  }
-
-  /** Only one popup, display with no navigation */
-  return (
-    <Popup
-      latitude={latitude}
-      longitude={longitude}
-      // The popup won't render after multiple map feature click without this prop being false :/
-      closeOnClick={false}
-      onClose={onClose}
-    >
-      <PopupContent properties={selectedFeatures[0]?.properties} />
+      )}
     </Popup>
   );
 }
