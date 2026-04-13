@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Popup } from "react-map-gl";
 import { Button } from "react-bootstrap";
-import { TableMapPopupContentProps } from "./TableMapPopupContent";
 import { GeoJsonProperties } from "geojson";
-import { LuSquareArrowLeft, LuSquareArrowRight } from "react-icons/lu";
-import { COLORS } from "@/utils/constants";
+import { LuArrowLeft, LuArrowRight } from "react-icons/lu";
+import { TableMapPopupContentProps } from "./TableMapPopupContent";
+import AlignedLabel from "@/components/AlignedLabel";
 
 interface PopupWrapperProps {
   latitude: number;
@@ -51,20 +51,30 @@ export default function PopupWrapper({
         properties={selectedFeatures[activeFeatureIndex]?.properties}
       />
       {selectedFeaturesLength > 1 && (
-        <div className="d-flex align-items-center justify-content-between border-top m-2">
+        <div className="d-flex align-items-center justify-content-between border-top pt-2 mx-2">
           <Button
-            className="border-0 px-0"
-            variant="link"
+            size="sm"
+            className="px-0 me-2 px-1"
+            variant="outline-primary"
             onClick={handlePrevious}
           >
-            <LuSquareArrowLeft color={COLORS.primary} />
-          </Button>{" "}
-          <span>
-            {activeFeatureIndex + 1}/{selectedFeaturesLength}
+            <AlignedLabel>
+              <LuArrowLeft className="fs-6" />
+            </AlignedLabel>
+          </Button>
+          <span className="text-primary">
+            {activeFeatureIndex + 1} of {selectedFeaturesLength}
           </span>
-          <Button className="border-0 px-0" variant="link" onClick={handleNext}>
-            <LuSquareArrowRight color={COLORS.primary} />
-          </Button>{" "}
+          <Button
+            size="sm"
+            className=" px-0 px-1"
+            variant="outline-primary"
+            onClick={handleNext}
+          >
+            <AlignedLabel>
+              <LuArrowRight className="fs-6" />
+            </AlignedLabel>
+          </Button>
         </div>
       )}
     </Popup>
