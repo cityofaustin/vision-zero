@@ -226,18 +226,10 @@ def main(*, skip_archive):
 
         seen_ids = set()
         unique_rows = []
-        incident_groups = []
+
 
         for row in data:
             master_incident_id = row["master_incident_id"]
-            incident_group_id = row["incident_group_id"]
-            if incident_group_id:
-                incident_groups.append(
-                    {
-                        "master_incident_id": master_incident_id,
-                        "incident_group_id": incident_group_id,
-                    }
-                )
             if master_incident_id not in seen_ids:
                 seen_ids.add(master_incident_id)
                 unique_rows.append(row)
@@ -246,16 +238,12 @@ def main(*, skip_archive):
             logging.info(f"Upserting {len(chunk)} rows...")
             make_hasura_request(query=upsert_mutation, variables={"objects": chunk})
 
-        for chunk in chunks(incident_groups, BATCH_SIZE):
-            logging.info(f"Upserting {len(chunk)} rows...")
-            make_hasura_request(
-                query=UPSERT_CAD_INCIDENT_GROUPS_MUTATION, variables={"objects": chunk}
-            )
-
         # if not skip_archive:
         # archive_file(file_obj_key)
 
 
 if __name__ == "__main__":
+    print("todo: ignore group ID file for now...")
+    breakpoint()
     args = get_cli_args()
     main(skip_archive=args.skip_archive)
