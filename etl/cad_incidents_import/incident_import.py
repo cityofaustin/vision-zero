@@ -11,7 +11,10 @@ from boto3 import client, resource
 from utils.cli import get_cli_args
 from utils.columns import COLUMNS
 from utils.graphql import make_hasura_request
-from utils.queries import UPSERT_CAD_INCIDENTS_MUTATION
+from utils.queries import (
+    UPSERT_CAD_INCIDENTS_MUTATION,
+    UPSERT_CAD_INCIDENT_GROUPS_MUTATION,
+)
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
@@ -64,7 +67,11 @@ def download_file(file_obj_key):
     """Download an email message from S3"""
     logging.info(f"Downloading: {file_obj_key}")
     file_obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=file_obj_key)
-    return file_obj["Body"].read().decode("utf-8-sig")
+    raw = file_obj["Body"].read()
+    try:
+        return raw.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return raw.decode("cp1252")
 
 
 def archive_file(file_obj_key):
@@ -181,14 +188,26 @@ def main(*, skip_archive):
     files_todo = get_files_todo()
     logging.info(f"{len(files_todo)} files to process")
 
+    if not files_todo:
+        raise Exception("No CAD files found in S3 inbox")
+
     for file_obj_key in files_todo:
+
+        is_group_id_file = "GroupID" in file_obj_key
+
+        if not is_group_id_file:
+            continue
+
         logging.info("Processing data...")
         csv_content = download_file(file_obj_key)
 
-        # todo: we might not need this encoding when working with the actual csvs from the network drive
         reader = csv.DictReader(csv_content.splitlines())
         data = list(reader)
         data = lower_case_keys(data)
+
+        if not data:
+            raise Exception("CAD file contains no records")
+
         set_empty_strings_to_none(data)
         rename_columns(data, COLUMNS["cols_to_rename"])
         transform_lat_lon(data)
@@ -197,13 +216,44 @@ def main(*, skip_archive):
         )
 
         logging.info(f"{len(data):,} total records to upsert.")
-        for chunk in chunks(data, BATCH_SIZE):
+
+        # add update column names to the muation "on conflict" directive
+        column_names_to_upsert = list(data[0].keys())
+        column_names_to_upsert.remove("master_incident_id")
+        upsert_mutation = UPSERT_CAD_INCIDENTS_MUTATION.replace(
+            "$updateColumns", "\n".join(column_names_to_upsert)
+        )
+
+        seen_ids = set()
+        unique_rows = []
+        incident_groups = []
+
+        for row in data:
+            master_incident_id = row["master_incident_id"]
+            incident_group_id = row["incident_group_id"]
+            if incident_group_id:
+                incident_groups.append(
+                    {
+                        "master_incident_id": master_incident_id,
+                        "incident_group_id": incident_group_id,
+                    }
+                )
+            if master_incident_id not in seen_ids:
+                seen_ids.add(master_incident_id)
+                unique_rows.append(row)
+
+        for chunk in chunks(unique_rows, BATCH_SIZE):
+            logging.info(f"Upserting {len(chunk)} rows...")
+            make_hasura_request(query=upsert_mutation, variables={"objects": chunk})
+
+        for chunk in chunks(incident_groups, BATCH_SIZE):
             logging.info(f"Upserting {len(chunk)} rows...")
             make_hasura_request(
-                query=UPSERT_CAD_INCIDENTS_MUTATION, variables={"objects": chunk}
+                query=UPSERT_CAD_INCIDENT_GROUPS_MUTATION, variables={"objects": chunk}
             )
-        if not skip_archive:
-            archive_file(file_obj_key)
+
+        # if not skip_archive:
+        # archive_file(file_obj_key)
 
 
 if __name__ == "__main__":
