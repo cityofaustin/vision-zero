@@ -32,9 +32,8 @@ export default function CrashIsTemporaryBanner({
         <span className="d-flex align-items-center">
           <FaTriangleExclamation className="me-2 d-none d-lg-inline" />
           <span className="me-3">
-            This crash record was created by the Vision Zero team and serves as a
-            placeholder until the CR3 report is received from TxDOT. It may be
-            deleted at any time.
+            This preliminary crash record was created by the Vision Zero team and serves as a
+            placeholder until the official crash report is received from TxDOT — it may be modifed or removed at any time.
           </span>
         </span>
         <PermissionsRequired allowedRoles={allowedDeleteCrashRecordEditRoles}>
