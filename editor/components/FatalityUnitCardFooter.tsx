@@ -1,10 +1,14 @@
-import { Card } from "react-bootstrap";
+import { Card, Button } from "react-bootstrap";
 import { LookupTableOption } from "@/types/relationships";
+import { useState } from "react";
 import { Charge } from "@/types/charge";
-
+import { LuCirclePlus } from "react-icons/lu";
+import AlignedLabel from "@/components/AlignedLabel";
+import ContributingFactorsModal from "@/components/ContributingFactorsModal";
 interface FatalityUnitCardFooterProps {
   primaryContribFactors: (LookupTableOption | null)[];
   possibleContribFactors: (LookupTableOption | null)[];
+  isTempRecord: boolean | null;
   unitCharges: Charge[] | undefined;
   hasCharges: boolean | undefined;
   hasVictim: boolean | undefined;
@@ -19,10 +23,13 @@ export default function FatalityUnitCardFooter({
   hasCharges,
   hasVictim,
   hasContribFactors,
+  isTempRecord,
   unitCharges,
   primaryContribFactors,
   possibleContribFactors,
 }: FatalityUnitCardFooterProps) {
+  const [showModal, setShowModal] = useState(false);
+  const onCloseModal = () => setShowModal(false);
   return (
     <Card.Footer
       // If theres no card body remove extra padding
@@ -30,6 +37,7 @@ export default function FatalityUnitCardFooter({
         "fatality-units-card-header-footer " + (!hasVictim ? "pt-0" : "")
       }
     >
+      <ContributingFactorsModal show={showModal} onClose={onCloseModal} />
       {hasCharges && (
         <div className="pb-1">
           <div className="fw-bold">Charges</div>
@@ -55,6 +63,25 @@ export default function FatalityUnitCardFooter({
               <span>{factor?.label}</span>
             </div>
           ))}
+        </div>
+      )}
+      {!hasContribFactors && isTempRecord && (
+        <div>
+          <div className="fw-bold">Contributing factors</div>
+          <div className="d-flex justify-content-start align-items-center">
+            <span className="text-secondary">None</span>
+            <span>
+              <Button
+                size="sm"
+                variant="outline-primary border-white"
+                onClick={() => setShowModal(true)}
+              >
+                <AlignedLabel>
+                  <LuCirclePlus />
+                </AlignedLabel>
+              </Button>
+            </span>
+          </div>
         </div>
       )}
     </Card.Footer>
