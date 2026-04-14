@@ -6,64 +6,16 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { FaCarBurst, FaMagnifyingGlass } from "react-icons/fa6";
-import { CRASH_NAV_SEARCH } from "@/queries/crash";
-import { Crash } from "@/types/crashes";
-import { Location } from "@/types/locations";
-import { useQuery } from "@/utils/graphql";
+import { LuAmbulance, LuChevronDown, LuMapPin } from "react-icons/lu";
 import DropdownButtonToggle from "@/components/DropdownButtonToggle";
 import AlignedLabel from "@/components/AlignedLabel";
-import { LuAmbulance, LuChevronDown, LuMapPin } from "react-icons/lu";
+import { CRASH_NAV_SEARCH, CASE_NAV_SEARCH } from "@/queries/crash";
+import { LOCATION_NAV_SEARCH } from "@/queries/location";
+import { EMS_INCIDENT_NAV_SEARCH } from "@/queries/ems";
+import { Crash } from "@/types/crashes";
 import { EMSPatientCareRecord } from "@/types/ems";
-import { gql } from "graphql-request";
-
-const CRASH_SEARCH = gql`
-  query CrashNavigationSearch($searchValue: String!) {
-    record_locator: crashes(
-      where: {
-        record_locator: { _eq: $searchValue }
-        is_deleted: { _eq: false }
-      }
-    ) {
-      id
-      record_locator
-    }
-  }
-`;
-
-const CASE_SEARCH = gql`
-  query CrashNavigationSearch($searchValue: String!) {
-    case_id: crashes(
-      where: { case_id: { _eq: $searchValue }, is_deleted: { _eq: false } }
-    ) {
-      id
-      record_locator
-    }
-  }
-`;
-
-const LOCATION_SEARCH = gql`
-  query LocationNavigationSearch($searchValue: String!) {
-    location_id: locations(
-      where: { location_id: { _eq: $searchValue }, is_deleted: { _eq: false } }
-    ) {
-      location_id
-    }
-  }
-`;
-
-const EMS_INCIDENT_SEARCH = gql`
-  query EMSNavigationSearch($searchValue: String!) {
-    incident_number: ems__incidents(
-      where: {
-        incident_number: { _eq: $searchValue }
-        is_deleted: { _eq: false }
-      }
-      limit: 1
-    ) {
-      incident_number
-    }
-  }
-`;
+import { Location } from "@/types/locations";
+import { useQuery } from "@/utils/graphql";
 
 const navSearchLocalStorageKey = "navBarSearchField";
 
@@ -99,7 +51,7 @@ const SEARCH_FIELDS = [
         <span>Case ID</span>
       </AlignedLabel>
     ),
-    query: CASE_SEARCH,
+    query: CASE_NAV_SEARCH,
     getUrl: (record: Crash) => `/crashes/${record.case_id}`,
   },
   {
@@ -110,7 +62,7 @@ const SEARCH_FIELDS = [
         <span>Crash ID</span>
       </AlignedLabel>
     ),
-    query: CRASH_SEARCH,
+    query: CRASH_NAV_SEARCH,
     getUrl: (record: Crash) => `/crashes/${record.record_locator}`,
   },
   {
@@ -121,7 +73,7 @@ const SEARCH_FIELDS = [
         <span>EMS Incident #</span>
       </AlignedLabel>
     ),
-    query: EMS_INCIDENT_SEARCH,
+    query: EMS_INCIDENT_NAV_SEARCH,
     getUrl: (record: EMSPatientCareRecord) => `/ems/${record.incident_number}`,
   },
   {
@@ -132,7 +84,7 @@ const SEARCH_FIELDS = [
         <span>Location ID</span>
       </AlignedLabel>
     ),
-    query: LOCATION_SEARCH,
+    query: LOCATION_NAV_SEARCH,
     getUrl: (record: Location) => `/locations/${record.location_id}`,
   },
 ] satisfies AnySearchField[];

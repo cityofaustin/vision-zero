@@ -34,3 +34,16 @@ export const GET_LOCATION = gql`
     }
   }
 `;
+
+/**
+ * Location ID search used by the navbar search component
+ */
+export const LOCATION_NAV_SEARCH = gql`
+  query LocationNavigationSearch($searchValue: String!) {
+    location_id: locations(
+      where: { location_id: { _eq: $searchValue }, is_deleted: { _eq: false } }
+    ) {
+      location_id
+    }
+  }
+`;
