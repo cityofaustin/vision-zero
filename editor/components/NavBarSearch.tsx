@@ -15,8 +15,11 @@ import { Crash } from "@/types/crashes";
 import { EMSPatientCareRecord } from "@/types/ems";
 import { Location } from "@/types/locations";
 import { useQuery } from "@/utils/graphql";
+import { useLogUserEvent } from "@/utils/userEvents";
 
 const navSearchLocalStorageKey = "navBarSearchField";
+
+const userEventName = "navbar_search";
 
 /**
  * Types that can be used in the search field config
@@ -94,6 +97,7 @@ export default function NavBarSearch() {
   );
   const [searchValue, setSearchValue] = useState("");
   const [searchClicked, setSearchClicked] = useState(false);
+  const logUserEvent = useLogUserEvent();
 
   const router = useRouter();
 
@@ -139,6 +143,7 @@ export default function NavBarSearch() {
   const onSearch = (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearchClicked(true);
+    logUserEvent(`${userEventName}_${searchField.key}`);
   };
 
   const onSelectSearchField = (field: AnySearchField) => {
