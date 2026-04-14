@@ -1,5 +1,4 @@
 import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
-import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 import { getYearsAgoDate, makeDateFilters } from "@/utils/dates";
 
 const locationCrashesFiltercards: FilterGroup[] = [
@@ -185,7 +184,7 @@ export const locationCrashesQueryConfig: QueryConfig = {
   exportable: true,
   exportFilename: "location-crashes",
   tableName: "location_crashes_view",
-  limit: DEFAULT_QUERY_LIMIT,
+  limit: 1000,
   offset: 0,
   sortColName: "crash_timestamp",
   sortAsc: false,
