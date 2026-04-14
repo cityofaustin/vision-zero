@@ -9,7 +9,7 @@ export const ROLLING_YEARS_OF_DATA = 4;
 export const MONTHS_AGO =
   process.env.REACT_APP_VZV_ENVIRONMENT === "PREVIEW" ? 1 : 2;
 
-// Last date of records that should be referenced in VZV (the last day of the month that is MONTHS_AGO months ago)
+// Last date of records that should be referenced in VZV
 export const dataEndDate = sub(new Date(), { days: 14 });
 
 // Create array of ints of last n years
