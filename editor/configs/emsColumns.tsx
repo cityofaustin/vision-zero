@@ -206,7 +206,6 @@ export const ALL_EMS_COLUMNS = {
     style: { whiteSpace: "nowrap" },
     valueFormatter: formatIsoDateTime,
     sortable: true,
-    fetchAlways: true,
   },
   incident_received_datetime: {
     path: "incident_received_datetime",
@@ -214,6 +213,7 @@ export const ALL_EMS_COLUMNS = {
     style: { whiteSpace: "nowrap" },
     valueFormatter: formatDate,
     sortable: true,
+    fetchAlways: true,
   },
   person_id: {
     path: "person_id",
