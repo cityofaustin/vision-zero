@@ -5,8 +5,7 @@ import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import { FaCarBurst, FaMagnifyingGlass } from "react-icons/fa6";
-import { LuAmbulance, LuChevronDown, LuMapPin } from "react-icons/lu";
+import { LuChevronDown, LuSearch } from "react-icons/lu";
 import DropdownButtonToggle from "@/components/DropdownButtonToggle";
 import AlignedLabel from "@/components/AlignedLabel";
 import { CRASH_NAV_SEARCH, CASE_NAV_SEARCH } from "@/queries/crash";
@@ -29,7 +28,7 @@ type SearchableTypes = Crash | Location | EMSPatientCareRecord;
  */
 type SearchField<T extends SearchableTypes = SearchableTypes> = {
   key: string;
-  label: string | React.ReactNode;
+  label: string;
   query: string;
   getUrl: (record: T) => string;
 };
@@ -45,56 +44,42 @@ type AnySearchField =
 const SEARCH_FIELDS = [
   {
     key: "case_id",
-    label: (
-      <AlignedLabel>
-        <FaCarBurst className="me-2" />
-        <span>Case ID</span>
-      </AlignedLabel>
-    ),
+    label: "Case ID",
     query: CASE_NAV_SEARCH,
-    getUrl: (record: Crash) => `/crashes/${record.case_id}`,
+    getUrl: (record: Crash) => `/crashes/${record.record_locator}`,
   },
   {
     key: "record_locator",
-    label: (
-      <AlignedLabel>
-        <FaCarBurst className="me-2" />
-        <span>Crash ID</span>
-      </AlignedLabel>
-    ),
+    label: "Crash ID",
     query: CRASH_NAV_SEARCH,
     getUrl: (record: Crash) => `/crashes/${record.record_locator}`,
   },
   {
     key: "incident_number",
-    label: (
-      <AlignedLabel>
-        <LuAmbulance className="me-2" />
-        <span>EMS Incident #</span>
-      </AlignedLabel>
-    ),
+    label: "EMS Incident #",
     query: EMS_INCIDENT_NAV_SEARCH,
     getUrl: (record: EMSPatientCareRecord) => `/ems/${record.incident_number}`,
   },
   {
     key: "location_id",
-    label: (
-      <AlignedLabel>
-        <LuMapPin className="me-2" />
-        <span>Location ID</span>
-      </AlignedLabel>
-    ),
+    label: "Location ID",
     query: LOCATION_NAV_SEARCH,
     getUrl: (record: Location) => `/locations/${record.location_id}`,
   },
 ] satisfies AnySearchField[];
 
-const getValidSearchField = (val: string | null): AnySearchField => {
-  if (!val) {
+/**
+ * Find a search field config from an input key - it's a safe way to handle an
+ * abritrary key string from local storage
+ * @param val
+ * @returns
+ */
+const getValidSearchField = (key: string | null): AnySearchField => {
+  if (!key) {
     return SEARCH_FIELDS[0];
   }
   const foundSearchField = SEARCH_FIELDS.find(
-    (searchField) => searchField.key === val
+    (searchField) => searchField.key === key
   );
   return foundSearchField || SEARCH_FIELDS[0];
 };
@@ -104,9 +89,8 @@ const getValidSearchField = (val: string | null): AnySearchField => {
  * typing in its crash id or case id
  */
 export default function NavBarSearch() {
-  const stored = localStorage.getItem(navSearchLocalStorageKey);
   const [searchField, setSearchField] = useState<AnySearchField>(
-    getValidSearchField(stored)
+    getValidSearchField(null)
   );
   const [searchValue, setSearchValue] = useState("");
   const [searchClicked, setSearchClicked] = useState(false);
@@ -122,15 +106,32 @@ export default function NavBarSearch() {
 
   useEffect(() => {
     if (searchClicked && data?.length === 1) {
-      // we pass our to get URL as an any, because we know that getUrl
-      // the query are from the same type
+      // we are casting our matchedRecord to bypass TS headaches. we have to
+      // trust that are queries are returning the objects we think they are
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      router.push(searchField.getUrl(data[0] as any));
+      const matchedRecord = data[0] as Crash & Location & EMSPatientCareRecord;
+      const route = searchField.getUrl(matchedRecord);
+      router.push(route);
       setSearchValue("");
       setSearchClicked(false);
     }
   }, [searchClicked, data, router, searchField]);
 
+  /**
+   * On init, check local storage for search key and use it
+   */
+  useEffect(() => {
+    const searchKeyFromLocalStorage = localStorage.getItem(
+      navSearchLocalStorageKey
+    );
+    if (searchKeyFromLocalStorage) {
+      setSearchField(getValidSearchField(searchKeyFromLocalStorage));
+    }
+  }, []);
+
+  /**
+   * Keep the selected search field key in sync w/ local storage
+   */
   useEffect(() => {
     localStorage.setItem(navSearchLocalStorageKey, searchField.key);
   }, [searchField]);
@@ -195,7 +196,7 @@ export default function NavBarSearch() {
             {searchError}
           </Form.Control.Feedback>
           <Button type="submit" size="sm" disabled={!searchValue}>
-            {!isLoading ? <FaMagnifyingGlass /> : <Spinner size="sm" />}
+            {!isLoading ? <LuSearch className="fs-5" /> : <Spinner size="sm" />}
           </Button>
         </InputGroup>
       </Form.Group>
