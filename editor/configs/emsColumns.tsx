@@ -154,7 +154,6 @@ export const ALL_EMS_COLUMNS = {
   cris_crash_id: {
     path: "crash.cris_crash_id",
     label: "Crash ID",
-    fetchAlways: true,
     relationship: {
       tableSchema: "public",
       tableName: "crashes",
@@ -188,6 +187,7 @@ export const ALL_EMS_COLUMNS = {
     path: "incident_number",
     label: "Incident",
     sortable: true,
+    fetchAlways: true,
     valueRenderer: (record: EMSPatientCareRecord) => (
       <Link href={`/ems/${record.incident_number}`} prefetch={false}>
         <span style={{ whiteSpace: "nowrap" }}>{record.incident_number}</span>
