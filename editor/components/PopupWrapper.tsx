@@ -46,6 +46,7 @@ export default function PopupWrapper({
       // The popup won't render after multiple map feature click without this prop being false :/
       closeOnClick={false}
       onClose={onClose}
+      style={{ width: "235px" }}
     >
       <PopupContent
         properties={selectedFeatures[activeFeatureIndex]?.properties}
