@@ -1,6 +1,7 @@
 -- Most recent migration: database/migrations/default/1727451511064_init/up.sql
 
-CREATE OR REPLACE VIEW fatalities_view AS SELECT
+CREATE OR REPLACE VIEW fatalities_view AS
+SELECT
     people.id  AS person_id,
     crashes.id AS crash_pk,
     crashes.cris_crash_id,
