@@ -236,15 +236,14 @@ const CrashesByTimeOfDay = () => {
                 series={
                   <HeatmapSeries
                     colorScheme={[
-                      colors.intensity1Of7,
-                      colors.intensity2Of7,
-                      colors.intensity3Of7,
-                      colors.intensity4Of7,
-                      colors.intensity5Of7,
-                      colors.intensity6Of7,
-                      colors.intensity7Of7,
+                      colors.intensity1Of6,
+                      colors.intensity2Of6,
+                      colors.intensity3Of6,
+                      colors.intensity4Of6,
+                      colors.intensity5Of6,
+                      colors.intensity6Of6,
                     ]}
-                    emptyColor={colors.intensity0Of7}
+                    emptyColor={colors.intensity0Of6}
                     cell={
                       <HeatmapCell
                         tooltip={
@@ -310,7 +309,7 @@ const CrashesByTimeOfDay = () => {
                   { key: "Min", data: 0 },
                 ]}
                 orientation="horizontal"
-                colorScheme={[colors.intensity1Of7, colors.intensity6Of7]}
+                colorScheme={[colors.intensity1Of6, colors.intensity6Of6]}
               />
             )}
           </Col>
