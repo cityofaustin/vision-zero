@@ -147,25 +147,6 @@ def chunks(lst, n):
         yield lst[i : i + n]
 
 
-sample = {
-    "Agency_Type": "FIRE",
-    "Master_Incident_Number": "15013354",
-    "Master_Incident_ID": "13753464",
-    "Address": "2700 Esperanza Xing",
-    "Incident_Type": "D - Collision Priority 4F",
-    "Priority_Number": "9",
-    "Priority_Description": "4M",
-    "Response_Date": "2015-02-09 22:19:22.000",
-    "Time_First_Unit_Arrived": "NULL",
-    "Time_CallClosed": "2015-02-09 22:23:12.000",
-    "Initial_Problem": "Traffic Injury Pri 4F",
-    "Final_Problem": "Traffic Injury Pri 4F",
-    "Call_Disposition": "CBA - Canceled Before Arrival",
-    "Latitude": "30397847",
-    "Longitude": "97718067",
-}
-
-
 def transform_lat_lon(data):
     """Translate the input lat/lon from integers to decimals.
 
@@ -227,7 +208,6 @@ def main(*, skip_archive):
         seen_ids = set()
         unique_rows = []
 
-
         for row in data:
             master_incident_id = row["master_incident_id"]
             if master_incident_id not in seen_ids:
@@ -240,10 +220,11 @@ def main(*, skip_archive):
 
         # if not skip_archive:
         # archive_file(file_obj_key)
+    print("todo: ignore group ID file for now...")
+    breakpoint()
 
 
 if __name__ == "__main__":
-    print("todo: ignore group ID file for now...")
-    breakpoint()
+
     args = get_cli_args()
     main(skip_archive=args.skip_archive)
