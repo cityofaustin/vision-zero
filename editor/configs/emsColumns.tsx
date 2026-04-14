@@ -154,6 +154,7 @@ export const ALL_EMS_COLUMNS = {
   cris_crash_id: {
     path: "crash.cris_crash_id",
     label: "Crash ID",
+    fetchAlways: true,
     relationship: {
       tableSchema: "public",
       tableName: "crashes",
@@ -181,6 +182,7 @@ export const ALL_EMS_COLUMNS = {
     path: "incident_location_address",
     label: "Incident address",
     sortable: true,
+    fetchAlways: true,
   },
   incident_number: {
     path: "incident_number",
@@ -204,6 +206,7 @@ export const ALL_EMS_COLUMNS = {
     style: { whiteSpace: "nowrap" },
     valueFormatter: formatIsoDateTime,
     sortable: true,
+    fetchAlways: true,
   },
   incident_received_datetime: {
     path: "incident_received_datetime",
@@ -238,11 +241,15 @@ export const ALL_EMS_COLUMNS = {
   },
   latitude: {
     path: "latitude",
-    label: "Latitude"
+    label: "Latitude",
+    fetchAlways: true,
+    exportOnly: true,
   },
   longitude: {
     path: "longitude",
-    label: "Longitude"
+    label: "Longitude",
+    fetchAlways: true,
+    exportOnly: true,
   },
   mvc_form_position_in_vehicle: {
     path: "mvc_form_position_in_vehicle",
