@@ -130,7 +130,7 @@ const formatCrashCount = (crashCount) => {
 };
 
 const CrashesByTimeOfDay = () => {
-  const [activeYear, setActiveYear] = useState(yearsArray.at(-1));
+  const [activeYear, setActiveYear] = useState("all_years");
   const [crashType, setCrashType] = useState({});
   const [heatmapData, setHeatmapData] = useState([]);
 
@@ -196,18 +196,6 @@ const CrashesByTimeOfDay = () => {
         <Row className="text-center">
           <Col className="pb-2">
             <StyledButton>
-              <Button
-                key="all_years"
-                className={classnames(
-                  { active: activeYear === "all_years" },
-                  "year-selector"
-                )}
-                onClick={() => {
-                  setActiveYear("all_years");
-                }}
-              >
-                All
-              </Button>
               {yearsArray // Calculate years ago for each year in data window
                 .map((year) => (
                   <Button
@@ -223,6 +211,18 @@ const CrashesByTimeOfDay = () => {
                     {year}
                   </Button>
                 ))}
+              <Button
+                key="all_years"
+                className={classnames(
+                  { active: activeYear === "all_years" },
+                  "year-selector"
+                )}
+                onClick={() => {
+                  setActiveYear("all_years");
+                }}
+              >
+                All
+              </Button>
             </StyledButton>
           </Col>
         </Row>
