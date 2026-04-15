@@ -2,9 +2,11 @@ import { Card, Button } from "react-bootstrap";
 import { LookupTableOption } from "@/types/relationships";
 import { useState } from "react";
 import { Charge } from "@/types/charge";
-import { LuCirclePlus } from "react-icons/lu";
+import { Unit } from "@/types/unit";
+import { LuCirclePlus, LuSquarePen } from "react-icons/lu";
 import AlignedLabel from "@/components/AlignedLabel";
 import ContributingFactorsModal from "@/components/ContributingFactorsModal";
+
 interface FatalityUnitCardFooterProps {
   primaryContribFactors: (LookupTableOption | null)[];
   possibleContribFactors: (LookupTableOption | null)[];
@@ -13,6 +15,8 @@ interface FatalityUnitCardFooterProps {
   hasCharges: boolean | undefined;
   hasVictim: boolean | undefined;
   hasContribFactors: boolean;
+  unit: Unit;
+  onSaveCallback: () => Promise<void>;
 }
 
 /**
@@ -27,6 +31,8 @@ export default function FatalityUnitCardFooter({
   unitCharges,
   primaryContribFactors,
   possibleContribFactors,
+  unit,
+  onSaveCallback,
 }: FatalityUnitCardFooterProps) {
   const [showModal, setShowModal] = useState(false);
   const onCloseModal = () => setShowModal(false);
@@ -37,7 +43,12 @@ export default function FatalityUnitCardFooter({
         "fatality-units-card-header-footer " + (!hasVictim ? "pt-0" : "")
       }
     >
-      <ContributingFactorsModal show={showModal} onClose={onCloseModal} />
+      <ContributingFactorsModal
+        unit={unit}
+        show={showModal}
+        onClose={onCloseModal}
+        onSaveCallback={onSaveCallback}
+      />
       {hasCharges && (
         <div className="pb-1">
           <div className="fw-bold">Charges</div>
@@ -50,7 +61,20 @@ export default function FatalityUnitCardFooter({
       )}
       {hasContribFactors && (
         <div>
-          <div className="fw-bold">Contributing factors</div>
+          <span className="fw-bold">Contributing factors</span>
+          {isTempRecord && (
+            <span>
+              <Button
+                size="sm"
+                variant="outline-primary border-white"
+                onClick={() => setShowModal(true)}
+              >
+                <AlignedLabel>
+                  <LuSquarePen />
+                </AlignedLabel>
+              </Button>
+            </span>
+          )}
           {primaryContribFactors.map((factor) => (
             <div className="ms-2" key={factor?.id}>
               <span className="fw-bold">Primary: </span>
