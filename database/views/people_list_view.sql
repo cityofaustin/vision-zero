@@ -1,7 +1,6 @@
 -- Most recent migration: database/migrations/default/1727451511064_init/up.sql
 
-CREATE OR REPLACE VIEW people_list_view AS
-SELECT
+CREATE OR REPLACE VIEW people_list_view AS SELECT
     people.id,
     people.created_at,
     people.created_by,
