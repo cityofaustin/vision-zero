@@ -36,7 +36,7 @@ export default function CrashIsTemporaryBanner({
           <span className="me-3">
             This preliminary crash record was created by the Vision Zero team
             and serves as a placeholder until the official crash report is
-            received from TxDOT — it may be modifed or removed at any time.
+            received from TxDOT.
           </span>
         </span>
         {allowDelete && (
