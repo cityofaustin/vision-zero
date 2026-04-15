@@ -7,6 +7,7 @@ import FatalityVictimListItem from "@/components/FatalityVictimListItem";
 
 interface FatalityUnitsCardsProps {
   crash: Crash;
+  onSaveCallback: () => Promise<void>;
 }
 
 /** Builds the year make and model string */
@@ -76,7 +77,10 @@ const getUnitDisplayData = (crash: Crash, showAllUnits: boolean) => {
  * A section of the Fatality Details page that renders a unit card for every
  * unit in the crash that has a fatality, contributing factor, or charge associated with it
  */
-export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
+export default function FatalityUnitsCards({
+  crash,
+  onSaveCallback,
+}: FatalityUnitsCardsProps) {
   const [showAllUnits, setShowAllUnits] = useState(true);
 
   const unitDataReadyToRender = useMemo(
@@ -144,6 +148,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                 unit.hasContribFactors ||
                 crash.is_temp_record) && (
                 <FatalityUnitCardFooter
+                  unit={unit}
                   hasCharges={unit.hasCharges}
                   hasVictim={unit.hasVictim}
                   hasContribFactors={unit.hasContribFactors}
@@ -151,6 +156,7 @@ export default function FatalityUnitsCards({ crash }: FatalityUnitsCardsProps) {
                   unitCharges={unit.unitCharges}
                   primaryContribFactors={unit.primaryContribFactors}
                   possibleContribFactors={unit.possibleContribFactors}
+                  onSaveCallback={onSaveCallback}
                 />
               )}
             </Card>
