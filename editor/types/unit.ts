@@ -2,6 +2,11 @@ import { LookupTableOption } from "./relationships";
 
 export type Unit = {
   id: number;
+  contrib_factr_1_id: number | null;
+  contrib_factr_2_id: number | null;
+  contrib_factr_3_id: number | null;
+  contrib_factr_p1_id: number | null;
+  contrib_factr_p2_id: number | null;
   contrib_factr: LookupTableOption | null;
   contrib_factr_2: LookupTableOption | null;
   contrib_factr_3: LookupTableOption | null;
