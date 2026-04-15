@@ -20,6 +20,7 @@ import { crashesColumns } from "@/configs/crashesColumns";
 import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 import NotesCard from "@/components/NotesCard";
 import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/crashNotes";
+import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
 
 const otherCardColumns = [
   crashesColumns.case_id,
@@ -92,6 +93,12 @@ export default function FatalCrashDetailsPage({
           </span>
         </div>
       </Row>
+      {
+        // show alert if crash is a temp record, hide delete button on fatalities pages
+        crash.is_temp_record && (
+          <CrashIsTemporaryBanner crash={crash} allowDelete={false} />
+        )
+      }
       <Row>
         <Col className="mb-3" sm={12} md={6}>
           <Card className="h-100">
