@@ -19,6 +19,7 @@ import DataCard from "@/components/DataCard";
 import { crashesColumns } from "@/configs/crashesColumns";
 import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 import NotesCard from "@/components/NotesCard";
+import UserEventsLogger from "@/components/UserEventsLogger";
 import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/crashNotes";
 import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
 
@@ -75,7 +76,7 @@ export default function FatalCrashDetailsPage({
   const crash = data[0];
 
   return (
-    <>
+    <UserEventsLogger eventName="fatality_details_view">
       <Row>
         <div className="d-flex justify-content-between align-items-center mb-3">
           <span className="fs-3 fw-bold text-uppercase">
@@ -201,6 +202,6 @@ export default function FatalCrashDetailsPage({
           />
         </Col>
       </Row>
-    </>
+    </UserEventsLogger>
   );
 }
