@@ -9,6 +9,7 @@ import { compareNumbersAndBools, compareStrings } from "@/utils/sorting";
 import { getRecordValue } from "@/utils/formHelpers";
 import { FaSortDown, FaSortUp } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
+import ColumnVisibilityAlert from "@/components/ColumnVisibilityAlert";
 
 interface RelatedRecordTableProps<
   T extends Record<string, unknown>,
@@ -258,6 +259,7 @@ export default function RelatedRecordTable<
         </div>
       </Card.Header>
       <Card.Body>
+        <ColumnVisibilityAlert show={visibleColumns.length === 0} />
         <Table hover responsive>
           <thead>
             <tr>

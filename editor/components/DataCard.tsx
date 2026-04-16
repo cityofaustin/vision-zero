@@ -16,6 +16,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { hasRole } from "@/utils/auth";
 import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
 import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
+import ColumnVisibilityAlert from "@/components/ColumnVisibilityAlert";
 
 export interface HeaderActionComponentProps<T extends Record<string, unknown>> {
   record: T;
@@ -160,6 +161,7 @@ export default function DataCard<T extends Record<string, unknown>>({
         )}
       </Card.Header>
       <Card.Body>
+        <ColumnVisibilityAlert show={visibleColumns.length === 0} />
         <Table responsive hover>
           <tbody>
             {visibleColumns.map((col) => {

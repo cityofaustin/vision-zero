@@ -22,6 +22,10 @@ import { useQuery } from "@/utils/graphql";
 import { useExportQuery, useQueryBuilder } from "@/utils/queryBuilder";
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
+import { Alert } from "react-bootstrap";
+import { LuSettings } from "react-icons/lu";
+import AlignedLabel from "@/components/AlignedLabel";
+import ColumnVisibilityAlert from "@/components/ColumnVisibilityAlert";
 
 interface TableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
@@ -362,6 +366,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       {(!queryConfig.mapConfig || !queryConfig.mapConfig.isActive) && (
         <Row>
           <Col>
+            <ColumnVisibilityAlert show={visibleColumns.length === 0} />
             <Table<T>
               rows={rows}
               columns={visibleColumns}
