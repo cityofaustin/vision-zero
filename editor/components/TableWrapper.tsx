@@ -22,6 +22,7 @@ import { useQuery } from "@/utils/graphql";
 import { useExportQuery, useQueryBuilder } from "@/utils/queryBuilder";
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
+import ColumnVisibilityAlert from "@/components/ColumnVisibilityAlert";
 
 interface TableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
@@ -129,7 +130,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   const { data, aggregateData, isLoading, error, refetch } = useQuery<T>({
     // don't fire first query until localstorage is loaded
-    query: isQueryConfigLocalStorageLoaded ? query : null,
+    query: (isQueryConfigLocalStorageLoaded && visibleColumns.length > 0) ? query : null,
     typename: queryConfig.tableName,
     hasAggregates: true,
   });
@@ -362,6 +363,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       {(!queryConfig.mapConfig || !queryConfig.mapConfig.isActive) && (
         <Row>
           <Col>
+            <ColumnVisibilityAlert show={visibleColumns.length === 0} />
             <Table<T>
               rows={rows}
               columns={visibleColumns}

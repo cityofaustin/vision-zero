@@ -315,6 +315,9 @@ export const GET_CRASH = gql`
   }
 `;
 
+/**
+ * Record locator search used by the navbar search component
+ */
 export const CRASH_NAV_SEARCH = gql`
   query CrashNavigationSearch($searchValue: String!) {
     record_locator: crashes(
@@ -326,6 +329,14 @@ export const CRASH_NAV_SEARCH = gql`
       id
       record_locator
     }
+  }
+`;
+
+/**
+ * Case ID search used by the navbar search component
+ */
+export const CASE_NAV_SEARCH = gql`
+  query CrashNavigationSearch($searchValue: String!) {
     case_id: crashes(
       where: { case_id: { _eq: $searchValue }, is_deleted: { _eq: false } }
     ) {

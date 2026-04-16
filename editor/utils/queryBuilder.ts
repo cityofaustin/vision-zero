@@ -54,7 +54,7 @@ const arrayToStringRep = (arr: number[] | string[]): string => {
     items = arr.map((val) => `"${val}"`);
   } else {
     items = arr;
-  } 
+  }
   return `[${items.join(", ")}]`;
 };
 
@@ -262,9 +262,11 @@ const buildQuery = <T extends Record<string, unknown>>(
     searchFilter,
   } = queryConfig;
 
-  const columnQueryString = getQueryStringComponent(
-    columns.map((col) => col.path)
-  );
+  // include the __typename in no columns provided
+  // ensures a valid column selection set is always included in the query
+  const pathsForQuery =
+    columns.length > 0 ? columns.map((col) => col.path) : ["__typename"];
+  const columnQueryString = getQueryStringComponent(pathsForQuery);
 
   /**
    * Collect all filters into one big FilterGroup
