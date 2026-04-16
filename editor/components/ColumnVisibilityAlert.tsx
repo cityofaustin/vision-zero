@@ -12,8 +12,7 @@ export default function ColumnVisibilityAlert({ show }: { show: boolean }) {
       <Alert variant="light">
         <AlignedLabel>
           <span>
-            <LuSettings className="fs-5" /> Use the settings menu to unhide
-            columns
+            <LuSettings className="fs-5" /> Use the settings menu to add columns
           </span>
         </AlignedLabel>
       </Alert>
