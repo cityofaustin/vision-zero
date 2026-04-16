@@ -162,67 +162,69 @@ export default function DataCard<T extends Record<string, unknown>>({
       </Card.Header>
       <Card.Body>
         <ColumnVisibilityAlert show={visibleColumns.length === 0} />
-        <Table responsive hover>
-          <tbody>
-            {visibleColumns.map((col) => {
-              const isEditingThisColumn = col.path === editColumn?.path;
-              return (
-                <tr
-                  key={String(col.path)}
-                  style={{
-                    cursor:
-                      col.editable && !isEditingThisColumn && !isReadOnlyUser
-                        ? "pointer"
-                        : "auto",
-                  }}
-                  onClick={() => {
-                    if (!col.editable || isReadOnlyUser) {
-                      return;
-                    }
-                    if (!isEditingThisColumn) {
-                      setEditColumn(col);
-                    }
-                  }}
-                >
-                  <td style={{ textWrap: "nowrap" }} className="fw-bold">
-                    {col.label}
-                  </td>
-                  {!isEditingThisColumn && (
-                    <td>{renderColumnValue(record, col)}</td>
-                  )}
-                  {isEditingThisColumn && (
-                    <td>
-                      {isLoadingSelectOptions && <Spinner size="sm" />}
-                      {!isLoadingSelectOptions && (
-                        <EditableField
-                          initialValue={valueToString(
-                            getRecordValue(record, col, true),
-                            col
-                          )}
-                          onSave={(value: string) =>
-                            onSave(
-                              handleFormValueOutput(
-                                value,
-                                !!col.relationship,
-                                col.inputType
-                              )
-                            )
-                          }
-                          onCancel={onCancel}
-                          inputType={col.inputType}
-                          selectOptions={selectOptions}
-                          selectOptionsError={selectOptionsError}
-                          isMutating={isMutating || isValidating}
-                          inputOptions={col.inputOptions}
-                        />
-                      )}
+        {visibleColumns.length > 0 && (
+          <Table responsive hover>
+            <tbody>
+              {visibleColumns.map((col) => {
+                const isEditingThisColumn = col.path === editColumn?.path;
+                return (
+                  <tr
+                    key={String(col.path)}
+                    style={{
+                      cursor:
+                        col.editable && !isEditingThisColumn && !isReadOnlyUser
+                          ? "pointer"
+                          : "auto",
+                    }}
+                    onClick={() => {
+                      if (!col.editable || isReadOnlyUser) {
+                        return;
+                      }
+                      if (!isEditingThisColumn) {
+                        setEditColumn(col);
+                      }
+                    }}
+                  >
+                    <td style={{ textWrap: "nowrap" }} className="fw-bold">
+                      {col.label}
                     </td>
-                  )}
-                </tr>
-              );
-            })}
-          </tbody>
-        </Table>
+                    {!isEditingThisColumn && (
+                      <td>{renderColumnValue(record, col)}</td>
+                    )}
+                    {isEditingThisColumn && (
+                      <td>
+                        {isLoadingSelectOptions && <Spinner size="sm" />}
+                        {!isLoadingSelectOptions && (
+                          <EditableField
+                            initialValue={valueToString(
+                              getRecordValue(record, col, true),
+                              col
+                            )}
+                            onSave={(value: string) =>
+                              onSave(
+                                handleFormValueOutput(
+                                  value,
+                                  !!col.relationship,
+                                  col.inputType
+                                )
+                              )
+                            }
+                            onCancel={onCancel}
+                            inputType={col.inputType}
+                            selectOptions={selectOptions}
+                            selectOptionsError={selectOptionsError}
+                            isMutating={isMutating || isValidating}
+                            inputOptions={col.inputOptions}
+                          />
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+        )}
       </Card.Body>
     </Card>
   );
