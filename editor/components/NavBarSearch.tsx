@@ -27,7 +27,7 @@ const userEventName = "navbar_search";
 type SearchableTypes = Crash | Location | EMSPatientCareRecord;
 
 /**
- * The serach field config
+ * The search field config
  */
 type SearchField<T extends SearchableTypes = SearchableTypes> = {
   key: string;
@@ -73,7 +73,7 @@ const SEARCH_FIELDS = [
 
 /**
  * Find a search field config from an input key - it's a safe way to handle an
- * abritrary key string from local storage
+ * arbitrary key string from local storage
  * @param val
  * @returns
  */
@@ -87,9 +87,9 @@ const getValidSearchField = (key: string | null): AnySearchField => {
   return foundSearchField || SEARCH_FIELDS[0];
 };
 
-/**e
- * Allows users to search for and route to a crash by
- * typing in its crash id or case id
+/**
+ * Allows users to search for and route to various record types
+ * by typing in an ID
  */
 export default function NavBarSearch() {
   const [searchField, setSearchField] = useState<AnySearchField>(
@@ -111,8 +111,7 @@ export default function NavBarSearch() {
   useEffect(() => {
     if (searchClicked && data?.length === 1) {
       // we are casting our matchedRecord to bypass TS headaches. we have to
-      // trust that are queries are returning the objects we think they are
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // trust that our queries are returning the objects we think they are
       const matchedRecord = data[0] as Crash & Location & EMSPatientCareRecord;
       const route = searchField.getUrl(matchedRecord);
       router.push(route);
