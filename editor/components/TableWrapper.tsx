@@ -130,7 +130,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   const { data, aggregateData, isLoading, error, refetch } = useQuery<T>({
     // don't fire first query until localstorage is loaded
-    query: isQueryConfigLocalStorageLoaded ? query : null,
+    query: (isQueryConfigLocalStorageLoaded && visibleColumns.length > 0) ? query : null,
     typename: queryConfig.tableName,
     hasAggregates: true,
   });
