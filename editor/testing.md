@@ -13,7 +13,7 @@ The below features should be tested with each role. Features with role-based acc
 - loading spinner appears to left of pagination controls while page loads
 - loading spinner appears to left of pagination controls when search is updated
 - search by Crash ID, Case ID, and address fields
-- search by an obviously address that returns no results, like 'asdf' and confirm that the table displays the message "No records found"
+- search by an obviously invalid address that returns no results, like 'asdf' and confirm that the table displays the message "No records found"
 - filter by preset date range
 - filter by custom date range
 - filter by various card switches:
