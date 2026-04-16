@@ -1,6 +1,5 @@
 import { getYearsAgoDate, makeDateFilters } from "@/utils/dates";
 import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
-import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
 const fatalitiesListViewFilterCards: FilterGroup[] = [
   {
@@ -264,7 +263,7 @@ export const fatalitiesListViewQueryConfig: QueryConfig = {
   exportable: true,
   exportFilename: "fatalities",
   tableName: "fatalities_view",
-  limit: DEFAULT_QUERY_LIMIT,
+  limit: 1000,
   offset: 0,
   sortColName: "cris_crash_id",
   sortAsc: false,

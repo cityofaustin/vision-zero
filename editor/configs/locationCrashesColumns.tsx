@@ -8,11 +8,13 @@ export const locationCrashesColumns: ColDataCardDef<LocationCrashRow>[] = [
     path: "type",
     label: "Type",
     sortable: true,
+    fetchAlways: true,
   },
   {
     path: "record_locator",
     label: "Crash ID",
     sortable: true,
+    fetchAlways: true,
     valueRenderer: (record: LocationCrashRow) =>
       record.record_locator ? (
         <Link href={`/crashes/${record.record_locator}`}>
@@ -26,17 +28,20 @@ export const locationCrashesColumns: ColDataCardDef<LocationCrashRow>[] = [
     path: "case_id",
     label: "Case ID",
     sortable: true,
+    fetchAlways: true,
   },
   {
     path: "crash_timestamp",
     label: "Date",
     sortable: true,
     valueFormatter: formatDate,
+    fetchAlways: true,
   },
   {
     path: "address_display",
     label: "Address",
     sortable: true,
+    fetchAlways: true,
   },
   {
     path: "sus_serious_injry_count",
