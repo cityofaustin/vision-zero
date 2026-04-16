@@ -6,6 +6,8 @@ import { Unit } from "@/types/unit";
 import { LuCirclePlus, LuSquarePen } from "react-icons/lu";
 import AlignedLabel from "@/components/AlignedLabel";
 import ContributingFactorsModal from "@/components/ContributingFactorsModal";
+import { useAuth0 } from "@auth0/auth0-react";
+import { hasRole } from "@/utils/auth";
 
 interface FatalityUnitCardFooterProps {
   primaryContribFactors: (LookupTableOption | null)[];
@@ -36,6 +38,11 @@ export default function FatalityUnitCardFooter({
 }: FatalityUnitCardFooterProps) {
   const [showModal, setShowModal] = useState(false);
   const onCloseModal = () => setShowModal(false);
+
+  const { user } = useAuth0();
+
+  const isReadOnlyUser = user && hasRole(["readonly"], user);
+
   return (
     <Card.Footer
       // If theres no card body remove extra padding
@@ -62,8 +69,8 @@ export default function FatalityUnitCardFooter({
       {hasContribFactors && (
         <div>
           <span className="fw-bold">Contributing factors</span>
-          {isTempRecord && (
-            <span>
+          {isTempRecord && !isReadOnlyUser && (
+            <span className="ms-1">
               <Button
                 size="sm"
                 variant="outline-primary border-white"
@@ -94,17 +101,19 @@ export default function FatalityUnitCardFooter({
           <div className="fw-bold">Contributing factors</div>
           <div className="d-flex justify-content-start align-items-center">
             <span className="text-secondary">None</span>
-            <span>
-              <Button
-                size="sm"
-                variant="outline-primary border-white"
-                onClick={() => setShowModal(true)}
-              >
-                <AlignedLabel>
-                  <LuCirclePlus />
-                </AlignedLabel>
-              </Button>
-            </span>
+            {!isReadOnlyUser && (
+              <span className="ms-1">
+                <Button
+                  size="sm"
+                  variant="outline-primary border-white"
+                  onClick={() => setShowModal(true)}
+                >
+                  <AlignedLabel>
+                    <LuCirclePlus />
+                  </AlignedLabel>
+                </Button>
+              </span>
+            )}
           </div>
         </div>
       )}
