@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { useQuery, useMutation } from "@/utils/graphql";
 import { Unit } from "@/types/unit";
@@ -54,6 +54,7 @@ export default function ContributingFactorsModal({
   unit,
   onSaveCallback,
 }: ContributingFactorsModalProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: factorOptions, isLoading } = useQuery<LookupTableOption>({
     query: GET_CONTRIB_FACTORS,
     typename: "lookups_contrib_factr",
@@ -72,28 +73,52 @@ export default function ContributingFactorsModal({
   const {
     register,
     handleSubmit,
+    reset,
     formState: { isDirty },
   } = useForm({
-    values: defaultValues,
+    defaultValues,
   });
 
   const { mutate } = useMutation(UPDATE_UNIT);
+
+  // Debug: Log what unit contains when modal opens
+  useEffect(() => {
+    if (show) {
+      console.log("Unit data when modal opens:", {
+        id: unit?.id,
+        contrib_factr_1_id: unit?.contrib_factr_1_id,
+        contrib_factr_2_id: unit?.contrib_factr_2_id,
+        contrib_factr_3_id: unit.contrib_factr_3_id,
+        contrib_factr_p1_id: unit.contrib_factr_p1_id,
+        contrib_factr_p2_id: unit.contrib_factr_p2_id,
+        // ... other fields
+      });
+    }
+  }, [show, unit]);
 
   /**
    * Submits mutation to database on save button click
    */
   const onSave: SubmitHandler<ContributingFactorsInputs> = async (data) => {
     console.log(data, "this is data");
+    setIsSubmitting(true);
     await mutate({
       id: unit.id,
       updates: data,
     });
     await onSaveCallback();
     onClose();
+    setIsSubmitting(false);
   };
 
   return (
-    <Modal show={show} onHide={onClose}>
+    <Modal
+      show={show}
+      onHide={onClose}
+      onExited={() => {
+        reset();
+      }}
+    >
       <Modal.Header>Edit contributing factors</Modal.Header>
       <Modal.Body>
         <Form id="contribFactorsForm" onSubmit={handleSubmit(onSave)}>
@@ -104,8 +129,12 @@ export default function ContributingFactorsModal({
                 {!isLoading && factorOptions && (
                   <Form.Select
                     {...register(factor.path, {
-                      // coerce to number or null
-                      setValueAs: (v) => Number(v) || null,
+                      //coerce to number or null
+                      setValueAs: (v) => {
+                        if (v === "") return null;
+                        const num = Number(v);
+                        return isNaN(num) ? null : num;
+                      },
                     })}
                   >
                     <option value="">Select...</option>
@@ -126,8 +155,7 @@ export default function ContributingFactorsModal({
       </Modal.Body>
       <Modal.Footer>
         <Button
-          // disabled={isSubmitting}
-          // onClick={handleSubmit(onSubmit)}
+          disabled={!isDirty || isSubmitting}
           form="contribFactorsForm"
           type="submit"
         >
@@ -135,8 +163,11 @@ export default function ContributingFactorsModal({
         </Button>
         <Button
           variant="secondary"
-          onClick={onClose}
-          // disabled={isDeleting}
+          onClick={() => {
+            onClose();
+            reset();
+          }}
+          disabled={isSubmitting}
         >
           Cancel
         </Button>
