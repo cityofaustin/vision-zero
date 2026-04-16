@@ -179,7 +179,7 @@ const PeopleByDemographics = () => {
       } = chartConfigs[dataKey];
       const isTarget = categoryType === "target";
       const isRange = categoryType === "range";
-      const years = yearsArray();
+      const years = yearsArray;
       const currentYear = years[years.length - 1];
 
       const formattedTypes = {};
@@ -262,7 +262,7 @@ const PeopleByDemographics = () => {
       );
 
       const data = {
-        labels: yearsArray(),
+        labels: yearsArray,
         datasets: config.labelCategories.map((category, i) => ({
           label: config.labelCategories[i],
           data: demoData[configName][crashType.name][category],
