@@ -278,7 +278,11 @@ export default function CreateCrashRecordModal({
                         {...register(`units_cris.${index}.unit_desc_id`, {
                           // coerce to number or null
                           required: true,
-                          setValueAs: (v) => Number(v) || null,
+                          setValueAs: (v) => {
+                            if (v === "") return null;
+                            const num = Number(v);
+                            return isNaN(num) ? null : num;
+                          },
                         })}
                         isInvalid={Boolean(
                           errors.units_cris?.[index]?.unit_desc_id

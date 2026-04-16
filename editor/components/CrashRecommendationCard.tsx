@@ -227,7 +227,11 @@ export default function CrashRecommendationCard({
                   <Form.Select
                     {...register("recommendation_status_id", {
                       // coerce to number or null
-                      setValueAs: (v) => Number(v) || null,
+                      setValueAs: (v) => {
+                        if (v === "") return null;
+                        const num = Number(v);
+                        return isNaN(num) ? null : num;
+                      },
                     })}
                   >
                     <option value="">Select status...</option>
