@@ -76,7 +76,7 @@ export default function ContributingFactorsModal({
     reset,
     formState: { isDirty },
   } = useForm({
-    defaultValues,
+    values: defaultValues,
   });
 
   const { mutate } = useMutation(UPDATE_UNIT);
@@ -140,7 +140,7 @@ export default function ContributingFactorsModal({
                     <option value="">Select...</option>
                     {factorOptions.map((factorOption) => (
                       <option
-                        key={factorOption.id}
+                        key={factorOption.label}
                         value={String(factorOption.id)}
                       >
                         {factorOption.label}
