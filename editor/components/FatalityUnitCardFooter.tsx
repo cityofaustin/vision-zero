@@ -82,14 +82,14 @@ export default function FatalityUnitCardFooter({
               </Button>
             </span>
           )}
-          {primaryContribFactors.map((factor) => (
-            <div className="ms-2" key={factor?.id}>
+          {primaryContribFactors.map((factor, index) => (
+            <div className="ms-2" key={`primary-${index}`}>
               <span className="fw-bold">Primary: </span>
               <span>{factor?.label}</span>
             </div>
           ))}
-          {possibleContribFactors.map((factor) => (
-            <div className="ms-2" key={factor?.id}>
+          {possibleContribFactors.map((factor, index) => (
+            <div className="ms-2" key={`possible-${index}`}>
               <span className="fw-bold">Possible: </span>
               <span>{factor?.label}</span>
             </div>
