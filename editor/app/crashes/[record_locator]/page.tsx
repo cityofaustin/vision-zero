@@ -132,6 +132,8 @@ export default function CrashDetailsPage({
             columns={crashDataCards.summary}
             mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
+            shouldShowColumnVisibilityPicker={true}
+            localStorageKey="crashPageSummary"
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
