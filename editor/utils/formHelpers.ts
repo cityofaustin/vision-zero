@@ -40,11 +40,8 @@ export const valueToString = <T extends Record<string, unknown>>(
 };
 
 export const stringToNumberNullable = (v: string | null | undefined) => {
-  console.log(v, "og number");
   if (v === "" || v === null || v === undefined) return null;
   const num = Number(v);
-  console.log("new num", num);
-  console.log("returning this", isNaN(num) ? null : num);
   return isNaN(num) ? null : num;
 };
 
