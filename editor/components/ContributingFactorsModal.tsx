@@ -120,9 +120,7 @@ export default function ContributingFactorsModal({
                 {!isLoading && factorOptions && (
                   <Form.Select
                     {...register(factor.path, {
-                      setValueAs: (v) => {
-                        stringToNumberNullable(v);
-                      },
+                      setValueAs: (v) => stringToNumberNullable(v),
                     })}
                   >
                     <option value="">Select...</option>
