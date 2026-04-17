@@ -40,6 +40,15 @@ export const valueToString = <T extends Record<string, unknown>>(
 };
 
 /**
+ * Coerce string into a number or null
+ */
+export const stringToNumberNullable = (v: string) => {
+  if (v === "") return null;
+  const num = Number(v);
+  return isNaN(num) ? null : num;
+};
+
+/**
  * Convert "true" to `true`, any other non-empty string to `false`
  * and anything falsey to `null`
  */

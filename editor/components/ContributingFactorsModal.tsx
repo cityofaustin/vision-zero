@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { useQuery, useMutation } from "@/utils/graphql";
 import { Unit } from "@/types/unit";
@@ -6,6 +6,7 @@ import { LookupTableOption } from "@/types/relationships";
 import { GET_CONTRIB_FACTORS } from "@/queries/contribFactors";
 import { UPDATE_UNIT } from "@/queries/unit";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { stringToNumberNullable } from "@/utils/formHelpers";
 
 interface ContributingFactorsModalProps {
   show: boolean;
@@ -22,7 +23,7 @@ type ContributingFactorsInputs = {
   contrib_factr_p2_id: number | null;
 };
 
-const contribFactors: Array<{
+const contribFactorLabels: Array<{
   path: keyof ContributingFactorsInputs;
   label: string;
 }> = [
@@ -48,6 +49,10 @@ const contribFactors: Array<{
   },
 ];
 
+/**
+ * A modal for editing the contributing factors of a
+ * temporary crash record on the fatalities page
+ */
 export default function ContributingFactorsModal({
   show,
   onClose,
@@ -81,26 +86,10 @@ export default function ContributingFactorsModal({
 
   const { mutate } = useMutation(UPDATE_UNIT);
 
-  // Debug: Log what unit contains when modal opens
-  useEffect(() => {
-    if (show) {
-      console.log("Unit data when modal opens:", {
-        id: unit?.id,
-        contrib_factr_1_id: unit?.contrib_factr_1_id,
-        contrib_factr_2_id: unit?.contrib_factr_2_id,
-        contrib_factr_3_id: unit.contrib_factr_3_id,
-        contrib_factr_p1_id: unit.contrib_factr_p1_id,
-        contrib_factr_p2_id: unit.contrib_factr_p2_id,
-        // ... other fields
-      });
-    }
-  }, [show, unit]);
-
   /**
    * Submits mutation to database on save button click
    */
   const onSave: SubmitHandler<ContributingFactorsInputs> = async (data) => {
-    console.log(data, "this is data");
     setIsSubmitting(true);
     await mutate({
       id: unit.id,
@@ -119,21 +108,20 @@ export default function ContributingFactorsModal({
         reset();
       }}
     >
-      <Modal.Header>Edit contributing factors</Modal.Header>
+      <Modal.Header>
+        <Modal.Title>Edit contributing factors</Modal.Title>
+      </Modal.Header>
       <Modal.Body>
         <Form id="contribFactorsForm" onSubmit={handleSubmit(onSave)}>
-          {contribFactors.map((factor) => {
+          {contribFactorLabels.map((factor) => {
             return (
-              <Form.Group key={factor.path}>
+              <Form.Group key={factor.path} className="mb-2">
                 <Form.Label>{factor.label}</Form.Label>
                 {!isLoading && factorOptions && (
                   <Form.Select
                     {...register(factor.path, {
-                      //coerce to number or null
                       setValueAs: (v) => {
-                        if (v === "") return null;
-                        const num = Number(v);
-                        return isNaN(num) ? null : num;
+                        stringToNumberNullable(v);
                       },
                     })}
                   >
