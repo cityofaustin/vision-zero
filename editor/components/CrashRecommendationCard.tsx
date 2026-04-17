@@ -227,9 +227,7 @@ export default function CrashRecommendationCard({
                 {isEditing && !isLoadingStatuses && statuses && (
                   <Form.Select
                     {...register("recommendation_status_id", {
-                      setValueAs: (v) => {
-                        stringToNumberNullable(v);
-                      },
+                      setValueAs: (v) => stringToNumberNullable(v),
                     })}
                   >
                     <option value="">Select status...</option>
