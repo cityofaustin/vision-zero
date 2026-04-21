@@ -46,9 +46,7 @@ export default function FatalityUnitCardFooter({
   return (
     <Card.Footer
       // If theres no card body remove extra padding
-      className={
-        "fatality-units-card-header-footer " + (!hasVictim ? "pt-0" : "")
-      }
+      className={"fatality-units-card-header-footer"}
     >
       <ContributingFactorsModal
         unit={unit}
