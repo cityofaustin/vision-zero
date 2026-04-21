@@ -10,7 +10,7 @@ import { stringToNumberNullable } from "@/utils/formHelpers";
 
 interface ContributingFactorsModalProps {
   show: boolean;
-  onClose: () => void;
+  setShowContribFactorsModal: React.Dispatch<React.SetStateAction<boolean>>;
   unit: Unit;
   onSaveCallback: () => Promise<void>;
 }
@@ -56,7 +56,7 @@ const contribFactorLabels: Array<{
  */
 export default function ContributingFactorsModal({
   show,
-  onClose,
+  setShowContribFactorsModal,
   unit,
   onSaveCallback,
 }: ContributingFactorsModalProps) {
@@ -100,6 +100,8 @@ export default function ContributingFactorsModal({
     onClose();
     setIsSubmitting(false);
   };
+
+  const onClose = () => setShowContribFactorsModal(false);
 
   return (
     <Modal
