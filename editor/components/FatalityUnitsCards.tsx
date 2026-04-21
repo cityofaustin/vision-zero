@@ -150,7 +150,6 @@ export default function FatalityUnitsCards({
                 <FatalityUnitCardFooter
                   unit={unit}
                   hasCharges={unit.hasCharges}
-                  hasVictim={unit.hasVictim}
                   hasContribFactors={unit.hasContribFactors}
                   isTempRecord={crash.is_temp_record}
                   unitCharges={unit.unitCharges}

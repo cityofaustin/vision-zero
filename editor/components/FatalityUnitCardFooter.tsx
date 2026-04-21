@@ -15,7 +15,6 @@ interface FatalityUnitCardFooterProps {
   isTempRecord: boolean | null;
   unitCharges: Charge[] | undefined;
   hasCharges: boolean | undefined;
-  hasVictim: boolean | undefined;
   hasContribFactors: boolean;
   unit: Unit;
   onSaveCallback: () => Promise<void>;
@@ -27,7 +26,6 @@ interface FatalityUnitCardFooterProps {
  */
 export default function FatalityUnitCardFooter({
   hasCharges,
-  hasVictim,
   hasContribFactors,
   isTempRecord,
   unitCharges,
