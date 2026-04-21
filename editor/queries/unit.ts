@@ -16,3 +16,12 @@ export const UNIT_TYPES_QUERY = gql`
     }
   }
 `;
+
+export const GET_CONTRIB_FACTORS = gql`
+  query ContribFactors {
+    lookups_contrib_factr {
+      id
+      label
+    }
+  }
+`;
