@@ -13,7 +13,6 @@ from utils.columns import COLUMNS
 from utils.graphql import make_hasura_request
 from utils.queries import (
     UPSERT_CAD_INCIDENTS_MUTATION,
-    UPSERT_CAD_INCIDENT_GROUPS_MUTATION,
 )
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
@@ -176,7 +175,7 @@ def main(*, skip_archive):
 
         is_group_id_file = "GroupID" in file_obj_key
 
-        if not is_group_id_file:
+        if is_group_id_file:
             continue
 
         logging.info("Processing data...")
@@ -208,13 +207,13 @@ def main(*, skip_archive):
         seen_ids = set()
         unique_rows = []
 
-        for row in data:
-            master_incident_id = row["master_incident_id"]
-            if master_incident_id not in seen_ids:
-                seen_ids.add(master_incident_id)
-                unique_rows.append(row)
+        # for row in data:
+        #     master_incident_id = row["master_incident_id"]
+        #     if master_incident_id not in seen_ids:
+        #         seen_ids.add(master_incident_id)
+        #         unique_rows.append(row)
 
-        for chunk in chunks(unique_rows, BATCH_SIZE):
+        for chunk in chunks(data, BATCH_SIZE):
             logging.info(f"Upserting {len(chunk)} rows...")
             make_hasura_request(query=upsert_mutation, variables={"objects": chunk})
 
