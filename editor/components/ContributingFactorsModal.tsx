@@ -3,7 +3,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { useQuery, useMutation } from "@/utils/graphql";
 import { Unit } from "@/types/unit";
 import { LookupTableOption } from "@/types/relationships";
-import { GET_CONTRIB_FACTORS } from "@/queries/contribFactors";
+import { GET_CONTRIB_FACTORS } from "@/queries/unit";
 import { UPDATE_UNIT } from "@/queries/unit";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { stringToNumberNullable } from "@/utils/formHelpers";
@@ -15,13 +15,14 @@ interface ContributingFactorsModalProps {
   onSaveCallback: () => Promise<void>;
 }
 
-type ContributingFactorsInputs = {
-  contrib_factr_1_id: number | null;
-  contrib_factr_2_id: number | null;
-  contrib_factr_3_id: number | null;
-  contrib_factr_p1_id: number | null;
-  contrib_factr_p2_id: number | null;
-};
+type ContributingFactorsInputs = Pick<
+  Unit,
+  | "contrib_factr_1_id"
+  | "contrib_factr_2_id"
+  | "contrib_factr_3_id"
+  | "contrib_factr_p1_id"
+  | "contrib_factr_p2_id"
+>;
 
 const contribFactorLabels: Array<{
   path: keyof ContributingFactorsInputs;
