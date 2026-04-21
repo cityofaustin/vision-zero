@@ -25,17 +25,10 @@ docker compose build
 4. Run with the local override to set a local mount point
 
 ```shell
-docker compose -f docker-compose.yml -f docker-compose.local.yml run import
+docker compose -f docker-compose.yml -f docker-compose.local.yml run import incident_import.py
 ``
 
 Note that the `--skip-archive` directive prevents the script from moving each processed file to the `/archive` directory. This option is for local development and should not be used in production.
-
-## Questions
-
-- Incident type
-- Incident group
-- Field for how the call was dispatched (911 call, other agency referral, officer-initiated...)
-- seem to be missing some crash types for APD
 
 ## Deployment + CI
 
