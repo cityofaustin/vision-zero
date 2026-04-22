@@ -6,6 +6,7 @@ import { Unit } from "@/types/unit";
 import { LuCirclePlus, LuSquarePen } from "react-icons/lu";
 import AlignedLabel from "@/components/AlignedLabel";
 import ContributingFactorsModal from "@/components/ContributingFactorsModal";
+import ChargesModal from "@/components/ChargesModal";
 import { useAuth0 } from "@auth0/auth0-react";
 import { hasRole } from "@/utils/auth";
 
@@ -34,8 +35,8 @@ export default function FatalityUnitCardFooter({
   unit,
   onSaveCallback,
 }: FatalityUnitCardFooterProps) {
-  const [showModal, setShowModal] = useState(false);
-  const onCloseModal = () => setShowModal(false);
+  const [showContribFactorsModal, setShowContribFactorsModal] = useState(false);
+  const [showChargesModal, setShowChargesModal] = useState(false);
 
   const { user } = useAuth0();
 
@@ -48,13 +49,33 @@ export default function FatalityUnitCardFooter({
     >
       <ContributingFactorsModal
         unit={unit}
-        show={showModal}
-        onClose={onCloseModal}
+        show={showContribFactorsModal}
+        setShowContribFactorsModal={setShowContribFactorsModal}
+        onSaveCallback={onSaveCallback}
+      />
+      <ChargesModal
+        unit={unit}
+        unitCharges={unitCharges}
+        show={showChargesModal}
+        setShowChargesModal={setShowChargesModal}
         onSaveCallback={onSaveCallback}
       />
       {hasCharges && (
         <div className="pb-1">
           <div className="fw-bold">Charges</div>
+          {isTempRecord && !isReadOnlyUser && (
+            <span className="ms-1">
+              <Button
+                size="sm"
+                variant="outline-primary border-white"
+                onClick={() => setShowChargesModal(true)}
+              >
+                <AlignedLabel>
+                  <LuSquarePen />
+                </AlignedLabel>
+              </Button>
+            </span>
+          )}
           {unitCharges?.map((charge) => (
             <div className="ms-2" key={charge.id}>
               {charge.charge}
@@ -70,7 +91,7 @@ export default function FatalityUnitCardFooter({
               <Button
                 size="sm"
                 variant="outline-primary border-white"
-                onClick={() => setShowModal(true)}
+                onClick={() => setShowContribFactorsModal(true)}
               >
                 <AlignedLabel>
                   <LuSquarePen />
@@ -102,7 +123,28 @@ export default function FatalityUnitCardFooter({
                 <Button
                   size="sm"
                   variant="outline-primary border-white"
-                  onClick={() => setShowModal(true)}
+                  onClick={() => setShowContribFactorsModal(true)}
+                >
+                  <AlignedLabel>
+                    <LuCirclePlus />
+                  </AlignedLabel>
+                </Button>
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+      {!hasCharges && isTempRecord && (
+        <div className="pt-1">
+          <div className="fw-bold">Charges</div>
+          <div className="d-flex justify-content-start align-items-center">
+            <span className="text-secondary">None</span>
+            {!isReadOnlyUser && (
+              <span className="ms-1">
+                <Button
+                  size="sm"
+                  variant="outline-primary border-white"
+                  onClick={() => setShowChargesModal(true)}
                 >
                   <AlignedLabel>
                     <LuCirclePlus />
