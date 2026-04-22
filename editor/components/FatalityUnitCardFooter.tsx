@@ -54,6 +54,8 @@ export default function FatalityUnitCardFooter({
         onSaveCallback={onSaveCallback}
       />
       <ChargesModal
+        unit={unit}
+        unitCharges={unitCharges}
         show={showChargesModal}
         setShowChargesModal={setShowChargesModal}
         onSaveCallback={onSaveCallback}
@@ -61,6 +63,19 @@ export default function FatalityUnitCardFooter({
       {hasCharges && (
         <div className="pb-1">
           <div className="fw-bold">Charges</div>
+          {isTempRecord && !isReadOnlyUser && (
+            <span className="ms-1">
+              <Button
+                size="sm"
+                variant="outline-primary border-white"
+                onClick={() => setShowChargesModal(true)}
+              >
+                <AlignedLabel>
+                  <LuSquarePen />
+                </AlignedLabel>
+              </Button>
+            </span>
+          )}
           {unitCharges?.map((charge) => (
             <div className="ms-2" key={charge.id}>
               {charge.charge}
@@ -129,7 +144,7 @@ export default function FatalityUnitCardFooter({
                 <Button
                   size="sm"
                   variant="outline-primary border-white"
-                  onClick={() => setShowContribFactorsModal(true)}
+                  onClick={() => setShowChargesModal(true)}
                 >
                   <AlignedLabel>
                     <LuCirclePlus />
