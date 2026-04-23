@@ -1,7 +1,6 @@
 -- Most recent migration: database/migrations/default/1727451511064_init/up.sql
 
-CREATE OR REPLACE VIEW crashes_change_log_view AS
-SELECT
+CREATE OR REPLACE VIEW crashes_change_log_view AS SELECT
     concat('crash_', change_log_crashes.id) AS id,
     'crash'::text                           AS record_type,
     change_log_crashes.record_id            AS crash_pk,

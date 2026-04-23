@@ -1,7 +1,6 @@
--- Most recent migration: database/migrations/default/1727451511064_init/up.sql
+-- Most recent migration: database/migrations/default/1776976438072_views_chicago_tz/up.sql
 
-CREATE OR REPLACE VIEW fatalities_view AS
-SELECT
+CREATE OR REPLACE VIEW fatalities_view AS SELECT
     people.id  AS person_id,
     crashes.id AS crash_pk,
     crashes.cris_crash_id,
@@ -14,7 +13,7 @@ SELECT
         ' '::text, people.prsn_first_name, people.prsn_mid_name, people.prsn_last_name
     )          AS victim_name,
     to_char(
-        (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text), 'yyyy'::text
+        (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'yyyy'::text
     )          AS year,
     crashes.crash_timestamp,
     concat_ws(
@@ -29,23 +28,23 @@ SELECT
         ')'
     )          AS location,
     to_char(
-        (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text), 'YYYY-MM-DD'::text
+        (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'YYYY-MM-DD'::text
     )          AS crash_date_ct,
     to_char(
-        (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text), 'HH24:MI:SS'::text
+        (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'HH24:MI:SS'::text
     )          AS crash_time_ct,
     row_number()
         OVER (
             PARTITION BY
-                (extract(YEAR FROM (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text)))
-            ORDER BY ((crashes.crash_timestamp AT TIME ZONE 'US/Central'::text))
+                (extract(YEAR FROM (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text)))
+            ORDER BY ((crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text))
         )
     AS ytd_fatality,
     dense_rank()
         OVER (
             PARTITION BY
-                (extract(YEAR FROM (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text)))
-            ORDER BY ((crashes.crash_timestamp AT TIME ZONE 'US/Central'::text)), crashes.id
+                (extract(YEAR FROM (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text)))
+            ORDER BY ((crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text)), crashes.id
         )
     AS ytd_fatal_crash,
     crashes.case_id,
