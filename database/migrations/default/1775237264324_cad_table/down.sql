@@ -1,0 +1,2 @@
+drop table cad_incidents;
+drop function cad_incidents_set_spatial_attributes;

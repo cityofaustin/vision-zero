@@ -1,0 +1,7 @@
+BUCKET_ENV=dev
+COACD_MOUNT_PATH=/mnt/vision_zero_cad
+AWS_ACCESS_KEY_ID=<Vision Zero ETLs item in 1pass>
+AWS_SECRET_ACCESS_KEY=<Vision Zero ETLs item in 1pass>
+BUCKET_NAME=<Vision Zero ETLs item in 1pass>
+HASURA_GRAPHQL_ENDPOINT=http://host.docker.internal:8084/v1/graphql
+HASURA_GRAPHQL_ADMIN_SECRET=<not needed locally - see Vision Zero ETLs item in 1pass>
