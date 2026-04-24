@@ -25,6 +25,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import AlignedLabel from "@/components/AlignedLabel";
 import { LuSquarePen } from "react-icons/lu";
+import { stringToNumberNullable } from "@/utils/formHelpers";
 
 const allowedRecommendationEditRoles = ["vz-admin", "editor"];
 
@@ -226,8 +227,7 @@ export default function CrashRecommendationCard({
                 {isEditing && !isLoadingStatuses && statuses && (
                   <Form.Select
                     {...register("recommendation_status_id", {
-                      // coerce to number or null
-                      setValueAs: (v) => Number(v) || null,
+                      setValueAs: (v) => stringToNumberNullable(v),
                     })}
                   >
                     <option value="">Select status...</option>

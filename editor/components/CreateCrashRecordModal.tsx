@@ -8,6 +8,7 @@ import FormControlDatePicker from "@/components/FormControlDatePicker";
 import { FaCirclePlus, FaCircleMinus } from "react-icons/fa6";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
 import { useQuery, useMutation } from "@/utils/graphql";
+import { stringToNumberNullable } from "@/utils/formHelpers";
 import { UNIT_TYPES_QUERY } from "@/queries/unit";
 import { CREATE_CRIS_CRASH } from "@/queries/crash";
 import { LookupTableOption } from "@/types/relationships";
@@ -278,7 +279,7 @@ export default function CreateCrashRecordModal({
                         {...register(`units_cris.${index}.unit_desc_id`, {
                           // coerce to number or null
                           required: true,
-                          setValueAs: (v) => Number(v) || null,
+                          setValueAs: (v) => stringToNumberNullable(v),
                         })}
                         isInvalid={Boolean(
                           errors.units_cris?.[index]?.unit_desc_id

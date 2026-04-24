@@ -39,6 +39,12 @@ export const valueToString = <T extends Record<string, unknown>>(
   return String(value || "");
 };
 
+export const stringToNumberNullable = (v: string | null | undefined) => {
+  if (v === "" || v === null || v === undefined) return null;
+  const num = Number(v);
+  return isNaN(num) ? null : num;
+};
+
 /**
  * Convert "true" to `true`, any other non-empty string to `false`
  * and anything falsey to `null`
