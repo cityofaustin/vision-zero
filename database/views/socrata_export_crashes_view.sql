@@ -1,6 +1,7 @@
 -- Most recent migration: database/migrations/default/1776976438072_views_chicago_tz/up.sql
 
-CREATE OR REPLACE VIEW socrata_export_crashes_view AS WITH unit_aggregates AS (
+CREATE OR REPLACE VIEW socrata_export_crashes_view AS
+WITH unit_aggregates AS (
     SELECT
         crashes_1.id,
         string_agg(DISTINCT mode_categories.label, ' & '::text) AS units_involved

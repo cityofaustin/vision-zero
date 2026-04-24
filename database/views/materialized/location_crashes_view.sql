@@ -2,7 +2,8 @@
 
 DROP MATERIALIZED VIEW IF EXISTS location_crashes_view;
 
-CREATE MATERIALIZED VIEW location_crashes_view AS SELECT
+CREATE MATERIALIZED VIEW location_crashes_view AS
+SELECT
     crashes.record_locator,
     crashes.cris_crash_id,
     crashes.id                                   AS crash_pk,

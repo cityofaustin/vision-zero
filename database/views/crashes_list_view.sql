@@ -1,6 +1,7 @@
 -- Most recent migration: database/migrations/default/1776976438072_views_chicago_tz/up.sql
 
-CREATE OR REPLACE VIEW crashes_list_view AS WITH geocode_status AS (
+CREATE OR REPLACE VIEW crashes_list_view AS
+WITH geocode_status AS (
     SELECT
         cris.id,
         unified.latitude IS NOT NULL AND unified.latitude IS DISTINCT
