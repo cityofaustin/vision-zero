@@ -11,6 +11,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { hasRole } from "@/utils/auth";
 
 interface FatalityUnitCardFooterProps {
+  crashPk: number;
   primaryContribFactors: (LookupTableOption | null)[];
   possibleContribFactors: (LookupTableOption | null)[];
   isTempRecord: boolean | null;
@@ -26,6 +27,7 @@ interface FatalityUnitCardFooterProps {
  * Should only render if unit has charges or contrib factors
  */
 export default function FatalityUnitCardFooter({
+  crashPk,
   hasCharges,
   hasContribFactors,
   isTempRecord,
@@ -54,6 +56,7 @@ export default function FatalityUnitCardFooter({
         onSaveCallback={onSaveCallback}
       />
       <ChargesModal
+        crashPk={crashPk}
         unit={unit}
         unitCharges={unitCharges}
         show={showChargesModal}

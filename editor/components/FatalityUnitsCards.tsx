@@ -148,6 +148,7 @@ export default function FatalityUnitsCards({
                 unit.hasContribFactors ||
                 crash.is_temp_record) && (
                 <FatalityUnitCardFooter
+                  crashPk={crash.id}
                   unit={unit}
                   hasCharges={unit.hasCharges}
                   hasContribFactors={unit.hasContribFactors}
