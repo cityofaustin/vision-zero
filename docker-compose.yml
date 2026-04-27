@@ -22,11 +22,16 @@ services:
       - ./database/snapshots:/snapshots
     ports:
       - 5431:5432
-    command: postgres
-      -c 'maintenance_work_mem=1GB'
-      -c 'max_wal_size=5GB'
-      -c 'shared_buffers=2GB'
-      -c 'work_mem=64MB'
+    command:
+      - postgres
+      - -c
+      - maintenance_work_mem=${PG_MAINTENANCE_WORK_MEM:-1GB}
+      - -c
+      - max_wal_size=${PG_MAX_WAL_SIZE:-5GB}
+      - -c
+      - shared_buffers=${PG_SHARED_BUFFERS:-2GB}
+      - -c
+      - work_mem=${PG_WORK_MEM:-64MB}
 
   cr3-user-api:
     build: api

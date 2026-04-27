@@ -4,11 +4,12 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      PGHOST: host.docker.internal
-      PGPORT: "5431"
-      PGDATABASE: vision_zero
-      PGUSER: visionzero
-      PGPASSWORD: visionzero
+      PGHOST: ${PGHOST:-host.docker.internal}
+      PGPORT: "${PGPORT:-5431}"
+      PGDATABASE: ${PGDATABASE:-vision_zero}
+      PGUSER: ${PGUSER:-visionzero}
+      PGPASSWORD: ${PGPASSWORD:-visionzero}
+      PGOPTIONS: ${PGOPTIONS:-}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     entrypoint: ["python", "benchmark_db.py"]

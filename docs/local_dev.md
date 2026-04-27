@@ -34,6 +34,26 @@ Rebuild the stack's images based on the Dockerfiles found in the repository. The
 
 Start and stop the postgres database
 
+Postgres tunables used by the local container are configurable via `.env`:
+
+- `PG_MAINTENANCE_WORK_MEM`
+- `PG_MAX_WAL_SIZE`
+- `PG_SHARED_BUFFERS`
+- `PG_WORK_MEM`
+
+After updating one or more of these values, restart the database container for them to take effect:
+
+```shell
+./vision-zero db-down
+./vision-zero db-up
+```
+
+You can verify the active values with:
+
+```shell
+docker compose exec postgis psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SHOW shared_buffers; SHOW work_mem; SHOW maintenance_work_mem; SHOW max_wal_size;"
+```
+
 #### `vision-zero graphql-engine-up` & `vision-zero graphql-engine-down`
 
 Start and stop the Hasura graphql-engine software as well as the database
