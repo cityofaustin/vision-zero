@@ -58,6 +58,13 @@ export default function Table<T extends Record<string, unknown>>({
         </tr>
       </thead>
       <tbody>
+        {rows.length === 0 && (
+          <tr>
+            <td colSpan={columns.length} className="text-center">
+              No records found
+            </td>
+          </tr>
+        )}
         {rows.map((row, i) => (
           <tr key={i}>
             {columns.map((col) => (

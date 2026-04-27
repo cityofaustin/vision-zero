@@ -11,6 +11,7 @@ const allowedDeleteCrashRecordEditRoles = ["vz-admin", "editor"];
 
 interface CrashIsTemporaryBannerProps {
   crash: Crash;
+  allowDelete?: boolean;
 }
 
 /**
@@ -20,6 +21,7 @@ interface CrashIsTemporaryBannerProps {
  */
 export default function CrashIsTemporaryBanner({
   crash,
+  allowDelete = true,
 }: CrashIsTemporaryBannerProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -32,24 +34,23 @@ export default function CrashIsTemporaryBanner({
         <span className="d-flex align-items-center">
           <FaTriangleExclamation className="me-2 d-none d-lg-inline" />
           <span className="me-3">
-            This crash record was created by the Vision Zero team and serves as a
-            placeholder until the CR3 report is received from TxDOT. It may be
-            deleted at any time.
+            This preliminary crash record was created by the Vision Zero team
+            and serves as a placeholder until the official crash report is
+            received from TxDOT.
           </span>
         </span>
-        <PermissionsRequired allowedRoles={allowedDeleteCrashRecordEditRoles}>
-          <span>
-            <Button
-              variant="danger"
-              onClick={() => setShowDeleteModal(true)}
-            >
-              <AlignedLabel>
-                <FaTrash className="me-2" />
-                <span>Delete</span>
-              </AlignedLabel>
-            </Button>
-          </span>
-        </PermissionsRequired>
+        {allowDelete && (
+          <PermissionsRequired allowedRoles={allowedDeleteCrashRecordEditRoles}>
+            <span>
+              <Button variant="danger" onClick={() => setShowDeleteModal(true)}>
+                <AlignedLabel>
+                  <FaTrash className="me-2" />
+                  <span>Delete</span>
+                </AlignedLabel>
+              </Button>
+            </span>
+          </PermissionsRequired>
+        )}
       </Alert>
       {showDeleteModal && (
         <DeleteTemporaryCrashModal

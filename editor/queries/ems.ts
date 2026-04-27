@@ -191,3 +191,20 @@ export const UPDATE_EMS_PCR = gql`
     }
   }
 `;
+
+/**
+ * Incident # search used by the navbar search component
+ */
+export const EMS_INCIDENT_NAV_SEARCH = gql`
+  query EMSNavigationSearch($searchValue: String!) {
+    incident_number: ems__incidents(
+      where: {
+        incident_number: { _eq: $searchValue }
+        is_deleted: { _eq: false }
+      }
+      limit: 1
+    ) {
+      incident_number
+    }
+  }
+`;

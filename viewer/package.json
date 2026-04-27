@@ -1,6 +1,6 @@
 {
   "name": "viewer",
-  "version": "2.29.0",
+  "version": "2.30.0",
   "homepage": "/viewer",
   "description": "Vision Zero Viewer",
   "author": "Austin Transportation & Public Works - Data & Technology Services",
@@ -21,7 +21,7 @@
     "@tippyjs/react": "^4.2.6",
     "@turf/difference": "6.0.1",
     "aphrodite": "^2.4.0",
-    "axios": "^0.30.3",
+    "axios": "^1.15.0",
     "bootstrap": "^4.6.2",
     "chart.js": "^2.9.4",
     "chartjs-plugin-stacked100": "^0.7.1",

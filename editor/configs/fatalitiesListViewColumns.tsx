@@ -13,6 +13,7 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     path: "record_locator",
     label: "Crash ID",
     sortable: true,
+    fetchAlways: true,
     valueRenderer: (record: fatalitiesListRow) => (
       <Link href={`/fatalities/${record.record_locator}`} prefetch={false}>
         {record.record_locator}
@@ -28,6 +29,7 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     path: "ytd_fatal_crash",
     label: "YTD Fatal Crash",
     sortable: true,
+    fetchAlways: true,
   },
   {
     path: "ytd_fatality",
@@ -43,6 +45,7 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     path: "crash_date_ct",
     label: "Crash Date",
     sortable: true,
+    fetchAlways: true,
     valueFormatter: formatDate,
     style: { whiteSpace: "nowrap" },
   },

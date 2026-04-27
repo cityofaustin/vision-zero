@@ -1,6 +1,5 @@
 import { getYearsAgoDate, makeDateFilters } from "@/utils/dates";
 import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
-import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
 const emsListViewFilterCards: FilterGroup[] = [
   {
@@ -440,7 +439,7 @@ export const emsListViewQueryConfig: QueryConfig = {
   exportable: true,
   exportFilename: "ems_patient_care_records",
   tableName: "ems__incidents",
-  limit: DEFAULT_QUERY_LIMIT,
+  limit: 1000,
   offset: 0,
   sortColName: "id",
   sortAsc: false,
