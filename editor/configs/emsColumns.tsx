@@ -181,11 +181,13 @@ export const ALL_EMS_COLUMNS = {
     path: "incident_location_address",
     label: "Incident address",
     sortable: true,
+    fetchAlways: true,
   },
   incident_number: {
     path: "incident_number",
     label: "Incident",
     sortable: true,
+    fetchAlways: true,
     valueRenderer: (record: EMSPatientCareRecord) => (
       <Link href={`/ems/${record.incident_number}`} prefetch={false}>
         <span style={{ whiteSpace: "nowrap" }}>{record.incident_number}</span>
@@ -211,6 +213,7 @@ export const ALL_EMS_COLUMNS = {
     style: { whiteSpace: "nowrap" },
     valueFormatter: formatDate,
     sortable: true,
+    fetchAlways: true,
   },
   person_id: {
     path: "person_id",
@@ -238,11 +241,15 @@ export const ALL_EMS_COLUMNS = {
   },
   latitude: {
     path: "latitude",
-    label: "Latitude"
+    label: "Latitude",
+    fetchAlways: true,
+    exportOnly: true,
   },
   longitude: {
     path: "longitude",
-    label: "Longitude"
+    label: "Longitude",
+    fetchAlways: true,
+    exportOnly: true,
   },
   mvc_form_position_in_vehicle: {
     path: "mvc_form_position_in_vehicle",
