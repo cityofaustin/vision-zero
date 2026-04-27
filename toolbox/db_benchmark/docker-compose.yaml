@@ -1,0 +1,15 @@
+services:
+  benchmark-db:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      PGHOST: host.docker.internal
+      PGPORT: "5431"
+      PGDATABASE: vision_zero
+      PGUSER: visionzero
+      PGPASSWORD: visionzero
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    entrypoint: ["python", "benchmark_db.py"]
+    command: ["--sql-file", "timing_query.sql"]
