@@ -8,26 +8,65 @@ object_relationships:
   - name: people_cri
     using:
       foreign_key_constraint_on: person_id
+insert_permissions:
+  - role: editor
+    permission:
+      check: {}
+      columns:
+        - charge
+        - citation_nbr
+        - crash_pk
+        - created_by
+        - cris_crash_id
+        - cris_schema_version
+        - is_temp
+        - person_id
+        - prsn_nbr
+        - unit_nbr
+        - updated_by
+    comment: ""
+  - role: vz-admin
+    permission:
+      check: {}
+      columns:
+        - charge
+        - citation_nbr
+        - crash_pk
+        - created_by
+        - cris_crash_id
+        - cris_schema_version
+        - is_temp
+        - person_id
+        - prsn_nbr
+        - unit_nbr
+        - updated_by
+    comment: ""
 select_permissions:
   - role: editor
     permission:
       columns:
+        - charge
+        - citation_nbr
         - crash_pk
+        - created_at
+        - created_by
+        - cris_crash_id
+        - cris_schema_version
         - id
+        - is_temp
         - person_id
         - prsn_nbr
         - unit_nbr
-        - charge
-        - citation_nbr
-        - created_by
-        - cris_schema_version
-        - created_at
+        - updated_at
+        - updated_by
       filter: {}
     comment: ""
   - role: readonly
     permission:
       columns:
+        - is_temp
         - crash_pk
+        - cris_crash_id
         - id
         - person_id
         - prsn_nbr
@@ -36,13 +75,17 @@ select_permissions:
         - citation_nbr
         - created_by
         - cris_schema_version
+        - updated_by
         - created_at
+        - updated_at
       filter: {}
     comment: ""
   - role: vz-admin
     permission:
       columns:
+        - is_temp
         - crash_pk
+        - cris_crash_id
         - id
         - person_id
         - prsn_nbr
@@ -51,6 +94,8 @@ select_permissions:
         - citation_nbr
         - created_by
         - cris_schema_version
+        - updated_by
         - created_at
+        - updated_at
       filter: {}
     comment: ""
