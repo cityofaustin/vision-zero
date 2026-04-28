@@ -28,6 +28,12 @@ The main local Postgres container (`docker-compose.yml`) supports these tunables
 - `PG_WORK_MEM`
 - `PG_EFFECTIVE_CACHE_SIZE`
 - `PG_CHECKPOINT_COMPLETION_TARGET`
+- `PG_RANDOM_PAGE_COST`
+- `PG_EFFECTIVE_IO_CONCURRENCY`
+- `PG_MAX_CONNECTIONS`
+- `PG_DEFAULT_STATISTICS_TARGET`
+- `PG_JIT`
+- `PG_WAL_COMPRESSION`
 
 After editing `.env`, restart the DB:
 
@@ -37,3 +43,20 @@ After editing `.env`, restart the DB:
 ```
 
 Then run the benchmark against it (`PGHOST=host.docker.internal`, `PGPORT=5431`).
+
+To verify the effective settings in Postgres:
+
+```sql
+SHOW maintenance_work_mem;
+SHOW max_wal_size;
+SHOW shared_buffers;
+SHOW work_mem;
+SHOW effective_cache_size;
+SHOW checkpoint_completion_target;
+SHOW random_page_cost;
+SHOW effective_io_concurrency;
+SHOW max_connections;
+SHOW default_statistics_target;
+SHOW jit;
+SHOW wal_compression;
+```
