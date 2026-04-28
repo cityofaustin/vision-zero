@@ -2,7 +2,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { Unit } from "@/types/unit";
 import { Charge } from "@/types/charge";
-import { INSERT_CHARGE } from "@/queries/charges";
+import { INSERT_CHARGE, UPDATE_CHARGE } from "@/queries/charges";
 import { useMutation } from "@/utils/graphql";
 import { SubmitHandler } from "react-hook-form";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -10,7 +10,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 interface ChargesModalProps {
   crashPk: number;
   show: boolean;
-  unitCharges: Charge[] | undefined;
+  unitChargeRecord: Charge | undefined;
   setShowChargesModal: React.Dispatch<React.SetStateAction<boolean>>;
   onSaveCallback: () => Promise<void>;
   unit: Unit;
@@ -23,7 +23,7 @@ type ChargesFormInputs = {
 export default function ChargesModal({
   crashPk,
   unit,
-  unitCharges,
+  unitChargeRecord,
   show,
   setShowChargesModal,
   onSaveCallback,
@@ -32,29 +32,33 @@ export default function ChargesModal({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { isDirty },
     reset,
   } = useForm<ChargesFormInputs>({
-    // defaultValues: { charge: unitCharges[0].charge || "" },
+    values: { charge: unitChargeRecord?.charge ?? "" },
   });
 
-  const { mutate, loading: isSubmitting } = useMutation(INSERT_CHARGE);
+  const { mutate, loading: isSubmitting } = useMutation(
+    unitChargeRecord ? UPDATE_CHARGE : INSERT_CHARGE
+  );
 
   const onSubmit: SubmitHandler<ChargesFormInputs> = async (data) => {
-    const updates = {
-      charge: data.charge,
-      unit_nbr: unit.unit_nbr,
-      prsn_nbr: 1,
-      crash_pk: crashPk,
-      is_temp: true,
-      cris_schema_version: "2026",
-      created_by: user?.email,
-    };
+    const variables = unitChargeRecord
+      ? { id: unitChargeRecord.id, updates: data }
+      : {
+          updates: {
+            charge: data.charge,
+            unit_nbr: unit.unit_nbr,
+            prsn_nbr: 1,
+            crash_pk: crashPk,
+            is_temp: true,
+            cris_schema_version: "2026",
+            created_by: user?.email,
+          },
+        };
 
-    const responseData = await mutate({ updates });
-    if (!!responseData) {
-      onSaveCallback();
-    }
+    await mutate(variables);
+    await onSaveCallback();
     reset();
     onClose();
   };
@@ -80,6 +84,7 @@ export default function ChargesModal({
               aria-label="Charges text"
               rows={6}
               placeholder="Enter charges..."
+              autoFocus={true}
               {...register("charge", {
                 // coerce empty fields to null
                 setValueAs: (v) => v?.trim() || null,
@@ -89,10 +94,9 @@ export default function ChargesModal({
         </Modal.Body>
         <Modal.Footer>
           <Button
-            // disabled={!isDirty || isSubmitting}
             form="chargesForm"
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !isDirty}
           >
             Save
           </Button>
