@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { useQuery, useMutation } from "@/utils/graphql";
 import { Unit } from "@/types/unit";
@@ -66,23 +66,19 @@ export default function ContributingFactorsModal({
     typename: "lookups_contrib_factr",
   });
 
-  const defaultValues = useMemo(() => {
-    return {
-      contrib_factr_1_id: unit.contrib_factr_1_id,
-      contrib_factr_2_id: unit.contrib_factr_2_id,
-      contrib_factr_3_id: unit.contrib_factr_3_id,
-      contrib_factr_p1_id: unit.contrib_factr_p1_id,
-      contrib_factr_p2_id: unit.contrib_factr_p2_id,
-    };
-  }, [unit]);
-
   const {
     register,
     handleSubmit,
     reset,
     formState: { isDirty },
   } = useForm({
-    values: defaultValues,
+    values: {
+      contrib_factr_1_id: unit.contrib_factr_1_id,
+      contrib_factr_2_id: unit.contrib_factr_2_id,
+      contrib_factr_3_id: unit.contrib_factr_3_id,
+      contrib_factr_p1_id: unit.contrib_factr_p1_id,
+      contrib_factr_p2_id: unit.contrib_factr_p2_id,
+    },
   });
 
   const { mutate } = useMutation(UPDATE_UNIT);
