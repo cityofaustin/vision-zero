@@ -26,6 +26,8 @@ The main local Postgres container (`docker-compose.yml`) supports these tunables
 - `PG_MAX_WAL_SIZE`
 - `PG_SHARED_BUFFERS`
 - `PG_WORK_MEM`
+- `PG_EFFECTIVE_CACHE_SIZE`
+- `PG_CHECKPOINT_COMPLETION_TARGET`
 
 After editing `.env`, restart the DB:
 

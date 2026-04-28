@@ -13,10 +13,27 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
+CACHE_STATS_SQL = """
+SELECT
+    sum(heap_blks_read) as heap_read,
+    sum(heap_blks_hit)  as heap_hit,
+    (sum(heap_blks_hit) / (sum(heap_blks_hit) + sum(heap_blks_read))) * 100 as hit_ratio
+FROM pg_statio_user_tables;
+"""
+
+
+@dataclass
+class CacheStats:
+    heap_read: int
+    heap_hit: int
+    hit_ratio: float | None
+
+
 @dataclass
 class BenchmarkResult:
     execution_time_ms: float
     row_count: int
+    cache_stats: CacheStats
 
 
 def run_benchmark(
@@ -49,10 +66,26 @@ def run_benchmark(
             cur.execute(sql_text)
             rows = cur.fetchall()
             end = perf_counter()
+            cur.execute(CACHE_STATS_SQL)
+            cache_row = cur.fetchone()
+
+    if cache_row is None:
+        cache_stats = CacheStats(heap_read=0, heap_hit=0, hit_ratio=None)
+    else:
+        heap_read = int(cache_row[0] or 0)
+        heap_hit = int(cache_row[1] or 0)
+        hit_ratio_raw = cache_row[2]
+        hit_ratio = float(hit_ratio_raw) if hit_ratio_raw is not None else None
+        cache_stats = CacheStats(
+            heap_read=heap_read,
+            heap_hit=heap_hit,
+            hit_ratio=hit_ratio,
+        )
 
     return BenchmarkResult(
         execution_time_ms=(end - start) * 1000.0,
         row_count=len(rows),
+        cache_stats=cache_stats,
     )
 
 
@@ -88,6 +121,7 @@ def run_loop_ui(args: argparse.Namespace, sql_text: str) -> None:
         run_count = 0
         scroll_offset = 0
         follow_tail = True
+        latest_cache_stats = CacheStats(heap_read=0, heap_hit=0, hit_ratio=None)
         started = perf_counter()
         next_run_at = perf_counter()
 
@@ -106,6 +140,7 @@ def run_loop_ui(args: argparse.Namespace, sql_text: str) -> None:
                         password=args.password,
                     )
                     timings_ms.append(result.execution_time_ms)
+                    latest_cache_stats = result.cache_stats
                     entries.append(
                         f"{run_count:05d} {timestamp}  {result.execution_time_ms:10.3f} ms  "
                         f"rows={result.row_count}"
@@ -119,7 +154,7 @@ def run_loop_ui(args: argparse.Namespace, sql_text: str) -> None:
 
             stdscr.erase()
             height, width = stdscr.getmaxyx()
-            stats_height = 9
+            stats_height = 10
             history_top = 1
             history_height = max(3, height - stats_height - history_top)
             max_scroll = max(0, len(entries) - history_height)
@@ -151,11 +186,17 @@ def run_loop_ui(args: argparse.Namespace, sql_text: str) -> None:
             max_ms = max(timings_ms) if success_count else 0.0
             p50_ms = percentile(timings_ms, 0.50)
             p95_ms = percentile(timings_ms, 0.95)
+            cache_hit_ratio = (
+                f"{latest_cache_stats.hit_ratio:.2f}%"
+                if latest_cache_stats.hit_ratio is not None
+                else "n/a"
+            )
 
             stats_lines = [
                 f"Runs: {run_count}  Success: {success_count}  Failures: {failures}  Interval: {interval_seconds:.0f}s  Next: {next_in:.1f}s",
                 f"Mean: {mean_ms:.3f} ms  Min: {min_ms:.3f} ms  Max: {max_ms:.3f} ms",
                 f"P50: {p50_ms:.3f} ms  P95: {p95_ms:.3f} ms",
+                f"Cache: heap_read={latest_cache_stats.heap_read}  heap_hit={latest_cache_stats.heap_hit}  hit_ratio={cache_hit_ratio}",
                 f"Elapsed: {elapsed_seconds:.1f}s  Showing {scroll_offset + 1 if entries else 0}-{min(len(entries), scroll_offset + history_height)} of {len(entries)}",
             ]
 
@@ -269,6 +310,16 @@ def main() -> None:
 
     print(f"Execution time: {result.execution_time_ms:.3f} ms")
     print(f"Rows returned: {result.row_count}")
+    if result.cache_stats.hit_ratio is None:
+        cache_hit_ratio = "n/a"
+    else:
+        cache_hit_ratio = f"{result.cache_stats.hit_ratio:.2f}%"
+    print(
+        "Cache stats: "
+        f"heap_read={result.cache_stats.heap_read} "
+        f"heap_hit={result.cache_stats.heap_hit} "
+        f"hit_ratio={cache_hit_ratio}"
+    )
 
 
 if __name__ == "__main__":

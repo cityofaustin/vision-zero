@@ -32,6 +32,10 @@ services:
       - shared_buffers=${PG_SHARED_BUFFERS:-2GB}
       - -c
       - work_mem=${PG_WORK_MEM:-64MB}
+      - -c
+      - effective_cache_size=${PG_EFFECTIVE_CACHE_SIZE:-6GB}
+      - -c
+      - checkpoint_completion_target=${PG_CHECKPOINT_COMPLETION_TARGET:-0.9}
 
   cr3-user-api:
     build: api
