@@ -3,7 +3,7 @@ drop trigger if exists set_charges_cris_person_id_and_crash_pk on charges_cris;
 CREATE TRIGGER set_charges_cris_person_id_and_crash_pk 
 BEFORE INSERT ON public.charges_cris 
 FOR EACH ROW 
-EXECUTE FUNCTION public.charges_cris_set_person_id_and_crash_pk()
+EXECUTE FUNCTION public.charges_cris_set_person_id_and_crash_pk();
 
 alter table "public"."charges_cris" drop column "updated_by";
 
