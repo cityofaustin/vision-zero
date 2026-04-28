@@ -14,7 +14,7 @@ services:
       - postgis
 
   postgis:
-    shm_size: 2g
+    shm_size: ${PG_SHM_SIZE:-8g}
     image: atddocker/postgis:unified-db
     env_file:
       - .env
