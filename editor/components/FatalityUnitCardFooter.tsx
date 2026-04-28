@@ -69,8 +69,9 @@ export default function FatalityUnitCardFooter({
           {isTempRecord && !isReadOnlyUser && (
             <span className="ms-1">
               <Button
+                className="border-0"
                 size="sm"
-                variant="outline-primary border-white"
+                variant="outline-primary"
                 onClick={() => setShowContribFactorsModal(true)}
               >
                 <AlignedLabel>
@@ -101,8 +102,9 @@ export default function FatalityUnitCardFooter({
             {!isReadOnlyUser && (
               <span className="ms-1">
                 <Button
+                  className="border-0"
                   size="sm"
-                  variant="outline-primary border-white"
+                  variant="outline-primary"
                   onClick={() => setShowContribFactorsModal(true)}
                 >
                   <AlignedLabel>
@@ -120,8 +122,9 @@ export default function FatalityUnitCardFooter({
           {isTempRecord && !isReadOnlyUser && (
             <span className="ms-1">
               <Button
+                className="border-0"
                 size="sm"
-                variant="outline-primary border-white"
+                variant="outline-primary "
                 onClick={() => setShowChargesModal(true)}
               >
                 <AlignedLabel>
@@ -149,8 +152,9 @@ export default function FatalityUnitCardFooter({
             {!isReadOnlyUser && (
               <span className="ms-1">
                 <Button
+                  className="border-0"
                   size="sm"
-                  variant="outline-primary border-white"
+                  variant="outline-primary "
                   onClick={() => setShowChargesModal(true)}
                 >
                   <AlignedLabel>
