@@ -58,36 +58,13 @@ export default function FatalityUnitCardFooter({
       <ChargesModal
         crashPk={crashPk}
         unit={unit}
-        unitCharges={unitCharges}
+        unitChargeRecord={unitCharges?.[0]}
         show={showChargesModal}
         setShowChargesModal={setShowChargesModal}
         onSaveCallback={onSaveCallback}
       />
-      {hasCharges && (
-        <div className="pb-1">
-          <div className="fw-bold">Charges</div>
-          {isTempRecord && !isReadOnlyUser && (
-            <span className="ms-1">
-              <Button
-                size="sm"
-                variant="outline-primary border-white"
-                onClick={() => setShowChargesModal(true)}
-              >
-                <AlignedLabel>
-                  <LuSquarePen />
-                </AlignedLabel>
-              </Button>
-            </span>
-          )}
-          {unitCharges?.map((charge) => (
-            <div className="ms-2" key={charge.id}>
-              {charge.charge}
-            </div>
-          ))}
-        </div>
-      )}
       {hasContribFactors && (
-        <div>
+        <div className="pb-2">
           <span className="fw-bold">Contributing factors</span>
           {isTempRecord && !isReadOnlyUser && (
             <span className="ms-1">
@@ -117,7 +94,7 @@ export default function FatalityUnitCardFooter({
         </div>
       )}
       {!hasContribFactors && isTempRecord && (
-        <div>
+        <div className="pb-2">
           <div className="fw-bold">Contributing factors</div>
           <div className="d-flex justify-content-start align-items-center">
             <span className="text-secondary">None</span>
@@ -135,6 +112,33 @@ export default function FatalityUnitCardFooter({
               </span>
             )}
           </div>
+        </div>
+      )}
+      {hasCharges && (
+        <div>
+          <span className="fw-bold">Charges</span>
+          {isTempRecord && !isReadOnlyUser && (
+            <span className="ms-1">
+              <Button
+                size="sm"
+                variant="outline-primary border-white"
+                onClick={() => setShowChargesModal(true)}
+              >
+                <AlignedLabel>
+                  <LuSquarePen />
+                </AlignedLabel>
+              </Button>
+            </span>
+          )}
+          {unitCharges?.map((charge) => (
+            <div
+              className="ms-2"
+              key={charge.id}
+              style={{ whiteSpace: "pre-wrap" }}
+            >
+              {charge.charge}
+            </div>
+          ))}
         </div>
       )}
       {!hasCharges && isTempRecord && (
