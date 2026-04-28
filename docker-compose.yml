@@ -25,15 +25,15 @@ services:
     command:
       - postgres
       - -c
-      - maintenance_work_mem=${PG_MAINTENANCE_WORK_MEM:-1GB}
+      - maintenance_work_mem=${PG_MAINTENANCE_WORK_MEM:-2GB}
       - -c
-      - max_wal_size=${PG_MAX_WAL_SIZE:-5GB}
+      - max_wal_size=${PG_MAX_WAL_SIZE:-4GB}
       - -c
-      - shared_buffers=${PG_SHARED_BUFFERS:-2GB}
+      - shared_buffers=${PG_SHARED_BUFFERS:-8GB}
       - -c
       - work_mem=${PG_WORK_MEM:-64MB}
       - -c
-      - effective_cache_size=${PG_EFFECTIVE_CACHE_SIZE:-6GB}
+      - effective_cache_size=${PG_EFFECTIVE_CACHE_SIZE:-24GB}
       - -c
       - checkpoint_completion_target=${PG_CHECKPOINT_COMPLETION_TARGET:-0.9}
       - -c
@@ -46,8 +46,6 @@ services:
       - default_statistics_target=${PG_DEFAULT_STATISTICS_TARGET:-200}
       - -c
       - jit=${PG_JIT:-off}
-      - -c
-      - synchronous_commit=${PG_SYNCHRONOUS_COMMIT:-off}
       - -c
       - wal_compression=${PG_WAL_COMPRESSION:-on}
 
