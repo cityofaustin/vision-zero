@@ -10,3 +10,11 @@ export const INSERT_CHARGE = gql`
     }
   }
 `;
+
+export const UPDATE_CHARGE = gql`
+  mutation UpdateCharge($id: Int!, $updates: charges_cris_set_input) {
+    update_charges_cris_by_pk(pk_columns: { id: $id }, _set: $updates) {
+      id
+    }
+  }
+`;
