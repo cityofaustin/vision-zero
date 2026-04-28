@@ -8,12 +8,18 @@ POSTGRES_HOST_AUTH_METHOD="trust"
 PGDATA="/var/lib/postgresql/data/pgdata"
 
 # postgres tuning for local docker stack (docker-compose.yml)
-PG_MAINTENANCE_WORK_MEM="1GB"
-PG_MAX_WAL_SIZE="5GB"
-PG_SHARED_BUFFERS="2GB"
-PG_WORK_MEM="64MB"
-PG_EFFECTIVE_CACHE_SIZE="6GB"
-PG_CHECKPOINT_COMPLETION_TARGET="0.9"
+PG_MAINTENANCE_WORK_MEM="2GB"          # Memory for maintenance tasks like VACUUM and CREATE INDEX.
+PG_MAX_WAL_SIZE="4GB"                  # WAL size before forced checkpoint; balances recovery time and I/O.
+PG_SHARED_BUFFERS="8GB"                # Amount of RAM for shared memory buffers (data caching).
+PG_EFFECTIVE_CACHE_SIZE="24GB"         # Planner hint for total available cache (DB buffers + OS page cache).
+PG_CHECKPOINT_COMPLETION_TARGET="0.9"  # Spreads checkpoint I/O over 90% of the interval to avoid spikes.
+PG_WORK_MEM="64MB"                     # Memory for internal sort/hash operations per connection.
+PG_RANDOM_PAGE_COST="1.1"              # Lowers cost of random disk access to encourage index usage (for SSDs).
+PG_EFFECTIVE_IO_CONCURRENCY="200"      # Number of concurrent I/O requests the system can handle.
+PG_MAX_CONNECTIONS="100"               # Max simultaneous connections; protects against connection thrashing.
+PG_DEFAULT_STATISTICS_TARGET="200"     # Higher detail for statistics to improve query plan accuracy.
+PG_JIT="off"                           # Disables Just-In-Time compilation (often faster for simple queries).
+PG_WAL_COMPRESSION="on"                # Compresses WAL logs to save disk I/O.
 
 # developer's personal credentials to VZ read reaplica
 RR_USERNAME=""

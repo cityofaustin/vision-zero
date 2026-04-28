@@ -36,6 +36,20 @@ services:
       - effective_cache_size=${PG_EFFECTIVE_CACHE_SIZE:-6GB}
       - -c
       - checkpoint_completion_target=${PG_CHECKPOINT_COMPLETION_TARGET:-0.9}
+      - -c
+      - random_page_cost=${PG_RANDOM_PAGE_COST:-1.1}
+      - -c
+      - effective_io_concurrency=${PG_EFFECTIVE_IO_CONCURRENCY:-200}
+      - -c
+      - max_connections=${PG_MAX_CONNECTIONS:-100}
+      - -c
+      - default_statistics_target=${PG_DEFAULT_STATISTICS_TARGET:-200}
+      - -c
+      - jit=${PG_JIT:-off}
+      - -c
+      - synchronous_commit=${PG_SYNCHRONOUS_COMMIT:-off}
+      - -c
+      - wal_compression=${PG_WAL_COMPRESSION:-on}
 
   cr3-user-api:
     build: api

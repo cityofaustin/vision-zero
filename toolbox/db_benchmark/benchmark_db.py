@@ -21,6 +21,17 @@ SELECT
 FROM pg_statio_user_tables;
 """
 
+SESSION_GUC_ENV_VARS = (
+    ("PG_RANDOM_PAGE_COST", "random_page_cost"),
+    ("PG_EFFECTIVE_IO_CONCURRENCY", "effective_io_concurrency"),
+    ("PG_DEFAULT_STATISTICS_TARGET", "default_statistics_target"),
+    ("PG_JIT", "jit"),
+)
+STARTUP_GUC_ENV_VARS = (
+    ("PG_MAX_CONNECTIONS", "max_connections"),
+    ("PG_WAL_COMPRESSION", "wal_compression"),
+)
+
 
 @dataclass
 class CacheStats:
@@ -44,6 +55,7 @@ def run_benchmark(
     dbname: str = "vision_zero",
     user: str = "visionzero",
     password: str = "visionzero",
+    options: str | None = None,
 ) -> BenchmarkResult:
     try:
         import psycopg
@@ -59,6 +71,7 @@ def run_benchmark(
         dbname=dbname,
         user=user,
         password=password,
+        options=options,
         autocommit=True,
     ) as conn:
         with conn.cursor() as cur:
@@ -108,8 +121,44 @@ def add_line(stdscr: curses.window, y: int, text: str) -> None:
         stdscr.addnstr(y, 0, text, max(1, width - 1))
 
 
-def run_loop_ui(args: argparse.Namespace, sql_text: str) -> None:
+def parse_sql_statements(sql_text: str) -> list[str]:
+    statements = [chunk.strip() for chunk in sql_text.split(";")]
+    return [f"{statement};" for statement in statements if statement]
+
+
+def build_pgoptions_from_env(raw_pgoptions: str | None) -> str | None:
+    if raw_pgoptions and raw_pgoptions.strip():
+        return raw_pgoptions
+
+    options_parts: list[str] = []
+    for env_var, guc_name in SESSION_GUC_ENV_VARS:
+        value = os.getenv(env_var)
+        if value and value.strip():
+            options_parts.extend(["-c", f"{guc_name}={value.strip()}"])
+
+    if not options_parts:
+        return None
+    return " ".join(options_parts)
+
+
+def warn_for_startup_only_env_tunables() -> None:
+    ignored = []
+    for env_var, guc_name in STARTUP_GUC_ENV_VARS:
+        value = os.getenv(env_var)
+        if value and value.strip():
+            ignored.append(f"{env_var} ({guc_name})")
+    if ignored:
+        print(
+            "Note: startup-only PostgreSQL tunables are configured via docker-compose "
+            f"(not per benchmark session): {', '.join(ignored)}",
+            file=sys.stderr,
+        )
+
+
+def run_loop_ui(args: argparse.Namespace, sql_statements: list[str]) -> None:
     interval_seconds = args.interval_seconds
+    total_queries = len(sql_statements)
+
     def _loop(stdscr: curses.window) -> None:
         curses.curs_set(0)
         stdscr.nodelay(True)
@@ -122,6 +171,7 @@ def run_loop_ui(args: argparse.Namespace, sql_text: str) -> None:
         scroll_offset = 0
         follow_tail = True
         latest_cache_stats = CacheStats(heap_read=0, heap_hit=0, hit_ratio=None)
+        last_query_index: int | None = None
         started = perf_counter()
         next_run_at = perf_counter()
 
@@ -129,6 +179,8 @@ def run_loop_ui(args: argparse.Namespace, sql_text: str) -> None:
             now = perf_counter()
             if now >= next_run_at:
                 run_count += 1
+                query_index = (run_count - 1) % total_queries
+                sql_text = sql_statements[query_index]
                 timestamp = datetime.now().strftime("%H:%M:%S")
                 try:
                     result = run_benchmark(
@@ -138,17 +190,21 @@ def run_loop_ui(args: argparse.Namespace, sql_text: str) -> None:
                         dbname=args.dbname,
                         user=args.user,
                         password=args.password,
+                        options=args.pg_options,
                     )
                     timings_ms.append(result.execution_time_ms)
                     latest_cache_stats = result.cache_stats
+                    last_query_index = query_index
                     entries.append(
                         f"{run_count:05d} {timestamp}  {result.execution_time_ms:10.3f} ms  "
-                        f"rows={result.row_count}"
+                        f"rows={result.row_count}  query={query_index + 1}/{total_queries}"
                     )
                 except Exception as exc:  # noqa: BLE001 - keep loop alive while benchmarking
                     failures += 1
+                    last_query_index = query_index
                     entries.append(
-                        f"{run_count:05d} {timestamp}  ERROR {exc.__class__.__name__}: {exc}"
+                        f"{run_count:05d} {timestamp}  ERROR {exc.__class__.__name__}: {exc}  "
+                        f"query={query_index + 1}/{total_queries}"
                     )
                 next_run_at = now + interval_seconds
 
@@ -194,6 +250,7 @@ def run_loop_ui(args: argparse.Namespace, sql_text: str) -> None:
 
             stats_lines = [
                 f"Runs: {run_count}  Success: {success_count}  Failures: {failures}  Interval: {interval_seconds:.0f}s  Next: {next_in:.1f}s",
+                f"Queries loaded: {total_queries}  Last query: {(last_query_index + 1) if last_query_index is not None else 'n/a'}",
                 f"Mean: {mean_ms:.3f} ms  Min: {min_ms:.3f} ms  Max: {max_ms:.3f} ms",
                 f"P50: {p50_ms:.3f} ms  P95: {p95_ms:.3f} ms",
                 f"Cache: heap_read={latest_cache_stats.heap_read}  heap_hit={latest_cache_stats.heap_hit}  hit_ratio={cache_hit_ratio}",
@@ -270,6 +327,16 @@ def main() -> None:
         help="Database password (default: visionzero or PGPASSWORD).",
     )
     parser.add_argument(
+        "--pg-options",
+        default=os.getenv("PGOPTIONS", ""),
+        help=(
+            "Connection options passed through to PostgreSQL "
+            "(default: PGOPTIONS, or auto-built from PG_RANDOM_PAGE_COST, "
+            "PG_EFFECTIVE_IO_CONCURRENCY, PG_DEFAULT_STATISTICS_TARGET, "
+            "PG_JIT)."
+        ),
+    )
+    parser.add_argument(
         "--loop",
         action="store_true",
         help="Run continuously with an interactive terminal UI.",
@@ -281,28 +348,35 @@ def main() -> None:
         help="Delay between loop iterations in seconds (default: 1.0).",
     )
     args = parser.parse_args()
+    args.pg_options = build_pgoptions_from_env(args.pg_options)
+    warn_for_startup_only_env_tunables()
 
     if args.interval_seconds <= 0:
         print("--interval-seconds must be greater than 0.", file=sys.stderr)
         raise SystemExit(1)
 
     sql_text = args.sql_file.read_text()
+    sql_statements = parse_sql_statements(sql_text)
+    if not sql_statements:
+        print(f"No SQL statements found in {args.sql_file}.", file=sys.stderr)
+        raise SystemExit(1)
 
     if args.loop:
         if not sys.stdout.isatty():
             print("--loop requires an interactive TTY terminal.", file=sys.stderr)
             raise SystemExit(1)
-        run_loop_ui(args, sql_text)
+        run_loop_ui(args, sql_statements)
         return
 
     try:
         result = run_benchmark(
-            sql_text,
+            sql_statements[0],
             host=args.host,
             port=args.port,
             dbname=args.dbname,
             user=args.user,
             password=args.password,
+            options=args.pg_options,
         )
     except RuntimeError as exc:
         print(str(exc), file=sys.stderr)
