@@ -1,3 +1,6 @@
+-- These updates enable users to insert and update charge records for temporary records
+-- via the Fatality Details page
+
 alter table "public"."charges_cris" add column "is_temp" boolean
  not null default 'false';
 
