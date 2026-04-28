@@ -20,6 +20,10 @@ type ChargesFormInputs = {
   charge: string;
 };
 
+/**
+ * A modal for editing the charges of a
+ * temporary crash record on the fatalities details page
+ */
 export default function ChargesModal({
   crashPk,
   unit,

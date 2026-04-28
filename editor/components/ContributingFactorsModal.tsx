@@ -52,7 +52,7 @@ const contribFactorLabels: Array<{
 
 /**
  * A modal for editing the contributing factors of a
- * temporary crash record on the fatalities page
+ * temporary crash record on the fatalities details page
  */
 export default function ContributingFactorsModal({
   show,
