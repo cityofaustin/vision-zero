@@ -67,7 +67,7 @@ export default function FatalityUnitCardFooter({
         <div className="pb-2">
           <span className="fw-bold">Contributing factors</span>
           {isTempRecord && !isReadOnlyUser && (
-            <span className="ms-1">
+            <span className="ms-1 d-inline-flex align-items-center">
               <Button
                 className="border-0"
                 size="sm"
@@ -80,6 +80,7 @@ export default function FatalityUnitCardFooter({
               </Button>
             </span>
           )}
+
           {primaryContribFactors.map((factor, index) => (
             <div className="ms-2" key={`primary-${index}`}>
               <span className="fw-bold">Primary: </span>
@@ -100,7 +101,7 @@ export default function FatalityUnitCardFooter({
           <div className="d-flex justify-content-start align-items-center">
             <span className="text-secondary">None</span>
             {!isReadOnlyUser && (
-              <span className="ms-1">
+              <span className="ms-1 d-inline-flex align-items-center">
                 <Button
                   className="border-0"
                   size="sm"
@@ -120,7 +121,7 @@ export default function FatalityUnitCardFooter({
         <div>
           <span className="fw-bold">Charges</span>
           {isTempRecord && !isReadOnlyUser && (
-            <span className="ms-1">
+            <span className="ms-1 d-inline-flex align-items-center">
               <Button
                 className="border-0"
                 size="sm"
@@ -150,7 +151,7 @@ export default function FatalityUnitCardFooter({
           <div className="d-flex justify-content-start align-items-center">
             <span className="text-secondary">None</span>
             {!isReadOnlyUser && (
-              <span className="ms-1">
+              <span className="ms-1 d-inline-flex align-items-center">
                 <Button
                   className="border-0"
                   size="sm"

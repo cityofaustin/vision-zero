@@ -39,7 +39,7 @@ export default function ChargesModal({
   });
 
   const { mutate, loading: isSubmitting } = useMutation(
-    unitChargeRecord ? UPDATE_CHARGE : INSERT_CHARGE
+    !!unitChargeRecord ? UPDATE_CHARGE : INSERT_CHARGE
   );
 
   const onSubmit: SubmitHandler<ChargesFormInputs> = async (data) => {
