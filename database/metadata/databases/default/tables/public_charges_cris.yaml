@@ -99,3 +99,20 @@ select_permissions:
         - updated_at
       filter: {}
     comment: ""
+update_permissions:
+  - role: editor
+    permission:
+      columns:
+        - charge
+        - updated_by
+      filter: {}
+      check: {}
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - charge
+        - updated_by
+      filter: {}
+      check: {}
+    comment: ""
