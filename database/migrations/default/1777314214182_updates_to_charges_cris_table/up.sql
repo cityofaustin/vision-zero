@@ -3,7 +3,7 @@
 
 -- This command cannot be undone in the down migration because if we delete this column then the following command with the 
 -- check_cris_crash_id_is_temp_dependency constraint will be violated
-alter table "public"."charges_cris" add column "is_temp" boolean
+alter table "public"."charges_cris" add column if not exists "is_temp" boolean
  not null default 'false';
 
 alter table "public"."charges_cris" add constraint "check_cris_crash_id_is_temp_dependency" check (cris_crash_id is not null or is_temp is true);
@@ -14,7 +14,7 @@ alter table "public"."charges_cris" alter column "cris_crash_id" drop not null;
 
 alter table "public"."charges_cris" add column "updated_at" timestamptz
  not null default now();
- create trigger set_public_atd_apd_blueform_updated_at before update on "public"."charges_cris" for each row execute function public.set_current_timestamp_updated_at();
+create trigger set_public_atd_apd_blueform_updated_at before update on "public"."charges_cris" for each row execute function public.set_current_timestamp_updated_at();
 
 alter table "public"."charges_cris" add column "updated_by" text
  null default 'system';
