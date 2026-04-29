@@ -9,8 +9,6 @@ alter table "public"."charges_cris" drop column "updated_by";
 
 alter table "public"."charges_cris" drop column "updated_at";
 
-alter table "public"."charges_cris" alter column "person_id" set not null;
-
 alter table "public"."charges_cris" alter column "cris_crash_id" set not null;
 
 alter table "public"."charges_cris" drop constraint "check_cris_crash_id_is_temp_dependency";
