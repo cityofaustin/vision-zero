@@ -99,7 +99,7 @@ export default function FatalityUnitCardFooter({
         <div className="pb-2">
           <div className="fw-bold">Contributing factors</div>
           <div className="d-flex justify-content-start align-items-center">
-            <span className="text-secondary">None</span>
+            <span className="ms-2 text-secondary">None</span>
             {!isReadOnlyUser && (
               <span className="ms-1 d-inline-flex align-items-center">
                 <Button
@@ -117,7 +117,7 @@ export default function FatalityUnitCardFooter({
           </div>
         </div>
       )}
-      {hasCharges && (
+      {hasCharges && !!unitCharges?.[0].charge && (
         <div>
           <span className="fw-bold">Charges</span>
           {isTempRecord && !isReadOnlyUser && (
@@ -145,26 +145,24 @@ export default function FatalityUnitCardFooter({
           ))}
         </div>
       )}
-      {!hasCharges && isTempRecord && (
-        <div className="pt-1">
+      {(!hasCharges || !unitCharges?.[0].charge) && isTempRecord && (
+        <div>
           <div className="fw-bold">Charges</div>
-          <div className="d-flex justify-content-start align-items-center">
-            <span className="text-secondary">None</span>
-            {!isReadOnlyUser && (
-              <span className="ms-1 d-inline-flex align-items-center">
-                <Button
-                  className="border-0"
-                  size="sm"
-                  variant="outline-primary "
-                  onClick={() => setShowChargesModal(true)}
-                >
-                  <AlignedLabel>
-                    <LuCirclePlus />
-                  </AlignedLabel>
-                </Button>
-              </span>
-            )}
-          </div>
+          <span className="ms-2 text-secondary">None</span>
+          {!isReadOnlyUser && (
+            <span className="ms-1 d-inline-flex align-items-center">
+              <Button
+                className="border-0"
+                size="sm"
+                variant="outline-primary "
+                onClick={() => setShowChargesModal(true)}
+              >
+                <AlignedLabel>
+                  <LuCirclePlus />
+                </AlignedLabel>
+              </Button>
+            </span>
+          )}
         </div>
       )}
     </Card.Footer>
