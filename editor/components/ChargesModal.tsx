@@ -52,6 +52,8 @@ export default function ChargesModal({
       : {
           updates: {
             charge: data.charge,
+            person_id: unit.people.filter((person) => (person.prsn_nbr = 1))[0]
+              .id,
             unit_nbr: unit.unit_nbr,
             prsn_nbr: 1,
             crash_pk: crashPk,
