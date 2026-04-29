@@ -11,4 +11,3 @@ alter table "public"."charges_cris" drop column "updated_at";
 
 alter table "public"."charges_cris" drop constraint "check_cris_crash_id_is_temp_dependency";
 
-alter table "public"."charges_cris" drop column "is_temp";

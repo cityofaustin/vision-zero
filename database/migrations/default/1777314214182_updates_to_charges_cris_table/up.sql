@@ -1,6 +1,8 @@
 -- These updates enable users to insert and update charge records for temporary records
 -- via the Fatality Details page
 
+-- This command cannot be undone in the down migration because if we delete this column then the following command with the 
+-- check_cris_crash_id_is_temp_dependency constraint will be violated
 alter table "public"."charges_cris" add column "is_temp" boolean
  not null default 'false';
 
