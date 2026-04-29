@@ -42,6 +42,12 @@ Postgres tunables used by the local container are configurable via `.env`:
 - `PG_WORK_MEM`
 - `PG_EFFECTIVE_CACHE_SIZE`
 - `PG_CHECKPOINT_COMPLETION_TARGET`
+- `PG_RANDOM_PAGE_COST`
+- `PG_EFFECTIVE_IO_CONCURRENCY`
+- `PG_MAX_CONNECTIONS`
+- `PG_DEFAULT_STATISTICS_TARGET`
+- `PG_JIT`
+- `PG_WAL_COMPRESSION`
 
 After updating one or more of these values, restart the database container for them to take effect:
 
@@ -53,7 +59,20 @@ After updating one or more of these values, restart the database container for t
 You can verify the active values with:
 
 ```shell
-docker compose exec postgis psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SHOW shared_buffers; SHOW work_mem; SHOW maintenance_work_mem; SHOW max_wal_size; SHOW effective_cache_size; SHOW checkpoint_completion_target;"
+docker compose exec postgis psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "
+SHOW maintenance_work_mem;
+SHOW max_wal_size;
+SHOW shared_buffers;
+SHOW work_mem;
+SHOW effective_cache_size;
+SHOW checkpoint_completion_target;
+SHOW random_page_cost;
+SHOW effective_io_concurrency;
+SHOW max_connections;
+SHOW default_statistics_target;
+SHOW jit;
+SHOW wal_compression;
+"
 ```
 
 #### `vision-zero graphql-engine-up` & `vision-zero graphql-engine-down`
