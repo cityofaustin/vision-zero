@@ -24,10 +24,6 @@ Script which compares lookup tables between a CRIS extract and the VZ database a
 
 This script runs a Large Language Model (LLM) locally to flag input text as potentially containing personally identifiable information (PII).
 
-### Database benchmark helper - `db_benchmark`
-
-Runs an ad-hoc SQL benchmark query against a target Postgres database and is useful for comparing query timings under different Postgres tunables.
-
 ## Archive
 
 These toolbox scripts were deleted from the repository. Most of them are incompatible with v2.0 of our database. These deletions were committed at hash `569511cc0d598120be4146920623f55c1a8501a3`.
