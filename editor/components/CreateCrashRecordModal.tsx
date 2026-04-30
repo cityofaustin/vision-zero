@@ -9,6 +9,7 @@ import { FaCirclePlus, FaCircleMinus } from "react-icons/fa6";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
 import { useQuery, useMutation } from "@/utils/graphql";
 import { stringToNumberNullable } from "@/utils/formHelpers";
+import { CRIS_SCHEMA_VERSION } from "@/utils/constants";
 import { UNIT_TYPES_QUERY } from "@/queries/unit";
 import { CREATE_CRIS_CRASH } from "@/queries/crash";
 import { LookupTableOption } from "@/types/relationships";
@@ -41,7 +42,7 @@ type CrashInputs = {
   case_id: string;
   crash_timestamp: string;
   created_by: string;
-  cris_schema_version: "2023";
+  cris_schema_version: string;
   is_temp_record: boolean;
   private_dr_fl: boolean;
   rpt_city_id: number;
@@ -61,7 +62,7 @@ const DEFAULT_FORM_VALUES: CrashInputs = {
   case_id: "",
   crash_timestamp: "",
   created_by: "",
-  cris_schema_version: "2023",
+  cris_schema_version: CRIS_SCHEMA_VERSION,
   is_temp_record: true,
   private_dr_fl: false,
   rpt_city_id: 22,
@@ -81,7 +82,7 @@ const makeUnitRecord = (unit: UnitInputs, index: number, userEmail: string) => {
   const unitRecord: Record<string, unknown> = {
     unit_nbr: unitNumber,
     unit_desc_id: unit.unit_desc_id,
-    cris_schema_version: "2023",
+    cris_schema_version: CRIS_SCHEMA_VERSION,
     updated_by: userEmail,
     created_by: userEmail,
   };
@@ -94,7 +95,7 @@ const makeUnitRecord = (unit: UnitInputs, index: number, userEmail: string) => {
       prsn_nbr: i + 1,
       unit_nbr: unitNumber,
       prsn_injry_sev_id: 4,
-      cris_schema_version: "2023",
+      cris_schema_version: CRIS_SCHEMA_VERSION,
       is_primary_person: true,
       updated_by: userEmail,
       created_by: userEmail,
@@ -109,7 +110,7 @@ const makeUnitRecord = (unit: UnitInputs, index: number, userEmail: string) => {
       prsn_nbr: unit.fatality_count + i + 1,
       unit_nbr: unitNumber,
       prsn_injry_sev_id: 1,
-      cris_schema_version: "2023",
+      cris_schema_version: CRIS_SCHEMA_VERSION,
       is_primary_person: true,
       updated_by: userEmail,
       created_by: userEmail,

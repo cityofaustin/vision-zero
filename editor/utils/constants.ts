@@ -10,3 +10,5 @@ export const COLORS = {
 
 export const ALLOWED_QUERY_PAGE_SIZES = [10, 50, 250, 1000] as const;
 export type AllowedPageSize = (typeof ALLOWED_QUERY_PAGE_SIZES)[number];
+
+export const CRIS_SCHEMA_VERSION = "2026";

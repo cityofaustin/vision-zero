@@ -148,6 +148,10 @@ export const GET_CRASH = gql`
           id
           label
         }
+        people {
+          id
+          prsn_nbr
+        }
         contrib_factr {
           id
           label

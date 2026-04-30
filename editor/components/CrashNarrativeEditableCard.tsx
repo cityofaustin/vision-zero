@@ -95,7 +95,9 @@ export default function CrashNarrativeEditableCard({
         <Card.Body className="crash-header-card-body">
           <Tab.Content>
             <Tab.Pane eventKey="narrative">
-              {crash.investigator_narrative || ""}
+              <div style={{ whiteSpace: "pre-wrap" }}>
+                {crash.investigator_narrative || ""}
+              </div>
             </Tab.Pane>
             <Tab.Pane eventKey="summary">
               {isEditingSummary ? (
@@ -117,7 +119,9 @@ export default function CrashNarrativeEditableCard({
                   </Form.Group>
                 </Form>
               ) : (
-                crash.narrative_summary || ""
+                <div style={{ whiteSpace: "pre-wrap" }}>
+                  {crash.narrative_summary || ""}
+                </div>
               )}
             </Tab.Pane>
           </Tab.Content>
