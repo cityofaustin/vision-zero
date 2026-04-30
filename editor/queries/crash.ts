@@ -148,6 +148,10 @@ export const GET_CRASH = gql`
           id
           label
         }
+        people {
+          id
+          prsn_nbr
+        }
         contrib_factr {
           id
           label
@@ -168,6 +172,11 @@ export const GET_CRASH = gql`
           id
           label
         }
+        contrib_factr_1_id
+        contrib_factr_2_id
+        contrib_factr_3_id
+        contrib_factr_p1_id
+        contrib_factr_p2_id
         unit_injury_metrics_view {
           vz_fatality_count
           sus_serious_injry_count
