@@ -2,6 +2,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { Unit } from "@/types/unit";
 import { Charge } from "@/types/charge";
+import { CRIS_SCHEMA_VERSION } from "@/utils/constants";
 import { INSERT_CHARGE, UPDATE_CHARGE } from "@/queries/charges";
 import { useMutation } from "@/utils/graphql";
 import { SubmitHandler } from "react-hook-form";
@@ -58,7 +59,7 @@ export default function ChargesModal({
             prsn_nbr: 1,
             crash_pk: crashPk,
             is_temp: true,
-            cris_schema_version: "2026",
+            cris_schema_version: CRIS_SCHEMA_VERSION,
             created_by: user?.email,
           },
         };
