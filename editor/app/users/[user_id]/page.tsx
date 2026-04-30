@@ -14,7 +14,7 @@ import PermissionsRequired from "@/components/PermissionsRequired";
 import { formatRoleName, useGetToken } from "@/utils/auth";
 import { useUser } from "@/utils/users";
 import { User } from "@/types/users";
-import { formatDateTimeWithDay } from "@/utils/formatters";
+import { formatIsoDateTimeWithDay } from "@/utils/formatters";
 
 const allowedUserEditRoles = ["vz-admin"];
 
@@ -37,17 +37,17 @@ const COLUMNS: UserColumn[] = [
   {
     name: "created_at",
     label: "Created at",
-    renderer: (user) => formatDateTimeWithDay(user.created_at),
+    renderer: (user) => formatIsoDateTimeWithDay(user.created_at),
   },
   {
     name: "last_login",
     label: "Last login",
-    renderer: (user) => formatDateTimeWithDay(user.last_login),
+    renderer: (user) => formatIsoDateTimeWithDay(user.last_login),
   },
   {
     name: "updated_at",
     label: "Updated at",
-    renderer: (user) => formatDateTimeWithDay(user.updated_at),
+    renderer: (user) => formatIsoDateTimeWithDay(user.updated_at),
   },
 ];
 
