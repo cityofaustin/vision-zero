@@ -1,6 +1,7 @@
 -- Most recent migration: database/migrations/default/1761935469547_units_invloved/up.sql
 
-CREATE OR REPLACE VIEW unit_types_involved_view AS WITH unit_types AS (
+CREATE OR REPLACE VIEW unit_types_involved_view AS
+WITH unit_types AS (
     SELECT
         units.crash_pk,
         CASE

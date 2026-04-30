@@ -243,12 +243,17 @@ refresh materialized view location_crashes_view;
 
 ### Fatality details page - `/fatalities/[record-locator]`
 
+- The page should be tested with a temporary crash record and a non-temporary crash record
 - Page title is `Fatalities <record-locator>`
 - Observe that summary/map card renders normally with hyperlinked crash ID
 - Units/victims card
   - If the crash has multiple units, all units invovled should be displayed with the **Show all units** toggle enabled
     - Uncheck the **Show all units** toggle to hide units except for those with fatalities
     - Confirm the section header changes from **Units involved** to **Victims** after unchecking the toggle
+    - For temp crashes, the **Contributing factors** and **Charges** sections should always be visible inside each unit card. For editor/admin roles, a plus sign button should be visible to add charges and contributing factors. Use these buttons to add both charges and contributing factors via modal input
+    - [role: editor, admin] Once charges and contributing factors have been added, use the edit button in each section header to edit each record type.
+    - Confirm that the charges and contributing facctors add/edit controls are not visible for non-temp crashes
+    - Confirm that the charges and contributing facctors add/edit controls are not visible for read-only users
   - Locate a crash with just one unit/victim. Confirm that the **Show all units** toggle is disabled and the section header says **Victims** (not **Units invovled**)
   - [role: editor, admin] hover over the victim placeholder image, observe the animated thumbnail expands in size with pointer cursor. Click the thumbnail to open the image upload modal
     - select an image (e.g. use https://placehold.co/), and confirm that the image loads in the modal as a preview
