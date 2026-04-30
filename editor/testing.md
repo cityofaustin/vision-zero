@@ -250,7 +250,7 @@ refresh materialized view location_crashes_view;
   - If the crash has multiple units, all units invovled should be displayed with the **Show all units** toggle enabled
     - Uncheck the **Show all units** toggle to hide units except for those with fatalities
     - Confirm the section header changes from **Units involved** to **Victims** after unchecking the toggle
-    - For temp crashes, the **Contributing factors** and **Charges labels** should always be visible inside each unit card. For editor/admin roles, a plus sign button should be visibile to add charges and contributing factors. Use these buttons to add both charges and contributing factors via modal input
+    - For temp crashes, the **Contributing factors** and **Charges** sections should always be visible inside each unit card. For editor/admin roles, a plus sign button should be visible to add charges and contributing factors. Use these buttons to add both charges and contributing factors via modal input
     - [role: editor, admin] Once charges and contributing factors have been added, use the edit button in each section header to edit each record type.
     - Confirm that the charges and contributing facctors add/edit controls are not visible for non-temp crashes
     - Confirm that the charges and contributing facctors add/edit controls are not visible for read-only users
