@@ -1,0 +1,3 @@
+table:
+  name: cad_incident_groups
+  schema: public
