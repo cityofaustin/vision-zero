@@ -21,7 +21,8 @@ PG_MAX_CONNECTIONS="60"                # Moderate connection limit to prevent me
 PG_DEFAULT_STATISTICS_TARGET="100"     # Balanced detail for statistics to improve query plan accuracy.
 PG_JIT="off"                           # Disables Just-In-Time compilation (often faster for simple queries).
 PG_WAL_COMPRESSION="on"                # Compresses WAL logs to save disk I/O.
-# developer's personal credentials to VZ read reaplica
+
+# developer's personal credentials to VZ read replica
 RR_USERNAME=""
 RR_PASSWORD=""
 RR_HOSTNAME=""
