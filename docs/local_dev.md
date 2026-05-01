@@ -48,6 +48,7 @@ Postgres tunables used by the local container are configurable via `.env`:
 - `PG_DEFAULT_STATISTICS_TARGET`
 - `PG_JIT`
 - `PG_WAL_COMPRESSION`
+- `PG_SHM_SIZE` (Docker size format, e.g. `8g`; should be >= `PG_SHARED_BUFFERS`)
 
 After updating one or more of these values, restart the database container for them to take effect:
 
