@@ -157,7 +157,7 @@ export default function FatalCrashDetailsPage({
           </Card>
         </Col>
         <Col className="mb-3" sm={12} md={6}>
-          <FatalityUnitsCards crash={crash} />
+          <FatalityUnitsCards crash={crash} onSaveCallback={onSaveCallback} />
         </Col>
       </Row>
       <Row>
