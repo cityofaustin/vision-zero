@@ -1,5 +1,5 @@
 CREATE TABLE cad_incidents (
-    id serial PRIMARY KEY,
+    id bigserial PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     created_by text DEFAULT 'system'::text NOT NULL,
@@ -141,7 +141,7 @@ longitude ON cad_incidents FOR EACH ROW
 EXECUTE FUNCTION cad_incidents_set_spatial_attributes ();
 
 CREATE TABLE cad_incident_groups (
-    id serial PRIMARY KEY,
+    id bigserial PRIMARY KEY,
     incident_group_id integer NOT NULL,
     master_incident_id integer NOT NULL,
     UNIQUE (incident_group_id, master_incident_id)
