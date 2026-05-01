@@ -59,7 +59,7 @@ After updating one or more of these values, restart the database container for t
 You can verify the active values with:
 
 ```shell
-docker compose exec postgis psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "
+docker compose exec postgis sh -lc 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "
 SHOW maintenance_work_mem;
 SHOW max_wal_size;
 SHOW shared_buffers;
@@ -72,8 +72,12 @@ SHOW max_connections;
 SHOW default_statistics_target;
 SHOW jit;
 SHOW wal_compression;
-"
+"'
 ```
+
+This runs `psql` through a shell in the `postgis` container so `POSTGRES_USER` and `POSTGRES_DB` are read from container environment variables (instead of host shell variables, which are often unset).
+
+Alternatively, you can connect with `./vision-zero psql` and run the same `SHOW ...;` statements interactively.
 
 #### `vision-zero graphql-engine-up` & `vision-zero graphql-engine-down`
 
