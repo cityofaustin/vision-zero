@@ -3,6 +3,7 @@ import csv
 from datetime import datetime
 import logging
 import os
+from pprint import pprint
 import sys
 from zoneinfo import ZoneInfo
 
@@ -13,6 +14,7 @@ from utils.columns import COLUMNS
 from utils.graphql import make_hasura_request
 from utils.queries import (
     UPSERT_CAD_INCIDENTS_MUTATION,
+    UPSERT_CAD_INCIDENT_GROUPS_MUTATION,
 )
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
@@ -29,6 +31,26 @@ s3_resource = resource("s3")
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
+def extract_sort_key(object_key: str) -> tuple[str, int]:
+    """Extract the sort key from an object key, ensuring that files are sorted
+    by date, then by `WithGroupID` files last.
+
+    We expect object keys like:
+        - dev/cad_incidents/inbox/TPWCADTrafficSafetyWithGroupIDDaily_20260410.CSV
+        - dev/cad_incidents/inbox/TPWCADTrafficSafetyDaily_20260410.CSV
+
+    Sort order:
+        1. By date ascending (oldest first)
+        2. Non-WithGroupID file before WithGroupIDDaily file for the same date
+    """
+    filename = os.path.basename(object_key)
+    full_name, _ext = filename.split(".")
+    name, dt = full_name.split("_")
+    # 0 sorts before 1, so the plain "Daily" file comes first
+    group_order = 1 if "WithGroupID" in name else 0
+    return (dt, group_order)
+
+
 def get_files_todo(subdir="inbox"):
     """Get a list of S3 object keys of files to process in the /inbox.
 
@@ -39,10 +61,10 @@ def get_files_todo(subdir="inbox"):
         IOError: If no objects are found in the bucket subdirectory
 
     Returns:
-        List: List of S3 object keys, sorted oldest to newest by modified date
+        List: List of S3 object keys, sorted oldest to newest
     """
     prefix = f"{BUCKET_ENV}/cad_incidents/{subdir}"
-    logging.info(f"Checking for files in: {prefix}")
+    logging.info(f"Getting list of files in: {prefix}")
     response = s3_client.list_objects(
         Bucket=BUCKET_NAME,
         Prefix=prefix,
@@ -52,14 +74,11 @@ def get_files_todo(subdir="inbox"):
         key = item.get("Key")
         # ignore the subdirectory itself
         if not key.endswith("/"):
-            last_modified = item.get("LastModified")
-            files.append((key, last_modified))
+            files.append(key)
     if not len(files):
         raise IOError("No files found in S3 bucket")
-    # sort oldest -> newest
-    files.sort(key=lambda x: x[1])
-    # return object keys only
-    return [file[0] for file in files]
+    files.sort(key=extract_sort_key)
+    return files
 
 
 def download_file(file_obj_key):
@@ -163,7 +182,7 @@ def transform_lat_lon(data):
             row["latitude"] = float(lat) / 1000000
 
 
-def main(*, skip_archive):
+def main(*, skip_archive, dry_run):
     logging.info(f"Running CAD incident import")
     files_todo = get_files_todo()
     logging.info(f"{len(files_todo)} files to process")
@@ -172,13 +191,6 @@ def main(*, skip_archive):
         raise Exception("No CAD files found in S3 inbox")
 
     for file_obj_key in files_todo:
-
-        is_group_id_file = "GroupID" in file_obj_key
-
-        if is_group_id_file:
-            continue
-
-        logging.info("Processing data...")
         csv_content = download_file(file_obj_key)
 
         reader = csv.DictReader(csv_content.splitlines())
@@ -189,41 +201,50 @@ def main(*, skip_archive):
             raise Exception("CAD file contains no records")
 
         set_empty_strings_to_none(data)
-        rename_columns(data, COLUMNS["cols_to_rename"])
-        transform_lat_lon(data)
-        make_fields_timezone_aware(
-            data, date_field_names=["response_date", "time_call_closed"]
-        )
 
-        logging.info(f"{len(data):,} total records to upsert.")
+        is_group_id_file = "GroupID" in file_obj_key
+        if not is_group_id_file:
+            rename_columns(data, COLUMNS["cols_to_rename"])
+            transform_lat_lon(data)
+            make_fields_timezone_aware(
+                data, date_field_names=["response_date", "time_call_closed"]
+            )
 
-        # add update column names to the muation "on conflict" directive
-        column_names_to_upsert = list(data[0].keys())
-        column_names_to_upsert.remove("master_incident_id")
-        upsert_mutation = UPSERT_CAD_INCIDENTS_MUTATION.replace(
-            "$updateColumns", "\n".join(column_names_to_upsert)
-        )
+        logging.info(f"{len(data):,} total records to upsert")
 
-        seen_ids = set()
-        unique_rows = []
+        if not is_group_id_file:
+            # add update column names to the muation "on conflict" directive
+            column_names_to_upsert = list(data[0].keys())
+            column_names_to_upsert.remove("master_incident_id")
+            upsert_mutation = UPSERT_CAD_INCIDENTS_MUTATION.replace(
+                "$updateColumns", "\n".join(column_names_to_upsert)
+            )
+        else:
+            upsert_mutation = UPSERT_CAD_INCIDENT_GROUPS_MUTATION
 
-        # for row in data:
-        #     master_incident_id = row["master_incident_id"]
-        #     if master_incident_id not in seen_ids:
-        #         seen_ids.add(master_incident_id)
-        #         unique_rows.append(row)
+        if is_group_id_file:
+            # exclude rows that don't have a group ID
+            # todo: what is the group ID??
+            data = [
+                row
+                for row in data
+                if row["incident_group_id"] and row["master_incident_id"]
+            ]
 
         for chunk in chunks(data, BATCH_SIZE):
-            logging.info(f"Upserting {len(chunk)} rows...")
-            make_hasura_request(query=upsert_mutation, variables={"objects": chunk})
+            if not dry_run:
+                logging.info(f"Upserting {len(chunk)} rows...")
+                make_hasura_request(query=upsert_mutation, variables={"objects": chunk})
+            else:
+                print(f"Would upsert {len(chunk)}")
 
-        # if not skip_archive:
-        # archive_file(file_obj_key)
-    print("todo: ignore group ID file for now...")
-    breakpoint()
+        if not skip_archive:
+            if not dry_run:
+                archive_file(file_obj_key)
+            else:
+                print(f"Would archive {file_obj_key}")
 
 
 if __name__ == "__main__":
-
     args = get_cli_args()
-    main(skip_archive=args.skip_archive)
+    main(skip_archive=args.skip_archive, dry_run=args.dry_run)
