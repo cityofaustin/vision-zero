@@ -192,7 +192,7 @@ export const useMutation = (mutation: RequestDocument) => {
 /**
  * Hook which constructs a graphql query string to fetch data from a lookup table.
  *
- * The query returned by this hook uses field name aliasing to ensure so that it
+ * The query returned by this hook uses field name aliasing to ensure it
  * always returns an array of objects with an `id` and `label` property, which
  * makes the results of this query compatible with our lookup value editing
  * component.

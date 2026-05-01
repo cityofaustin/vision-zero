@@ -19,7 +19,9 @@ import DataCard from "@/components/DataCard";
 import { crashesColumns } from "@/configs/crashesColumns";
 import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 import NotesCard from "@/components/NotesCard";
+import UserEventsLogger from "@/components/UserEventsLogger";
 import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/crashNotes";
+import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
 
 const otherCardColumns = [
   crashesColumns.case_id,
@@ -74,7 +76,7 @@ export default function FatalCrashDetailsPage({
   const crash = data[0];
 
   return (
-    <>
+    <UserEventsLogger eventName="fatality_details_view">
       <Row>
         <div className="d-flex justify-content-between align-items-center mb-3">
           <span className="fs-3 fw-bold text-uppercase">
@@ -92,6 +94,12 @@ export default function FatalCrashDetailsPage({
           </span>
         </div>
       </Row>
+      {
+        // show alert if crash is a temp record, hide delete button on fatalities pages
+        crash.is_temp_record && (
+          <CrashIsTemporaryBanner crash={crash} allowDelete={false} />
+        )
+      }
       <Row>
         <Col className="mb-3" sm={12} md={6}>
           <Card className="h-100">
@@ -149,7 +157,7 @@ export default function FatalCrashDetailsPage({
           </Card>
         </Col>
         <Col className="mb-3" sm={12} md={6}>
-          <FatalityUnitsCards crash={crash} />
+          <FatalityUnitsCards crash={crash} onSaveCallback={onSaveCallback} />
         </Col>
       </Row>
       <Row>
@@ -194,6 +202,6 @@ export default function FatalCrashDetailsPage({
           />
         </Col>
       </Row>
-    </>
+    </UserEventsLogger>
   );
 }

@@ -148,6 +148,10 @@ export const GET_CRASH = gql`
           id
           label
         }
+        people {
+          id
+          prsn_nbr
+        }
         contrib_factr {
           id
           label
@@ -168,6 +172,11 @@ export const GET_CRASH = gql`
           id
           label
         }
+        contrib_factr_1_id
+        contrib_factr_2_id
+        contrib_factr_3_id
+        contrib_factr_p1_id
+        contrib_factr_p2_id
         unit_injury_metrics_view {
           vz_fatality_count
           sus_serious_injry_count
@@ -315,6 +324,9 @@ export const GET_CRASH = gql`
   }
 `;
 
+/**
+ * Record locator search used by the navbar search component
+ */
 export const CRASH_NAV_SEARCH = gql`
   query CrashNavigationSearch($searchValue: String!) {
     record_locator: crashes(
@@ -326,6 +338,14 @@ export const CRASH_NAV_SEARCH = gql`
       id
       record_locator
     }
+  }
+`;
+
+/**
+ * Case ID search used by the navbar search component
+ */
+export const CASE_NAV_SEARCH = gql`
+  query CrashNavigationSearch($searchValue: String!) {
     case_id: crashes(
       where: { case_id: { _eq: $searchValue }, is_deleted: { _eq: false } }
     ) {

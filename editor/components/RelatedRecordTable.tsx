@@ -9,6 +9,7 @@ import { compareNumbersAndBools, compareStrings } from "@/utils/sorting";
 import { getRecordValue } from "@/utils/formHelpers";
 import { FaSortDown, FaSortUp } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
+import ColumnVisibilityAlert from "@/components/ColumnVisibilityAlert";
 
 interface RelatedRecordTableProps<
   T extends Record<string, unknown>,
@@ -258,72 +259,75 @@ export default function RelatedRecordTable<
         </div>
       </Card.Header>
       <Card.Body>
-        <Table hover responsive>
-          <thead>
-            <tr>
-              {visibleColumns.map((col) => (
-                <th
-                  key={String(col.path)}
-                  style={{
-                    textWrap: "nowrap",
-                    cursor: col.sortable ? "pointer" : "auto",
-                  }}
-                  onClick={() => {
-                    const sortSettingsNew = { ...sortSettings };
-                    if (col.sortable) {
-                      if (col.path === sortSettings.col?.path) {
-                        // already sorting on this column, so switch order
-                        sortSettingsNew.asc = !sortSettings.asc;
-                      } else {
-                        // change sort column and leave order as-is
-                        sortSettingsNew.col = col;
-                      }
-                      setSortSettings(sortSettingsNew);
-                    }
-                  }}
-                >
-                  <AlignedLabel>
-                    {col.label}
-                    {col.path === sortSettings.col?.path && col.sortable && (
-                      <SortIcon className="ms-1 my-1 text-primary" />
-                    )}
-                  </AlignedLabel>
-                </th>
-              ))}
-              {/* add an empty header for the row action */}
-              {rowActionComponent && <th></th>}
-            </tr>
-          </thead>
-          <tbody>
-            {recordsSorted.length === 0 ? (
+        <ColumnVisibilityAlert show={visibleColumns.length === 0} />
+        {visibleColumns.length > 0 && (
+          <Table hover responsive>
+            <thead>
               <tr>
-                <td
-                  colSpan={columns.length + (rowActionComponent ? 1 : 0)}
-                  className="text-center text-secondary"
-                >
-                  {noRowsMessage ? noRowsMessage : "No records found"}
-                </td>
+                {visibleColumns.map((col) => (
+                  <th
+                    key={String(col.path)}
+                    style={{
+                      textWrap: "nowrap",
+                      cursor: col.sortable ? "pointer" : "auto",
+                    }}
+                    onClick={() => {
+                      const sortSettingsNew = { ...sortSettings };
+                      if (col.sortable) {
+                        if (col.path === sortSettings.col?.path) {
+                          // already sorting on this column, so switch order
+                          sortSettingsNew.asc = !sortSettings.asc;
+                        } else {
+                          // change sort column and leave order as-is
+                          sortSettingsNew.col = col;
+                        }
+                        setSortSettings(sortSettingsNew);
+                      }
+                    }}
+                  >
+                    <AlignedLabel>
+                      {col.label}
+                      {col.path === sortSettings.col?.path && col.sortable && (
+                        <SortIcon className="ms-1 my-1 text-primary" />
+                      )}
+                    </AlignedLabel>
+                  </th>
+                ))}
+                {/* add an empty header for the row action */}
+                {rowActionComponent && <th></th>}
               </tr>
-            ) : (
-              recordsSorted.map((record, i) => (
-                <RelatedRecordTableRow<T, P>
-                  key={i}
-                  columns={visibleColumns}
-                  isValidating={isValidating}
-                  onSaveCallback={onSaveCallback}
-                  record={record}
-                  mutation={mutation}
-                  getMutationVariables={getMutationVariables}
-                  rowActionMutation={rowActionMutation}
-                  rowActionComponent={rowActionComponent}
-                  rowActionComponentAdditionalProps={
-                    rowActionComponentAdditionalProps
-                  }
-                />
-              ))
-            )}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {recordsSorted.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={columns.length + (rowActionComponent ? 1 : 0)}
+                    className="text-center text-secondary"
+                  >
+                    {noRowsMessage ? noRowsMessage : "No records found"}
+                  </td>
+                </tr>
+              ) : (
+                recordsSorted.map((record, i) => (
+                  <RelatedRecordTableRow<T, P>
+                    key={i}
+                    columns={visibleColumns}
+                    isValidating={isValidating}
+                    onSaveCallback={onSaveCallback}
+                    record={record}
+                    mutation={mutation}
+                    getMutationVariables={getMutationVariables}
+                    rowActionMutation={rowActionMutation}
+                    rowActionComponent={rowActionComponent}
+                    rowActionComponentAdditionalProps={
+                      rowActionComponentAdditionalProps
+                    }
+                  />
+                ))
+              )}
+            </tbody>
+          </Table>
+        )}
       </Card.Body>
     </Card>
   );

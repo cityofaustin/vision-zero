@@ -1,4 +1,4 @@
--- Most recent migration: database/migrations/default/1771445809119_update_location_crashes_view/up.sql
+-- Most recent migration: database/migrations/default/1776976438072_views_chicago_tz/up.sql
 
 DROP MATERIALIZED VIEW IF EXISTS location_crashes_view;
 
@@ -12,13 +12,13 @@ SELECT
     crashes.case_id,
     crashes.crash_timestamp,
     to_char(
-        (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text), 'YYYY-MM-DD'::text
+        (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'YYYY-MM-DD'::text
     )                                            AS crash_date,
     to_char(
-        (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text), 'HH24:MI:SS'::text
+        (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'HH24:MI:SS'::text
     )                                            AS crash_time,
     upper(
-        to_char((crashes.crash_timestamp AT TIME ZONE 'US/Central'::text), 'dy'::text)
+        to_char((crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'dy'::text)
     )                                            AS day_of_week,
     crash_injury_metrics_view.crash_injry_sev_id AS crash_sev_id,
     crashes.latitude,
@@ -87,34 +87,38 @@ LEFT JOIN lookups.collsn ON crashes.fhe_collsn_id = collsn.id
 WHERE crashes.is_deleted = false
 UNION ALL
 SELECT
-    null::text                                                                        AS record_locator,
-    aab.form_id                                                                       AS cris_crash_id,
-    null::integer                                                                     AS crash_pk,
-    'NON-CR3'::text                                                                   AS type,
+    null::text         AS record_locator,
+    aab.form_id        AS cris_crash_id,
+    null::integer      AS crash_pk,
+    'NON-CR3'::text    AS type,
     aab.location_id,
-    aab.case_id::text                                                                 AS case_id,
-    aab.case_timestamp                                                                AS crash_timestamp,
-    to_char((aab.case_timestamp AT TIME ZONE 'US/Central'::text), 'YYYY-MM-DD'::text) AS crash_date,
-    to_char((aab.case_timestamp AT TIME ZONE 'US/Central'::text), 'HH24:MI:SS'::text) AS crash_time,
+    aab.case_id::text  AS case_id,
+    aab.case_timestamp AS crash_timestamp,
+    to_char(
+        (aab.case_timestamp AT TIME ZONE 'America/Chicago'::text), 'YYYY-MM-DD'::text
+    )                  AS crash_date,
+    to_char(
+        (aab.case_timestamp AT TIME ZONE 'America/Chicago'::text), 'HH24:MI:SS'::text
+    )                  AS crash_time,
     upper(
-        to_char((aab.case_timestamp AT TIME ZONE 'US/Central'::text), 'dy'::text)
-    )                                                                                 AS day_of_week,
-    0                                                                                 AS crash_sev_id,
+        to_char((aab.case_timestamp AT TIME ZONE 'America/Chicago'::text), 'dy'::text)
+    )                  AS day_of_week,
+    0                  AS crash_sev_id,
     aab.latitude,
     aab.longitude,
-    aab.address                                                                       AS address_display,
-    0                                                                                 AS non_injry_count,
-    0                                                                                 AS nonincap_injry_count,
-    0                                                                                 AS poss_injry_count,
-    0                                                                                 AS sus_serious_injry_count,
-    0                                                                                 AS tot_injry_count,
-    0                                                                                 AS unkn_injry_count,
-    0                                                                                 AS vz_fatality_count,
+    aab.address        AS address_display,
+    0                  AS non_injry_count,
+    0                  AS nonincap_injry_count,
+    0                  AS poss_injry_count,
+    0                  AS sus_serious_injry_count,
+    0                  AS tot_injry_count,
+    0                  AS unkn_injry_count,
+    0                  AS vz_fatality_count,
     aab.est_comp_cost_crash_based,
-    ''::text                                                                          AS collsn_desc,
-    ''::text                                                                          AS movement_desc,
-    ''::text                                                                          AS travel_direction,
-    ''::text                                                                          AS veh_body_styl_desc,
-    ''::text                                                                          AS veh_unit_desc
+    ''::text           AS collsn_desc,
+    ''::text           AS movement_desc,
+    ''::text           AS travel_direction,
+    ''::text           AS veh_body_styl_desc,
+    ''::text           AS veh_unit_desc
 FROM atd_apd_blueform aab
 WHERE aab.is_deleted = false;

@@ -157,7 +157,7 @@ def upsert_person_image(person_id, s3):
     if has_file:
         # save/update image in S3
         file = request.files["file"]
-        image_new_obj_key = _handle_image_upload(person_id, file, s3)
+        image_new_obj_key = handle_image_upload(person_id, file, s3)
         image_original_filename = file.filename
 
     # update hasura file metadata

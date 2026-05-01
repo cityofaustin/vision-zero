@@ -13,6 +13,7 @@ The below features should be tested with each role. Features with role-based acc
 - loading spinner appears to left of pagination controls while page loads
 - loading spinner appears to left of pagination controls when search is updated
 - search by Crash ID, Case ID, and address fields
+- search by an obviously invalid address that returns no results, like 'asdf' and confirm that the table displays the message "No records found"
 - filter by preset date range
 - filter by custom date range
 - filter by various card switches:
@@ -31,12 +32,14 @@ The below features should be tested with each role. Features with role-based acc
 - Reset filters button appears when sort column is changed
 - Use column visibility settings menu (gear icon to right of pagination controls) to adjust column visibility
 - Verify column visibility settings persist when page is refreshed
+- Verify that hiding all columns causes an alert banner appears that suggests you add columns via the settings menu
 - Column sort setting is persisted when refreshing the page
 - Loading spinner appearas when column sort triggers data refetch
 - Crashes map: Use the **Map** toggle to the right of the search input to switch between the list and map views
 - Crashes map: Adjust the page size to show many features on map
 - Crash map: use the address search to find a location within Austin metro area
 - Crashes map: zoom in. click on a crash point to display it's pop-up card.
+- Crashes map: zoom out the map so that some crash circle markers are overlapping. Click on a crash point and observe that there is a pagination interface in the pop-up card footer. Use the pagination buttons to cycle through the pop-up cards.
 - Crashes map: use the fit bounds control (top right corner of map, above +/- buttons) to recenter the map
 - Crashes map: Use the basemap control to change to the **Aerial** imagery basemap. Zoom in to make sure tiles load properly. Zoom out, and notice that the tiles transition to the mapbox satellite layer with road line features on top of the imagery.
 - Crashes map: Switch back to **Streets** basemap. Now switch to dark mode and (1) confirm that the basemap changes to the dark streets basemap and (2) click on a point to confirm that it's pop-up card is styled with a dark background
@@ -57,20 +60,20 @@ The below features should be tested with each role. Features with role-based acc
 - On crashes list, the **Temporary records only** filter switch shows only temporary records
 - Navigate to the crash details page for a temp record and verify that crash details page of the temp record reflects units + people injuries correctly
 - [role: readonly] Verify the crash diagram component displays an alert message that says **This temporary crash record does not have a diagram**
-- [role: editor, admin] 
+- [role: editor, admin]
   - Verify the crash diagram component displays an alert message as well as a button to upload a crash diagram
   - Click the **Upload crash diagram** button to open the diagram upload modal
   - Select an image (e.g. use https://placehold.co/), and confirm that the image loads in the modal as a preview
   - Click the **Save** button to save your image, then confirm that your uploaded image immediately renders in the crash diagram component
   - In the diagram component header, use the **Edit diagram** button to re-open the image upload modal. Upload a new image, save, and confirm it renders properly in the diagram component card.
   - Use the **Edit diagram** button once again to open the diagram image upload modal. Now use the **Delete** button in the modal header to delete the diagram image. Click **OK** to confirm that you want to delete the image, and then verify that you diagram image has been deleted and the crash diagram component once again presents a button to upload a diagram.
-- At the top of the temporary record crash details page, veryif there is a yellow alert banner indicating the record is a temp record. 
+- At the top of the temporary record crash details page, veryif there is a yellow alert banner indicating the record is a temp record.
 - [role: editor, admin] Use the **Delete** button inside the alert banner to open the delete temp record modal
   - The modal shoudl display a message that says **No transferrable data was found on this temporary crash record.**
   - Click the cancel button, then edit the temp crash's Fatality Review Board Recommendation and use the **Notes** widget to add a note.
-  -  Use the **Delete** button inside the alert banner to open the delete temp record modal. Confirm you cannot proceed until you toggle the **I don't want to transfer data** button or you select a crash for data transfer.
-  -  Use the crash search to select crash. Note that the modal displays **The following will be transferred** and lists the FRB recommendations and notes.
-  -  Click the **Delete and transfer data button**. Verify that the page redirects to the crash details page of the crash you selected with the FRB recommendations and notes populated with the same data from your temp crash
+  - Use the **Delete** button inside the alert banner to open the delete temp record modal. Confirm you cannot proceed until you toggle the **I don't want to transfer data** button or you select a crash for data transfer.
+  - Use the crash search to select crash. Note that the modal displays **The following will be transferred** and lists the FRB recommendations and notes.
+  - Click the **Delete and transfer data button**. Verify that the page redirects to the crash details page of the crash you selected with the FRB recommendations and notes populated with the same data from your temp crash
   - Note that crash victim images can also be transfered via this process, but this is only possible when the temp record and target crash record each have exactly one fatality. Test this by creating a temp record with one fatality, add a victim image using the fatality details page, then, when deleting the temp record, select a crash with exactly one fatality
 - After deleting temporary crash, use back button to navigate to it's details page and verify 404 page shows
 
@@ -119,11 +122,11 @@ The below features should be tested with each role. Features with role-based acc
 - Crash data card: edit a text input
 - Crash data card: edit a number input
 - Crash data card: edit a yes/no field
-- Crash data card: Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted
+- Crash data card: Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted. Now hide all columns and confirm an alert banner appears that suggests you add columns via the settings menu.
 - Crash data card - **Other**: cannot save a speed limit that is not a positive integer
 - Crash data card: nullify a value (e.g. street name) by clearing its input and saving it
 - Related records - **Units**
-  - Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted
+  - Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted. Now hide all columns and confirm an alert banner appears that suggests you add columns via the settings menu.
   - Verify unit **Contributing factors** are listed and prefixed with either **Primary** or **Possible**
   - Edit unit **Year**, **Body style**, **Type**, and **Movement**
   - Edit unit: cannot save a **Year** value less than 1900 or after the current year + 1
@@ -240,18 +243,23 @@ refresh materialized view location_crashes_view;
 
 ### Fatality details page - `/fatalities/[record-locator]`
 
+- The page should be tested with a temporary crash record and a non-temporary crash record
 - Page title is `Fatalities <record-locator>`
 - Observe that summary/map card renders normally with hyperlinked crash ID
 - Units/victims card
   - If the crash has multiple units, all units invovled should be displayed with the **Show all units** toggle enabled
     - Uncheck the **Show all units** toggle to hide units except for those with fatalities
     - Confirm the section header changes from **Units involved** to **Victims** after unchecking the toggle
+    - For temp crashes, the **Contributing factors** and **Charges** sections should always be visible inside each unit card. For editor/admin roles, a plus sign button should be visible to add charges and contributing factors. Use these buttons to add both charges and contributing factors via modal input
+    - [role: editor, admin] Once charges and contributing factors have been added, use the edit button in each section header to edit each record type.
+    - Confirm that the charges and contributing facctors add/edit controls are not visible for non-temp crashes
+    - Confirm that the charges and contributing facctors add/edit controls are not visible for read-only users
   - Locate a crash with just one unit/victim. Confirm that the **Show all units** toggle is disabled and the section header says **Victims** (not **Units invovled**)
   - [role: editor, admin] hover over the victim placeholder image, observe the animated thumbnail expands in size with pointer cursor. Click the thumbnail to open the image upload modal
     - select an image (e.g. use https://placehold.co/), and confirm that the image loads in the modal as a preview
     - Fill in the **Image source** input, save the form
     - Confirm that your uploaded image immediately renders in the victim card
-    - Edit the image by clicking on the victim thumbnail image. Confirm that you cannot submit the form without both selecting an image and filling in the  **Image source** field
+    - Edit the image by clicking on the victim thumbnail image. Confirm that you cannot submit the form without both selecting an image and filling in the **Image source** field
     - Confirm that you cannot upload an image type that is not JEPG or PNG
     - Delete the victim photo by using the **Delete** button in the image upload modal header
 - Confirm that the crash diagram card (second row, leftmost card) renders and functions normally

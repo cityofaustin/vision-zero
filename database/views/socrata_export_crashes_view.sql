@@ -1,4 +1,4 @@
--- Most recent migration: database/migrations/default/1727451511064_init/up.sql
+-- Most recent migration: database/migrations/default/1776976438072_views_chicago_tz/up.sql
 
 CREATE OR REPLACE VIEW socrata_export_crashes_view AS
 WITH unit_aggregates AS (
@@ -61,7 +61,8 @@ SELECT
         crashes.crash_timestamp, 'YYYY-MM-DD"T"HH24:MI:SS'::text
     )                                          AS crash_timestamp,
     to_char(
-        (crashes.crash_timestamp AT TIME ZONE 'US/Central'::text), 'YYYY-MM-DD"T"HH24:MI:SS'::text
+        (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text),
+        'YYYY-MM-DD"T"HH24:MI:SS'::text
     )                                          AS crash_timestamp_ct,
     CASE
         WHEN
