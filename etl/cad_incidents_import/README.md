@@ -22,7 +22,15 @@ todo
 docker compose build
 ```
 
-4. Run with the local override to set a local mount point
+1. In order to emulate the network volume mount on the prod server, you'll run locally with an extra docker compose file that mounts your local `./test_data` directory into the container.
+
+```shell
+scp get_files@now
+```
+
+```shell
+docker compose -f docker-compose.yml -f docker-compose.local.yml run import incidents_to_s3.py
+```
 
 ```shell
 docker compose -f docker-compose.yml -f docker-compose.local.yml run import incident_import.py
