@@ -36,14 +36,12 @@ def is_file_to_process(filename):
     )
 
 
-def extract_date(filename: str) -> str:
+def extract_date_from_filename(filename: str) -> str:
     """Extract the date string from a filename for sorting.
 
     We expect files named in either of these two ways
         - TPWCADTrafficSafetyWithGroupIDDaily_20260410.CSV
         - TPWCADTrafficSafetyDaily_20260410.CSV
-
-    Non-conforming files are ignored
     """
     full_name, ext = filename.split(".")
     name, dt = full_name.split("_")
@@ -59,6 +57,11 @@ def main():
         action="store_true",
         help="Log what would be uploaded and deleted without actually doing it",
     )
+    parser.add_argument(
+        "--skip-archive",
+        action="store_true",
+        help="Don't delete the file from the network drive after processing",
+    )
     args = parser.parse_args()
 
     if args.dry_run:
@@ -71,7 +74,7 @@ def main():
     if not files:
         raise Exception("No files found in COACD network directory")
 
-    files.sort(key=extract_date)
+    files.sort(key=extract_date_from_filename)
     logger.info(f"Found {len(files)} file(s) to process.")
 
     for filename in files:
@@ -82,13 +85,17 @@ def main():
             logger.info(
                 f"[DRY RUN] Would upload {filename} → s3://{BUCKET_NAME}/{s3_key}"
             )
-            logger.info(f"[DRY RUN] Would remove {local_path}")
+
         else:
             logger.info(f"Uploading {filename} → s3://{BUCKET_NAME}/{s3_key}")
             s3.upload_file(local_path, BUCKET_NAME, s3_key)
 
-            logger.info(f"Removing {local_path}")
-            os.remove(local_path)
+        if not args.skip_archive:
+            if args.dry_run:
+                logger.info(f"[DRY RUN] Would remove {local_path}")
+            else:
+                logger.info(f"Removing {local_path}")
+                # os.remove(local_path)
 
     logger.info(f"Done. Processed {len(files)} file(s).")
 
