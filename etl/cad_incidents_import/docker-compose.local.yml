@@ -2,6 +2,7 @@
 services:
   import:
     volumes:
+      # mount local directory into working directory  
       - .:/app
-      # mount local test directory where we expect the network directory
+      # mount local test_data directory where we expect the network directory
       - ./test_data:/mnt/vision_zero_cad
