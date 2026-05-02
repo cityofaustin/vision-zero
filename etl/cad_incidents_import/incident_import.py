@@ -1,16 +1,20 @@
 #!/usr/bin/ python
+import argparse
 import csv
 from datetime import datetime
 import logging
 import os
-from pprint import pprint
 import sys
 from zoneinfo import ZoneInfo
 
-from boto3 import client, resource
 
-from utils.cli import get_cli_args
 from utils.columns import COLUMNS
+from utils.files import (
+    archive_file_s3,
+    download_file_s3,
+    get_local_files_to_process,
+    get_s3_files_todo,
+)
 from utils.graphql import make_hasura_request
 from utils.queries import (
     UPSERT_CAD_INCIDENTS_MUTATION,
@@ -19,91 +23,37 @@ from utils.queries import (
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-BUCKET_NAME = os.getenv("BUCKET_NAME")
-BUCKET_ENV = os.getenv("BUCKET_ENV")
+
+COACD_MOUNT_PATH = os.environ.get("COACD_MOUNT_PATH", "/mnt/vision_zero_cad")
 
 BATCH_SIZE = 1000
-
-s3_client = client("s3")
-s3_resource = resource("s3")
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
-def extract_sort_key(object_key: str) -> tuple[str, int]:
-    """Extract the sort key from an object key, ensuring that files are sorted
-    by date, then by `WithGroupID` files last.
-
-    We expect object keys like:
-        - dev/cad_incidents/inbox/TPWCADTrafficSafetyWithGroupIDDaily_20260410.CSV
-        - dev/cad_incidents/inbox/TPWCADTrafficSafetyDaily_20260410.CSV
-
-    Sort order:
-        1. By date ascending (oldest first)
-        2. Non-WithGroupID file before WithGroupIDDaily file for the same date
-    """
-    filename = os.path.basename(object_key)
-    full_name, _ext = filename.split(".")
-    name, dt = full_name.split("_")
-    # 0 sorts before 1, so the plain "Daily" file comes first
-    group_order = 1 if "WithGroupID" in name else 0
-    return (dt, group_order)
-
-
-def get_files_todo(subdir="inbox"):
-    """Get a list of S3 object keys of files to process in the /inbox.
-
-    Args:
-        subdir (str, optional): The S3 bucket subdirectory to check. Defaults to "inbox".
-
-    Raises:
-        IOError: If no objects are found in the bucket subdirectory
-
-    Returns:
-        List: List of S3 object keys, sorted oldest to newest
-    """
-    prefix = f"{BUCKET_ENV}/cad_incidents/{subdir}"
-    logging.info(f"Getting list of files in: {prefix}")
-    response = s3_client.list_objects(
-        Bucket=BUCKET_NAME,
-        Prefix=prefix,
+def get_cli_args():
+    parser = argparse.ArgumentParser(
+        description="Import CAD incident records into the Vision Zero Database",
+        usage="import_incidents.py ems",
     )
-    files = []
-    for item in response.get("Contents", []):
-        key = item.get("Key")
-        # ignore the subdirectory itself
-        if not key.endswith("/"):
-            files.append(key)
-    if not len(files):
-        raise IOError("No files found in S3 bucket")
-    files.sort(key=extract_sort_key)
-    return files
-
-
-def download_file(file_obj_key):
-    """Download an email message from S3"""
-    logging.info(f"Downloading: {file_obj_key}")
-    file_obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=file_obj_key)
-    raw = file_obj["Body"].read()
-    try:
-        return raw.decode("utf-8-sig")
-    except UnicodeDecodeError:
-        return raw.decode("cp1252")
-
-
-def archive_file(file_obj_key):
-    """Move email fom ./inbox to ./archive
-
-    Args:
-        email_obj_key (str): the s3 object file key of the email file to be archved
-    """
-    new_key = file_obj_key.replace("inbox", "archive")
-    logging.info(f"Archiving {file_obj_key}")
-    s3_resource.meta.client.copy(
-        {"Bucket": BUCKET_NAME, "Key": file_obj_key}, BUCKET_NAME, new_key
+    parser.add_argument(
+        "--skip-archive",
+        "-s",
+        help="Skip the archival step of moving each processed file to the S3 bucket's /archive directory",
+        action="store_true",
     )
-    s3_client.delete_object(Bucket=BUCKET_NAME, Key=file_obj_key)
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Log what files would be uploaded without actually doing it",
+    )
+    parser.add_argument(
+        "--local-files",
+        action="store_true",
+        help="If true, process files from local COACD_MOUNT_PATH directory instead of AWS S3",
+    )
+    return parser.parse_args()
 
 
 def lower_case_keys(data):
@@ -182,16 +132,25 @@ def transform_lat_lon(data):
             row["latitude"] = float(lat) / 1000000
 
 
-def main(*, skip_archive, dry_run):
+def main(args):
     logging.info(f"Running CAD incident import")
-    files_todo = get_files_todo()
-    logging.info(f"{len(files_todo)} files to process")
+
+    if not args.local_files:
+        logging.info(f"Getting list of files in S3 inbox")
+        files_todo = get_s3_files_todo()
+    else:
+        files_todo = get_local_files_to_process(dir_name=COACD_MOUNT_PATH)
+
+    logging.info(
+        f"{len(files_todo)} {"local" if args.local_files else "S3"} files to process"
+    )
 
     if not files_todo:
         raise Exception("No CAD files found in S3 inbox")
 
     for file_obj_key in files_todo:
-        csv_content = download_file(file_obj_key)
+        logging.info(f"Downloading: {file_obj_key}")
+        csv_content = download_file_s3(file_obj_key)
 
         reader = csv.DictReader(csv_content.splitlines())
         data = list(reader)
@@ -209,8 +168,6 @@ def main(*, skip_archive, dry_run):
             make_fields_timezone_aware(
                 data, date_field_names=["response_date", "time_call_closed"]
             )
-
-        logging.info(f"{len(data):,} total records to upsert")
 
         if not is_group_id_file:
             # add update column names to the muation "on conflict" directive
@@ -231,20 +188,23 @@ def main(*, skip_archive, dry_run):
                 if row["incident_group_id"] and row["master_incident_id"]
             ]
 
+        logging.info(f"{len(data):,} total records to upsert")
+
         for chunk in chunks(data, BATCH_SIZE):
-            if not dry_run:
+            if not args.dry_run:
                 logging.info(f"Upserting {len(chunk)} rows...")
                 make_hasura_request(query=upsert_mutation, variables={"objects": chunk})
             else:
-                print(f"Would upsert {len(chunk)}")
+                logging.info(f"Would upsert {len(chunk)}")
 
-        if not skip_archive:
-            if not dry_run:
-                archive_file(file_obj_key)
+        if not args.skip_archive and not args.local_files:
+            if not args.dry_run:
+                logging.info(f"Archiving {file_obj_key}")
+                archive_file_s3(file_obj_key)
             else:
-                print(f"Would archive {file_obj_key}")
+                logging.info(f"Would archive {file_obj_key}")
 
 
 if __name__ == "__main__":
     args = get_cli_args()
-    main(skip_archive=args.skip_archive, dry_run=args.dry_run)
+    main(args)
