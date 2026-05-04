@@ -49,8 +49,8 @@ def main():
 
     logger.info(f"Found {len(files_todo)} file(s) to process.")
 
-    for filename in files_todo:
-        file_path = os.path.join(COACD_MOUNT_PATH, filename)
+    for file_path in files_todo:
+        filename = os.path.basename(file_path)
         s3_key = f"{S3_PREFIX}/{filename}"
 
         if args.dry_run:

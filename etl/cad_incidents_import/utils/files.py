@@ -17,10 +17,10 @@ def is_file_to_process(filename):
     """
     return (
         filename.lower().endswith(".csv")
-        and (
-            "TPWCADTrafficSafetyWithGroupIDDaily" in filename
-            or "TPWCADTrafficSafetyDaily" in filename
-        )
+        # and (
+        #     "TPWCADTrafficSafetyWithGroupIDDaily" in filename
+        #     or "TPWCADTrafficSafetyDaily" in filename
+        # )
         and len(filename.split("_")) == 2
     )
 
@@ -64,11 +64,26 @@ def get_local_files_to_process(*, dir_name):
         dir_name (str): the name of the directory to look for files
 
     Returns:
-        list: list of file name strings sorted by date, then by `WithGroupID` files last
+        list: file paths sorted by date, then by `WithGroupID` files last
     """
-    files = [f for f in os.listdir(dir_name) if is_file_to_process(f)]
+    files = [
+        os.path.join(dir_name, filename)
+        for filename in os.listdir(dir_name)
+        if is_file_to_process(filename)
+    ]
+
     files.sort(key=extract_sort_key)
     return files
+
+
+def read_file_local(file_path):
+    """Read a file from the local filesystem"""
+    with open(file_path, "rb") as f:
+        raw = f.read()
+    try:
+        return raw.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return raw.decode("cp1252")
 
 
 def get_s3_files_todo(subdir="inbox"):

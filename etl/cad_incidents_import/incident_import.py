@@ -14,6 +14,7 @@ from utils.files import (
     download_file_s3,
     get_local_files_to_process,
     get_s3_files_todo,
+    read_file_local,
 )
 from utils.graphql import make_hasura_request
 from utils.queries import (
@@ -148,9 +149,15 @@ def main(args):
     if not files_todo:
         raise Exception("No CAD files found in S3 inbox")
 
-    for file_obj_key in files_todo:
-        logging.info(f"Downloading: {file_obj_key}")
-        csv_content = download_file_s3(file_obj_key)
+    for file_obj_key_or_path in files_todo:
+
+        if args.local_files:
+            logging.info(f"Loading local file: {file_obj_key_or_path}")
+            csv_content = read_file_local(file_obj_key_or_path)
+        else:
+            logging.info(f"Downloading: {file_obj_key_or_path}")
+            csv_content = download_file_s3(file_obj_key_or_path)
+            csv_content = download_file_s3(file_obj_key_or_path)
 
         reader = csv.DictReader(csv_content.splitlines())
         data = list(reader)
@@ -161,7 +168,7 @@ def main(args):
 
         set_empty_strings_to_none(data)
 
-        is_group_id_file = "GroupID" in file_obj_key
+        is_group_id_file = "GroupID" in file_obj_key_or_path
         if not is_group_id_file:
             rename_columns(data, COLUMNS["cols_to_rename"])
             transform_lat_lon(data)
@@ -199,10 +206,10 @@ def main(args):
 
         if not args.skip_archive and not args.local_files:
             if not args.dry_run:
-                logging.info(f"Archiving {file_obj_key}")
-                archive_file_s3(file_obj_key)
+                logging.info(f"Archiving {file_obj_key_or_path}")
+                archive_file_s3(file_obj_key_or_path)
             else:
-                logging.info(f"Would archive {file_obj_key}")
+                logging.info(f"Would archive {file_obj_key_or_path}")
 
 
 if __name__ == "__main__":
