@@ -1,7 +1,4 @@
-"""
-Transfer CAD data CSV files from COACD network location to AWS S3 inbox
-"""
-
+#!/usr/bin/ python
 import argparse
 import os
 import boto3
@@ -64,7 +61,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--remove",
         action="store_true",
-        help="'Delete the file(s) from the file system processing",
+        help="Delete the file(s) from the file system processing",
     )
     args = parser.parse_args()
 
