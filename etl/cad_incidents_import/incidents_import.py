@@ -195,7 +195,6 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--archive",
-        "-s",
         help="Move each processed file to the S3 bucket's /archive directory",
         action="store_true",
     )
