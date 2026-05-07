@@ -87,8 +87,6 @@ python incidents_import.py --archive
 
 ## Deployment + CI
 
-(TODO)
-
-A github action is configured to build and push this ETL's image to the Docker hub whenever files in this directory are changed.
+A github action is configured to build and push this ETL's image (`atddocker/vz-cad-incidents-import`) to Docker hub whenever files in this directory are changed.
 
 The ETL itself is deployed via [atd-airflow](https://github.com/cityofaustin/atd-airflow).
