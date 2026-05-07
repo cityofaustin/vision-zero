@@ -21,25 +21,7 @@ BUCKET_ENV = os.environ["BUCKET_ENV"]
 S3_PREFIX = f"{BUCKET_ENV}/cad_incidents/inbox"
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Transfer CAD data CSV files from COACD network location to AWS S3 inbox"
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Log what would be uploaded and deleted without actually doing it",
-    )
-    parser.add_argument(
-        "--skip-removal",
-        action="store_true",
-        help="Don't delete the file from the network drive after processing",
-    )
-    args = parser.parse_args()
-
-    if args.dry_run:
-        logger.info("DRY RUN enabled — no files will be uploaded or deleted.")
-
+def main(args):
     s3 = boto3.client("s3")
 
     files_todo = get_local_files_to_process(dir_name=COACD_MOUNT_PATH)
@@ -60,15 +42,33 @@ def main():
             logger.info(f"Uploading s3://{BUCKET_NAME}/{s3_key}")
             s3.upload_file(file_path, BUCKET_NAME, s3_key)
 
-        if not args.skip_removal:
+        if args.remove:
             if args.dry_run:
                 logger.info(f"[DRY RUN] Would remove {file_path}")
             else:
                 logger.info(f"Removing {file_path}")
-                # os.remove(local_path)
+                os.remove(file_path)
 
     logger.info(f"Done. Processed {len(files_todo)} file(s).")
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(
+        description="Transfer CAD data CSV files from COACD network location to AWS S3 inbox"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Log what would be uploaded and deleted without actually doing it",
+    )
+    parser.add_argument(
+        "--remove",
+        action="store_true",
+        help="'Delete the file(s) from the file system processing",
+    )
+    args = parser.parse_args()
+
+    if args.dry_run:
+        logger.info("DRY RUN enabled — no files will be uploaded or deleted.")
+
+    main(args)

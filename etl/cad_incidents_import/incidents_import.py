@@ -27,34 +27,10 @@ AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
 COACD_MOUNT_PATH = os.environ.get("COACD_MOUNT_PATH", "/mnt/vision_zero_cad")
 
-BATCH_SIZE = 1000
+UPSERT_BATCH_SIZE = 1000
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-
-
-def get_cli_args():
-    parser = argparse.ArgumentParser(
-        description="Import CAD incident records into the Vision Zero Database",
-        usage="import_incidents.py ems",
-    )
-    parser.add_argument(
-        "--skip-archive",
-        "-s",
-        help="Skip the archival step of moving each processed file to the S3 bucket's /archive directory",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Log what files would be uploaded without actually doing it",
-    )
-    parser.add_argument(
-        "--local-files",
-        action="store_true",
-        help="If true, process files from local COACD_MOUNT_PATH directory instead of AWS S3",
-    )
-    return parser.parse_args()
 
 
 def lower_case_keys(data):
@@ -197,14 +173,14 @@ def main(args):
 
         logging.info(f"{len(data):,} total records to upsert")
 
-        for chunk in chunks(data, BATCH_SIZE):
+        for chunk in chunks(data, UPSERT_BATCH_SIZE):
             if not args.dry_run:
                 logging.info(f"Upserting {len(chunk)} rows...")
                 make_hasura_request(query=upsert_mutation, variables={"objects": chunk})
             else:
                 logging.info(f"Would upsert {len(chunk)}")
 
-        if not args.skip_archive and not args.local_files:
+        if args.archive and not args.local_files:
             if not args.dry_run:
                 logging.info(f"Archiving {file_obj_key_or_path}")
                 archive_file_s3(file_obj_key_or_path)
@@ -213,5 +189,25 @@ def main(args):
 
 
 if __name__ == "__main__":
-    args = get_cli_args()
+    parser = argparse.ArgumentParser(
+        description="Import CAD incident records into the Vision Zero Database",
+        usage="import_incidents.py ems",
+    )
+    parser.add_argument(
+        "--archive",
+        "-s",
+        help="Move each processed file to the S3 bucket's /archive directory",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Log what files would be uploaded without actually doing it",
+    )
+    parser.add_argument(
+        "--local-files",
+        action="store_true",
+        help="If true, process files from local COACD_MOUNT_PATH directory instead of AWS S3",
+    )
+    args = parser.parse_args()
     main(args)
