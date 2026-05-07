@@ -1,8 +1,6 @@
 services:
   import:
     build: .
-    volumes:
-      - .:/app
     env_file:
       - ./.env
     volumes:
