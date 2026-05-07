@@ -25,18 +25,6 @@ def is_file_to_process(filename):
     )
 
 
-# def extract_date_from_filename(filename: str) -> str:
-#     """Extract the date string from a filename for sorting.
-
-#     We expect files named in either of these two ways
-#         - TPWCADTrafficSafetyWithGroupIDDaily_20260410.CSV
-#         - TPWCADTrafficSafetyDaily_20260410.CSV
-#     """
-#     full_name, ext = filename.split(".")
-#     name, dt = full_name.split("_")
-#     return dt
-
-
 def extract_sort_key(object_key_or_full_filename: str) -> tuple[str, int]:
     """Extract the sort key from an object key, ensuring that files are sorted
     by date, then by `WithGroupID` files last.
