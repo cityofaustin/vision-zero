@@ -17,10 +17,10 @@ def is_file_to_process(filename):
     """
     return (
         filename.lower().endswith(".csv")
-        # and (
-        #     "TPWCADTrafficSafetyWithGroupIDDaily" in filename
-        #     or "TPWCADTrafficSafetyDaily" in filename
-        # )
+        and (
+            "TPWCADTrafficSafetyWithGroupIDDaily" in filename
+            or "TPWCADTrafficSafetyDaily" in filename
+        )
         and len(filename.split("_")) == 2
     )
 
