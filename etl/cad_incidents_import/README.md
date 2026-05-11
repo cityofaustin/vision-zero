@@ -25,7 +25,7 @@ This shared network drive is mounted to our on-prem ETL server at `/mnt/vision_z
 
 We process two distinct files on a daily basis:
 
-- The CAD incident incident file, in which each row is a crash-related CAD incident responded to by AFD, EMS, or APD. Sample filename: `TPWCADTrafficSafetyDaily_20260410.CSV`
+- The CAD incident file, in which each row is a crash-related CAD incident responded to by AFD, EMS, or APD. Sample filename: `TPWCADTrafficSafetyDaily_20260410.CSV`
 
 - The incident group file, which provides metadata about incident group relationships. The incident group file is not well understood, but should be helpful in the future as we try to link CAD records to the same crash incident response. Sample filename: `PWCADTrafficSafetyDaily_20260410.CSV`.
 
