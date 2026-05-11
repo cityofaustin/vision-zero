@@ -15,12 +15,9 @@ def is_file_to_process(filename):
     - TPWCADTrafficSafetyWithGroupIDDaily_20260410.CSV
     - TPWCADTrafficSafetyDaily_20260410.CSV
     """
-    return (
-        filename.lower().endswith(".csv")
-        and (
-            "TPWCADTrafficSafetyWithGroupIDDaily" in filename
-            or "TPWCADTrafficSafetyDaily" in filename
-        )
+    return filename.lower().endswith(".csv") and (
+        "TPWCADTrafficSafetyWithGroupIDDaily" in filename
+        or "TPWCADTrafficSafetyDaily" in filename
     )
 
 
@@ -96,8 +93,7 @@ def get_s3_files_todo(subdir="inbox"):
         # ignore the subdirectory itself
         if is_file_to_process(key):
             files.append(key)
-    if not len(files):
-        raise IOError("No files found in S3 bucket")
+
     files.sort(key=extract_sort_key)
     return files
 

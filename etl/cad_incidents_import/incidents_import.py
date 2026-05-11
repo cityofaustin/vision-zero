@@ -61,7 +61,7 @@ def rename_columns(data, cols_to_rename):
 def make_fields_timezone_aware(
     data, date_field_names, date_format="%Y-%m-%d %H:%M:%S", tz="America/Chicago"
 ):
-    """Update a field to be timezone aware by replacing the input value with a ISO sting with a
+    """Update a field to be timezone aware by replacing the input value with a ISO string with a
     tz offset
 
     Args:
@@ -69,7 +69,7 @@ def make_fields_timezone_aware(
         date_field_names (str[]): list of field names which hold date values to update
         date_format (str): the format of the input date string, which will be use to parse the string
             into a datetime object
-        tz (string): The IANA time zone name of the input time value. Defaluts to America/Chicago
+        tz (string): The IANA time zone name of the input time value. Defaults to America/Chicago
     """
     tzinfo = ZoneInfo(tz)
     for row in data:
