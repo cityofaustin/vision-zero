@@ -123,7 +123,9 @@ def main(args):
     )
 
     if not files_todo:
-        raise Exception("No CAD files found in S3 inbox")
+        raise Exception(
+            f"No CAD files found in {"local directory" if args.local_files else "S3 inbox"}"
+        )
 
     for file_obj_key_or_path in files_todo:
 

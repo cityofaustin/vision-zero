@@ -21,7 +21,6 @@ def is_file_to_process(filename):
             "TPWCADTrafficSafetyWithGroupIDDaily" in filename
             or "TPWCADTrafficSafetyDaily" in filename
         )
-        and len(filename.split("_")) == 2
     )
 
 
@@ -95,7 +94,7 @@ def get_s3_files_todo(subdir="inbox"):
     for item in response.get("Contents", []):
         key = item.get("Key")
         # ignore the subdirectory itself
-        if not key.endswith("/"):
+        if is_file_to_process(key):
             files.append(key)
     if not len(files):
         raise IOError("No files found in S3 bucket")
