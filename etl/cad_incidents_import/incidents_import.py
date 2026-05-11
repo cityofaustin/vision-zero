@@ -135,7 +135,6 @@ def main(args):
         else:
             logging.info(f"Downloading: {file_obj_key_or_path}")
             csv_content = download_file_s3(file_obj_key_or_path)
-            csv_content = download_file_s3(file_obj_key_or_path)
 
         reader = csv.DictReader(csv_content.splitlines())
         data = list(reader)
