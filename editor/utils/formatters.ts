@@ -11,13 +11,14 @@ export const formatDollars = (cost: unknown | null): string => {
 };
 
 /**
- * Format date as: Tue 5 Nov 2024 9:18 AM
+ * Format date as: 2025-06-22 10:33 AM · Sun
  */
 export const formatIsoDateTimeWithDay = (value: unknown): string => {
   if (!value || typeof value !== "string") {
     return "";
   }
-  return format(parseISO(value), "E yyyy-MM-dd h:mm a") || "";
+//   E d MMM yyyy h:mm a
+  return format(parseISO(value), "yyyy-MM-dd h:mm a · E") || "";
 };
 
 /**
