@@ -1,7 +1,11 @@
 import { getInjuryColorClass } from "@/utils/people";
 import { ColDataCardDef } from "@/types/types";
 import { EMSPatientCareRecord } from "@/types/ems";
-import { formatIsoDate, formatIsoDateTimeWithDay } from "@/utils/formatters";
+import {
+  formatIsoDate,
+  formatIsoDateTimeWithDay,
+  formatTime,
+} from "@/utils/formatters";
 import Link from "next/link";
 import { ClientError } from "graphql-request";
 import {
@@ -215,6 +219,14 @@ export const ALL_EMS_COLUMNS = {
     sortable: true,
     fetchAlways: true,
   },
+  incident_received_time: {
+    path: "incident_received_datetime",
+    label: "Time",
+    sortable: false,
+    defaultHidden: true,
+    valueFormatter: formatTime,
+    style: { minWidth: "6rem" },
+  },
   person_id: {
     path: "person_id",
     label: "Person ID",
@@ -294,6 +306,7 @@ export const emsListViewColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
   ALL_EMS_COLUMNS.id,
   ALL_EMS_COLUMNS.incident_number,
   ALL_EMS_COLUMNS.incident_received_datetime,
+  ALL_EMS_COLUMNS.incident_received_time,
   ALL_EMS_COLUMNS.incident_location_address,
   ALL_EMS_COLUMNS.travel_mode,
   ALL_EMS_COLUMNS.incident_problem,
