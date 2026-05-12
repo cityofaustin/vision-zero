@@ -17,7 +17,7 @@ export const formatIsoDateTimeWithDay = (value: unknown): string => {
   if (!value || typeof value !== "string") {
     return "";
   }
-  return format(parseISO(value), "yyyy-MM-dd h:mm a — E") || "";
+  return format(parseISO(value), "E yyyy-MM-dd h:mm a") || "";
 };
 
 /**
@@ -33,7 +33,7 @@ export const formatIsoDateTime = (value: unknown): string => {
 /**
  * Format date as: 08/24/2025 8:57 PM — Sun
  */
-export const formatUSDateTimeWithDay = (value: unknown): string => {
+export const formatUsDateTimeWithDay = (value: unknown): string => {
   if (!value || typeof value !== "string") {
     return "";
   }
@@ -43,7 +43,7 @@ export const formatUSDateTimeWithDay = (value: unknown): string => {
 /**
  * Format date as: 2024-01-01
  */
-export const formatDate = (value: unknown): string => {
+export const formatIsoDate = (value: unknown): string => {
   if (!value || typeof value !== "string") {
     return "";
   }

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Accordion from "react-bootstrap/Accordion";
-import { formatIsoDateTimeWithDay, formatUSDateTimeWithDay } from "@/utils/formatters";
+import { formatIsoDateTime } from "@/utils/formatters";
 import ChangeLogDetails from "@/components/ChangeLogDetails";
 import {
   ChangeLogEntry,
@@ -137,7 +137,7 @@ export default function ChangeLog({ logs }: { logs: ChangeLogEntry[] }) {
                       : change.affected_fields.join(", ")}
                   </td>
                   <td>{change.created_by}</td>
-                  <td>{formatUSDateTimeWithDay(change.created_at)}</td>
+                  <td>{formatIsoDateTime(change.created_at)}</td>
                 </tr>
               ))}
             </tbody>

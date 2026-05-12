@@ -1,7 +1,7 @@
 import { getInjuryColorClass } from "@/utils/people";
 import { ColDataCardDef } from "@/types/types";
 import { EMSPatientCareRecord } from "@/types/ems";
-import { formatDate, formatIsoDateTime } from "@/utils/formatters";
+import { formatIsoDate, formatIsoDateTimeWithDay } from "@/utils/formatters";
 import Link from "next/link";
 import { ClientError } from "graphql-request";
 import {
@@ -204,14 +204,14 @@ export const ALL_EMS_COLUMNS = {
     path: "incident_received_datetime",
     label: "Date",
     style: { whiteSpace: "nowrap" },
-    valueFormatter: formatIsoDateTime,
+    valueFormatter: formatIsoDateTimeWithDay,
     sortable: true,
   },
   incident_received_datetime: {
     path: "incident_received_datetime",
     label: "Date",
     style: { whiteSpace: "nowrap" },
-    valueFormatter: formatDate,
+    valueFormatter: formatIsoDate,
     sortable: true,
     fetchAlways: true,
   },

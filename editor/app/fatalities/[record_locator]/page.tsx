@@ -11,7 +11,7 @@ import CrashNarrativeEditableCard from "@/components/CrashNarrativeEditableCard"
 import { GET_CRASH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
 import { useDocumentTitle } from "@/utils/documentTitle";
-import { formatUSDateTimeWithDay, formatYear } from "@/utils/formatters";
+import { formatUsDateTimeWithDay, formatYear } from "@/utils/formatters";
 import { useQuery } from "@/utils/graphql";
 import { UPDATE_CRASH } from "@/queries/crash";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
@@ -118,7 +118,7 @@ export default function FatalCrashDetailsPage({
                     <td style={{ textWrap: "nowrap" }} className="fw-bold">
                       Date
                     </td>
-                    <td>{formatUSDateTimeWithDay(crash.crash_timestamp)}</td>
+                    <td>{formatUsDateTimeWithDay(crash.crash_timestamp)}</td>
                   </tr>
                   <tr>
                     <td style={{ textWrap: "nowrap" }} className="fw-bold">
