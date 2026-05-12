@@ -223,7 +223,7 @@ export const ALL_EMS_COLUMNS = {
     path: "incident_received_datetime",
     label: "Time",
     sortable: false,
-    defaultHidden: true,
+    defaultHidden: false,
     valueFormatter: formatTime,
     style: { minWidth: "6rem" },
   },
