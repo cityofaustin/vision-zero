@@ -25,6 +25,7 @@ import CrashSearchTypeahead, {
   CrashSearchResult,
 } from "./CrashSearchTypeahead";
 import { executeTransfer } from "@/utils/transferTempCrash";
+import InputSearchTypeahead from "./InputSearchTypeahead";
 
 const TRANSFERABLE_CARD_FIELDS: Record<string, string> = {
   latitude: "Crash location",
@@ -91,6 +92,10 @@ function buildTransferItemsList(
     items.push("Victim photo");
   }
   return items;
+}
+
+function formatSelectedValue(selected: CrashSearchResult): string {
+  return `${selected.record_locator} – ${selected.address_display ?? ""}`
 }
 
 interface DeleteTemporaryCrashModalProps {
@@ -336,6 +341,14 @@ export default function DeleteTemporaryCrashModal({
                 onSelect={setSelectedTarget}
                 disabled={!showModal || skipTransfer}
               />
+              <InputSearchTypeahead
+                excludeCrashId={crash.id}
+                label="Transfer data to crash"
+                formPlaceholder="Search by Crash ID or primary address..."
+                selectedValueFormatter={formatSelectedValue}
+                selected={selectedTarget}
+                onSelect={setSelectedTarget}
+                disabled={!showModal || skipTransfer}/>
             </>
           )}
 
