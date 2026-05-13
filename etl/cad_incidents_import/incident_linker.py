@@ -9,6 +9,8 @@ For each unprocessed incident:
 
 Requires env vars:
     HASURA_GRAPHQL_ENDPOINT
+
+docker compose -f docker-compose.yml -f docker-compose.local.yml run import incident_linker.py
 """
 
 # --- config -------------------------------------------------------------------
@@ -101,7 +103,7 @@ def time_window(response_date: datetime, hours: float) -> tuple[datetime, dateti
     return response_date - delta, response_date + delta
 
 
-def meters_to_degrees(meters, latitude=30.4):
+def meters_to_degrees(meters):
     """Rough conversion for _st_d_within on a 4326 geometry column."""
     return meters / 111_000
 
@@ -130,7 +132,7 @@ def fetch_candidates(incident: dict) -> list[dict]:
             "geom": point_geojson(incident["longitude"], incident["latitude"]),
             "start": start.isoformat(),
             "end": end.isoformat(),
-            "distance": meters_to_degrees(DISTANCE_THRESHOLD_M, incident["latitude"]),
+            "distance": meters_to_degrees(DISTANCE_THRESHOLD_M),
         },
     )
     return data["cad_incidents"]
