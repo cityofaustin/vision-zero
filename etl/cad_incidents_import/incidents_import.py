@@ -150,7 +150,12 @@ def main(args):
             rename_columns(data, COLUMNS["cols_to_rename"])
             transform_lat_lon(data)
             make_fields_timezone_aware(
-                data, date_field_names=["response_date", "time_call_closed"]
+                data,
+                date_field_names=[
+                    "response_date",
+                    "time_call_closed",
+                    "time_first_unit_arrived",
+                ],
             )
 
         if not is_group_id_file:
