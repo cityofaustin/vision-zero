@@ -13,7 +13,7 @@ from utils.field_maps import (
 )
 from utils.graphql import (
     make_hasura_request,
-    GET_UNMATCHED_EMS_PCRS,
+    GET_UNMATCHED_EMS_PCRS_TO_PEOPLE,
     GET_UNMATCHED_CRASH_PEOPLE,
     GET_EMS_PCRS_BY_INCIDENT_NUMBER,
     UPDATE_EMS_PCR,
@@ -197,7 +197,7 @@ def assign_people_to_pcrs(incident_match_results):
 def main():
     # get all PCRs that are matched to a crash_pk but not a person_id
     logger.info("Getting EMS PCRs to match...")
-    ems_pcrs_data = make_hasura_request(query=GET_UNMATCHED_EMS_PCRS)
+    ems_pcrs_data = make_hasura_request(query=GET_UNMATCHED_EMS_PCRS_TO_PEOPLE)
     ems_pcrs = ems_pcrs_data["ems__incidents"]
     # group by incident_number
     inc_nums_todo = []
