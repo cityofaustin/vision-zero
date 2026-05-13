@@ -13,3 +13,7 @@ CREATE TABLE cad_incident_links (
 --     ON cad_incident_links (super_incident_id);
 CREATE INDEX idx_cad_incident_links_a ON cad_incident_links (incident_id_a);
 CREATE INDEX idx_cad_incident_links_b ON cad_incident_links (incident_id_b);
+
+alter table cad_incidents add column match_status text default 'unprocessed';
+CREATE INDEX idx_cad_incidents_match_status ON cad_incidents (match_status);
+
