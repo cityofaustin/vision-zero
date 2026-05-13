@@ -7,19 +7,27 @@ import Spinner from "react-bootstrap/Spinner";
 import { CRASH_TRANSFER_SEARCH } from "@/queries/crash"; // also a prop
 import { useQuery } from "@/utils/graphql";
 
-export type CrashSearchResult = { // this might become a var passed into here?
+type TypeaheadSearchableTypes = CrashSearchResult;
+
+export type CrashSearchResult = {
+  // this might become a var passed into here?
   id: number;
   record_locator: string;
   address_display: string | null;
 };
- 
+
 interface InputSearchTypeaheadProps {
   excludeCrashId: number;
   label: string;
   formPlaceholder?: string;
-  selectedValueFormatter: (selected: CrashSearchResult) => string;
-  selected: CrashSearchResult | null;
-  onSelect: (hit: CrashSearchResult | null) => void;
+  selectedValueFormatter: (selected: TypeaheadSearchableTypes) => string;
+  selected: TypeaheadSearchableTypes | null;
+  onSelect: (hit: TypeaheadSearchableTypes | null) => void;
+  searchResultFormatter: (
+    result: TypeaheadSearchableTypes,
+    index: number,
+    highlightedIndex: number
+  ) => React.ReactNode;
   disabled?: boolean;
 }
 
@@ -33,6 +41,7 @@ export default function InputSearchTypeahead({
   selectedValueFormatter,
   selected,
   onSelect,
+  searchResultFormatter,
   disabled = false,
 }: InputSearchTypeaheadProps) {
   const [searchInput, setSearchInput] = useState("");
@@ -52,8 +61,7 @@ export default function InputSearchTypeahead({
 
   // Search pattern for SQL LIKE query after user has typed at least 2 characters
   const searchPattern = useMemo(
-    () =>
-      searchInput.trim().length >= 2 ? `%${searchInput.trim()}%` : null,
+    () => (searchInput.trim().length >= 2 ? `%${searchInput.trim()}%` : null),
     [searchInput]
   );
 
@@ -68,10 +76,7 @@ export default function InputSearchTypeahead({
       typename: "crashes",
     });
 
-  const results = useMemo(
-    () => searchResults ?? [],
-    [searchResults]
-  );
+  const results = useMemo(() => searchResults ?? [], [searchResults]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -98,7 +103,7 @@ export default function InputSearchTypeahead({
       }
     },
     [highlightedIndex, onSelect, results, selected, showDropdown]
-  ); 
+  );
 
   return (
     <Form.Group className="mb-3">
@@ -108,11 +113,7 @@ export default function InputSearchTypeahead({
           type="text"
           placeholder={formPlaceholder ?? "search"}
           disabled={disabled}
-          value={
-            selected
-              ? selectedValueFormatter(selected)
-              : searchInput
-          }
+          value={selected ? selectedValueFormatter(selected) : searchInput}
           onChange={(e) => {
             if (selected) {
               onSelect(null);
@@ -139,7 +140,8 @@ export default function InputSearchTypeahead({
             style={{ zIndex: 1050, maxHeight: "240px", overflowY: "auto" }}
           >
             {results.length === 0 && !isSearching && (
-              <li className="list-group-item text-muted">No crashes found</li>
+              // do we want this to also be a customizable message
+              <li className="list-group-item text-muted">No results found</li>
             )}
             {results.map((result, index) => (
               <li
@@ -155,18 +157,7 @@ export default function InputSearchTypeahead({
                   setShowDropdown(false);
                 }}
               >
-                <strong>{result.record_locator}</strong>
-                {result.address_display && (
-                  <span
-                    className={
-                      index === highlightedIndex
-                        ? "ms-2 text-white"
-                        : "ms-2 text-muted"
-                    }
-                  >
-                    {result.address_display}
-                  </span>
-                )}
+                {searchResultFormatter(result, index, highlightedIndex)}
               </li>
             ))}
           </ul>
