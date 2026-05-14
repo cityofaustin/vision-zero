@@ -14,7 +14,7 @@ services:
       - postgis
 
   postgis:
-    shm_size: 2g
+    shm_size: ${PG_SHM_SIZE:-8g}
     image: atddocker/postgis:unified-db
     env_file:
       - .env
@@ -22,11 +22,32 @@ services:
       - ./database/snapshots:/snapshots
     ports:
       - 5431:5432
-    command: postgres
-      -c 'maintenance_work_mem=1GB'
-      -c 'max_wal_size=5GB'
-      -c 'shared_buffers=2GB'
-      -c 'work_mem=64MB'
+    command:
+      - postgres
+      - -c
+      - maintenance_work_mem=${PG_MAINTENANCE_WORK_MEM:-2GB}
+      - -c
+      - max_wal_size=${PG_MAX_WAL_SIZE:-4GB}
+      - -c
+      - shared_buffers=${PG_SHARED_BUFFERS:-8GB}
+      - -c
+      - work_mem=${PG_WORK_MEM:-64MB}
+      - -c
+      - effective_cache_size=${PG_EFFECTIVE_CACHE_SIZE:-24GB}
+      - -c
+      - checkpoint_completion_target=${PG_CHECKPOINT_COMPLETION_TARGET:-0.9}
+      - -c
+      - random_page_cost=${PG_RANDOM_PAGE_COST:-1.1}
+      - -c
+      - effective_io_concurrency=${PG_EFFECTIVE_IO_CONCURRENCY:-200}
+      - -c
+      - max_connections=${PG_MAX_CONNECTIONS:-100}
+      - -c
+      - default_statistics_target=${PG_DEFAULT_STATISTICS_TARGET:-200}
+      - -c
+      - jit=${PG_JIT:-off}
+      - -c
+      - wal_compression=${PG_WAL_COMPRESSION:-on}
 
   cr3-user-api:
     build: api
