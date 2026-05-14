@@ -25,7 +25,6 @@ import CrashSearchTypeahead, {
   CrashSearchResult,
 } from "./CrashSearchTypeahead";
 import { executeTransfer } from "@/utils/transferTempCrash";
-import InputSearchTypeahead from "./InputSearchTypeahead";
 
 const TRANSFERABLE_CARD_FIELDS: Record<string, string> = {
   latitude: "Crash location",
@@ -94,30 +93,6 @@ function buildTransferItemsList(
   return items;
 }
 
-function formatSelectedValue(selected: CrashSearchResult): string {
-  return `${selected.record_locator} – ${selected.address_display ?? ""}`;
-}
-
-function formatSearchResult(
-  result: CrashSearchResult,
-  index: number,
-  highlightedIndex: number
-): React.ReactNode {
-  return (
-    <>
-      <strong>{result.record_locator}</strong>
-      {result.address_display && (
-        <span
-          className={
-            index === highlightedIndex ? "ms-2 text-white" : "ms-2 text-muted"
-          }
-        >
-          {result.address_display}
-        </span>
-      )}{" "}
-    </>
-  );
-}
 
 interface DeleteTemporaryCrashModalProps {
   show: boolean;
@@ -359,16 +334,6 @@ export default function DeleteTemporaryCrashModal({
                 excludeCrashId={crash.id}
                 selected={selectedTarget}
                 onSelect={setSelectedTarget}
-                disabled={!showModal || skipTransfer}
-              />
-              <InputSearchTypeahead
-                excludeCrashId={crash.id}
-                label="Transfer data to crash"
-                formPlaceholder="Search by Crash ID or primary address..."
-                selectedValueFormatter={formatSelectedValue}
-                selected={selectedTarget}
-                onSelect={setSelectedTarget}
-                searchResultFormatter={formatSearchResult}
                 disabled={!showModal || skipTransfer}
               />
             </>
