@@ -9,6 +9,7 @@ on:
       - ".github/workflows/build_docker_images.yml"
       - "api/**"
       - "etl/afd_ems_import/**"
+      - "etl/cad_incidents_import/**"
       - "etl/cris_import/**"
       - "etl/ems_person_match/**"
       - "etl/moped_projects/**"
@@ -38,6 +39,8 @@ jobs:
           filters: |
             afd_ems:
               - 'etl/afd_ems_import/**'
+            cad_incidents:
+              - 'etl/cad_incidents_import/**'
             cris:
               - 'etl/cris_import/**'
             ems_person_match:
@@ -62,6 +65,15 @@ jobs:
           context: etl/afd_ems_import
           push: true
           tags: atddocker/vz-afd-ems-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
+
+      - name: Build and push CAD incidents image
+        if: steps.changes.outputs.cad_incidents == 'true'
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: etl/cad_incidents_import
+          push: true
+          tags: atddocker/vz-cad-incidents-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
 
       - name: Build and push CRIS import image
         if: steps.changes.outputs.cris == 'true'

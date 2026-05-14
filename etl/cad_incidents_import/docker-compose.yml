@@ -1,0 +1,8 @@
+services:
+  import:
+    build: .
+    env_file:
+      - ./.env
+    volumes:
+      # mount local COACD network directory to container
+      - /mnt/vision_zero_cad:/mnt/vision_zero_cad
