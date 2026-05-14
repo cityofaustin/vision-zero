@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatDate, formatDollars, formatTime } from "@/utils/formatters";
+import { formatIsoDate, formatDollars, formatTime } from "@/utils/formatters";
 import { ColDataCardDef } from "@/types/types";
 import { CrashesListRow } from "@/types/crashesList";
 
@@ -25,7 +25,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     label: "Date",
     sortable: true,
     style: { minWidth: "8rem" },
-    valueFormatter: formatDate,
+    valueFormatter: formatIsoDate,
     fetchAlways: true,
   },
   {
