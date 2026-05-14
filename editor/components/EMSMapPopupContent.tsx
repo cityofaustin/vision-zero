@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatDate } from "@/utils/formatters";
+import { formatIsoDate } from "@/utils/formatters";
 import { GeoJsonProperties } from "geojson";
 
 export interface EMSMapPopupContentProps {
@@ -23,7 +23,7 @@ export default function EMSMapPopupContent({
       <div className="d-flex justify-content-between">
         <span className="fw-bold">Date</span>
         <span className="text-muted">
-          {formatDate(properties?.incident_received_datetime)}
+          {formatIsoDate(properties?.incident_received_datetime)}
         </span>
       </div>
     </div>

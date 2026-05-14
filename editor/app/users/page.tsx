@@ -13,6 +13,7 @@ import { User } from "@/types/users";
 import { formatRoleName } from "@/utils/auth";
 import { useDocumentTitle } from "@/utils/documentTitle";
 import { LuCheck, LuCopy, LuUserPlus } from "react-icons/lu";
+import { formatIsoDateTime } from "@/utils/formatters";
 
 const allowedCreateUserRoles = ["vz-admin"];
 
@@ -147,14 +148,16 @@ export default function Users() {
                   >
                     <td>{user.name}</td>
                     <td>{user.email}</td>
-                    <td>{new Date(user.created_at).toLocaleDateString()}</td>
+                    <td>{formatIsoDateTime(user.created_at)}</td>
                     <td>
                       {user.last_login
-                        ? new Date(user.last_login).toLocaleDateString()
+                        ? formatIsoDateTime(user.last_login)
                         : ""}
                     </td>
                     <td>{user.logins_count || "0"}</td>
-                    <td>{formatRoleName(user.app_metadata?.roles?.[0] || "")}</td>
+                    <td>
+                      {formatRoleName(user.app_metadata?.roles?.[0] || "")}
+                    </td>
                   </tr>
                 );
               })}

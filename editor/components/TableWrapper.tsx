@@ -130,7 +130,12 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   const { data, aggregateData, isLoading, error, refetch } = useQuery<T>({
     // don't fire first query until localstorage is loaded
-    query: (isQueryConfigLocalStorageLoaded && visibleColumns.length > 0) ? query : null,
+    query:
+      isQueryConfigLocalStorageLoaded &&
+      isColVisibilityLocalStorageLoaded &&
+      visibleColumns.length > 0
+        ? query
+        : null,
     typename: queryConfig.tableName,
     hasAggregates: true,
   });
@@ -272,6 +277,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   useEffect(() => {
     refetch();
   }, [_refetch, refetch]);
+
   /**
    * wait until the localstorage hook resolves to render anything
    * to prevent filter UI elements from jumping

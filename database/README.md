@@ -22,6 +22,7 @@ The design supports an editing environment which enables Vision Zero program sta
       - [Audit fields](#audit-fields)
       - [Change logs](#change-logs)
     - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems-todo)
+    - [Computer-Aided Dispatch records](computer-aided-dispatch-records)
     - [Geospatial layers](#geospatial-layers)
   - [Common maintenance tasks](#common-maintenance-tasks)
     - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
@@ -265,6 +266,14 @@ The view `crashes_change_log_view` provides a unioned view of the unified table 
 
 ### Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)
 
+### Computer-Aided Dispatch records
+
+These records contain information on 911 calls and officer-initiated incidents related to traffic crashes as recorded in the Austin public safety Computer Aided Dispatch (CAD) system. They are referred to colloquially as "CAD calls".
+
+Data is provided by the public safety enterprise data team and has been reviewed and approved by subject matter experts at the Austin Fire Department, Austin Police Department, and Austin-Travis County EMS.
+
+For additional information about CAD records, see the [CAD incident import ETL](../etl/cad_incidents_import/README.md).
+
 ### Geospatial layers
 
 We have a number of tables which function as geospatial layers which are referenced by crashes and various other records. At the Vision Zero team's request, our team is actively working to expand the number of layers available in the database as well as add new attribute columns to crash records which will be populated based on their intersection with these layers.
@@ -406,7 +415,14 @@ Typically, any foreign key constraint that references the layer should use the `
 
 Use the [ArcGIS Online Layer Helper](/toolbox/load_agol_layer) to update layers in our database from their authoritative source on ArcGIS Online.
 
-After a geospatial layer is updated, you must re-process any records which reference the layer. These updates require manual crafting of SQL statements which mirror the trigger functions that typically set these associations when a record is inserted or updated. For example, after updating the `location` polygons layer, you will need to re-process the `location_id` associations for `crashes`, `atd_apd_blueform`, `ems__incidents`, and `afd__incdents`. See [#26112](https://github.com/cityofaustin/atd-data-tech/issues/26112) as an example of how this can be accomplished.
+After a geospatial layer is updated, you must reprocess any records which reference the layer. These updates require manual crafting of SQL statements which mirror the trigger functions that typically set these associations when a record is inserted or updated. For example, after updating the `location` polygons layer, you will need to re-process the `location_id` associations for `crashes`, `atd_apd_blueform`, `ems__incidents`, and `afd__incdents`. 
+
+You can find example SQL statements for reprocessing reference layer associations in the following issues:
+
+* [Refresh the locations polygon layer](https://github.com/cityofaustin/atd-data-tech/issues/26112)
+* [Refresh the jurisdictions layer](https://github.com/cityofaustin/atd-data-tech/issues/20461#issuecomment-2576082208)
+* [Refresh the non-COA roadways layer](https://github.com/cityofaustin/atd-data-tech/issues/19904#issuecomment-2477118070)
+* [Refresh the APD sectors layer](https://github.com/cityofaustin/atd-data-tech/issues/22714#issuecomment-2945543564)
 
 ## Backups
 
@@ -520,7 +536,7 @@ the workflow is keeping `database/views/` synchronized with the migrations on th
 If you’re changing or adding views and want to update `database/views/` locally (instead of
 waiting for CI to push a bot commit), you can regenerate them with the same script CI uses.
 
-Please note, while you can push changes on these views, but it's a non-op, they will be 
+Please note, while you can push changes on these views, but it's a non-op, they will be
 overwritten. All changes to the views must go through the `graphql-engine` migration process.
 
 Prerequisites:

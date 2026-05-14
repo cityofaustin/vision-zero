@@ -8,7 +8,7 @@ import AlignedLabel from "@/components/AlignedLabel";
 import DeleteNoteButton from "@/components/DeleteNoteButton";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import { CrashNote } from "@/types/crashNote";
-import { formatDate, formatUserNameFromEmail } from "@/utils/formatters";
+import { formatIsoDate, formatUserNameFromEmail } from "@/utils/formatters";
 import { LuSquarePen } from "react-icons/lu";
 import { LocationNote } from "@/types/locationNote";
 
@@ -78,7 +78,7 @@ export default function NotesCard<T extends CrashNote | LocationNote>({
                       </span>
                       <span>{` on `}</span>
                       <span className="text-nowrap">
-                        {formatDate(note.updated_at)}
+                        {formatIsoDate(note.updated_at)}
                       </span>
                     </small>
                   </div>
