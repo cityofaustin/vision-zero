@@ -17,7 +17,6 @@ export const formatIsoDateTimeWithDay = (value: unknown): string => {
   if (!value || typeof value !== "string") {
     return "";
   }
-//   E d MMM yyyy h:mm a
   return format(parseISO(value), "yyyy-MM-dd h:mm a · E") || "";
 };
 
