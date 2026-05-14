@@ -13,6 +13,8 @@ Requires env vars:
 docker compose -f docker-compose.yml -f docker-compose.local.yml run import incident_linker.py
 """
 
+import uuid
+
 # --- config -------------------------------------------------------------------
 
 DISTANCE_THRESHOLD_M = 100
@@ -20,6 +22,10 @@ TIME_THRESHOLD_HOURS = 2
 MAX_RECORD_TO_PROCESS = 30000
 
 # --- queries ------------------------------------------------------------------
+
+
+# todo: we need a minimum incident age date (24 hours?) to ensure
+# that additional incidents are not added after the link processing.
 
 GET_UNPROCESSED = """
 query GetUnprocessed($limit: Int!) {
@@ -144,10 +150,11 @@ def make_pair(a: dict, b: dict) -> tuple[int, int]:
     return (id_a, id_b) if id_a < id_b else (id_b, id_a)
 
 
-def build_links(group: list[dict]) -> list[dict]:
+def build_links(group: list[dict], group_id: str) -> list[dict]:
     """
     Build deduplicated link objects for all pairs in the group.
     Each pair is normalized (incident_id_a < incident_id_b).
+    All links share the same group_id.
     """
     seen = set()
     links = []
@@ -158,11 +165,11 @@ def build_links(group: list[dict]) -> list[dict]:
                 continue
             seen.add(pair)
             id_a, id_b = pair
-            # find the actual dicts for metric calculation
             rec_a = a if a["master_incident_id"] == id_a else b
             rec_b = b if b["master_incident_id"] == id_b else a
             links.append(
                 {
+                    "group_id": group_id,
                     "incident_id_a": id_a,
                     "incident_id_b": id_b,
                     "distance_m": haversine_m(
@@ -238,7 +245,8 @@ def run():
 
         # --- insert links ---
         if closed:
-            links = build_links(group)
+            group_id = str(uuid.uuid4())
+            links = build_links(group, group_id)
             make_hasura_request(query=INSERT_LINKS, variables={"links": links})
 
         # --- update match status on all group members ---
