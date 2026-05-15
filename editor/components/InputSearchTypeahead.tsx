@@ -3,11 +3,9 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import type { KeyboardEvent } from "react";
 import Form from "react-bootstrap/Form";
-import Spinner from "react-bootstrap/Spinner";
-import { CRASH_TRANSFER_SEARCH } from "@/queries/crash"; // also a prop
-import { useQuery } from "@/utils/graphql";
+import { LookupTableOption } from "@/types/relationships";
 
-type TypeaheadSearchableTypes = CrashSearchResult;
+type TypeaheadSearchableTypes = LookupTableOption;
 
 export type CrashSearchResult = {
   // this might become a var passed into here?
@@ -17,17 +15,13 @@ export type CrashSearchResult = {
 };
 
 interface InputSearchTypeaheadProps {
-  excludeCrashId: number;
+  options: LookupTableOption[];
   label: string;
   formPlaceholder?: string;
   selectedValueFormatter: (selected: TypeaheadSearchableTypes) => string;
   selected: TypeaheadSearchableTypes | null;
   onSelect: (hit: TypeaheadSearchableTypes | null) => void;
-  searchResultFormatter: (
-    result: TypeaheadSearchableTypes,
-    index: number,
-    highlightedIndex: number
-  ) => React.ReactNode;
+  optionFormatter: (result: TypeaheadSearchableTypes) => React.ReactNode;
   disabled?: boolean;
 }
 
@@ -35,13 +29,13 @@ interface InputSearchTypeaheadProps {
  * Typeahead search input
  */
 export default function InputSearchTypeahead({
-  excludeCrashId,
   label,
+  options,
   formPlaceholder,
   selectedValueFormatter,
   selected,
   onSelect,
-  searchResultFormatter,
+  optionFormatter,
   disabled = false,
 }: InputSearchTypeaheadProps) {
   const [searchInput, setSearchInput] = useState("");
@@ -52,31 +46,20 @@ export default function InputSearchTypeahead({
     if (!selected) setSearchInput("");
   }, [selected]);
 
-  // Constrain address search by time to reduce result count
-  const minCrashTimestamp = useMemo(() => {
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-    return oneYearAgo.toISOString();
-  }, []);
-
   // Search pattern for SQL LIKE query after user has typed at least 2 characters
   const searchPattern = useMemo(
     () => (searchInput.trim().length >= 2 ? `%${searchInput.trim()}%` : null),
     [searchInput]
   );
 
-  const { data: searchResults, isLoading: isSearching } =
-    useQuery<CrashSearchResult>({
-      query: !disabled && searchPattern ? CRASH_TRANSFER_SEARCH : null,
-      variables: {
-        searchPattern,
-        currentCrashId: excludeCrashId,
-        minCrashTimestamp,
-      },
-      typename: "crashes",
-    });
+  //const results = useMemo(() => searchResults ?? [], [searchResults]);
+  const results = useMemo(() => {
+    return options.filter((item) =>
+      item.label.toLowerCase().includes(searchInput.toLowerCase())
+    );
+  }, [searchInput, options]);
 
-  const results = useMemo(() => searchResults ?? [], [searchResults]);
+  console.log(options, results);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -111,7 +94,7 @@ export default function InputSearchTypeahead({
       <div className="position-relative">
         <Form.Control
           type="text"
-          placeholder={formPlaceholder ?? "search"}
+          placeholder={formPlaceholder ?? "Search"}
           disabled={disabled}
           value={selected ? selectedValueFormatter(selected) : searchInput}
           onChange={(e) => {
@@ -124,24 +107,17 @@ export default function InputSearchTypeahead({
             setShowDropdown(true);
           }}
           onKeyDown={handleKeyDown}
-          onFocus={() => searchInput.length >= 2 && setShowDropdown(true)}
+          onFocus={() => setShowDropdown(true)}
           onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
           autoComplete="off"
         />
-        {isSearching && (
-          <Spinner
-            size="sm"
-            className="position-absolute top-50 end-0 translate-middle-y me-2"
-          />
-        )}
-        {showDropdown && searchPattern && !selected && (
+        {showDropdown && !selected && (
           <ul
             className="list-group position-absolute w-100 mt-1 shadow-sm"
             style={{ zIndex: 1050, maxHeight: "240px", overflowY: "auto" }}
           >
-            {results.length === 0 && !isSearching && (
-              // do we want this to also be a customizable message
-              <li className="list-group-item text-muted">No results found</li>
+            {results.length === 0 && (
+              <li className="list-group-item text-muted">No options</li>
             )}
             {results.map((result, index) => (
               <li
@@ -157,7 +133,7 @@ export default function InputSearchTypeahead({
                   setShowDropdown(false);
                 }}
               >
-                {searchResultFormatter(result, index, highlightedIndex)}
+                {optionFormatter(result)}
               </li>
             ))}
           </ul>

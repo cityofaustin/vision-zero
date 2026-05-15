@@ -93,7 +93,6 @@ function buildTransferItemsList(
   return items;
 }
 
-
 interface DeleteTemporaryCrashModalProps {
   show: boolean;
   onHide: () => void;
