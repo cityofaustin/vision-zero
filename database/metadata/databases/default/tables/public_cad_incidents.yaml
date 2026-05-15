@@ -1,6 +1,13 @@
 table:
   name: cad_incidents
   schema: public
+object_relationships:
+  - name: location
+    using:
+      foreign_key_constraint_on: location_id
+  - name: vz_incident
+    using:
+      foreign_key_constraint_on: vz_incident_id
 array_relationships:
   - name: cad_incident_groups
     using:
