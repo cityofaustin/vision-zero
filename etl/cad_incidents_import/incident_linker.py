@@ -118,8 +118,8 @@ def meters_to_degrees(meters):
 
 
 def fetch_candidates(incident: dict) -> list[dict]:
-    respone_date = datetime.fromisoformat(incident["response_date"])
-    start, end = time_window(respone_date, TIME_THRESHOLD_MINUTES)
+    response_date = datetime.fromisoformat(incident["response_date"])
+    start, end = time_window(response_date, TIME_THRESHOLD_MINUTES)
     data = make_hasura_request(
         query=GET_CANDIDATE_MATCHES,
         variables={
@@ -160,17 +160,21 @@ def is_group_closed(anchor: dict, candidates: list[dict]) -> bool:
 
 def run():
 
-    date_limit = (datetime.now(UTC) - timedelta(hours=MIN_RECORD_AGE_HOURS)).isoformat()
+    date_limit = datetime.now(UTC) - timedelta(hours=MIN_RECORD_AGE_HOURS)
 
     print(f"Fetching unprocessed incidents that occurred before {date_limit}...")
     data = make_hasura_request(
-        query=GET_UNPROCESSED, variables={"record_limit": MAX_RECORD_TO_PROCESS, "date_limit": date_limit}
+        query=GET_UNPROCESSED,
+        variables={
+            "record_limit": MAX_RECORD_TO_PROCESS,
+            "date_limit": date_limit.isoformat(),
+        },
     )
     incidents = data["cad_incidents"]
     print(f"  Found {len(incidents):,} unprocessed incidents\n")
 
     processed_ids = set()
-    counts = {"matched": 0, "unmatched": 0, "ambiguous": 0, "skipped": 0}
+    counts = {"matched": 0, "ambiguous": 0, "skipped": 0}
 
     for incident in incidents:
         iid = incident["master_incident_id"]
