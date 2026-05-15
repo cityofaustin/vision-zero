@@ -1,3 +1,4 @@
-drop table cad_incident_links cascade;
+alter table cad_incidents drop column match_status;
+alter table cad_incidents drop column vz_incident_id;
 
-alter table cad_incidents drop  column match_status;
+drop table vz_incidents cascade;

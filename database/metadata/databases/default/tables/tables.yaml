@@ -58,7 +58,6 @@
 - "!include public_atd__recommendation_status_lkp.yaml"
 - "!include public_atd_apd_blueform.yaml"
 - "!include public_cad_incident_groups.yaml"
-- "!include public_cad_incident_links.yaml"
 - "!include public_cad_incidents.yaml"
 - "!include public_change_log_crashes.yaml"
 - "!include public_change_log_crashes_cris.yaml"
@@ -95,3 +94,4 @@
 - "!include public_units_cris.yaml"
 - "!include public_user_events.yaml"
 - "!include public_view_crash_narratives_ocr_todo.yaml"
+- "!include public_vz_incidents.yaml"
