@@ -1,3 +1,13 @@
 table:
   name: cad_incidents
   schema: public
+array_relationships:
+  - name: cad_incident_groups
+    using:
+      manual_configuration:
+        column_mapping:
+          master_incident_id: master_incident_id
+        insertion_order: null
+        remote_table:
+          name: cad_incident_groups
+          schema: public
