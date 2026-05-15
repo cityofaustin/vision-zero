@@ -1,27 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback } from "react";
 import type { KeyboardEvent } from "react";
 import Form from "react-bootstrap/Form";
 import { LookupTableOption } from "@/types/relationships";
 
 type TypeaheadSearchableTypes = LookupTableOption;
 
-export type CrashSearchResult = {
-  // this might become a var passed into here?
-  id: number;
-  record_locator: string;
-  address_display: string | null;
-};
-
 interface InputSearchTypeaheadProps {
   options: LookupTableOption[];
-  label: string;
   formPlaceholder?: string;
-  selectedValueFormatter: (selected: TypeaheadSearchableTypes) => string;
-  selected: TypeaheadSearchableTypes | null;
   onSelect: (hit: TypeaheadSearchableTypes | null) => void;
-  optionFormatter: (result: TypeaheadSearchableTypes) => React.ReactNode;
   disabled?: boolean;
 }
 
@@ -29,28 +18,14 @@ interface InputSearchTypeaheadProps {
  * Typeahead search input
  */
 export default function InputSearchTypeahead({
-  label,
   options,
   formPlaceholder,
-  selectedValueFormatter,
-  selected,
   onSelect,
-  optionFormatter,
   disabled = false,
 }: InputSearchTypeaheadProps) {
   const [searchInput, setSearchInput] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
-
-  useEffect(() => {
-    if (!selected) setSearchInput("");
-  }, [selected]);
-
-  // Search pattern for SQL LIKE query after user has typed at least 2 characters
-  const searchPattern = useMemo(
-    () => (searchInput.trim().length >= 2 ? `%${searchInput.trim()}%` : null),
-    [searchInput]
-  );
 
   //const results = useMemo(() => searchResults ?? [], [searchResults]);
   const results = useMemo(() => {
@@ -63,7 +38,7 @@ export default function InputSearchTypeahead({
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
-      if (!showDropdown || selected || !results.length) return;
+      if (!showDropdown || !results.length) return;
 
       if (e.key === "ArrowDown") {
         e.preventDefault();
@@ -85,25 +60,20 @@ export default function InputSearchTypeahead({
         }
       }
     },
-    [highlightedIndex, onSelect, results, selected, showDropdown]
+    [highlightedIndex, onSelect, results, showDropdown]
   );
 
   return (
     <Form.Group className="mb-3">
-      <Form.Label>{label}</Form.Label>
       <div className="position-relative">
         <Form.Control
           type="text"
-          placeholder={formPlaceholder ?? "Search"}
+          placeholder={formPlaceholder ?? "Select..."}
           disabled={disabled}
-          value={selected ? selectedValueFormatter(selected) : searchInput}
+          value={searchInput}
           onChange={(e) => {
-            if (selected) {
-              onSelect(null);
-            } else {
-              setSearchInput(e.target.value);
-              setHighlightedIndex(0);
-            }
+            setSearchInput(e.target.value);
+            setHighlightedIndex(0);
             setShowDropdown(true);
           }}
           onKeyDown={handleKeyDown}
@@ -111,7 +81,7 @@ export default function InputSearchTypeahead({
           onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
           autoComplete="off"
         />
-        {showDropdown && !selected && (
+        {showDropdown && (
           <ul
             className="list-group position-absolute w-100 mt-1 shadow-sm"
             style={{ zIndex: 1050, maxHeight: "240px", overflowY: "auto" }}
@@ -133,7 +103,7 @@ export default function InputSearchTypeahead({
                   setShowDropdown(false);
                 }}
               >
-                {optionFormatter(result)}
+                {result.label}
               </li>
             ))}
           </ul>

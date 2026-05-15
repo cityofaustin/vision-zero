@@ -134,7 +134,7 @@ export default function ContributingFactorsModal({
                   //     </option>
                   //   ))}
                   // </Form.Select>
-                  <InputSearchTypeahead options={factorOptions} optionFormatter={(option)=>option.label} />
+                  <InputSearchTypeahead options={factorOptions} />
                 )}
               </Form.Group>
             );
