@@ -6,7 +6,6 @@ import { LookupTableOption } from "@/types/relationships";
 import { GET_CONTRIB_FACTORS } from "@/queries/unit";
 import { UPDATE_UNIT } from "@/queries/unit";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { stringToNumberNullable } from "@/utils/formHelpers";
 import InputSearchTypeahead from "@/components/InputSearchTypeahead";
 
 interface ContributingFactorsModalProps {
@@ -68,12 +67,10 @@ export default function ContributingFactorsModal({
   });
 
   const {
-    register,
     handleSubmit,
     reset,
     formState: { isDirty },
     control,
-    getValues
   } = useForm({
     values: {
       contrib_factr_1_id: unit.contrib_factr_1_id,
@@ -120,30 +117,10 @@ export default function ContributingFactorsModal({
               <Form.Group key={factor.path} className="mb-2">
                 <Form.Label>{factor.label}</Form.Label>
                 {!isLoading && factorOptions && (
-                  // do we register also in datacard?
-                  // <Form.Select
-                  //   {...register(factor.path, {
-                  //     setValueAs: (v) => stringToNumberNullable(v),
-                  //   })}
-                  // >
-                  //   <option value="">Select...</option>
-                  //   {factorOptions.map((factorOption) => (
-                  //     <option
-                  //       key={factorOption.label}
-                  //       value={String(factorOption.id)}
-                  //     >
-                  //       {factorOption.label}
-                  //     </option>
-                  //   ))}
-                  // </Form.Select>
                   <InputSearchTypeahead
                     options={factorOptions}
-                    // onSelect={(value) => console.log(value)}
                     control={control}
                     name={factor.path}
-                    // inputOptions={{
-                    //   setValueAs: (v) => stringToNumberNullable(v),
-                    // }}
                   />
                 )}
               </Form.Group>
