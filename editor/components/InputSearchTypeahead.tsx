@@ -2,16 +2,15 @@
 
 import { useMemo, useState, useCallback } from "react";
 import type { KeyboardEvent } from "react";
+import { useController } from "react-hook-form";
 import Form from "react-bootstrap/Form";
 import { LookupTableOption } from "@/types/relationships";
-
-type TypeaheadSearchableTypes = LookupTableOption;
 
 interface InputSearchTypeaheadProps {
   options: LookupTableOption[];
   formPlaceholder?: string;
-  onSelect: (hit: TypeaheadSearchableTypes | null) => void;
   disabled?: boolean;
+  name: string;
 }
 
 /**
@@ -20,21 +19,23 @@ interface InputSearchTypeaheadProps {
 export default function InputSearchTypeahead({
   options,
   formPlaceholder,
-  onSelect,
   disabled = false,
+  name,
+  control,
 }: InputSearchTypeaheadProps) {
   const [searchInput, setSearchInput] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
-  //const results = useMemo(() => searchResults ?? [], [searchResults]);
-  const results = useMemo(() => {
-    return options.filter((item) =>
-      item.label.toLowerCase().includes(searchInput.toLowerCase())
-    );
-  }, [searchInput, options]);
+  const { field } = useController({ name, control });
 
-  console.log(options, results);
+  const results = useMemo(
+    () =>
+      options.filter((item) =>
+        item.label.toLowerCase().includes(searchInput.toLowerCase())
+      ),
+    [searchInput, options]
+  );
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -54,19 +55,19 @@ export default function InputSearchTypeahead({
         const choice = results[highlightedIndex];
         if (choice) {
           e.preventDefault();
-          onSelect(choice);
-          setSearchInput("");
+          field.onChange(choice.id);
+          setSearchInput(choice.label);
           setShowDropdown(false);
         }
       }
     },
-    [highlightedIndex, onSelect, results, showDropdown]
+    [highlightedIndex, results, showDropdown, field]
   );
-
   return (
     <Form.Group className="mb-3">
-      <div className="position-relative">
+      <span className="position-relative">
         <Form.Control
+          {...field}
           type="text"
           placeholder={formPlaceholder ?? "Select..."}
           disabled={disabled}
@@ -97,9 +98,10 @@ export default function InputSearchTypeahead({
                 }`}
                 role="button"
                 onMouseDown={(e) => {
+                  console.log(result);
                   e.preventDefault();
-                  onSelect(result);
-                  setSearchInput("");
+                  field.onChange(result.id);
+                  setSearchInput(result.label);
                   setShowDropdown(false);
                 }}
               >
@@ -108,7 +110,7 @@ export default function InputSearchTypeahead({
             ))}
           </ul>
         )}
-      </div>
+      </span>
     </Form.Group>
   );
 }

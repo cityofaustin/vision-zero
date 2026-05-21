@@ -72,6 +72,8 @@ export default function ContributingFactorsModal({
     handleSubmit,
     reset,
     formState: { isDirty },
+    control,
+    getValues
   } = useForm({
     values: {
       contrib_factr_1_id: unit.contrib_factr_1_id,
@@ -134,7 +136,15 @@ export default function ContributingFactorsModal({
                   //     </option>
                   //   ))}
                   // </Form.Select>
-                  <InputSearchTypeahead options={factorOptions} />
+                  <InputSearchTypeahead
+                    options={factorOptions}
+                    // onSelect={(value) => console.log(value)}
+                    control={control}
+                    name={factor.path}
+                    // inputOptions={{
+                    //   setValueAs: (v) => stringToNumberNullable(v),
+                    // }}
+                  />
                 )}
               </Form.Group>
             );
