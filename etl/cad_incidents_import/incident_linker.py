@@ -14,7 +14,10 @@ Requires env vars:
 docker compose -f docker-compose.yml -f docker-compose.local.yml run import incident_linker.py
 """
 
+import argparse
 from datetime import datetime, timedelta, UTC
+import logging
+import sys
 
 from utils.graphql import make_hasura_request
 
@@ -33,7 +36,7 @@ MAX_RECORD_TO_PROCESS = 1000
 GET_UNPROCESSED = """
 query GetUnprocessed($record_limit: Int!, $date_limit: timestamptz = "") {
     cad_incidents(
-        where: { match_status: { _eq: "unprocessed" }, response_date: { _lt: $date_limit } }
+        where: { vz_incident_match_status: { _eq: "unprocessed" }, response_date: { _lt: $date_limit } }
         order_by: { response_date: desc }
         limit: $record_limit
     ) {
@@ -71,10 +74,10 @@ query GetCandidateMatches(
 """
 
 UPDATE_MATCH_STATUS = """
-mutation UpdateMatchStatus($ids: [Int!]!, $match_status: String!) {
+mutation UpdateMatchStatus($ids: [Int!]!, $vz_incident_match_status: String!) {
     update_cad_incidents(
         where: { master_incident_id: { _in: $ids } }
-        _set: { match_status: $match_status }
+        _set: { vz_incident_match_status: $vz_incident_match_status }
     ) {
         affected_rows
     }
@@ -90,10 +93,10 @@ mutation InsertVzIncident {
 """
 
 UPDATE_GROUP_MEMBERS = """
-mutation UpdateGroupMembers($ids: [Int!]!, $vz_incident_id: bigint!, $match_status: String!) {
+mutation UpdateGroupMembers($ids: [Int!]!, $vz_incident_id: bigint!, $vz_incident_match_status: String!) {
     update_cad_incidents(
         where: { master_incident_id: { _in: $ids } }
-        _set: { vz_incident_id: $vz_incident_id, match_status: $match_status }
+        _set: { vz_incident_id: $vz_incident_id, vz_incident_match_status: $vz_incident_match_status }
     ) {
         affected_rows
     }
@@ -155,23 +158,21 @@ def is_group_closed(anchor: dict, candidates: list[dict]) -> bool:
     return True
 
 
-# --- pipeline -----------------------------------------------------------------
 
-
-def run():
-
+def main(args):
+    record_limit = args.limit
     date_limit = datetime.now(UTC) - timedelta(hours=MIN_RECORD_AGE_HOURS)
 
-    print(f"Fetching unprocessed incidents that occurred before {date_limit}...")
+    logging.info(f"Fetching unprocessed incidents that occurred before {date_limit}...")
     data = make_hasura_request(
         query=GET_UNPROCESSED,
         variables={
-            "record_limit": MAX_RECORD_TO_PROCESS,
+            "record_limit": record_limit,
             "date_limit": date_limit.isoformat(),
         },
     )
     incidents = data["cad_incidents"]
-    print(f"  Found {len(incidents):,} unprocessed incidents\n")
+    logging.info(f"  Found {len(incidents):,} unprocessed incidents\n")
 
     processed_ids = set()
     counts = {"matched": 0, "ambiguous": 0, "skipped": 0}
@@ -200,29 +201,41 @@ def run():
                 variables={
                     "ids": group_ids,
                     "vz_incident_id": vz_incident_id,
-                    "match_status": "matched",
+                    "vz_incident_match_status": "matched",
                 },
             )
         else:
             # Ambiguous: mark status only, no vz_incident
             make_hasura_request(
                 query=UPDATE_MATCH_STATUS,
-                variables={"ids": group_ids, "match_status": "ambiguous"},
+                variables={"ids": group_ids, "vz_incident_match_status": "ambiguous"},
             )
 
         processed_ids.update(group_ids)
         counts["matched" if closed else "ambiguous"] += len(group)
 
-        print(
+        logging.info(
             f"  {'matched  ' if closed else 'AMBIGUOUS'} "
             f"group of {len(group):>2} — anchor {iid} @ {incident['address']}"
         )
 
-    print(f"\n=== Done ===")
-    print(f"  Matched   : {counts['matched']:,}")
-    print(f"  Ambiguous : {counts['ambiguous']:,}")
-    print(f"  Skipped   : {counts['skipped']:,} (already processed as part of a group)")
+    logging.info(f"\n=== Done ===")
+    logging.info(f"  Matched   : {counts['matched']:,}")
+    logging.info(f"  Ambiguous : {counts['ambiguous']:,}")
+    logging.info(f"  Skipped   : {counts['skipped']:,} (already processed as part of a group)")
 
 
 if __name__ == "__main__":
-    run()
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+    parser = argparse.ArgumentParser(
+        description="Group CAD incidents by matching them to temporal and spatial neighbors and inserting new vz_incident_groups records",
+        usage="incident_linker.py --limit 1000",
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=MAX_RECORD_TO_PROCESS,
+        help="The maximum number of records to process"
+    )
+    args = parser.parse_args()
+    main(args)

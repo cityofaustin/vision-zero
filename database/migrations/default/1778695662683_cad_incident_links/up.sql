@@ -11,8 +11,14 @@ EXECUTE FUNCTION public.set_updated_at_timestamp ();
 
 ALTER TABLE cad_incidents
 ADD COLUMN vz_incident_id bigint REFERENCES vz_incidents(id),
-add column match_status text default 'unprocessed';
+add column vz_incident_match_status text default 'unprocessed',
+add constraint cad_incidents_vz_incident_match_status_check check (vz_incident_match_status in (
+        'unprocessed',
+        'ambiguous',
+        'matched'
+    )
+);
 
-CREATE INDEX idx_cad_incidents_match_status ON cad_incidents (match_status);
+CREATE INDEX idx_cad_incidents_vz_incident_match_status ON cad_incidents (vz_incident_match_status);
 CREATE INDEX idx_cad_incidents_vz_incident_id ON cad_incidents(vz_incident_id);
 
