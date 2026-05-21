@@ -1,19 +1,4 @@
-"""
-CAD incident matching - write pipeline.
-
-For each unprocessed incident:
-  1. Fetch candidates within space/time thresholds
-  2. If no candidates, create a group of one and mark as matched.
-  3. Verify the group is closed (every member's candidates == group - {self})
-  4. If closed: create a vz_incidents parent row and link all members to it
-  5. If not closed: mark members 'ambiguous'
-
-Requires env vars:
-    HASURA_GRAPHQL_ENDPOINT
-
-docker compose -f docker-compose.yml -f docker-compose.local.yml run import incident_linker.py
-"""
-
+#!/usr/bin/ python
 import argparse
 from datetime import datetime, timedelta, UTC
 import logging

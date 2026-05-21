@@ -21,6 +21,8 @@ Data is imported into our database via a two step process:
 
 This shared network drive is mounted to our on-prem ETL server at `/mnt/vision_zero_cad`, and the scripts in this repo can be configured to use that mount path or a local file as needed (see **Local Development**).
 
+Once data has been imported, a third script, `incident_linker.py` is used to group incidents based on their time and location.
+
 ## Daily extract files
 
 We process two distinct files on a daily basis:
@@ -69,6 +71,16 @@ docker compose -f docker-compose.yml -f docker-compose.local.yml run import inci
 - `--dry-run`: Log what would be downloaded and processed without actually doing it
 - `--archive`: Move each processed file to the S3 bucket's `/archive` directory
 - `--local-files`: Process files from local `COACD_MOUNT_PATH` directory instead of AWS S3
+
+### `incident_linker.py`
+
+![diagram](docs/cad_incidents_matched.png)
+
+It is common for multiple CAD records to be created in response to a single incident that happens in the real-world. This script groups CAD incidents together based on their time and location.
+
+```shell
+docker compose -f docker-compose.yml -f docker-compose.local.yml run import incident_linker.py --limit 500
+```
 
 ## Production run
 
