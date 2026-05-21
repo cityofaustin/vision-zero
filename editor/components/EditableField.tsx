@@ -97,8 +97,6 @@ export default function EditableField({
           />
         )}
         {inputType === "select" && (selectOptions || !!selectOptionsError) && (
-          // input type "typeahead"
-          // register
           <Form.Select
             {...register("value", inputOptions)}
             autoFocus

@@ -2,36 +2,46 @@
 
 import { useMemo, useState, useCallback } from "react";
 import type { KeyboardEvent } from "react";
-import { useController } from "react-hook-form";
+import { useController, Control, FieldValues } from "react-hook-form";
 import Form from "react-bootstrap/Form";
 import { LookupTableOption } from "@/types/relationships";
+import { ContribFormValues } from "./ContributingFactorsModal";
 
-interface InputSearchTypeaheadProps {
+interface InputLookupTypeaheadProps<TFieldValues extends FieldValues> {
   options: LookupTableOption[];
   formPlaceholder?: string;
   disabled?: boolean;
   name: string;
+  control: Control<TFieldValues>;
 }
 
 /**
  * Typeahead search input
  */
-export default function InputSearchTypeahead({
+export default function InputLookupTypeahead({
   options,
   formPlaceholder,
   disabled = false,
   name,
   control,
-}: InputSearchTypeaheadProps) {
+}: InputLookupTypeaheadProps<ContribFormValues>) {
   const [searchInput, setSearchInput] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
   const { field } = useController({ name, control });
 
+  console.log(name, field.value);
+
+  //   const findOptionById = (options, field.value) => {
+  //   return options?.find((option) => option?.id === id);
+  // };
+
+  // console.log(options.find((option) => option.id === field.value));
+
   const results = useMemo(
     () =>
-      options.filter((item) =>
+      options.filter((item: LookupTableOption) =>
         item.label.toLowerCase().includes(searchInput.toLowerCase())
       ),
     [searchInput, options]
@@ -90,7 +100,7 @@ export default function InputSearchTypeahead({
             {results.length === 0 && (
               <li className="list-group-item text-muted">No options</li>
             )}
-            {results.map((result, index) => (
+            {results.map((result: LookupTableOption, index: number) => (
               <li
                 key={result.id}
                 className={`list-group-item list-group-item-action${
@@ -98,7 +108,6 @@ export default function InputSearchTypeahead({
                 }`}
                 role="button"
                 onMouseDown={(e) => {
-                  console.log(result);
                   e.preventDefault();
                   field.onChange(result.id);
                   setSearchInput(result.label);

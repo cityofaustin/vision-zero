@@ -6,7 +6,7 @@ import { LookupTableOption } from "@/types/relationships";
 import { GET_CONTRIB_FACTORS } from "@/queries/unit";
 import { UPDATE_UNIT } from "@/queries/unit";
 import { useForm, SubmitHandler } from "react-hook-form";
-import InputSearchTypeahead from "@/components/InputSearchTypeahead";
+import InputLookupTypeahead from "@/components/InputLookupTypeahead";
 
 interface ContributingFactorsModalProps {
   show: boolean;
@@ -23,6 +23,8 @@ type ContributingFactorsInputs = Pick<
   | "contrib_factr_p1_id"
   | "contrib_factr_p2_id"
 >;
+
+export type ContribFormValues = Record<keyof ContributingFactorsInputs, string | null>;
 
 const contribFactorLabels: Array<{
   path: keyof ContributingFactorsInputs;
@@ -49,6 +51,8 @@ const contribFactorLabels: Array<{
     label: "Possible #2",
   },
 ];
+
+
 
 /**
  * A modal for editing the contributing factors of a
@@ -117,7 +121,7 @@ export default function ContributingFactorsModal({
               <Form.Group key={factor.path} className="mb-2">
                 <Form.Label>{factor.label}</Form.Label>
                 {!isLoading && factorOptions && (
-                  <InputSearchTypeahead
+                  <InputLookupTypeahead
                     options={factorOptions}
                     control={control}
                     name={factor.path}
