@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatDate } from "@/utils/formatters";
+import { formatIsoDate } from "@/utils/formatters";
 import { TableMapPopupContentProps } from "./TableMapPopupContent";
 
 export default function LocationTableMapPopupContent({
@@ -33,7 +33,7 @@ export default function LocationTableMapPopupContent({
       <div className="d-flex justify-content-between">
         <span className="fw-bold">Date</span>
         <span className="text-muted">
-          {formatDate(properties?.crash_timestamp)}
+          {formatIsoDate(properties?.crash_timestamp)}
         </span>
       </div>
     </div>
