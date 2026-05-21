@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ColDataCardDef } from "@/types/types";
 import { LocationCrashRow } from "@/types/locationCrashes";
-import { formatDate, formatDollars } from "@/utils/formatters";
+import { formatIsoDate, formatDollars } from "@/utils/formatters";
 
 export const locationCrashesColumns: ColDataCardDef<LocationCrashRow>[] = [
   {
@@ -34,7 +34,7 @@ export const locationCrashesColumns: ColDataCardDef<LocationCrashRow>[] = [
     path: "crash_timestamp",
     label: "Date",
     sortable: true,
-    valueFormatter: formatDate,
+    valueFormatter: formatIsoDate,
     fetchAlways: true,
   },
   {

@@ -1,6 +1,6 @@
 import { ColDataCardDef } from "@/types/types";
 import { Crash } from "@/types/crashes";
-import { formatDateTimeWithDay } from "@/utils/formatters";
+import { formatIsoDateTimeWithDay } from "@/utils/formatters";
 import { commonValidations } from "@/utils/formHelpers";
 import Link from "next/link";
 
@@ -52,7 +52,7 @@ export const crashesColumns = {
   crash_timestamp: {
     path: "crash_timestamp",
     label: "Crash date",
-    valueFormatter: formatDateTimeWithDay,
+    valueFormatter: formatIsoDateTimeWithDay,
   },
   collsn: {
     path: "collsn.label",
