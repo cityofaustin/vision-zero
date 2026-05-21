@@ -20,90 +20,17 @@ import logging
 import sys
 
 from utils.graphql import make_hasura_request
-
-# --- config -------------------------------------------------------------------
+from utils.queries import (
+    SET_VZ_INCIDENT_IDS,
+    GET_UNPROCESSED_INCIDENTS,
+    INSERT_VZ_INCIDENT,
+    GET_POTENTIAL_MATCHES,
+)
 
 MIN_RECORD_AGE_HOURS = 24
 DISTANCE_THRESHOLD_M = 500
 TIME_THRESHOLD_MINUTES = 30
 MAX_RECORD_TO_PROCESS = 1000
-
-# --- queries ------------------------------------------------------------------
-
-# todo: we need a minimum incident age date (24 hours?) to ensure
-# that additional incidents are not added after the link processing.
-
-GET_UNPROCESSED = """
-query GetUnprocessed($record_limit: Int!, $date_limit: timestamptz = "") {
-    cad_incidents(
-        where: { vz_incident_match_status: { _eq: "unprocessed" }, response_date: { _lt: $date_limit } }
-        order_by: { response_date: desc }
-        limit: $record_limit
-    ) {
-        master_incident_id
-        response_date
-        latitude
-        longitude
-        address
-    }
-}
-"""
-
-GET_CANDIDATE_MATCHES = """
-query GetCandidateMatches(
-    $incident_id: Int!
-    $geom: geometry!
-    $start: timestamptz!
-    $end: timestamptz!
-    $distance: Float!
-) {
-    cad_incidents(
-        where: {
-            master_incident_id: { _neq: $incident_id }
-            response_date: { _gte: $start, _lte: $end }
-            geom: { _st_d_within: { distance: $distance, from: $geom } }
-        }
-    ) {
-        master_incident_id
-        response_date
-        latitude
-        longitude
-        address
-    }
-}
-"""
-
-UPDATE_MATCH_STATUS = """
-mutation UpdateMatchStatus($ids: [Int!]!, $vz_incident_match_status: String!) {
-    update_cad_incidents(
-        where: { master_incident_id: { _in: $ids } }
-        _set: { vz_incident_match_status: $vz_incident_match_status }
-    ) {
-        affected_rows
-    }
-}
-"""
-
-INSERT_VZ_INCIDENT = """
-mutation InsertVzIncident {
-    insert_vz_incidents_one(object: {}) {
-        id
-    }
-}
-"""
-
-UPDATE_GROUP_MEMBERS = """
-mutation UpdateGroupMembers($ids: [Int!]!, $vz_incident_id: bigint!, $vz_incident_match_status: String!) {
-    update_cad_incidents(
-        where: { master_incident_id: { _in: $ids } }
-        _set: { vz_incident_id: $vz_incident_id, vz_incident_match_status: $vz_incident_match_status }
-    ) {
-        affected_rows
-    }
-}
-"""
-
-# --- helpers ------------------------------------------------------------------
 
 
 def point_geojson(lon, lat):
@@ -120,11 +47,11 @@ def meters_to_degrees(meters):
     return meters / 111_000
 
 
-def fetch_candidates(incident: dict) -> list[dict]:
+def fetch_potential_matches(incident: dict) -> list[dict]:
     response_date = datetime.fromisoformat(incident["response_date"])
     start, end = time_window(response_date, TIME_THRESHOLD_MINUTES)
     data = make_hasura_request(
-        query=GET_CANDIDATE_MATCHES,
+        query=GET_POTENTIAL_MATCHES,
         variables={
             "incident_id": incident["master_incident_id"],
             "geom": point_geojson(incident["longitude"], incident["latitude"]),
@@ -136,27 +63,26 @@ def fetch_candidates(incident: dict) -> list[dict]:
     return data["cad_incidents"]
 
 
-def is_group_closed(anchor: dict, candidates: list[dict]) -> bool:
+def is_group_closed(primary: dict, matches: list[dict]) -> bool:
     """
-    Verify the group is closed: every candidate's candidates must be
+    Verify the group is closed: every member's matches must be
     exactly the rest of the group (no more, no fewer).
 
-    anchor's candidates == {B, C, ...}
-    B's candidates must == {anchor, C, ...}
-    C's candidates must == {anchor, B, ...}
+    primary's candidates == {B, C, ...}
+    B's candidates must == {primary, C, ...}
+    C's candidates must == {primary, B, ...}
     """
-    group_ids = {anchor["master_incident_id"]} | {
-        c["master_incident_id"] for c in candidates
-    }
-
-    for member in candidates:
-        member_candidates = fetch_candidates(member)
-        member_candidate_ids = {c["master_incident_id"] for c in member_candidates}
-        expected = group_ids - {member["master_incident_id"]}
-        if member_candidate_ids != expected:
+    # create a set of the
+    all_incident_ids = {primary["master_incident_id"]}.union(
+        {m["master_incident_id"] for m in matches}
+    )
+    for member in matches:
+        member_matches = fetch_potential_matches(member)
+        member_match_ids = {m["master_incident_id"] for m in member_matches}
+        expected = all_incident_ids - {member["master_incident_id"]}
+        if member_match_ids != expected:
             return False
     return True
-
 
 
 def main(args):
@@ -165,7 +91,7 @@ def main(args):
 
     logging.info(f"Fetching unprocessed incidents that occurred before {date_limit}...")
     data = make_hasura_request(
-        query=GET_UNPROCESSED,
+        query=GET_UNPROCESSED_INCIDENTS,
         variables={
             "record_limit": record_limit,
             "date_limit": date_limit.isoformat(),
@@ -175,7 +101,12 @@ def main(args):
     logging.info(f"  Found {len(incidents):,} unprocessed incidents\n")
 
     processed_ids = set()
-    counts = {"matched": 0, "ambiguous": 0, "skipped": 0}
+    counts = {
+        "cad_incidents_processed": 0,
+        "vz_incidents_created": 0,
+        "ambiguous": 0,
+        "skipped": 0,
+    }
 
     for incident in incidents:
         iid = incident["master_incident_id"]
@@ -184,45 +115,49 @@ def main(args):
             counts["skipped"] += 1
             continue
 
-        candidates = fetch_candidates(incident)
+        matches = fetch_potential_matches(incident)
 
-        group = [incident] + candidates
-        group_ids = [m["master_incident_id"] for m in group]
-        closed = is_group_closed(incident, candidates) if candidates else True
+        group = [incident] + matches
 
-        if closed:
-            # Create the vz_incident parent row
-            vz_data = make_hasura_request(query=INSERT_VZ_INCIDENT, variables={})
-            vz_incident_id = vz_data["insert_vz_incidents_one"]["id"]
+        closed = is_group_closed(incident, matches) if matches else True
 
-            # Link all group members to it and mark matched
-            make_hasura_request(
-                query=UPDATE_GROUP_MEMBERS,
-                variables={
-                    "ids": group_ids,
-                    "vz_incident_id": vz_incident_id,
-                    "vz_incident_match_status": "matched",
-                },
-            )
+        if not closed:
+            # we cannot use the matched group IDs because the group is not closed
+            group_ids = [iid]
         else:
-            # Ambiguous: mark status only, no vz_incident
-            make_hasura_request(
-                query=UPDATE_MATCH_STATUS,
-                variables={"ids": group_ids, "vz_incident_match_status": "ambiguous"},
-            )
+            group_ids = [m["master_incident_id"] for m in group]
 
-        processed_ids.update(group_ids)
-        counts["matched" if closed else "ambiguous"] += len(group)
+        # Create the vz_incident parent row
+        vz_data = make_hasura_request(query=INSERT_VZ_INCIDENT, variables={})
+        vz_incident_id = vz_data["insert_vz_incidents_one"]["id"]
 
-        logging.info(
-            f"  {'matched  ' if closed else 'AMBIGUOUS'} "
-            f"group of {len(group):>2} — anchor {iid} @ {incident['address']}"
+        # Link all group members to the incident
+        make_hasura_request(
+            query=SET_VZ_INCIDENT_IDS,
+            variables={"ids": group_ids, "vz_incident_id": vz_incident_id},
         )
 
+        logging.info(
+            f"Creted vz_incident {vz_incident_id} for group of {len(group_ids):>2} — anchor incident {iid} @ {incident['address']} - {incident['response_date']}"
+        )
+
+        # add all incident IDs we've assigned to a group to the list of processed IDs
+        processed_ids.update(group_ids)
+
+        counts["vz_incidents_created"] += 1
+        counts["cad_incidents_processed"] += len(group_ids)
+        counts["ambiguous"] += 1 if not closed else 0
+        counts["skipped"] += len(group_ids) - 1
+
     logging.info(f"\n=== Done ===")
-    logging.info(f"  Matched   : {counts['matched']:,}")
-    logging.info(f"  Ambiguous : {counts['ambiguous']:,}")
-    logging.info(f"  Skipped   : {counts['skipped']:,} (already processed as part of a group)")
+    logging.info(
+        f"  CAD recorsds processed (including skipped): {counts['cad_incidents_processed']:,}"
+    )
+    logging.info(f"  VZ incidents created: {counts['vz_incidents_created']:,}")
+    logging.info(f"  Ambiguous incidents seen: {counts['ambiguous']:,}")
+    logging.info(
+        f"  Skipped: {counts['skipped']:,} (already processed as part of a group)"
+    )
 
 
 if __name__ == "__main__":
@@ -235,7 +170,7 @@ if __name__ == "__main__":
         "--limit",
         type=int,
         default=MAX_RECORD_TO_PROCESS,
-        help="The maximum number of records to process"
+        help="The maximum number of records to process",
     )
     args = parser.parse_args()
     main(args)
