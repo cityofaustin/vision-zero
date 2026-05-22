@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import type { KeyboardEvent } from "react";
 import { useController, Control, FieldValues, Path } from "react-hook-form";
 import Form from "react-bootstrap/Form";
@@ -15,7 +15,7 @@ interface InputLookupTypeaheadProps<TFieldValues extends FieldValues> {
 }
 
 /**
- * Typeahead search input
+ * Typeahead search input to use with Lookup table options
  */
 export default function InputLookupTypeahead<TFieldValues extends FieldValues>({
   options,
@@ -30,12 +30,16 @@ export default function InputLookupTypeahead<TFieldValues extends FieldValues>({
 
   const { field } = useController({ name, control });
 
-  //   const findOptionById = (options, field.value) => {
-  //   return options?.find((option) => option?.id === id);
-  // };
+  useEffect(() => {
+    if (field.value) {
+      const selectedOption = options.find(
+        (option) => option.id === field.value
+      );
+      setSearchInput(selectedOption?.label ?? "");
+    }
+  }, [field.value, options]);
 
-  // console.log(options.find((option) => option.id === field.value));
-
+  // refine options to only contain search input
   const results = useMemo(
     () =>
       options.filter((item: LookupTableOption) =>
@@ -63,13 +67,14 @@ export default function InputLookupTypeahead<TFieldValues extends FieldValues>({
         if (choice) {
           e.preventDefault();
           field.onChange(choice.id);
-          setSearchInput(choice.label);
           setShowDropdown(false);
         }
       }
     },
     [highlightedIndex, results, showDropdown, field]
   );
+
+
   return (
     <Form.Group className="mb-3">
       <span className="position-relative">
@@ -107,7 +112,6 @@ export default function InputLookupTypeahead<TFieldValues extends FieldValues>({
                 onMouseDown={(e) => {
                   e.preventDefault();
                   field.onChange(result.id);
-                  setSearchInput(result.label);
                   setShowDropdown(false);
                 }}
               >
