@@ -11,12 +11,6 @@ interface TargetRecommendation {
   recommendations_partners: { id: number; partner_id: number | null }[];
 }
 
-export type CrashSearchResult = {
-  id: number;
-  record_locator: string;
-  address_display: string | null;
-};
-
 export interface TransferConfig {
   crash: Crash;
   targetCrashId: number;

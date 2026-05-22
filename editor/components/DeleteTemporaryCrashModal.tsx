@@ -310,6 +310,7 @@ export default function DeleteTemporaryCrashModal({
     },
     [canDelete, runTransferThenDelete]
   );
+
   // --- Render ---
 
   return (
