@@ -24,8 +24,6 @@ type ContributingFactorsInputs = Pick<
   | "contrib_factr_p2_id"
 >;
 
-export type ContribFormValues = Record<keyof ContributingFactorsInputs, string | null>;
-
 const contribFactorLabels: Array<{
   path: keyof ContributingFactorsInputs;
   label: string;
@@ -51,8 +49,6 @@ const contribFactorLabels: Array<{
     label: "Possible #2",
   },
 ];
-
-
 
 /**
  * A modal for editing the contributing factors of a

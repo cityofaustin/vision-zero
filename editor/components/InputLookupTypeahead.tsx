@@ -2,36 +2,33 @@
 
 import { useMemo, useState, useCallback } from "react";
 import type { KeyboardEvent } from "react";
-import { useController, Control, FieldValues } from "react-hook-form";
+import { useController, Control, FieldValues, Path } from "react-hook-form";
 import Form from "react-bootstrap/Form";
 import { LookupTableOption } from "@/types/relationships";
-import { ContribFormValues } from "./ContributingFactorsModal";
 
 interface InputLookupTypeaheadProps<TFieldValues extends FieldValues> {
   options: LookupTableOption[];
   formPlaceholder?: string;
   disabled?: boolean;
-  name: string;
+  name: Path<TFieldValues>;
   control: Control<TFieldValues>;
 }
 
 /**
  * Typeahead search input
  */
-export default function InputLookupTypeahead({
+export default function InputLookupTypeahead<TFieldValues extends FieldValues>({
   options,
   formPlaceholder,
   disabled = false,
   name,
   control,
-}: InputLookupTypeaheadProps<ContribFormValues>) {
+}: InputLookupTypeaheadProps<TFieldValues>) {
   const [searchInput, setSearchInput] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
   const { field } = useController({ name, control });
-
-  console.log(name, field.value);
 
   //   const findOptionById = (options, field.value) => {
   //   return options?.find((option) => option?.id === id);
