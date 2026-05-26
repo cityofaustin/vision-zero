@@ -84,7 +84,7 @@ export default function InputLookupTypeahead<TFieldValues extends FieldValues>({
       <span className="position-relative">
         <Form.Control
           {...field}
-          type="text"
+          type="search"
           placeholder={formPlaceholder ?? "Select..."}
           disabled={disabled}
           value={searchInput}
