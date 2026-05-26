@@ -8,10 +8,14 @@ import { LookupTableOption } from "@/types/relationships";
 
 interface InputLookupTypeaheadProps<TFieldValues extends FieldValues> {
   options: LookupTableOption[];
-  formPlaceholder?: string;
-  disabled?: boolean;
+  /** Field name */
   name: Path<TFieldValues>;
+  /** React Hook Form control */
   control: Control<TFieldValues>;
+  /** optional placeholder for input, if not included defaults to "Select..." */
+  formPlaceholder?: string;
+  /** If input should be disabled */
+  disabled?: boolean;
 }
 
 /**
