@@ -100,8 +100,8 @@ export default function InputLookupTypeahead<TFieldValues extends FieldValues>({
         />
         {showDropdown && (
           <ul
-            className="list-group position-absolute w-100 mt-1 shadow-sm"
-            style={{ zIndex: 1050, maxHeight: "240px", overflowY: "auto" }}
+            className="list-group w-100 mt-1 shadow-sm"
+            style={{ maxHeight: "240px", overflowY: "auto" }}
           >
             {results.length === 0 && (
               <li className="list-group-item text-muted">No options</li>
