@@ -1,5 +1,12 @@
 # copy this file to .env and fill in the values
 
+# developer's personal credentials to VZ read replica
+RR_USERNAME=""
+RR_PASSWORD=""
+RR_HOSTNAME=""
+RR_DATABASE="vision_zero"
+
+
 # credentials specific to local database
 POSTGRES_PASSWORD="visionzero"
 POSTGRES_USER="visionzero"
@@ -22,8 +29,3 @@ PG_DEFAULT_STATISTICS_TARGET="100"     # Balanced detail for statistics to impro
 PG_JIT="off"                           # Disables Just-In-Time compilation (often faster for simple queries).
 PG_WAL_COMPRESSION="on"                # Compresses WAL logs to save disk I/O.
 
-# developer's personal credentials to VZ read replica
-RR_USERNAME=""
-RR_PASSWORD=""
-RR_HOSTNAME=""
-RR_DATABASE="vision_zero"
