@@ -30,7 +30,9 @@ mutation UpsertCADIncidentGRoups($objects: [cad_incident_groups_insert_input!]!)
 GET_UNPROCESSED_INCIDENTS = """
 query GetUnprocessed($record_limit: Int!, $date_limit: timestamptz = "") {
     cad_incidents(
-        where: { vz_incident_id: { _is_null: true }, response_date: { _lt: $date_limit } }
+        where: { vz_incident_id: { _is_null: true }, response_date: { _lt: $date_limit }, 
+        call_disposition: { _nin: ["4 - False Alarm", "Call Cancelled", "Call Cancelled,Referred Law En", "Cancelled", "Cancelled By Caller", "Cancelled By Caller,Duplicate", "Cancelled By Caller,Referred A", "Cancelled,Cancelled By Caller", "Cancelled,Dual w/ other EMS Un", "CAR - Canceled On Arrival", "CBA - Canceled Before Arrival", "CBA - Canceled Before Arrival,", "C - Cancelled Incident", "C - Cancelled Incident,C - Can", "C - Cancelled Incident,N - No", "Duplicate Call", "False Alarm Call", "T - Test call", "0 - Reassigned call", "0 - Reassigned call,3 - Unable", "0 - Reassigned call,6 - No Rep", "0 - Reassigned call,C - Cancel"]}
+        }
         order_by: { response_date: desc }
         limit: $record_limit
     ) {
@@ -56,6 +58,7 @@ query GetPotentialMatches(
             master_incident_id: { _neq: $incident_id }
             response_date: { _gte: $start, _lte: $end }
             geom: { _st_d_within: { distance: $distance, from: $geom } }
+            call_disposition: { _nin: ["4 - False Alarm", "Call Cancelled", "Call Cancelled,Referred Law En", "Cancelled", "Cancelled By Caller", "Cancelled By Caller,Duplicate", "Cancelled By Caller,Referred A", "Cancelled,Cancelled By Caller", "Cancelled,Dual w/ other EMS Un", "CAR - Canceled On Arrival", "CBA - Canceled Before Arrival", "CBA - Canceled Before Arrival,", "C - Cancelled Incident", "C - Cancelled Incident,C - Can", "C - Cancelled Incident,N - No", "Duplicate Call", "False Alarm Call", "T - Test call", "0 - Reassigned call", "0 - Reassigned call,3 - Unable", "0 - Reassigned call,6 - No Rep", "0 - Reassigned call,C - Cancel"]}
         }
     ) {
         master_incident_id
