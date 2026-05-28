@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback } from "react";
 import type { KeyboardEvent } from "react";
 import { useController, Control, FieldValues, Path } from "react-hook-form";
 import Form from "react-bootstrap/Form";
@@ -30,7 +30,7 @@ export default function FormControlAutocomplete<
   name,
   control,
 }: FormControlAutocomplete<TFieldValues>) {
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useState<null | string>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
@@ -40,13 +40,14 @@ export default function FormControlAutocomplete<
     options.find((option) => option.id === field.value)?.label ?? "";
 
   // refine options to only contain search input
-  const results = useMemo(
-    () =>
-      options.filter((item: LookupTableOption) =>
+  const results = useMemo(() => {
+    if (searchInput && searchInput.length > 0) {
+      return options.filter((item: LookupTableOption) =>
         item.label.toLowerCase().includes(searchInput.toLowerCase())
-      ),
-    [searchInput, options]
-  );
+      );
+    }
+    return options;
+  }, [searchInput, options]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -68,6 +69,7 @@ export default function FormControlAutocomplete<
           e.preventDefault();
           field.onChange(choice.id);
           setShowDropdown(false);
+          setSearchInput(choice.label)
         }
       }
     },
@@ -82,7 +84,7 @@ export default function FormControlAutocomplete<
           type="search"
           placeholder={formPlaceholder ?? "Select..."}
           disabled={disabled}
-          value={searchInput ? searchInput : selectedOptionLabel}
+          value={searchInput ?? selectedOptionLabel}
           onChange={(e) => {
             setSearchInput(e.target.value);
             setHighlightedIndex(0);
@@ -115,6 +117,7 @@ export default function FormControlAutocomplete<
                   e.preventDefault();
                   field.onChange(result.id);
                   setShowDropdown(false);
+                  setSearchInput(result.label)
                 }}
               >
                 {result.label}
