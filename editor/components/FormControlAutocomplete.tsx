@@ -77,58 +77,56 @@ export default function FormControlAutocomplete<
   );
 
   return (
-    <Form.Group className="mb-3">
-      <span className="position-relative">
-        <Form.Control
-          {...field}
-          type="search"
-          placeholder={formPlaceholder ?? "Select..."}
-          disabled={disabled}
-          value={searchInput ?? selectedOptionLabel}
-          onChange={(e) => {
-            setSearchInput(e.target.value);
-            setHighlightedIndex(0);
-            setShowDropdown(true);
-            if (e.target.value ==="") {
-              field.onChange(null)
-            }
-          }}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setShowDropdown(true)}
-          onBlur={() => {
-            setShowDropdown(false);
-            field.onBlur();
-          }}
-          autoComplete="off"
-        />
-        {showDropdown && (
-          <ul
-            className="list-group w-100 mt-1 shadow-sm position-absolute"
-            style={{ zIndex: 100, maxHeight: "240px", overflowY: "auto" }}
-          >
-            {results.length === 0 && (
-              <li className="list-group-item text-muted">No options</li>
-            )}
-            {results.map((result: LookupTableOption, index: number) => (
-              <li
-                key={result.id}
-                className={`list-group-item list-group-item-action${
-                  index === highlightedIndex ? " active" : ""
-                }`}
-                role="button"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  field.onChange(result.id);
-                  setShowDropdown(false);
-                  setSearchInput(result.label);
-                }}
-              >
-                {result.label}
-              </li>
-            ))}
-          </ul>
-        )}
-      </span>
+    <Form.Group className="mb-3 position-relative">
+      <Form.Control
+        {...field}
+        type="search"
+        placeholder={formPlaceholder ?? "Select..."}
+        disabled={disabled}
+        value={searchInput ?? selectedOptionLabel}
+        onChange={(e) => {
+          setSearchInput(e.target.value);
+          setHighlightedIndex(0);
+          setShowDropdown(true);
+          if (e.target.value === "") {
+            field.onChange(null);
+          }
+        }}
+        onKeyDown={handleKeyDown}
+        onFocus={() => setShowDropdown(true)}
+        onBlur={() => {
+          setShowDropdown(false);
+          field.onBlur();
+        }}
+        autoComplete="off"
+      />
+      {showDropdown && (
+        <ul
+          className="list-group w-100 mt-1 shadow-sm position-absolute"
+          style={{ zIndex: 100, maxHeight: "240px", overflowY: "auto" }}
+        >
+          {results.length === 0 && (
+            <li className="list-group-item text-muted">No options</li>
+          )}
+          {results.map((result: LookupTableOption, index: number) => (
+            <li
+              key={result.id}
+              className={`list-group-item list-group-item-action${
+                index === highlightedIndex ? " active" : ""
+              }`}
+              role="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                field.onChange(result.id);
+                setShowDropdown(false);
+                setSearchInput(result.label);
+              }}
+            >
+              {result.label}
+            </li>
+          ))}
+        </ul>
+      )}
     </Form.Group>
   );
 }
