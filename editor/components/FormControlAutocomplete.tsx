@@ -21,7 +21,9 @@ interface FormControlAutocomplete<TFieldValues extends FieldValues> {
 /**
  * Typeahead search input to use with Lookup table options
  */
-export default function FormControlAutocomplete<TFieldValues extends FieldValues>({
+export default function FormControlAutocomplete<
+  TFieldValues extends FieldValues,
+>({
   options,
   formPlaceholder,
   disabled = false,
@@ -78,7 +80,6 @@ export default function FormControlAutocomplete<TFieldValues extends FieldValues
     [highlightedIndex, results, showDropdown, field]
   );
 
-
   return (
     <Form.Group className="mb-3">
       <span className="position-relative">
@@ -95,7 +96,10 @@ export default function FormControlAutocomplete<TFieldValues extends FieldValues
           }}
           onKeyDown={handleKeyDown}
           onFocus={() => setShowDropdown(true)}
-          onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+          onBlur={() => {
+            setShowDropdown(false);
+            field.onBlur();
+          }}
           autoComplete="off"
         />
         {showDropdown && (
