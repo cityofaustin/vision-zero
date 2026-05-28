@@ -104,8 +104,8 @@ export default function FormControlAutocomplete<
         />
         {showDropdown && (
           <ul
-            className="list-group w-100 mt-1 shadow-sm"
-            style={{ maxHeight: "240px", overflowY: "auto" }}
+            className="list-group w-100 mt-1 shadow-sm position-absolute"
+            style={{ zIndex: 100, maxHeight: "240px", overflowY: "auto" }}
           >
             {results.length === 0 && (
               <li className="list-group-item text-muted">No options</li>
