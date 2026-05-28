@@ -27,6 +27,7 @@
     "chartjs-plugin-stacked100": "^0.7.1",
     "chroma-js": "2.4.2",
     "date-fns": "^2.30.0",
+    "events": "^3.3.0",
     "events-polyfill": "^2.1.2",
     "hookrouter": "^1.2.5",
     "lodash.clonedeep": "^4.5.0",
@@ -49,18 +50,19 @@
     "serialize-javascript": "^7.0.5",
     "styled-components": "^4.4.1",
     "url": "^0.11.4",
+    "vite-plugin-svgr": "^5.2.0",
     "wellknown": "^0.5.0"
   },
   "resolutions": {
     "react-dev-utils/chalk/ansi-styles": "https://github.com/codercodingthecode/ansi-styles"
   },
-"scripts": {
+  "scripts": {
     "dev": "vite",
     "build": "vite build",
     "build:staging": "vite build --mode staging",
     "build:production": "vite build --mode production",
     "preview": "vite preview"
-},
+  },
   "eslintConfig": {
     "extends": "react-app"
   },
