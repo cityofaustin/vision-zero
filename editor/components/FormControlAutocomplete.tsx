@@ -69,7 +69,7 @@ export default function FormControlAutocomplete<
           e.preventDefault();
           field.onChange(choice.id);
           setShowDropdown(false);
-          setSearchInput(choice.label)
+          setSearchInput(choice.label);
         }
       }
     },
@@ -89,6 +89,9 @@ export default function FormControlAutocomplete<
             setSearchInput(e.target.value);
             setHighlightedIndex(0);
             setShowDropdown(true);
+            if (e.target.value ==="") {
+              field.onChange(null)
+            }
           }}
           onKeyDown={handleKeyDown}
           onFocus={() => setShowDropdown(true)}
@@ -117,7 +120,7 @@ export default function FormControlAutocomplete<
                   e.preventDefault();
                   field.onChange(result.id);
                   setShowDropdown(false);
-                  setSearchInput(result.label)
+                  setSearchInput(result.label);
                 }}
               >
                 {result.label}
