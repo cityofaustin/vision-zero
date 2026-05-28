@@ -4,6 +4,7 @@ import { useMemo, useState, useCallback } from "react";
 import type { KeyboardEvent } from "react";
 import { useController, Control, FieldValues, Path } from "react-hook-form";
 import Form from "react-bootstrap/Form";
+import ListGroup from "react-bootstrap/ListGroup";
 import { LookupTableOption } from "@/types/relationships";
 
 interface FormControlAutocomplete<TFieldValues extends FieldValues> {
@@ -102,15 +103,17 @@ export default function FormControlAutocomplete<
         autoComplete="off"
       />
       {showDropdown && (
-        <ul
+        <ListGroup
           className="list-group w-100 mt-1 shadow-sm position-absolute"
           style={{ zIndex: 100, maxHeight: "240px", overflowY: "auto" }}
         >
           {results.length === 0 && (
-            <li className="list-group-item text-muted">No options</li>
+            <ListGroup.Item className="list-group-item text-muted">
+              No options
+            </ListGroup.Item>
           )}
           {results.map((result: LookupTableOption, index: number) => (
-            <li
+            <ListGroup.Item
               key={result.id}
               className={`list-group-item list-group-item-action${
                 index === highlightedIndex ? " active" : ""
@@ -124,9 +127,9 @@ export default function FormControlAutocomplete<
               }}
             >
               {result.label}
-            </li>
+            </ListGroup.Item>
           ))}
-        </ul>
+        </ListGroup>
       )}
     </Form.Group>
   );
