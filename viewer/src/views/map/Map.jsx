@@ -30,7 +30,7 @@ import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 import MapGeocoder from "./Geocoder/Geocoder";
 import { arcgisToGeoJSON } from "@terraformer/arcgis";
 
-export const MAPBOX_TOKEN = import.meta.env.REACT_APP_MAPBOX_TOKEN;
+export const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
 const Map = () => {
   // Set initial map config
@@ -326,6 +326,8 @@ const Map = () => {
       setLayersVisibility(injuryIds, injuryVisibility);
     }
   }, [isMapTypeSet]);
+
+  console.log(MAPBOX_TOKEN, "mapbox token")
 
   return (
     <ReactMapGL

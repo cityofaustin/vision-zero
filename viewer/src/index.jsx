@@ -30,7 +30,7 @@ SVGElement.prototype.contains = function contains(node) {
   return false;
 };
 
-if (import.meta.env.NODE_ENV !== "production") {
+if (import.meta.env.MODE !== "production") {
   import("react-axe").then((axe) => {
     axe.default(React, ReactDOM, 1000);
     ReactDOM.render(
