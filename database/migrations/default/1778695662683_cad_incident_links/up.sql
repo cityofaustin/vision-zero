@@ -15,11 +15,13 @@ ALTER TABLE cad_incidents
 ADD COLUMN vz_incident_id bigint REFERENCES vz_incidents(id),
 ADD COLUMN is_cancelled_call boolean GENERATED ALWAYS AS (
   coalesce(
-    lower(call_disposition) LIKE '%cancelled%'
+        lower(call_disposition) LIKE '%cancelled%'
+        or lower(call_disposition) LIKE '%canceled%'
         OR lower(call_disposition) LIKE '%false alarm%'
         OR lower(call_disposition) LIKE '%duplicate%'
         OR lower(call_disposition) LIKE '%reassigned call%'
         OR lower(call_disposition) LIKE '%test call%',
+        or lower(call_disposition) like '%training%'
     false)
 ) STORED;
 
