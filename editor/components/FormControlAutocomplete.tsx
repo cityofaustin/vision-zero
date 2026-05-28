@@ -36,14 +36,8 @@ export default function FormControlAutocomplete<
 
   const { field } = useController({ name, control });
 
-  useEffect(() => {
-    if (field.value) {
-      const selectedOption = options.find(
-        (option) => option.id === field.value
-      );
-      setSearchInput(selectedOption?.label ?? "");
-    }
-  }, [field.value, options]);
+  const selectedOptionLabel =
+    options.find((option) => option.id === field.value)?.label ?? "";
 
   // refine options to only contain search input
   const results = useMemo(
@@ -88,7 +82,7 @@ export default function FormControlAutocomplete<
           type="search"
           placeholder={formPlaceholder ?? "Select..."}
           disabled={disabled}
-          value={searchInput}
+          value={searchInput ? searchInput : selectedOptionLabel}
           onChange={(e) => {
             setSearchInput(e.target.value);
             setHighlightedIndex(0);
