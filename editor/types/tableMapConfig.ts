@@ -3,6 +3,7 @@ import TableMapPopupContent from "@/components/TableMapPopupContent";
 import LocationTableMapPopupContent from "@/components/LocationsTableMapPopupContent";
 import FatalitiesMapPopupContent from "@/components/FatalitiesMapPopupContent";
 import EMSMapPopupContent from "@/components/EMSMapPopupContent";
+import CadMapPopupContent from "@/components/CadMapPopupContent";
 
 // importing MapProps does not work: https://github.com/visgl/react-map-gl/issues/2140
 type MapGLComponentProps = React.ComponentProps<typeof MapGL>;
@@ -16,6 +17,7 @@ export const getPopupComponent = (
     | "locationTableMap"
     | "fatalitiesTableMap"
     | "emsTableMap"
+    | "cadTableMap"
     | undefined
 ) => {
   switch (popupName) {
@@ -25,6 +27,8 @@ export const getPopupComponent = (
       return FatalitiesMapPopupContent;
     case "emsTableMap":
       return EMSMapPopupContent;
+    case "cadTableMap":
+        return CadMapPopupContent
     default:
       return TableMapPopupContent;
   }
@@ -64,7 +68,8 @@ export interface TableMapConfig {
   popupComponentName?:
     | "locationTableMap"
     | "fatalitiesTableMap"
-    | "emsTableMap";
+    | "emsTableMap"
+    | "cadTableMap";
   /**
    *
    */

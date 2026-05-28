@@ -1,6 +1,12 @@
 import { FaRegHeart, FaCarBurst } from "react-icons/fa6";
 import { RiDashboard3Line } from "react-icons/ri";
-import { LuMapPin, LuAmbulance, LuCloudUpload, LuUsers } from "react-icons/lu";
+import {
+  LuMapPin,
+  LuAmbulance,
+  LuCloudUpload,
+  LuUsers,
+  LuPhone,
+} from "react-icons/lu";
 import { IconType } from "react-icons";
 
 interface Route {
@@ -35,6 +41,11 @@ export const routes: Route[] = [
     path: "ems",
     label: "EMS",
     icon: LuAmbulance,
+  },
+  {
+    path: "cad",
+    label: "CAD",
+    icon: LuPhone,
   },
   {
     path: "upload-non-cr3",

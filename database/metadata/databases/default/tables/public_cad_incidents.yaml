@@ -18,3 +18,94 @@ array_relationships:
         remote_table:
           name: cad_incident_groups
           schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - is_cancelled_call
+        - incident_type
+        - call_disposition
+        - priority_description
+        - final_problem
+        - master_incident_number
+        - initial_problem
+        - master_incident_id
+        - in_austin_full_purpose
+        - geom
+        - id
+        - address
+        - agency_type
+        - response_date
+        - time_first_unit_arrived
+        - time_call_closed
+        - created_at
+        - updated_at
+        - latitude
+        - longitude
+        - location_id
+        - created_by
+        - updated_by
+        - priority_number
+        - vz_incident_id
+      filter: {}
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - is_cancelled_call
+        - incident_type
+        - call_disposition
+        - priority_description
+        - final_problem
+        - master_incident_number
+        - initial_problem
+        - master_incident_id
+        - in_austin_full_purpose
+        - geom
+        - id
+        - address
+        - agency_type
+        - response_date
+        - time_first_unit_arrived
+        - time_call_closed
+        - created_at
+        - updated_at
+        - latitude
+        - longitude
+        - location_id
+        - created_by
+        - updated_by
+        - priority_number
+        - vz_incident_id
+      filter: {}
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - is_cancelled_call
+        - incident_type
+        - call_disposition
+        - priority_description
+        - final_problem
+        - master_incident_number
+        - initial_problem
+        - master_incident_id
+        - in_austin_full_purpose
+        - geom
+        - id
+        - address
+        - agency_type
+        - response_date
+        - time_first_unit_arrived
+        - time_call_closed
+        - created_at
+        - updated_at
+        - latitude
+        - longitude
+        - location_id
+        - created_by
+        - updated_by
+        - priority_number
+        - vz_incident_id
+      filter: {}
+    comment: ""
