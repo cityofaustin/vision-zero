@@ -12,7 +12,16 @@ EXECUTE FUNCTION public.set_updated_at_timestamp ();
 COMMENT ON TABLE public.vz_incidents is 'Table which stores Vision Zero-defined incidents, which function to group various types of crash-related records (crash reports, CAD, EMS, AFD) under a single entity.';
 
 ALTER TABLE cad_incidents
-ADD COLUMN vz_incident_id bigint REFERENCES vz_incidents(id);
+ADD COLUMN vz_incident_id bigint REFERENCES vz_incidents(id),
+ADD COLUMN is_cancelled_call boolean GENERATED ALWAYS AS (
+  coalesce(
+    lower(call_disposition) LIKE '%cancelled%'
+        OR lower(call_disposition) LIKE '%false alarm%'
+        OR lower(call_disposition) LIKE '%duplicate%'
+        OR lower(call_disposition) LIKE '%reassigned call%'
+        OR lower(call_disposition) LIKE '%test call%',
+    false)
+) STORED;
 
 COMMENT ON COLUMN public.cad_incidents.vz_incident_id is 'The vz_incidents foreign key. When null, indicates that this incident has not been processed by the VZ incident grouping ETL.';
 
