@@ -97,6 +97,7 @@ export default function FormControlAutocomplete<
         onBlur={() => {
           setShowDropdown(false);
           field.onBlur();
+          setSearchInput(null);
         }}
         autoComplete="off"
       />
