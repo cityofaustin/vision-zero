@@ -6,7 +6,7 @@ import MapPolygonFilter from "./MapPolygonFilter";
 import MapCompassSpinner from "./MapCompassSpinner";
 import { createMapDataUrl, useMapEventHandler } from "./helpers";
 import { mapInit, travisCountyBboxGeoJSON, mapNavBbox } from "./mapData";
-import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
+import { crashGeoJSONEndpointUrl } from "../summary/queries/socrataQueries";
 import {
   baseSourceAndLayer,
   fatalitiesDataLayer,
@@ -30,7 +30,7 @@ import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 import MapGeocoder from "./Geocoder/Geocoder";
 import { arcgisToGeoJSON } from "@terraformer/arcgis";
 
-export const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
+export const MAPBOX_TOKEN = import.meta.env.REACT_APP_MAPBOX_TOKEN;
 
 const Map = () => {
   // Set initial map config

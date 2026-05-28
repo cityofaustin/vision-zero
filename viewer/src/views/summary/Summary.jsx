@@ -50,7 +50,7 @@ const Summary = () => {
   const lastUpdated = format(dataEndDate, "MMMM dd, yyyy");
 
   // Display disclaimer when viewing preview instance
-  const previewDisclaimer = process.env.REACT_APP_VZV_ENVIRONMENT ===
+  const previewDisclaimer = import.meta.env.REACT_APP_VZV_ENVIRONMENT ===
     "PREVIEW" && (
     <Row className="summary-child">
       <Alert color="danger" className="col-12 mb-0">

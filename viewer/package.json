@@ -42,7 +42,6 @@
     "react-map-gl": "^5.3.21",
     "react-map-gl-draw": "^0.16.1",
     "react-map-gl-geocoder": "^2.2.0",
-    "react-scripts": "5.0.1",
     "react-use": "^14.3.0",
     "react-with-styles-interface-aphrodite": "^6.0.1",
     "reactstrap": "^8.10.1",
@@ -55,16 +54,13 @@
   "resolutions": {
     "react-dev-utils/chalk/ansi-styles": "https://github.com/codercodingthecode/ansi-styles"
   },
-  "scripts": {
-    "start": "REACT_APP_UNDER_MAINTENANCE=false REACT_APP_VZV_ENVIRONMENT=STAGING react-scripts start",
-    "build": "CI= react-scripts build && cp _redirects build && cp -r build viewer && mv viewer build",
-    "build:staging": "REACT_APP_VZV_ENVIRONMENT=STAGING npm run build",
-    "build:production": "REACT_APP_VZV_ENVIRONMENT=PRODUCTION npm run build",
-    "build:preview": "REACT_APP_VZV_ENVIRONMENT=PREVIEW npm run build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "postinstall": "patch-package"
-  },
+"scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:staging": "vite build --mode staging",
+    "build:production": "vite build --mode production",
+    "preview": "vite preview"
+},
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -96,6 +92,8 @@
     "npm": ">=6"
   },
   "devDependencies": {
-    "react-axe": "^3.5.4"
+    "@vitejs/plugin-react": "^6.0.2",
+    "react-axe": "^3.5.4",
+    "vite": "^8.0.14"
   }
 }

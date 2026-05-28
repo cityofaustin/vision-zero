@@ -10,11 +10,11 @@ const DATASET_IDS = {
 };
 
 const crashDatasetID =
-  process.env.REACT_APP_VZV_ENVIRONMENT === "PRODUCTION"
+  import.meta.env.REACT_APP_VZV_ENVIRONMENT === "PRODUCTION"
     ? DATASET_IDS.prod.crash
     : DATASET_IDS.staging.crash;
 const personDatasetID =
-  process.env.REACT_APP_VZV_ENVIRONMENT === "PRODUCTION"
+  import.meta.env.REACT_APP_VZV_ENVIRONMENT === "PRODUCTION"
     ? DATASET_IDS.prod.person
     : DATASET_IDS.staging.person;
 
