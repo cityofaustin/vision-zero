@@ -6,7 +6,7 @@ import { LookupTableOption } from "@/types/relationships";
 import { GET_CONTRIB_FACTORS } from "@/queries/unit";
 import { UPDATE_UNIT } from "@/queries/unit";
 import { useForm, SubmitHandler } from "react-hook-form";
-import InputLookupTypeahead from "@/components/InputLookupTypeahead";
+import FormControlAutocomplete from "@/components/FormControlAutocomplete";
 
 interface ContributingFactorsModalProps {
   show: boolean;
@@ -117,7 +117,7 @@ export default function ContributingFactorsModal({
               <Form.Group key={factor.path} className="mb-2">
                 <Form.Label>{factor.label}</Form.Label>
                 {!isLoading && factorOptions && (
-                  <InputLookupTypeahead
+                  <FormControlAutocomplete
                     options={factorOptions}
                     control={control}
                     name={factor.path}

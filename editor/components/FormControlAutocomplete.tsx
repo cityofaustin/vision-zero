@@ -6,7 +6,7 @@ import { useController, Control, FieldValues, Path } from "react-hook-form";
 import Form from "react-bootstrap/Form";
 import { LookupTableOption } from "@/types/relationships";
 
-interface InputLookupTypeaheadProps<TFieldValues extends FieldValues> {
+interface FormControlAutocomplete<TFieldValues extends FieldValues> {
   options: LookupTableOption[];
   /** Field name */
   name: Path<TFieldValues>;
@@ -21,13 +21,13 @@ interface InputLookupTypeaheadProps<TFieldValues extends FieldValues> {
 /**
  * Typeahead search input to use with Lookup table options
  */
-export default function InputLookupTypeahead<TFieldValues extends FieldValues>({
+export default function FormControlAutocomplete<TFieldValues extends FieldValues>({
   options,
   formPlaceholder,
   disabled = false,
   name,
   control,
-}: InputLookupTypeaheadProps<TFieldValues>) {
+}: FormControlAutocomplete<TFieldValues>) {
   const [searchInput, setSearchInput] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
