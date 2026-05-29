@@ -74,7 +74,7 @@ docker compose -f docker-compose.yml -f docker-compose.local.yml run import inci
 
 ### `incident_linker.py`
 
-It is common for multiple CAD records to be created in response to a single incident that happens in the real-world. The `incident_linker.py` script groups CAD incidents together based on their time and location, creating a `new vz_incidents` record for each group it finds.
+It is common for multiple CAD records to be created in response to a single incident that happens in the real-world. The `incident_linker.py` script groups CAD incidents together based on their time and location, creating a new `vz_incidents` record for each group it finds.
 
 The script works as follows:
 
@@ -84,13 +84,9 @@ The script works as follows:
   
 * Once a group is finalized, a parent `vz_incidents` record is created and all CAD incidents in the group are linked to it. Any incident already assigned to a group is skipped if it comes up again as an anchor.
 
-The matching alogrithm is illustrated below, in which CAD incidents A, B, C are grouped into a single incident based on their spatial proximity. Although A and C are not within the search radius the recursive matching of A → B → C leads to formation of the three-member group.
+The matching alogrithm is illustrated below, in which CAD incidents A, B, C are grouped into a single incident based on their spatial proximity. Although A and C are not within the search radius of each other, the recursive matching of A → B → C leads to formation of the three-member group.
 
 ![diagram](docs/cad_incidents_chained.png)
-
-```shell
-docker compose -f docker-compose.yml -f docker-compose.local.yml run import incident_linker.py --limit 500
-```
 
 ## Production run
 
@@ -105,6 +101,10 @@ python incidents_to_s3.py --remove
 
 ```shell
 python incidents_import.py --archive
+```
+
+```shell
+python incident_linker.py
 ```
 
 ## Deployment + CI
