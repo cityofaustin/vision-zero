@@ -31,9 +31,8 @@ GET_UNPROCESSED_INCIDENTS = """
 query GetUnprocessed($record_limit: Int!, $date_limit: timestamptz = "") {
     cad_incidents(
         where: { 
-            vz_incident_id: { _is_null: true },
-            is_cancelled_call: { _eq: false }
-            response_date: { _lt: $date_limit }, 
+            vz_incident_id: { _is_null: true }
+            response_date: { _lt: $date_limit } 
         }
         order_by: { response_date: desc }
         limit: $record_limit
@@ -60,7 +59,6 @@ query GetPotentialMatches(
             master_incident_id: { _neq: $incident_id }
             response_date: { _gte: $start, _lte: $end }
             geom: { _st_d_within: { distance: $distance, from: $geom } }
-            is_cancelled_call: { _eq: false }
         }
     ) {
         master_incident_id
@@ -90,4 +88,3 @@ mutation UpdateGroupMembers($ids: [Int!]!, $vz_incident_id: bigint!) {
     }
 }
 """
-
