@@ -28,7 +28,6 @@ ADD COLUMN vz_incident_id bigint REFERENCES vz_incidents(id);
 COMMENT ON COLUMN public.cad_incidents.is_cancelled_call is 'If the call disposition indicated that the call was canceled, a duplicate, false alarm, etc.';
 COMMENT ON COLUMN public.cad_incidents.vz_incident_id is 'The vz_incidents foreign key. When null, indicates that this incident has not been processed by the VZ incident grouping ETL.';
 
--- todo: needed?
 CREATE INDEX cad_incidents_geom_geography_idx 
     ON cad_incidents USING GIST ((geom::geography));
 
