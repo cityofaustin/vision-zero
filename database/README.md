@@ -24,6 +24,7 @@ The design supports an editing environment which enables Vision Zero program sta
     - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems-todo)
     - [Computer-Aided Dispatch records](computer-aided-dispatch-records)
     - [Vision Zero Incidents](vision-zero-incidents)
+      - [Sample queries](#sample-queries)
     - [Geospatial layers](#geospatial-layers)
   - [Common maintenance tasks](#common-maintenance-tasks)
     - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
@@ -290,7 +291,7 @@ The `vz_incidents` table holds Vision Zero incidents, which is a composite recor
 
 This work is ongoing and in a state of flux. The below queries can be used to explore and visualize VZ incidents as they currently exist in the database.
 
-### Sample queries
+#### Sample queries
 
 
 * VZ incident stats (number of member CAD incidents, distance spread, response time spread)
