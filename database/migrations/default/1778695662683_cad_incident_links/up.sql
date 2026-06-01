@@ -20,7 +20,7 @@ ADD COLUMN is_cancelled_call boolean GENERATED ALWAYS AS (
         OR lower(call_disposition) LIKE '%duplicate%'
         OR lower(call_disposition) LIKE '%reassigned call%'
         OR lower(call_disposition) LIKE '%test call%'
-        OR lower(call_disposition) like '%training%'
+        OR lower(call_disposition) like '%training%',
     false)
 ) STORED,
 ADD COLUMN vz_incident_id bigint REFERENCES vz_incidents(id);
