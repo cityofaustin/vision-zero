@@ -1,4 +1,4 @@
-#!/usr/bin/ python
+#!/usr/bin/python
 import argparse
 from datetime import datetime, timedelta, UTC
 import logging
@@ -14,7 +14,7 @@ from utils.queries import (
 
 MIN_RECORD_AGE_HOURS = 24
 DISTANCE_THRESHOLD_M = 500
-TIME_THRESHOLD_MINUTES = 30
+TIME_THRESHOLD_MINUTES = 60
 MAX_RECORD_TO_PROCESS = 1000
 
 
@@ -48,26 +48,25 @@ def fetch_potential_matches(incident: dict) -> list[dict]:
     return data["cad_incidents"]
 
 
-def is_group_closed(primary: dict, matches: list[dict]) -> bool:
+def flood_fill_group(anchor: dict) -> set[str]:
     """
-    Verify the group is closed: every member's matches must be
-    exactly the rest of the group (no more, no fewer).
+    Creates groups of incidents by recursively expanding a group starting
+    from anchor by bread-first search. Each newly discovered member's own
+    neighbors are explored in turn, until the frontier is exhausted.
+    """
+    group_ids = {anchor["master_incident_id"]}
+    # frontier holds full incident dicts so we can call fetch_potential_matches
+    frontier = [anchor]
 
-    primary's candidates == {B, C, ...}
-    B's candidates must == {primary, C, ...}
-    C's candidates must == {primary, B, ...}
-    """
-    # create a set of the
-    all_incident_ids = {primary["master_incident_id"]}.union(
-        {m["master_incident_id"] for m in matches}
-    )
-    for member in matches:
-        member_matches = fetch_potential_matches(member)
-        member_match_ids = {m["master_incident_id"] for m in member_matches}
-        expected = all_incident_ids - {member["master_incident_id"]}
-        if member_match_ids != expected:
-            return False
-    return True
+    while frontier:
+        current = frontier.pop()
+        for neighbor in fetch_potential_matches(current):
+            nid = neighbor["master_incident_id"]
+            if nid not in group_ids:
+                group_ids.add(nid)
+                frontier.append(neighbor)
+
+    return group_ids
 
 
 def main(args):
@@ -89,7 +88,6 @@ def main(args):
     counts = {
         "cad_incidents_processed": 0,
         "vz_incidents_created": 0,
-        "ambiguous": 0,
         "skipped": 0,
     }
 
@@ -100,17 +98,7 @@ def main(args):
             counts["skipped"] += 1
             continue
 
-        matches = fetch_potential_matches(incident)
-
-        group = [incident] + matches
-
-        closed = is_group_closed(incident, matches) if matches else True
-
-        if not closed:
-            # we cannot use the matched group IDs because the group is not closed
-            group_ids = [iid]
-        else:
-            group_ids = [m["master_incident_id"] for m in group]
+        group_ids = flood_fill_group(incident)
 
         # Create the vz_incident parent row
         vz_data = make_hasura_request(query=INSERT_VZ_INCIDENT, variables={})
@@ -119,27 +107,24 @@ def main(args):
         # Link all group members to the incident
         make_hasura_request(
             query=SET_VZ_INCIDENT_IDS,
-            variables={"ids": group_ids, "vz_incident_id": vz_incident_id},
+            variables={"ids": list(group_ids), "vz_incident_id": vz_incident_id},
         )
 
         logging.info(
-            f"Creted vz_incident {vz_incident_id} for group of {len(group_ids):>2} — anchor incident {iid} @ {incident['address']} - {incident['response_date']}"
+            f"Created vz_incident {vz_incident_id} for group of {len(group_ids):>2} — anchor incident {iid} @ {incident['address']} - {incident['response_date']}"
         )
 
-        # add all incident IDs we've assigned to a group to the list of processed IDs
         processed_ids.update(group_ids)
 
         counts["vz_incidents_created"] += 1
         counts["cad_incidents_processed"] += len(group_ids)
-        counts["ambiguous"] += 1 if not closed else 0
         counts["skipped"] += len(group_ids) - 1
 
     logging.info(f"\n=== Done ===")
     logging.info(
-        f"  CAD recorsds processed (including skipped): {counts['cad_incidents_processed']:,}"
+        f"  CAD records processed (including skipped): {counts['cad_incidents_processed']:,}"
     )
     logging.info(f"  VZ incidents created: {counts['vz_incidents_created']:,}")
-    logging.info(f"  Ambiguous incidents seen: {counts['ambiguous']:,}")
     logging.info(
         f"  Skipped: {counts['skipped']:,} (already processed as part of a group)"
     )
@@ -148,7 +133,7 @@ def main(args):
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     parser = argparse.ArgumentParser(
-        description="Group CAD incidents by matching them to temporal and spatial neighbors and inserting new vz_incident_groups records",
+        description="Group CAD incidents by flood-filling spatial+temporal neighbors and inserting new vz_incident_groups records",
         usage="incident_linker.py --limit 1000",
     )
     parser.add_argument(

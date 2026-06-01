@@ -23,6 +23,8 @@ The design supports an editing environment which enables Vision Zero program sta
       - [Change logs](#change-logs)
     - [Austin Fire Department (AFD) and Travis County Emergency Medical Services (EMS) (todo)](#austin-fire-department-afd-and-travis-county-emergency-medical-services-ems-todo)
     - [Computer-Aided Dispatch records](computer-aided-dispatch-records)
+    - [Vision Zero Incidents](vision-zero-incidents)
+      - [Sample queries](#sample-queries)
     - [Geospatial layers](#geospatial-layers)
   - [Common maintenance tasks](#common-maintenance-tasks)
     - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
@@ -268,11 +270,98 @@ The view `crashes_change_log_view` provides a unioned view of the unified table 
 
 ### Computer-Aided Dispatch records
 
-These records contain information on 911 calls and officer-initiated incidents related to traffic crashes as recorded in the Austin public safety Computer Aided Dispatch (CAD) system. They are referred to colloquially as "CAD calls".
+These records (`cad_incidents` table) contain information on 911 calls and officer-initiated incidents related to traffic crashes as recorded in the Austin public safety Computer Aided Dispatch (CAD) system. They are referred to colloquially as "CAD calls".
 
 Data is provided by the public safety enterprise data team and has been reviewed and approved by subject matter experts at the Austin Fire Department, Austin Police Department, and Austin-Travis County EMS.
 
 For additional information about CAD records, see the [CAD incident import ETL](../etl/cad_incidents_import/README.md).
+
+### Vision Zero Incidents
+
+[Under active development]
+
+The `vz_incidents` table holds Vision Zero incidents, which is a composite record type which attempts to unify various crash-related records under a single containing object. Currently, VZ incidents are only linked to CAD records; they are created as part of the [CAD incident import ETL](../etl/cad_incidents_import/README.md). In the future a VZ incident may be linked to any number of record types, enabling a picture of the total public safety response to a crash:
+
+- Vision Zero incident
+  - Fire CAD incident
+  - EMS CAD incident
+  - Police CAD inicdent
+  - EMS Patient care record (future state)
+  - Police crash report (future state)
+
+This work is ongoing and in a state of flux. The below queries can be used to explore and visualize VZ incidents as they currently exist in the database.
+
+#### Sample queries
+
+
+* VZ incident stats (number of member CAD incidents, distance spread, response time spread)
+
+```sql
+SELECT
+    v.id AS vz_incident_id,
+    COUNT(c.id) AS cad_incident_count,
+    ROUND(ST_Length (ST_LongestLine (ST_Collect (c.geom), ST_Collect (c.geom))::geography)::numeric, 1) AS spread_meters,
+    ROUND(
+        EXTRACT(
+            EPOCH
+            FROM
+                (MAX(c.response_date) - MIN(c.response_date))
+        ) / 60.0,
+        1
+    ) AS time_spread_minutes
+FROM
+    vz_incidents v
+    JOIN cad_incidents c ON c.vz_incident_id = v.id
+WHERE
+    v.is_deleted = FALSE
+GROUP BY
+    v.id
+ORDER BY
+    v.id
+```
+
+* Generates a geojson of VZ incidents with simple styles that can be visualized in mapping tools such as https://geojson.io.
+
+
+```sql
+SELECT
+    jsonb_build_object(
+        'type',
+        'FeatureCollection',
+        'features',
+        jsonb_agg(
+            jsonb_build_object(
+                'type',
+                'Feature',
+                'geometry',
+                ST_AsGeoJSON (geom)::jsonb,
+                'properties',
+                jsonb_build_object(
+                    'vz_incident_id',
+                    vz_incident_id,
+                    'master_incident_id',
+                    master_incident_id,
+                    'agency_type',
+                    agency_type,
+                    'response_date',
+                    response_date,
+                    'address',
+                    address,
+                    'marker-color',
+                    '#' || lpad(to_hex(('x' || substr(md5(vz_incident_id::text), 1, 6))::bit(24)::int), 6, '0'),
+                    'marker-size',
+                    'large'
+                )
+            )
+        )
+    ) AS geojson
+FROM
+    cad_incidents
+WHERE
+    vz_incident_id IS NOT NULL
+LIMIT
+    2000;
+```
 
 ### Geospatial layers
 
