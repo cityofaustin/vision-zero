@@ -31,7 +31,7 @@ const UnderMaintenance = ({ isMeasuresPath }) => {
                 <img
                   className="vz-logo"
                   style={{ height: "40px" }}
-                  src={import.meta.env.PUBLIC_URL + "/vz_logo.png"}
+                  src={import.meta.env.BASE_URL + "vz_logo.png"}
                   alt="Vision Zero Austin Logo"
                 ></img>
               </div>
