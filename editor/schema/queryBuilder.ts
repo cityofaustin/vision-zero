@@ -3,6 +3,7 @@
  * need to be kept in sync in order to validate the queryConfig
  * that is parsed from local storage
  */
+import { TableMapConfigSchema } from "@/schema/tableMapConfig";
 import { z } from "zod";
 
 // Base types
@@ -11,6 +12,7 @@ const FilterValue = z.union([
   z.number(),
   z.boolean(),
   z.array(z.number()),
+  z.array(z.string()),
 ]);
 
 const Filter = z.object({
@@ -18,6 +20,7 @@ const Filter = z.object({
   operator: z.enum([
     "_gte",
     "_lte",
+    "_lt",
     "_gt",
     "_eq",
     "_neq",
@@ -25,6 +28,7 @@ const Filter = z.object({
     "_ilike",
     "_in",
     "_nin",
+    "_contains",
   ]),
   value: FilterValue,
   column: z.string(),
@@ -75,6 +79,7 @@ const DateFilter = z.object({
 
 // Main QueryConfig schema
 export const QueryConfigSchema = z.object({
+  _version: z.number(),
   tableName: z.string(),
   limit: z.number(),
   offset: z.number(),
@@ -86,4 +91,5 @@ export const QueryConfigSchema = z.object({
   filterCards: z.array(FilterGroup),
   exportable: z.boolean().optional(),
   exportFilename: z.string().optional(),
+  mapConfig: TableMapConfigSchema.strict().optional(),
 });

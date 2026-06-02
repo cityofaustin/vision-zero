@@ -2,11 +2,10 @@ import { gql } from "graphql-request";
 
 export const RECOMMENDATION_STATUS_QUERY = gql`
   query GetRecStatuses {
-    statuses: atd__recommendation_status_lkp(
-      order_by: { rec_status_desc: desc }
-    ) {
+    statuses: atd__recommendation_status_lkp(order_by: { sort_order: asc }) {
       id
       rec_status_desc
+      sort_order
     }
   }
 `;
@@ -45,6 +44,14 @@ export const UPDATE_RECOMMENDATION_MUTATION = gql`
     }
     insert_recommendations_partners(objects: $partnersToAdd) {
       affected_rows
+    }
+  }
+`;
+
+export const DELETE_RECOMMENDATION_MUTATION = gql`
+  mutation DeleteRecommendation($id: Int!) {
+    delete_recommendations_by_pk(id: $id) {
+      id
     }
   }
 `;

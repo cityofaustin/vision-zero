@@ -42,11 +42,20 @@ const quoteWrapAndEscape = (value: string): FilterValue =>
   `"${value.replaceAll('"', '\\"')}"`;
 
 /**
- * Create a string representation of an array of numbers
- * [1, 2]  => "[1, 2]"
+ * Create a string representation of an array of numbers or strings.
+ * [1, 2]        => "[1, 2]"
+ * ["1", "2"]    => '["1", "2"]'
  */
-const arrayToStringRep = (arr: number[]): string => {
-  return `[${arr}]`;
+const arrayToStringRep = (arr: number[] | string[]): string => {
+  if (arr.length === 0) return "[]";
+  let items: number[] | string[] = [];
+  if (typeof arr[0] === "string") {
+    // add literal quotes to array values
+    items = arr.map((val) => `"${val}"`);
+  } else {
+    items = arr;
+  }
+  return `[${items.join(", ")}]`;
 };
 
 /**
@@ -231,7 +240,7 @@ const getQueryStringComponent = (
  *      record_locator
  *      case_id
  *      crash_timestamp
- *      address_primary
+ *      address_display
  *      collsn_desc
  *    }
  *  }
@@ -253,9 +262,11 @@ const buildQuery = <T extends Record<string, unknown>>(
     searchFilter,
   } = queryConfig;
 
-  const columnQueryString = getQueryStringComponent(
-    columns.map((col) => col.path)
-  );
+  // include the __typename in no columns provided
+  // ensures a valid column selection set is always included in the query
+  const pathsForQuery =
+    columns.length > 0 ? columns.map((col) => col.path) : ["__typename"];
+  const columnQueryString = getQueryStringComponent(pathsForQuery);
 
   /**
    * Collect all filters into one big FilterGroup

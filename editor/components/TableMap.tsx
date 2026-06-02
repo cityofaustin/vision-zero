@@ -10,13 +10,14 @@ import MapFitBoundsControl from "@/components/MapFitBoundsControl";
 import { useCurrentBounds } from "@/utils/map";
 import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
 import { FeatureCollection } from "geojson";
-import { TableMapConfig } from "@/types/tableMapConfig";
+import { getPopupComponent, TableMapConfig } from "@/types/tableMapConfig";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { GeoJSONFeature } from "mapbox-gl";
 import PopupWrapper from "@/components/PopupWrapper";
-import TableMapPopupContent from "@/components/TableMapPopupContent";
 import MapBasemapControl from "@/components/MapBasemapControl";
 import { useBasemap } from "@/utils/map";
+import { MapAerialSourceAndLayer } from "@/components/MapAerialSourceAndLayer";
+import MapGeocoderControl from "./MapGeocoderControl";
 
 export interface LatLon {
   latitude: number;
@@ -47,7 +48,9 @@ interface TableMapProps {
  * Map which can be configured to render in the Table component
  */
 export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
-  const { basemapURL, basemapType, setBasemapType } = useBasemap("streets");
+  const { basemapURL, basemapType, setBasemapType } = useBasemap(
+    mapConfig.defaultBasemap
+  );
 
   const geojsonBounds = useCurrentBounds(geojson);
   /**
@@ -78,9 +81,9 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
     }
   }, [geojsonBounds, mapRef]);
 
-  const [selectedFeature, setSelectedFeature] = useState<GeoJSONFeature | null>(
-    null
-  );
+  const [selectedFeatures, setSelectedFeatures] = useState<
+    GeoJSONFeature[] | null
+  >(null);
   const [cursor, setCursor] = useState("grab");
 
   const onMouseEnter = useCallback(() => {
@@ -91,13 +94,19 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
     setCursor("grab");
   }, []);
 
+  const PopupComponent = getPopupComponent(mapConfig.popupComponentName);
+
   return (
     <MapGL
+      /**
+       * use flexbox instead of height/width percentages - this map should
+       * be embedded in a flex container, or TODO: move style to map config
+       */
+      style={{ flexGrow: 1, height: "auto", width: "auto" }}
       ref={mapRef}
       initialViewState={initialViewState}
       {...DEFAULT_MAP_PARAMS}
       mapStyle={basemapURL}
-      cooperativeGestures={true}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       cursor={cursor}
@@ -107,12 +116,16 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       onClick={(e) => {
         e.originalEvent.stopPropagation();
         if (e.features?.length) {
-          setSelectedFeature(e.features[0]);
+          setSelectedFeatures(e.features);
         } else {
-          setSelectedFeature(null);
+          setSelectedFeatures(null);
         }
       }}
+      // conditionally include props from mapConfig
+      {...(mapConfig.mapProps || {})}
     >
+      {basemapType === "aerial" && <MapAerialSourceAndLayer />}
+      <MapGeocoderControl position="top-left" />
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
       {/* custom geojson source and layer */}
@@ -123,14 +136,15 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
       <MapBasemapControl
         basemapType={basemapType}
         setBasemapType={setBasemapType}
+        controlId="tableMap"
       />
-      {selectedFeature && (
+      {selectedFeatures && selectedFeatures.length > 0 && (
         <PopupWrapper
-          longitude={selectedFeature?.properties?.longitude}
-          latitude={selectedFeature?.properties?.latitude}
-          featureProperties={selectedFeature.properties}
-          PopupContent={TableMapPopupContent}
-          onClose={() => setSelectedFeature(null)}
+          longitude={selectedFeatures[0]?.properties?.longitude}
+          latitude={selectedFeatures[0]?.properties?.latitude}
+          selectedFeatures={selectedFeatures}
+          PopupContent={PopupComponent}
+          onClose={() => setSelectedFeatures(null)}
         />
       )}
     </MapGL>

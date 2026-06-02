@@ -71,7 +71,7 @@ build-iPhoneSimulator/
 # Let's not track any csv, env or log files
 *.csv
 *.env
-*.env.local
+*.env.*
 *.log
 *.xml
 
@@ -88,11 +88,15 @@ etl/app/**/*.json
 env
 
 # vim 
-[._]*.s[a-v][a-z]
-[._]*.sw[a-p]
+.*.s[a-v][a-z]
+.*.sw[a-p]
 
 # Zappa API deployment secrets
 zappa_settings.json
 
 env_file
 /app
+
+# Example CSV inputs for crash narrative flagging
+!toolbox/crash_narrative_flagging/example_input.csv
+!toolbox/crash_narrative_flagging/example_output.csv

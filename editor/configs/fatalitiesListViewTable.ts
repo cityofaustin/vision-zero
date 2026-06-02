@@ -1,6 +1,5 @@
 import { getYearsAgoDate, makeDateFilters } from "@/utils/dates";
 import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
-import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
 const fatalitiesListViewFilterCards: FilterGroup[] = [
   {
@@ -260,10 +259,11 @@ const fatalitiesListViewFilterCards: FilterGroup[] = [
 ];
 
 export const fatalitiesListViewQueryConfig: QueryConfig = {
+  _version: 2,
   exportable: true,
   exportFilename: "fatalities",
   tableName: "fatalities_view",
-  limit: DEFAULT_QUERY_LIMIT,
+  limit: 1000,
   offset: 0,
   sortColName: "cris_crash_id",
   sortAsc: false,
@@ -291,10 +291,22 @@ export const fatalitiesListViewQueryConfig: QueryConfig = {
   filterCards: fatalitiesListViewFilterCards,
   mapConfig: {
     isActive: false,
+    popupComponentName: "fatalitiesTableMap",
     layerProps: {
       id: "points-layer",
       type: "circle",
       paint: {
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          // zoom is 5 (or less)
+          5,
+          2,
+          // zoom is 20 (or greater)
+          20,
+          10,
+        ],
         "circle-color": "#1276d1",
         "circle-stroke-width": [
           "interpolate",
@@ -302,7 +314,7 @@ export const fatalitiesListViewQueryConfig: QueryConfig = {
           ["zoom"],
           // zoom is 5 (or less)
           5,
-          1,
+          2,
           // zoom is 20 (or greater)
           20,
           3,
@@ -311,5 +323,6 @@ export const fatalitiesListViewQueryConfig: QueryConfig = {
       },
     },
     geojsonTransformerName: "latLon",
+    defaultBasemap: "streets",
   },
 };

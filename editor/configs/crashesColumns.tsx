@@ -1,7 +1,8 @@
 import { ColDataCardDef } from "@/types/types";
 import { Crash } from "@/types/crashes";
-import { formatDateTimeWithDay } from "@/utils/formatters";
+import { formatIsoDateTimeWithDay } from "@/utils/formatters";
 import { commonValidations } from "@/utils/formHelpers";
+import Link from "next/link";
 
 export const crashesColumns = {
   active_school_zone_fl: {
@@ -14,13 +15,19 @@ export const crashesColumns = {
     path: "record_locator",
     label: "Crash ID",
   },
-  address_primary: {
-    path: "address_primary",
-    label: "Address",
+  record_locator_hyperlinked: {
+    path: "record_locator",
+    label: "Crash ID",
+    sortable: true,
+    valueRenderer: (record: Crash) => (
+      <Link href={`/crashes/${record.record_locator}`} prefetch={false}>
+        {record.record_locator}
+      </Link>
+    ),
   },
-  address_secondary: {
-    path: "address_secondary",
-    label: "Secondary address",
+  address_display: {
+    path: "address_display",
+    label: "Address",
   },
   at_intrsct_fl: {
     path: "at_intrsct_fl",
@@ -45,7 +52,7 @@ export const crashesColumns = {
   crash_timestamp: {
     path: "crash_timestamp",
     label: "Crash date",
-    valueFormatter: formatDateTimeWithDay,
+    valueFormatter: formatIsoDateTimeWithDay,
   },
   collsn: {
     path: "collsn.label",
@@ -123,7 +130,13 @@ export const crashesColumns = {
 
   road_constr_zone_fl: {
     path: "road_constr_zone_fl",
-    label: "Road construction zone",
+    label: "Construction zone",
+    editable: true,
+    inputType: "yes_no",
+  },
+  road_constr_zone_wrkr_fl: {
+    path: "road_constr_zone_wrkr_fl",
+    label: "Construction worker present",
     editable: true,
     inputType: "yes_no",
   },
@@ -313,5 +326,17 @@ export const crashesColumns = {
     label: "wthr_cond_id",
     editable: true,
     inputType: "number",
+  },
+  agency: {
+    path: "agency.label",
+    label: "Investigating agency",
+    editable: false,
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "agency",
+      idColumnName: "id",
+      labelColumnName: "label",
+      foreignKey: "investigat_agency_id",
+    },
   },
 } satisfies Record<string, ColDataCardDef<Crash>>;

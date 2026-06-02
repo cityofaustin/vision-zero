@@ -2,12 +2,10 @@ import { gql } from "graphql-request";
 
 export const INSERT_LOCATION_NOTE = gql`
   mutation InsertLocationNote(
-    $recordId: String!
-    $text: String!
-    $userEmail: String!
+    $updates: location_notes_insert_input!
   ) {
     insert_location_notes_one(
-      object: { location_id: $recordId, text: $text, updated_by: $userEmail, created_by: $userEmail }
+      object: $updates
     ) {
       id
       text

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from "react";
+import { use, useState, useCallback } from "react";
 import { notFound, useRouter } from "next/navigation";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -14,7 +14,7 @@ import PermissionsRequired from "@/components/PermissionsRequired";
 import { formatRoleName, useGetToken } from "@/utils/auth";
 import { useUser } from "@/utils/users";
 import { User } from "@/types/users";
-import { formatDateTimeWithDay } from "@/utils/formatters";
+import { formatIsoDateTime } from "@/utils/formatters";
 
 const allowedUserEditRoles = ["vz-admin"];
 
@@ -29,7 +29,7 @@ const COLUMNS: UserColumn[] = [
   {
     name: "app_metadata",
     label: "Role",
-    renderer: (user) => formatRoleName(user.app_metadata.roles[0]) || "",
+    renderer: (user) => formatRoleName(user.app_metadata?.roles?.[0] || "") || "",
   },
   { name: "name", label: "Name" },
   { name: "email", label: "Email" },
@@ -37,28 +37,28 @@ const COLUMNS: UserColumn[] = [
   {
     name: "created_at",
     label: "Created at",
-    renderer: (user) => formatDateTimeWithDay(user.created_at),
+    renderer: (user) => formatIsoDateTime(user.created_at),
   },
   {
     name: "last_login",
     label: "Last login",
-    renderer: (user) => formatDateTimeWithDay(user.last_login),
+    renderer: (user) => formatIsoDateTime(user.last_login),
   },
   {
     name: "updated_at",
     label: "Updated at",
-    renderer: (user) => formatDateTimeWithDay(user.updated_at),
+    renderer: (user) => formatIsoDateTime(user.updated_at),
   },
 ];
 
 export default function UserDetails({
   params,
 }: {
-  params: { user_id: string };
+  params: Promise<{ user_id: string }>;
 }) {
   const getToken = useGetToken();
   const router = useRouter();
-  const userId = params.user_id;
+  const { user_id: userId } = use(params);
   const { data: user, mutate } = useUser(userId);
   const [showEditUserModal, setShowEditUserModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);

@@ -5,6 +5,7 @@ import { MdFilterCenterFocus } from "react-icons/md";
 import { MapRef } from "react-map-gl";
 import { LngLatBoundsLike } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { DEFAULT_MAP_PAN_ZOOM } from "@/configs/map";
 
 /**
  * Custom map control that fits the map to current bounds
@@ -24,7 +25,10 @@ export default function MapFitBoundsControl({
         variant="primary"
         onClick={() => {
           if (bounds) {
-            mapRef?.current?.fitBounds(bounds, { padding: 10 });
+            mapRef?.current?.fitBounds(bounds, {
+              padding: 10,
+              maxZoom: DEFAULT_MAP_PAN_ZOOM.zoom,
+            });
           }
         }}
       >

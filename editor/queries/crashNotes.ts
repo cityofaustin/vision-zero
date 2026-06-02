@@ -2,12 +2,10 @@ import { gql } from "graphql-request";
 
 export const INSERT_CRASH_NOTE = gql`
   mutation InsertCrashNote(
-    $recordId: Int!
-    $text: String!
-    $userEmail: String!
+    $updates: crash_notes_insert_input!
   ) {
     insert_crash_notes_one(
-      object: { crash_pk: $recordId, text: $text, updated_by: $userEmail, created_by: $userEmail }
+      object: $updates
     ) {
       id
       text
@@ -26,6 +24,24 @@ export const UPDATE_CRASH_NOTE = gql`
         updated_at
         updated_by
       }
+    }
+  }
+`;
+
+/**
+ * Reassign all notes from one crash to another (for temp crash transfer).
+ */
+export const TRANSFER_CRASH_NOTES = gql`
+  mutation TransferCrashNotes(
+    $sourceCrashId: Int!
+    $targetCrashId: Int!
+    $updated_by: String!
+  ) {
+    update_crash_notes(
+      where: { crash_pk: { _eq: $sourceCrashId } }
+      _set: { crash_pk: $targetCrashId, updated_by: $updated_by }
+    ) {
+      affected_rows
     }
   }
 `;

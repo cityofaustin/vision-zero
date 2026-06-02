@@ -1,0 +1,12 @@
+[sqruff]
+dialect = postgres
+max_line_length = 100
+
+# NB: The spelling used for capitalisation is using UK English. An 'es' not a 'zee'.
+rules = ambiguous,capitalisation,convention,layout,references
+
+# This causes all the AS aliases to line up.
+[sqruff:layout:type:alias_expression]
+spacing_before = align
+align_within = select_clause
+align_scope = bracketed

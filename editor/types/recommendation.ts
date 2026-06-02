@@ -20,6 +20,7 @@ export type Recommendation = {
 export type RecommendationStatus = {
   id: number;
   rec_status_desc: string;
+  sort_order: number;
 };
 
 /**

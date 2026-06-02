@@ -11,7 +11,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
     filterGroups: [
       {
         id: "vz_fatality_crashes",
-        label: "Fatal crashes - Vision Zero",
+        label: "Fatal injuries - Vision Zero",
         groupOperator: "_and",
         enabled: false,
         filters: [
@@ -25,7 +25,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
       },
       {
         id: "cris_fatality_crashes",
-        label: "Fatal crashes - CRIS",
+        label: "Fatal injuries - CRIS",
         groupOperator: "_and",
         enabled: false,
         filters: [
@@ -39,7 +39,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
       },
       {
         id: "law_enforcement_fatality_crashes",
-        label: "Fatal crashes - Law enforcement",
+        label: "Fatal injuries - Law enforcement",
         groupOperator: "_and",
         enabled: false,
         filters: [
@@ -54,7 +54,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
 
       {
         id: "suspected_serious_injury_crashes",
-        label: "Suspected serious injury crashes",
+        label: "Suspected serious injuries",
         groupOperator: "_and",
         enabled: false,
         filters: [
@@ -265,6 +265,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
 ];
 
 export const crashesListViewQueryConfig: QueryConfig = {
+  _version: 1,
   exportable: true,
   exportFilename: "crashes",
   tableName: "crashes_list_view",
@@ -275,12 +276,12 @@ export const crashesListViewQueryConfig: QueryConfig = {
   searchFilter: {
     id: "search",
     value: "",
-    column: "address_primary",
+    column: "address_display",
     operator: "_ilike",
     wildcard: true,
   },
   searchFields: [
-    { label: "Address", value: "address_primary" },
+    { label: "Address", value: "address_display" },
     { label: "Crash ID", value: "record_locator" },
     { label: "Case ID", value: "case_id" },
   ],
@@ -326,5 +327,6 @@ export const crashesListViewQueryConfig: QueryConfig = {
       },
     },
     geojsonTransformerName: "latLon",
+    defaultBasemap: "streets",
   },
 };

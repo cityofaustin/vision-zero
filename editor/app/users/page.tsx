@@ -5,7 +5,6 @@ import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import Table from "react-bootstrap/Table";
-import { FaUserPlus, FaCopy, FaCheck } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import UserModal from "@/components/UserModal";
@@ -13,6 +12,8 @@ import { useUsersInfinite } from "@/utils/users";
 import { User } from "@/types/users";
 import { formatRoleName } from "@/utils/auth";
 import { useDocumentTitle } from "@/utils/documentTitle";
+import { LuCheck, LuCopy, LuUserPlus } from "react-icons/lu";
+import { formatIsoDateTime } from "@/utils/formatters";
 
 const allowedCreateUserRoles = ["vz-admin"];
 
@@ -42,7 +43,7 @@ export default function Users() {
     // only display the copied button state for a moment
     navigator.clipboard.writeText(userEmails).then(() => {
       setCopyUserEmailsClicked(true);
-      const copiedStateTime = 1000;
+      const copiedStateTime = 2000;
       setTimeout(() => setCopyUserEmailsClicked(false), copiedStateTime);
     });
   }, [users]);
@@ -75,7 +76,7 @@ export default function Users() {
                     disabled={isValidating}
                   >
                     <AlignedLabel>
-                      <FaUserPlus className="me-2" />
+                      <LuUserPlus className="me-2" />
                       <span>Add user</span>
                     </AlignedLabel>
                   </Button>
@@ -83,15 +84,16 @@ export default function Users() {
                 <Button
                   onClick={handleCopyUserEmails}
                   disabled={isValidating || copyUserEmailsClicked}
+                  variant="outline-primary"
                 >
                   {copyUserEmailsClicked ? (
                     <AlignedLabel>
-                      <FaCheck className="me-2" />
+                      <LuCheck className="me-2" />
                       <span>Copied</span>
                     </AlignedLabel>
                   ) : (
                     <AlignedLabel>
-                      <FaCopy className="me-2" />
+                      <LuCopy className="me-2" />
                       <span>Copy user emails</span>
                     </AlignedLabel>
                   )}
@@ -146,14 +148,16 @@ export default function Users() {
                   >
                     <td>{user.name}</td>
                     <td>{user.email}</td>
-                    <td>{new Date(user.created_at).toLocaleDateString()}</td>
+                    <td>{formatIsoDateTime(user.created_at)}</td>
                     <td>
                       {user.last_login
-                        ? new Date(user.last_login).toLocaleDateString()
+                        ? formatIsoDateTime(user.last_login)
                         : ""}
                     </td>
                     <td>{user.logins_count || "0"}</td>
-                    <td>{formatRoleName(user.app_metadata.roles[0])}</td>
+                    <td>
+                      {formatRoleName(user.app_metadata?.roles?.[0] || "")}
+                    </td>
                   </tr>
                 );
               })}

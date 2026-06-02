@@ -13,6 +13,7 @@ The below features should be tested with each role. Features with role-based acc
 - loading spinner appears to left of pagination controls while page loads
 - loading spinner appears to left of pagination controls when search is updated
 - search by Crash ID, Case ID, and address fields
+- search by an obviously invalid address that returns no results, like 'asdf' and confirm that the table displays the message "No records found"
 - filter by preset date range
 - filter by custom date range
 - filter by various card switches:
@@ -31,14 +32,17 @@ The below features should be tested with each role. Features with role-based acc
 - Reset filters button appears when sort column is changed
 - Use column visibility settings menu (gear icon to right of pagination controls) to adjust column visibility
 - Verify column visibility settings persist when page is refreshed
+- Verify that hiding all columns causes an alert banner appears that suggests you add columns via the settings menu
 - Column sort setting is persisted when refreshing the page
 - Loading spinner appearas when column sort triggers data refetch
 - Crashes map: Use the **Map** toggle to the right of the search input to switch between the list and map views
 - Crashes map: Adjust the page size to show many features on map
+- Crash map: use the address search to find a location within Austin metro area
 - Crashes map: zoom in. click on a crash point to display it's pop-up card.
+- Crashes map: zoom out the map so that some crash circle markers are overlapping. Click on a crash point and observe that there is a pagination interface in the pop-up card footer. Use the pagination buttons to cycle through the pop-up cards.
 - Crashes map: use the fit bounds control (top right corner of map, above +/- buttons) to recenter the map
-- Crashes map: Use the basemap control to change to the **Aerial** imagery basemap. Zoom in to make sure tiles load propery.
-- Crashes map: Switch back to **Streets** basemap. Not switch to dark mode and (1) confirm that the basemap changes to the dark streets basemap and (2) click on a point to confirm that it's pop-up card is styled with a dark background
+- Crashes map: Use the basemap control to change to the **Aerial** imagery basemap. Zoom in to make sure tiles load properly. Zoom out, and notice that the tiles transition to the mapbox satellite layer with road line features on top of the imagery.
+- Crashes map: Switch back to **Streets** basemap. Now switch to dark mode and (1) confirm that the basemap changes to the dark streets basemap and (2) click on a point to confirm that it's pop-up card is styled with a dark background
 - Crashes map: refresh your page to make sure the dark mode map setting persists
 - Crashes map: click on a crash point once more and use the hyperlinked crash ID to navigate to the crash details page
 - Use download button to export records to csv
@@ -47,33 +51,50 @@ The below features should be tested with each role. Features with role-based acc
 - Download modal: use Download button to save exported data
 - Open downloaded data in CSV editor and verify it has no rendering or formatting issues
 
-### Create temporary crash record
+### Temporary crash records
 
 - [role: editor, admin] Use **Create crash record** button to open crash record form
 - Cannot complete **Create crash record** without populating Case ID, Crash date, Primary address, and at least one unit
 - Add multiple units with at least one fatality and one injury
 - Submit form and verify crashes list updates with the newly created record
 - On crashes list, the **Temporary records only** filter switch shows only temporary records
-- Verify that crash details page of the temp record reflects units + people injuries correctly
-- Delete temporary crash record
+- Navigate to the crash details page for a temp record and verify that crash details page of the temp record reflects units + people injuries correctly
+- [role: readonly] Verify the crash diagram component displays an alert message that says **This temporary crash record does not have a diagram**
+- [role: editor, admin]
+  - Verify the crash diagram component displays an alert message as well as a button to upload a crash diagram
+  - Click the **Upload crash diagram** button to open the diagram upload modal
+  - Select an image (e.g. use https://placehold.co/), and confirm that the image loads in the modal as a preview
+  - Click the **Save** button to save your image, then confirm that your uploaded image immediately renders in the crash diagram component
+  - In the diagram component header, use the **Edit diagram** button to re-open the image upload modal. Upload a new image, save, and confirm it renders properly in the diagram component card.
+  - Use the **Edit diagram** button once again to open the diagram image upload modal. Now use the **Delete** button in the modal header to delete the diagram image. Click **OK** to confirm that you want to delete the image, and then verify that you diagram image has been deleted and the crash diagram component once again presents a button to upload a diagram.
+- At the top of the temporary record crash details page, veryif there is a yellow alert banner indicating the record is a temp record.
+- [role: editor, admin] Use the **Delete** button inside the alert banner to open the delete temp record modal
+  - The modal shoudl display a message that says **No transferrable data was found on this temporary crash record.**
+  - Click the cancel button, then edit the temp crash's Fatality Review Board Recommendation and use the **Notes** widget to add a note.
+  - Use the **Delete** button inside the alert banner to open the delete temp record modal. Confirm you cannot proceed until you toggle the **I don't want to transfer data** button or you select a crash for data transfer.
+  - Use the crash search to select crash. Note that the modal displays **The following will be transferred** and lists the FRB recommendations and notes.
+  - Click the **Delete and transfer data button**. Verify that the page redirects to the crash details page of the crash you selected with the FRB recommendations and notes populated with the same data from your temp crash
+  - Note that crash victim images can also be transfered via this process, but this is only possible when the temp record and target crash record each have exactly one fatality. Test this by creating a temp record with one fatality, add a victim image using the fatality details page, then, when deleting the temp record, select a crash with exactly one fatality
 - After deleting temporary crash, use back button to navigate to it's details page and verify 404 page shows
 
 ### Crash details - `/crashes/[record_locator]`
 
-- Breadcrumb shows below navbar with Crash ID
+- Breadcrumb shows below navbar with Crash ID. Use copy button to the right of crash ID to copy it to the clipboard.
 - Verify page `<title>` element is formatted as `<record-locator> - <crash-address>` (check how the title is rendered in your browser tab)
-- Crash address header looks correct
+- Crash address header looks correct. Use copy button to copy the crash address to the clipboard
 - [role: editor, admin] Click crash address to edit form inputs. Use **Swap addresses** button to swap primary and secondary address inputs. Confirm changes save correctly.
 - Crash injury widget reflects injuries from **People** card (test by editing person injuries)
 - Temporary record banner is visible for (temp crashes only)
 - [role: editor, admin] Delete tempoary crash record button inside temp record banner (temp crashes only)
 - Crash map: card header: displays hyperlinked **Location ID** (if crash is matched to a location)
 - Crash map: card header: displays **Provider** as **TxDOT CRIS** (default for new crashes from CRIS) or **Manual Q/A** (if a crash location is edited)
-- Crash map: crash map displays crash location with nearmap aerials
+- Crash map: crash map displays crash location with nearmap aerials by default
+- Crash map: Use the basemap control to change to the **Streets** basemap. Zoom way in and way out to make sure basemap load properly.
 - Crash map: edit crash location by dragging map
 - Crash map: edit crash location by keying in lat/lon
 - Observe in change log that council district, jurisdiction, APD sector, engineer area update when crash location is edited to a distant position
-- Crash map: in edit mode, use the address search to find a location within Austin metro area
+- Crash map: use the address search to find a location within Austin metro area
+- Crash map: use the fit bounds control (top right corner of map, above +/- buttons) to recenter the map
 - Crash map: verify **Location ID** updates when crash is moved to another intersection
 - Crash map: validation restricts keying in lat/lon with alpha characters
 - Crash map: validation restricts keying in empty/blank lat/lon
@@ -84,6 +105,9 @@ The below features should be tested with each role. Features with role-based acc
 - Crash diagram: the diagram card does not capture scroll unless shift is pressed
 - Crash diagram: info alert shows when no diagram is available and is temp record
 - Crash diagram: danger alert shows when no diagram is available and is not temp record
+- Crash diagram: [role: admin, editor] **Save** button with disk icon shows as disabled if diagram x/y/z/rotate is not edited and diagram is initial loaded position
+- Crash diagram: [role: admin, editor] Change diagram x, y, z, and rotate. Confirm that **Save** button enables when any of these properties are adjusted
+- Crash diagram: [role: admin, editor] Use **Save** button to save current x/y/z/rotate. Refresh the page and confirm the diagram initializes at the expected transform state. On load, confirm that **Save** button is disabled and says **Saved** with a checkmark icon.
 - Crash narrative: loads normally and is scrollable for long narratives
 - Crash narrative: download CR3 pdf
 - Crash data card: **Flags** card. Edit set **Private drive** to **No** and verify that warning banner appears with notification that the crash is not included in VZ statistical reporting
@@ -98,11 +122,11 @@ The below features should be tested with each role. Features with role-based acc
 - Crash data card: edit a text input
 - Crash data card: edit a number input
 - Crash data card: edit a yes/no field
-- Crash data card: Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted
+- Crash data card: Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted. Now hide all columns and confirm an alert banner appears that suggests you add columns via the settings menu.
 - Crash data card - **Other**: cannot save a speed limit that is not a positive integer
 - Crash data card: nullify a value (e.g. street name) by clearing its input and saving it
 - Related records - **Units**
-  - Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted
+  - Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted. Now hide all columns and confirm an alert banner appears that suggests you add columns via the settings menu.
   - Verify unit **Contributing factors** are listed and prefixed with either **Primary** or **Possible**
   - Edit unit **Year**, **Body style**, **Type**, and **Movement**
   - Edit unit: cannot save a **Year** value less than 1900 or after the current year + 1
@@ -125,13 +149,13 @@ The below features should be tested with each role. Features with role-based acc
 - FRB Recommendations
   - [role: Admin, editor] Create and edit all recommendation fields
 - Keyboard shortcuts to scroll instantly to various cards:
-  - `shift` + `a`: Primary address
   - `shift` + `u`: Units
   - `shift` + `p`: People
   - `shift` + `3`: EMS patient care
   - `shift` + `c`: Charges
   - `shift` + `n`: Notes
   - `shift` + `f`: Fatality Review Board recommendations
+- Hover your mouse over each card that has a shortcut key and verify that the shortcut key helper text appears above the right edge of the card.
 
 ### Sidebar
 
@@ -149,7 +173,7 @@ The below features should be tested with each role. Features with role-based acc
 
 ### Location details `/locations/[location_id]`
 
-- Verify page `<title>` element is formatted as `<location-ID> - <location-description>` (check how the title is rendered in your browser tab)
+- Verify page `<title>` element is formatted as `<location-ID> - <location-name>` (check how the title is rendered in your browser tab)
 - Location polygon map
 - Location data card displays the location ID, crash counts and comp costs
 - combined cr3 and noncr3 crashes list
@@ -158,6 +182,10 @@ The below features should be tested with each role. Features with role-based acc
 ```sql
 refresh materialized view location_crashes_view;
 ```
+
+- use the **Map** toggle the view the map of crashes at the location
+- verify map popup shows the crash **Type** the **Case ID** (for non-cr3 crashes), the **Crash ID** (hyperlinked, for CR3 crashes)
+- notes card at the bottom of the location page can be used [role: editor, admin] to add, edit, and delete location notes
 
 ### EMS list - `/ems`
 
@@ -169,15 +197,30 @@ refresh materialized view location_crashes_view;
 ### EMS incident details - `/ems/[incident-number]`
 
 - Page breadcrumb and title—which is the EMS record address—look normal
-- The incident map (top right of page) shows the incident location
+- Incident map (top right of page)
+  - Use the EMS list page to filter/find an incident that has been matched automatically to a crash, person, and non-cr3 record
+  - The incident map should display a CR3 crash (blue circle with car icon) and non-cr3 (gray cricle with sticky note icon) on the map as well as the EMS incident (red circle with ambulence icon)
+  - Use the layer selector to toggle the CR3 and non-cr3 layers on/off
+  - Use the layer selector to switch beetween the satellite and streets basemap
 - Navigating to a bogus incident number such as `/ems/1abc` results in 404
-- The **EMS Patients** card displays EMS patients with the same incident number.
-- The **Select person** button is displayed for each EMS patient row
-- Click **Select person** to enable the **Select match** button to appear next to any unlinked person records in the **Associated people records** table
+
+#### EMS -> CR3 matching UI
+
+- Locate an incident with multiple EMS patients: sort the EMS list by incident number and find rows that have the same incident number—visit the details page for any of the rows.
+- The **EMS Patients** card displays multiple EMS patients with the same incident number.
+- Use the column visibility selector to enable all columns on the **EMS Patients**
+- Find an EMS patient record with a **person match status** of **Matched automatically**. Verify that the **Person match attributes** and **Match quality** fields are populated
+- If **any** of the EMS patient records are not matched to a crash, the **Possible CR3 people matches** table will display **people** records from crashes that occurred during a 12-hour window of the crash
+- The **Possible CR3 people matches** will also display **people** records from any crashes which are matched to any of the EMS patient records
+- To match an EMS patien to a crash, confirm that the **Select person** button is displayed for each EMS patient row
+- Click **Select person** to enable the **Select match** button to appear next to any unlinked person records in the **Possible CR3 people matches** table
 - Click the **Person ID** column for any **EMS Patients** row to manually edit a person ID value
-- - Click the **Person ID** column and save an invalid person ID value and verify an error message is displayed
+- Click the **Person ID** column and save an invalid person ID value and verify an error message is displayed
+- Locate an **unmatched** EMS record, then click the **Person ID** column and save a valid person ID value
 - Use the falafel menu to **Reset** an incident matched to a person ID
 - Use the falafel menu to modify an incident to be **Match not found**
+- Use the falafel menu to **Delete** an EMS record which is matched to a crash. If is is the only EMS record with this incident number, the 404 page will render.
+- Navigate to the crash details page of the deleted record and confirm it is not displayed on the **EMS patien care** card
 - The **Possible non-CR3 matches** card should display either no records if there are no matches, one match, or multiple possible matches depending on the non-CR3 match status
 
 #### These steps test the DB trigger that matches EMS records to crashes
@@ -197,6 +240,38 @@ refresh materialized view location_crashes_view;
 - Search, sort, and filter the falitities list
 - Test the column visibility picker to show/hide columns
 - Toggle the map view and click on a point to open it's pop-up card. Click on the hyperlinked crash ID to navigate the crash details page
+
+### Fatality details page - `/fatalities/[record-locator]`
+
+- The page should be tested with a temporary crash record and a non-temporary crash record
+- Page title is `Fatalities <record-locator>`
+- Observe that summary/map card renders normally with hyperlinked crash ID
+- Units/victims card
+  - If the crash has multiple units, all units invovled should be displayed with the **Show all units** toggle enabled
+    - Uncheck the **Show all units** toggle to hide units except for those with fatalities
+    - Confirm the section header changes from **Units involved** to **Victims** after unchecking the toggle
+    - For temp crashes, the **Contributing factors** and **Charges** sections should always be visible inside each unit card. For editor/admin roles, a plus sign button should be visible to add charges and contributing factors. Use these buttons to add both charges and contributing factors via modal input
+    - [role: editor, admin] Once charges and contributing factors have been added, use the edit button in each section header to edit each record type.
+    - Confirm that the charges and contributing facctors add/edit controls are not visible for non-temp crashes
+    - Confirm that the charges and contributing facctors add/edit controls are not visible for read-only users
+  - Locate a crash with just one unit/victim. Confirm that the **Show all units** toggle is disabled and the section header says **Victims** (not **Units invovled**)
+  - [role: editor, admin] hover over the victim placeholder image, observe the animated thumbnail expands in size with pointer cursor. Click the thumbnail to open the image upload modal
+    - select an image (e.g. use https://placehold.co/), and confirm that the image loads in the modal as a preview
+    - Fill in the **Image source** input, save the form
+    - Confirm that your uploaded image immediately renders in the victim card
+    - Edit the image by clicking on the victim thumbnail image. Confirm that you cannot submit the form without both selecting an image and filling in the **Image source** field
+    - Confirm that you cannot upload an image type that is not JEPG or PNG
+    - Delete the victim photo by using the **Delete** button in the image upload modal header
+- Confirm that the crash diagram card (second row, leftmost card) renders and functions normally
+- Use the narrative card (second row, middle card) displays the crash narrative.
+  - [role: editor, admin] Click the **Add summary** button and confirm that the narrative becomes editable
+  - [role: editor, admin] Modify the narrative and click **Save summary** to confirm your changes are saved. Refresh the page and confirm that the **Summary** tab is focused and showing your edited narrative.
+  - Switch to the **Narrative** tab and confirm it looks normal
+  - Switch back to the **Sumamary** tab, use the **Edit summary** button to clear the summary you created and then **Save summary**
+  - Confirm that the **Summary** tab has disappeard and only the **Narrative** tab is shown
+- Observe that the **Details** card (second row, rightmost card) looks normal
+  - [role: editor, admin] confirm that the LE YTD Fatal Crash, light condition, speed limit, and Object struct fields are editable
+- Observe that the FRB recommendations and notes cards are visible in the third row of card. If you haven't tested these on the crash details page, test them here (role: editor, admin).
 
 ### Top nav
 
@@ -232,13 +307,19 @@ refresh materialized view location_crashes_view;
 - delete a user
 - copy user emails
 
+### User events tracking
+
+Insepct the `user_events` table in the DB and verify that your recent activity was logged:
+
+```sql
+select * from user_events;
+```
+
 ### Misc
 
 - The route path ( `/editor`) redirects to `/editor/crashes`. Locally, `http://localhost:3002/` should also redirect to `/editor/crashes`
 - The page footer is stuck to the bottom of the oageon all pages and displays current version number
 - The app favicon appears in the browser tab
-- Locally, the environment banner shows at the top of the screen with a light yellow background. On staging/netlify, the banner shows with a light blue background
-- login page
-- location details
-  - crash charts and widgets
+- Locally, the environment banner shows in the top navigation bar with a light yellow background. On staging/netlify, the banner shows with a light blue background
+- login page looks good
 - upload non-cr3

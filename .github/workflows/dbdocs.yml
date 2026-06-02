@@ -46,9 +46,9 @@ jobs:
           echo "POSTGRES_DB=vision_zero" >> .env;
           echo "POSTGRES_HOST_AUTH_METHOD=trust" >> .env;
 
-          docker compose -f docker-compose-github-dbdocs-action.yml up -d postgis;
+          docker compose -f docker-compose-github-actions.yml up -d postgis;
           sleep 10;
-          docker compose -f docker-compose-github-dbdocs-action.yml up -d graphql-engine;
+          docker compose -f docker-compose-github-actions.yml up -d graphql-engine;
           sleep 10;
           cd database;
           hasura --skip-update-check --database-name=default migrate apply;

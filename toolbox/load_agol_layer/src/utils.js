@@ -3,9 +3,14 @@ const fs = require("fs");
 const AGOL_USERNAME = process.env.AGOL_USERNAME;
 const AGOL_PASSWORD = process.env.AGOL_PASSWORD;
 const AGOL_ORG_BASE_URL = "https://austin.maps.arcgis.com";
-
 const COORDINATE_DECIMAL_PLACES = 6;
 const coordPrecisionMultiplier = Math.pow(10, COORDINATE_DECIMAL_PLACES);
+/**\
+ * this limit is set by CTM ArcGIS Online admins
+ * you can confirm this per feature layer by inspecting the feature service
+ * metadata
+ */
+const ESRI_MAX_RECORD_COUNT = 2000;
 
 /**
  * Save a JSON object to file
@@ -49,27 +54,30 @@ const makeUniformMultiPoly = (features) => {
     if (feature.geometry.type === "Polygon") {
       feature.geometry.type = "MultiPolygon";
       feature.geometry.coordinates = [feature.geometry.coordinates];
-      console.log(`Converted Polygon to MultiPolygon`);
     }
   });
 };
 
 /**
  * Processes GeoJSON features by reducing their properties to a specified set of fields
- * and also lowercasing each field name.
+ * and handling transformations
  *
- * @param {Object[]} features - Array of GeoJSON features. Each feature should have a `properties` object.
- * @param {string[]} fields - Array of fields names to retain from the feature's properties.
- * The field names are converted to lowercase in the resulting properties.
+ * @param {Feature[]} features - Array of GeoJSON Features objects
+ * @param {import("./settings").FieldMapping} fields - Array of field settings
  *
  * @returns {void} Updates each feature's properties in-place.
  */
 const handleFields = (features, fields) => {
-  features.forEach((f) => {
-    f.properties = fields.reduce((newProperties, field) => {
-      newProperties[field.toLowerCase()] = f.properties[field];
+  features.forEach((feature) => {
+    const newProperties = fields.reduce((newProperties, field) => {
+      const value = feature.properties[field.inputName];
+      newProperties[field.outputName] = field.valueHandler
+        ? field.valueHandler(value)
+        : value;
       return newProperties;
     }, {});
+    // overwrite feature props
+    feature.properties = newProperties;
   });
 };
 
@@ -112,24 +120,20 @@ const reduceGeomPrecision = (features) => {
  * Fetch wrapper that handles error handling and json parsing
  */
 const genericJSONFetch = async ({ url, method, ...options }) => {
-  try {
-    const response = await fetch(url, {
-      method,
-      ...options,
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP error: ${response.status} - ${errorText}`);
-    }
-    const responseData = await response.json();
-
-    if (responseData?.errors) {
-      throw JSON.stringify(responseData.errors);
-    }
-    return responseData;
-  } catch (error) {
-    throw error;
+  const response = await fetch(url, {
+    method,
+    ...options,
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`HTTP error: ${response.status} - ${errorText}`);
   }
+  const responseData = await response.json();
+
+  if (responseData?.errors || responseData.error) {
+    throw JSON.stringify(responseData);
+  }
+  return responseData;
 };
 
 /**
@@ -150,21 +154,96 @@ async function getEsriToken() {
 }
 
 /**
- * Just a wrapper which makes a GET request to any endpoint
- * @param {string} url - The ArcGIS REST API endpoint
- * @returns JSON object
+ * Fetch an ESRI layer with pagination using globalid sorting
+ * @param {Object} params
+ * @param {string} params.service_name - The service name
+ * @param {number} params.layer_id - The layer ID
+ * @param {Object} params.query_params - Base query parameters
+ * @param {number} [params.page_size=1000] - Number of records per page
+ * @param {string} orderByField - Used as the sort parameter
+ * @returns {Promise<Object>} Combined ESRI JSON with all features
  */
-const getEsriJson = async (url) => {
-  return genericJSONFetch({ url, method: "GET" });
+const getEsriJson = async (
+  { service_name, layer_id, query_params },
+  orderByField
+) => {
+  let offset = 0;
+  let hasMore = true;
+  let combinedJson = null;
+  const pageSize = ESRI_MAX_RECORD_COUNT;
+
+  while (hasMore) {
+    // Create paginated query params
+    const paginatedParams = {
+      ...query_params,
+      orderByFields: orderByField,
+      resultOffset: offset,
+      resultRecordCount: pageSize,
+    };
+
+    console.log(`Fetching page of data (offset: ${offset})...`);
+
+    const url = getEsriLayerUrl({
+      service_name,
+      layer_id,
+      query_params: paginatedParams,
+    });
+
+    const response = await genericJSONFetch({ url, method: "GET" });
+
+    // First response JSON will be used to hold all features
+    if (combinedJson === null) {
+      combinedJson = { ...response };
+      combinedJson.features = [];
+    }
+
+    const features = response.features || [];
+    combinedJson.features.push(...features);
+
+    console.log(
+      `Fetched ${features.length} features (total: ${combinedJson.features.length})`
+    );
+
+    if (features.length < pageSize) {
+      hasMore = false;
+    } else {
+      offset += pageSize;
+    }
+  }
+
+  return combinedJson;
 };
 
 /**
  * Get a Hasura graphql mutation that will delete
  * all rows in the table
  */
-const getTruncateMutation = (tableName) => `
-  mutation Delete${tableName} {
-    delete_geo_${tableName}(where: {}) {
+const getTruncateMutation = (objectName) => `
+  mutation Delete${objectName} {
+    delete_${objectName}(where: {}) {
+      affected_rows
+    }
+  }
+`;
+
+/**
+ * Get a Hasura upsert mutation - only supports handling a single ON CONFLICT constraint.
+ * @param {string} objectName - the graphql object name
+ * @param {string} onConflictConstraintName - the constraint name to handle on conflict
+ * @param {string[]} updateColumns  - array column name strings to update on conflict
+ * @returns {string} - the hasura mutation string
+ */
+const getUpsertMutation = (
+  objectName,
+  onConflictConstraintName,
+  updateColumns
+) => `
+   mutation Upsert${objectName}($objects: [${objectName}_insert_input!]!) {
+    insert_${objectName}(objects: $objects,  on_conflict: {
+      constraint: ${onConflictConstraintName},
+      update_columns: [${updateColumns.join(" ")}]
+    }
+) {
       affected_rows
     }
   }
@@ -174,9 +253,9 @@ const getTruncateMutation = (tableName) => `
  * Get a generic Hasura graphql mutation that will insert
  * an array of objects
  */
-const getInsertMutation = (tableName) => `
-  mutation Insert${tableName}($objects: [geo_${tableName}_insert_input!]!) {
-    insert_geo_${tableName}(objects: $objects) {
+const getInsertMutation = (objectName) => `
+  mutation Insert${objectName}($objects: [${objectName}_insert_input!]!) {
+    insert_${objectName}(objects: $objects) {
       affected_rows
     }
   }
@@ -231,13 +310,33 @@ const combineDistrictTenFeatures = (geojson) => {
   geojson.features.push(combinedDistrictTenFeature);
 };
 
+/**
+ * Convert a comma-separated value to an array type. Falsey values
+ * coerce to null
+ * @param {string} csvString - the comma-separated string to parse
+ * @param {function} valueHandler - an optional function to handle each value
+ * extracted from the csv string. Must accept and returns anything.
+ */
+const csvToArray = (csvString, asNumber = false) => {
+  if (!csvString || !csvString.trim()) {
+    return null;
+  }
+  const parsedValues = csvString.trim().split(",");
+  return parsedValues.map((val) =>
+    asNumber ? Number(val.trim()) : val.trim()
+  );
+};
+
 module.exports = {
   combineDistrictTenFeatures,
+  csvToArray,
+  ESRI_MAX_RECORD_COUNT,
   getEsriJson,
   getEsriLayerUrl,
   getEsriToken,
   getInsertMutation,
   getTruncateMutation,
+  getUpsertMutation,
   handleFields,
   loadJSONFile,
   makeHasuraRequest,

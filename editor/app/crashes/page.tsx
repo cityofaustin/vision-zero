@@ -1,14 +1,15 @@
 "use client";
 import { useState, useCallback } from "react";
 import Button from "react-bootstrap/Button";
+import UserEventsLogger from "@/components/UserEventsLogger";
 import AlignedLabel from "@/components/AlignedLabel";
 import CreateCrashRecordModal from "@/components/CreateCrashRecordModal";
-import { FaCirclePlus } from "react-icons/fa6";
 import { crashesListViewColumns } from "@/configs/crashesListViewColumns";
 import { crashesListViewQueryConfig } from "@/configs/crashesListViewTable";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import TableWrapper from "@/components/TableWrapper";
 import { useDocumentTitle } from "@/utils/documentTitle";
+import { LuCirclePlus } from "react-icons/lu";
 
 const localStorageKey = "crashesListViewQueryConfig";
 
@@ -27,7 +28,7 @@ export default function Crashes() {
   }, [setRefetch]);
 
   return (
-    <>
+    <UserEventsLogger eventName="crashes_list_view">
       <div className="h-100 d-flex flex-column">
         <div className="d-flex justify-content-between">
           <span className="fs-3 fw-bold">Crashes</span>
@@ -37,7 +38,7 @@ export default function Crashes() {
               onClick={() => setShowNewUserModal(true)}
             >
               <AlignedLabel>
-                <FaCirclePlus className="me-2" />
+                <LuCirclePlus className="me-2" />
                 <span>Create</span>
               </AlignedLabel>
             </Button>
@@ -48,6 +49,9 @@ export default function Crashes() {
           initialQueryConfig={crashesListViewQueryConfig}
           localStorageKey={localStorageKey}
           refetch={refetch}
+          filtersEventName="crashes_list_filters_toggle"
+          mapEventName="crashes_map_toggle"
+          downloadEventName="crashes_list_download_toggle"
         />
       </div>
       <CreateCrashRecordModal
@@ -55,6 +59,6 @@ export default function Crashes() {
         show={showNewUserModal}
         onSubmitCallback={onSaveCallback}
       />
-    </>
+    </UserEventsLogger>
   );
 }

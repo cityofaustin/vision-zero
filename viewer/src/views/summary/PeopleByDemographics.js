@@ -41,8 +41,8 @@ const chartConfigs = {
       "Hispanic",
       "Black",
       "Asian",
-      "Other or unknown",
       "American Indian or Alaska Native",
+      "Other or unknown",
     ],
     exceptionCategory: "Other or unknown", // Category for missing or unknown data
     query: `SELECT date_extract_y(crash_timestamp_ct) as year, COUNT(*) as total, prsn_ethnicity_id, prsn_injry_sev_id
@@ -179,7 +179,7 @@ const PeopleByDemographics = () => {
       } = chartConfigs[dataKey];
       const isTarget = categoryType === "target";
       const isRange = categoryType === "range";
-      const years = yearsArray();
+      const years = yearsArray;
       const currentYear = years[years.length - 1];
 
       const formattedTypes = {};
@@ -262,7 +262,7 @@ const PeopleByDemographics = () => {
       );
 
       const data = {
-        labels: yearsArray(),
+        labels: yearsArray,
         datasets: config.labelCategories.map((category, i) => ({
           label: config.labelCategories[i],
           data: demoData[configName][crashType.name][category],

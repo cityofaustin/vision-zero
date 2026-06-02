@@ -1,6 +1,6 @@
 "use client";
 import { notFound } from "next/navigation";
-import { useCallback } from "react";
+import { use, useCallback } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import ChangeLog from "@/components/ChangeLog";
@@ -14,9 +14,10 @@ import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 import DataCard from "@/components/DataCard";
 import NotesCard from "@/components/NotesCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
+import ShortcutHelperText from "@/components/ShortcutHelperText";
+import UserEventsLogger from "@/components/UserEventsLogger";
 import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
 import { crashDataCards } from "@/configs/crashDataCard";
-import { crashNotesColumns } from "@/configs/notesColumns";
 import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
 import { emsRelatedRecordCols } from "@/configs/emsRelatedRecordTable";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
@@ -31,7 +32,6 @@ import {
   scrollToElementOnKeyPress,
   useKeyboardShortcut,
 } from "@/utils/shortcuts";
-import { formatAddresses } from "@/utils/formatters";
 import EMSCardHeader from "@/components/EMSCardHeader";
 import { useDocumentTitle } from "@/utils/documentTitle";
 
@@ -39,7 +39,6 @@ const typename = "crashes";
 
 // Lookup object that maps key shortcuts to the associated DOM element id to scroll to
 const shortcutKeyLookup: ShortcutKeyLookup[] = [
-  { key: "A", elementId: "address" },
   { key: "U", elementId: "units" },
   { key: "P", elementId: "people" },
   { key: "E", elementId: "ems" },
@@ -51,9 +50,9 @@ const shortcutKeyLookup: ShortcutKeyLookup[] = [
 export default function CrashDetailsPage({
   params,
 }: {
-  params: { record_locator: string };
+  params: Promise<{ record_locator: string }>;
 }) {
-  const recordLocator = params.record_locator;
+  const { record_locator: recordLocator } = use(params);
 
   // Call hook to watch out for the use of keyboard shortcuts
   useKeyboardShortcut(shortcutKeyLookup, scrollToElementOnKeyPress);
@@ -75,7 +74,7 @@ export default function CrashDetailsPage({
   // Set document title based on loaded crash data
   useDocumentTitle(
     data && data.length > 0
-      ? `${data[0].record_locator} - ${formatAddresses(data[0])}`
+      ? `${data[0].record_locator} - ${data[0].address_display}`
       : "Vision Zero Editor",
     true // exclude the suffix
   );
@@ -93,7 +92,7 @@ export default function CrashDetailsPage({
   const crash = data[0];
 
   return (
-    <>
+    <UserEventsLogger eventName="crash_details_view">
       <CrashHeader crash={crash} refetch={refetch} />
       {
         // show alert if crash on private drive or outside of Austin full purpose
@@ -103,7 +102,7 @@ export default function CrashDetailsPage({
       }
       {
         // show alert if crash is a temp record
-        crash.is_temp_record && <CrashIsTemporaryBanner crashId={crash.id} />
+        crash.is_temp_record && <CrashIsTemporaryBanner crash={crash} />
       }
       <Row>
         <Col sm={12} md={6} lg={4} className="mb-3">
@@ -118,7 +117,7 @@ export default function CrashDetailsPage({
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
-          <CrashDiagramCard crash={crash} />
+          <CrashDiagramCard crash={crash} crashRefetch={refetch} />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
           <CrashNarrativeCard crash={crash} />
@@ -133,6 +132,8 @@ export default function CrashDetailsPage({
             columns={crashDataCards.summary}
             mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
+            shouldShowColumnVisibilityPicker={true}
+            localStorageKey="crashPageSummary"
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
@@ -151,7 +152,7 @@ export default function CrashDetailsPage({
           <DataCard<Crash>
             record={crash}
             isValidating={isValidating}
-            title="Other"
+            title="Details"
             columns={crashDataCards.other}
             mutation={UPDATE_CRASH}
             onSaveCallback={onSaveCallback}
@@ -160,8 +161,9 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="units">
-        <Col sm={12} className="mb-3">
+      <Row id="units" className="offset-header-scroll-top">
+        <Col sm={12} className="mb-1">
+          <ShortcutHelperText shortcutKey="U" />
           <RelatedRecordTable
             records={crash.units || []}
             isValidating={isValidating}
@@ -175,8 +177,9 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="people">
-        <Col sm={12} className="mb-3">
+      <Row id="people" className="offset-header-scroll-top">
+        <ShortcutHelperText shortcutKey="P" />
+        <Col sm={12} className="mb-1">
           <RelatedRecordTable
             records={crash.people_list_view || []}
             isValidating={isValidating}
@@ -190,8 +193,9 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="ems">
-        <Col sm={12} className="mb-3">
+      <Row id="ems" className="offset-header-scroll-top">
+        <ShortcutHelperText shortcutKey="E" />
+        <Col sm={12} className="mb-1">
           <RelatedRecordTable
             records={crash.ems__incidents || []}
             isValidating={isValidating}
@@ -205,8 +209,9 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="charges">
-        <Col sm={12} className="mb-3">
+      <Row id="charges" className="offset-header-scroll-top">
+        <ShortcutHelperText shortcutKey="C" />
+        <Col sm={12} className="mb-1">
           <RelatedRecordTable
             records={crash.charges_cris || []}
             isValidating={isValidating}
@@ -218,20 +223,8 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="notes">
-        <Col sm={12} className="mb-3">
-          <NotesCard
-            notes={crash.crash_notes || []}
-            notesColumns={crashNotesColumns}
-            updateMutation={UPDATE_CRASH_NOTE}
-            insertMutation={INSERT_CRASH_NOTE}
-            onSaveCallback={onSaveCallback}
-            recordId={crash.id}
-            refetch={onSaveCallback}
-          />
-        </Col>
-      </Row>
-      <Row id="fatality">
+      <Row id="fatality" className="offset-header-scroll-top">
+        <ShortcutHelperText shortcutKey="F" />
         <Col sm={12} md={6} className="mb-3">
           <CrashRecommendationCard
             recommendation={crash.recommendation}
@@ -239,10 +232,20 @@ export default function CrashDetailsPage({
             onSaveCallback={onSaveCallback}
           />
         </Col>
+        <Col sm={12} md={6} className="mb-3">
+          <NotesCard
+            notes={crash.crash_notes || []}
+            updateMutation={UPDATE_CRASH_NOTE}
+            insertMutation={INSERT_CRASH_NOTE}
+            onSaveCallback={onSaveCallback}
+            recordId={crash.id}
+            recordKey="crash_pk"
+          />
+        </Col>
       </Row>
       <Row>
         <Col>{crash && <ChangeLog logs={crash.change_logs || []} />}</Col>
       </Row>
-    </>
+    </UserEventsLogger>
   );
 }

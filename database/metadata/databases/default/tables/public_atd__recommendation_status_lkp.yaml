@@ -15,6 +15,7 @@ select_permissions:
       columns:
         - id
         - rec_status_desc
+        - sort_order
       filter: {}
     comment: ""
   - role: readonly
@@ -22,6 +23,7 @@ select_permissions:
       columns:
         - id
         - rec_status_desc
+        - sort_order
       filter: {}
     comment: ""
   - role: vz-admin
@@ -29,5 +31,6 @@ select_permissions:
       columns:
         - id
         - rec_status_desc
+        - sort_order
       filter: {}
     comment: ""

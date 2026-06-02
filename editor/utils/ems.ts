@@ -68,7 +68,7 @@ export const useMatchSuggestions = (
          */
         if (
           ems_pcr.pcr_patient_gender &&
-          person.gndr.label.toLowerCase() ===
+          person.gndr?.label.toLowerCase() ===
             ems_pcr.pcr_patient_gender?.toLowerCase()
         ) {
           matchResult.sex = true;

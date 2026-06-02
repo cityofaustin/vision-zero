@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { use, useCallback, useEffect, useMemo, useState } from "react";
 import { notFound } from "next/navigation";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
@@ -25,22 +25,25 @@ import EMSLinkToPersonButton, {
 import { emsMatchingPeopleColumns } from "@/configs/emsMatchingPeopleColumns";
 import { emsNonCR3Columns } from "@/configs/nonCR3Columns";
 import { emsDataCards } from "@/configs/emsDataCards";
+import { getMutationVariables } from "@/configs/emsRelatedRecordTable";
 import { PeopleListRow } from "@/types/peopleList";
-import { FaTruckMedical } from "react-icons/fa6";
+import { LuAmbulance } from "react-icons/lu";
 import { parseISO, subHours, addHours } from "date-fns";
 import { Crash } from "@/types/crashes";
 import EMSMapCard from "@/components/EMSMapCard";
 import { NonCR3Record } from "@/types/nonCr3";
+import { useAuth0 } from "@auth0/auth0-react";
+import UserEventsLogger from "@/components/UserEventsLogger";
 
 export default function EMSDetailsPage({
   params,
 }: {
-  params: { incident_number: string };
+  params: Promise<{ incident_number: string }>;
 }) {
   const [selectedEmsPcr, setSelectedEmsPcr] =
     useState<EMSPatientCareRecord | null>(null);
 
-  const incident_number = params.incident_number;
+  const { incident_number } = use(params);
 
   /**
    * Get all EMS records associated with this incident
@@ -58,12 +61,16 @@ export default function EMSDetailsPage({
     typename: "ems__incidents",
   });
 
+  const { user } = useAuth0();
+  const userEmail = user?.email;
+
   const { mutate: updateEmsPcr } = useMutation(UPDATE_EMS_PCR_CRASH_AND_PERSON);
 
   /**
    * Use the first EMS record as the "incident"
    */
   const incident = ems_pcrs?.[0];
+
   /**
    * Hook which manages which related crash PKs we should
    * use to query people records
@@ -203,6 +210,7 @@ export default function EMSDetailsPage({
         updateEmsPcr({
           id: emsId,
           person_id: personId,
+          updated_by: userEmail,
         })
           .then(() => refetchEMS())
           .then(() => refetchPeople())
@@ -212,7 +220,7 @@ export default function EMSDetailsPage({
       },
       selectedEmsPcr: selectedEmsPcr,
     }),
-    [updateEmsPcr, selectedEmsPcr, refetchEMS, refetchPeople]
+    [updateEmsPcr, selectedEmsPcr, refetchEMS, refetchPeople, userEmail]
   );
 
   if (error) {
@@ -237,15 +245,15 @@ export default function EMSDetailsPage({
   }
 
   return (
-    <>
+    <UserEventsLogger eventName="ems_details_view">
       <Row>
         <Col className="d-flex fs-3 align-items-center mb-3">
-          <FaTruckMedical className="me-2" />
+          <LuAmbulance className="me-2" />
           <span>{incident.incident_location_address}</span>
         </Col>
       </Row>
       <Row>
-        <Col sm={12} md={6} lg={4} className="mb-3">
+        <Col sm={12} md={4} lg={3} className="mb-3">
           <DataCard<EMSPatientCareRecord>
             record={incident}
             title="Summary"
@@ -253,10 +261,12 @@ export default function EMSDetailsPage({
             mutation={""}
           />
         </Col>
-        <Col sm={12} md={6} lg={8} className="mb-3">
+        <Col sm={12} md={8} lg={9} className="mb-3">
           <EMSMapCard
             savedLatitude={incident.latitude}
             savedLongitude={incident.longitude}
+            matchingPeople={matchingPeople}
+            nonCR3Crashes={nonCR3Crashes}
           />
         </Col>
       </Row>
@@ -269,6 +279,7 @@ export default function EMSDetailsPage({
             header="EMS patient(s)"
             columns={emsDataCards.patient}
             mutation={UPDATE_EMS_PCR}
+            getMutationVariables={getMutationVariables}
             onSaveCallback={onSaveCallback}
             rowActionComponent={EMSLinkRecordButton}
             rowActionComponentAdditionalProps={linkRecordButtonProps}
@@ -284,7 +295,7 @@ export default function EMSDetailsPage({
             records={matchingPeople ? matchingPeople : []}
             isValidating={isValidating}
             noRowsMessage="No people found"
-            header="Possible people matches"
+            header="Possible CR3 people matches"
             columns={emsMatchingPeopleColumns}
             mutation={UPDATE_PERSON}
             onSaveCallback={onSaveCallback}
@@ -307,6 +318,6 @@ export default function EMSDetailsPage({
           />
         </Col>
       </Row>
-    </>
+    </UserEventsLogger>
   );
 }

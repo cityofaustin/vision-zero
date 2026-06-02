@@ -8,11 +8,11 @@ import { Recommendation } from "@/types/recommendation";
 import { CrashesListRow } from "@/types/crashesList";
 import { CrashNote } from "./crashNote";
 import { EMSPatientCareRecord } from "@/types/ems";
+import { CrashDiagramOrientation } from "./crashDiagramOrientation";
+import { UnitTypesInvolved } from "@/types/unitTypesInvolved";
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
-  address_primary: string | null;
-  address_secondary: string | null;
   at_intrsct_fl: boolean | null;
   case_id: string | null;
   crash_injury_metrics_view: CrashInjuryMetric | null;
@@ -22,8 +22,11 @@ export type Crash = {
   crash_timestamp: string | null;
   cris_crash_id: number | null;
   collsn: LookupTableOption | null;
+  diagram_transform: CrashDiagramOrientation | null;
   ems__incidents: EMSPatientCareRecord[] | null;
   fhe_collsn_id: number | null;
+  investigat_agency_id: number | null;
+  agency: LookupTableOption | null;
   id: number;
   in_austin_full_purpose: boolean;
   investigator_narrative: string | null;
@@ -41,6 +44,7 @@ export type Crash = {
   record_locator: string;
   recommendation: Recommendation | null;
   road_constr_zone_fl: boolean | null;
+  road_constr_zone_wrkr_fl: boolean | null;
   rpt_block_num: string | null;
   rpt_city_id: number | null;
   city: LookupTableOption | null;
@@ -77,4 +81,8 @@ export type Crash = {
   charges_cris: Charge[] | null;
   people_list_view: PeopleListRow[] | null;
   crashes_list_view: CrashesListRow;
+  address_display: string | null;
+  is_coa_roadway: boolean | null;
+  narrative_summary: string | null;
+  unit_types_involved?: UnitTypesInvolved | null;
 };

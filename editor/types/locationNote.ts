@@ -4,4 +4,6 @@ export type LocationNote = {
     text: string;
     created_at: string;
     updated_by: string;
+    created_by?: string;
+    updated_at?: string;
 };

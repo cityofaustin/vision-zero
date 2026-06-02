@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatDate, formatDollars, formatTime } from "@/utils/formatters";
+import { formatIsoDate, formatDollars, formatTime } from "@/utils/formatters";
 import { ColDataCardDef } from "@/types/types";
 import { CrashesListRow } from "@/types/crashesList";
 
@@ -8,6 +8,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     path: "record_locator",
     label: "Crash ID",
     sortable: true,
+    fetchAlways: true,
     valueRenderer: (record: CrashesListRow) => (
       <Link href={`/crashes/${record.record_locator}`} prefetch={false}>
         {record.record_locator}
@@ -24,7 +25,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     label: "Date",
     sortable: true,
     style: { minWidth: "8rem" },
-    valueFormatter: formatDate,
+    valueFormatter: formatIsoDate,
     fetchAlways: true,
   },
   {
@@ -47,7 +48,7 @@ export const crashesListViewColumns: ColDataCardDef<CrashesListRow>[] = [
     exportOnly: true,
   },
   {
-    path: "address_primary",
+    path: "address_display",
     label: "Address",
     sortable: true,
     fetchAlways: true,

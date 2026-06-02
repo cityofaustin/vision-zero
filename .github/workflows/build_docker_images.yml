@@ -7,12 +7,14 @@ on:
       - production
     paths:
       - ".github/workflows/build_docker_images.yml"
+      - "api/**"
       - "etl/afd_ems_import/**"
+      - "etl/cad_incidents_import/**"
       - "etl/cris_import/**"
-      - "etl/socrata_export/**"
+      - "etl/ems_person_match/**"
       - "etl/moped_projects/**"
       - "etl/run_sql/**"
-      - "api/**"
+      - "etl/socrata_export/**"
   workflow_dispatch:
 
 jobs:
@@ -37,16 +39,20 @@ jobs:
           filters: |
             afd_ems:
               - 'etl/afd_ems_import/**'
+            cad_incidents:
+              - 'etl/cad_incidents_import/**'
             cris:
               - 'etl/cris_import/**'
-            socrata_export:
-              - 'etl/socrata_export/**'
-            user_cr3_api:
-              - 'api/**'
+            ems_person_match:
+              - 'etl/ems_person_match/**'
             moped_projects:
               - 'etl/moped_projects/**'
             run_sql:
               - 'etl/run_sql/**'
+            socrata_export:
+              - 'etl/socrata_export/**'
+            user_cr3_api:
+              - 'api/**'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -60,6 +66,15 @@ jobs:
           push: true
           tags: atddocker/vz-afd-ems-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
 
+      - name: Build and push CAD incidents image
+        if: steps.changes.outputs.cad_incidents == 'true'
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: etl/cad_incidents_import
+          push: true
+          tags: atddocker/vz-cad-incidents-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
+
       - name: Build and push CRIS import image
         if: steps.changes.outputs.cris == 'true'
         uses: docker/build-push-action@v4
@@ -68,6 +83,15 @@ jobs:
           context: etl/cris_import
           push: true
           tags: atddocker/vz-cris-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
+
+      - name: Build and push EMS person match ETL image
+        if: steps.changes.outputs.ems_person_match == 'true'
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64
+          context: etl/ems_person_match
+          push: true
+          tags: atddocker/vz-ems-person-match:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
 
       - name: Build and push Socrata export image
         if: steps.changes.outputs.socrata_export == 'true'
@@ -113,7 +137,7 @@ jobs:
             echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-production/backend-flask-api" >> $GITHUB_ENV
           else
             echo "ECS_CLUSTER=atd-vz-data-cluster-staging" >> $GITHUB_ENV
-            echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-staging/backend-flask-api-staging" >> $GITHUB_ENV
+            echo "ECS_SERVICE=arn:aws:ecs:us-east-1:295525487728:service/atd-vz-data-cluster-staging/backend-flask-api" >> $GITHUB_ENV
           fi
 
       - name: Restart ECS service

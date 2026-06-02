@@ -1,7 +1,13 @@
 import { LookupTableOption } from "./relationships";
+import { People } from "@/types/people";
 
 export type Unit = {
   id: number;
+  contrib_factr_1_id: number | null;
+  contrib_factr_2_id: number | null;
+  contrib_factr_3_id: number | null;
+  contrib_factr_p1_id: number | null;
+  contrib_factr_p2_id: number | null;
   contrib_factr: LookupTableOption | null;
   contrib_factr_2: LookupTableOption | null;
   contrib_factr_3: LookupTableOption | null;
@@ -19,6 +25,12 @@ export type Unit = {
   unit_desc_id: number | null;
   trvl_dir: LookupTableOption | null;
   veh_trvl_dir_id: number | null;
+  veh_hnr_fl: boolean | null;
   movt: LookupTableOption | null;
   movement_id: number | null;
+  autonomous_unit: LookupTableOption | null;
+  autonomous_unit_id: number | null;
+  autonomous_level_engaged: LookupTableOption | null;
+  rpt_autonomous_level_engaged_id: number | null;
+  people: People[] | null;
 };

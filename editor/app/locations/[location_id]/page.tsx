@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useCallback } from "react";
+import { use, useMemo, useCallback } from "react";
 import { notFound } from "next/navigation";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -7,6 +7,7 @@ import Row from "react-bootstrap/Row";
 import DataCard from "@/components/DataCard";
 import LocationMapCard from "@/components/LocationMapCard";
 import TableWrapper from "@/components/TableWrapper";
+import UserEventsLogger from "@/components/UserEventsLogger";
 import { useQuery } from "@/utils/graphql";
 import { GET_LOCATION } from "@/queries/location";
 import { Location } from "@/types/locations";
@@ -15,8 +16,7 @@ import { locationCardColumns } from "@/configs/locationDataCard";
 import { locationCrashesColumns } from "@/configs/locationCrashesColumns";
 import { locationCrashesQueryConfig } from "@/configs/locationCrashesTable";
 import AlignedLabel from "@/components/AlignedLabel";
-import { FaCircleInfo } from "react-icons/fa6";
-import { locationNotesColumns } from "@/configs/notesColumns";
+import { LuInfo } from "react-icons/lu";
 import NotesCard from "@/components/NotesCard";
 import {
   INSERT_LOCATION_NOTE,
@@ -24,10 +24,10 @@ import {
 } from "@/queries/locationNotes";
 import { useDocumentTitle } from "@/utils/documentTitle";
 
-const typename = "atd_txdot_locations";
+const typename = "locations";
 
 /**
- * Hook which returns builds a Filter array with the `location_id` param.
+ * Hook which returns a Filter array with the `location_id` param.
  * This can be passed as a `contextFilter` to the TableWrapper so that the
  * location's crashes table is filtered by location
  * @param {string} locationId - the location ID string from the page route
@@ -49,9 +49,9 @@ const useLocationIdFilter = (locationId: string): Filter[] =>
 export default function LocationDetailsPage({
   params,
 }: {
-  params: { location_id: string };
+  params: Promise<{ location_id: string }>;
 }) {
-  const locationId = params.location_id;
+  const { location_id: locationId } = use(params);
 
   const locationIdFilter = useLocationIdFilter(locationId);
 
@@ -72,7 +72,7 @@ export default function LocationDetailsPage({
   // Set document title based on loaded location data
   useDocumentTitle(
     data && data.length > 0
-      ? `${data[0].location_id} - ${data[0].description}`
+      ? `${data[0].location_id} - ${data[0].location_name}`
       : "Vision Zero Editor",
     true // exclude the suffix
   );
@@ -90,8 +90,8 @@ export default function LocationDetailsPage({
   const location = data[0];
 
   return (
-    <>
-      <span className="fs-2">{location.description}</span>
+    <UserEventsLogger eventName="location_details_view">
+      <span className="fs-2">{location.location_name}</span>
       <Row>
         <Col sm={12} md={6} lg={7} className="mb-3">
           <LocationMapCard location={location} />
@@ -109,19 +109,20 @@ export default function LocationDetailsPage({
       </Row>
       <Row>
         <Col className="mb-3">
-          <Card>
+          {/* map will be fixed height, list will grow vertically as needed */}
+          <Card style={{ minHeight: "85vh" }}>
             <Card.Header>
               <Card.Title>Crashes</Card.Title>
               <Card.Subtitle className="fw-light text-secondary">
                 <AlignedLabel>
-                  <FaCircleInfo className="me-2" />
+                  <LuInfo className="me-2 text-secondary" />
                   <span>
                     The data in this table is refreshed on an hourly basis
                   </span>
                 </AlignedLabel>
               </Card.Subtitle>
             </Card.Header>
-            <Card.Body>
+            <Card.Body className="d-flex flex-column flex-grow-1">
               <TableWrapper
                 columns={locationCrashesColumns}
                 initialQueryConfig={locationCrashesQueryConfig}
@@ -131,6 +132,8 @@ export default function LocationDetailsPage({
                  * that it is not saved in the local storage config
                  */
                 contextFilters={locationIdFilter}
+                filtersEventName="location_crashes_list_filters_toggle"
+                mapEventName="location_crashes_list_map_toggle"
               />
             </Card.Body>
           </Card>
@@ -140,15 +143,14 @@ export default function LocationDetailsPage({
         <Col sm={12}>
           <NotesCard
             notes={location.location_notes || []}
-            notesColumns={locationNotesColumns}
             updateMutation={UPDATE_LOCATION_NOTE}
             insertMutation={INSERT_LOCATION_NOTE}
             onSaveCallback={onSaveCallback}
             recordId={location.location_id}
-            refetch={onSaveCallback}
+            recordKey="location_id"
           />
         </Col>
       </Row>
-    </>
+    </UserEventsLogger>
   );
 }

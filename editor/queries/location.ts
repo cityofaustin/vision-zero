@@ -2,18 +2,24 @@ import { gql } from "graphql-request";
 
 export const GET_LOCATION = gql`
   query GetLocation($locationId: String!) {
-    atd_txdot_locations(where: { location_id: { _eq: $locationId } }) {
+    locations(
+      where: { location_id: { _eq: $locationId }, is_deleted: { _eq: false } }
+    ) {
       location_id
-      street_level
-      description
+      street_levels
+      location_name
       geometry
-      latitude
-      longitude
       locations_list_view {
         cr3_crash_count
         non_cr3_crash_count
         total_est_comp_cost
       }
+      apd_sectors
+      area_eng_areas
+      signal_eng_areas
+      council_districts
+      is_signalized
+      is_hin
       location_notes(
         where: { is_deleted: { _eq: false } }
         order_by: { created_at: asc }
@@ -21,9 +27,23 @@ export const GET_LOCATION = gql`
         id
         updated_by
         created_at
+        updated_at
         text
         location_id
       }
+    }
+  }
+`;
+
+/**
+ * Location ID search used by the navbar search component
+ */
+export const LOCATION_NAV_SEARCH = gql`
+  query LocationNavigationSearch($searchValue: String!) {
+    location_id: locations(
+      where: { location_id: { _eq: $searchValue }, is_deleted: { _eq: false } }
+    ) {
+      location_id
     }
   }
 `;

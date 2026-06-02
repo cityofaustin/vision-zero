@@ -6,14 +6,14 @@ const StyledMapNav = styled.div`
   .nav-buttons {
     position: absolute;
     top: 0px;
-    right: 0px;
+    right: 30px;
     padding: 10px;
   }
 
   .geolocate-button {
     position: absolute;
     top: 68px;
-    right: 0px;
+    right: 30px;
     padding: 10px;
   }
 `;

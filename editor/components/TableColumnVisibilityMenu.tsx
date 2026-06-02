@@ -10,7 +10,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Form from "react-bootstrap/Form";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import { FaGear } from "react-icons/fa6";
+import { LuSettings } from "react-icons/lu";
 import { ColumnVisibilitySetting } from "@/types/types";
 import { ColDataCardDef } from "@/types/types";
 import AlignedLabel from "@/components/AlignedLabel";
@@ -118,13 +118,7 @@ export default function TableColumnVisibilityMenu({
         }
         return { ...col, isVisible: !col.isVisible };
       });
-      // do nothing if this will result in all columns being invisible
-      const willAllColumnsBeInvisible = updatedColVisibilitySettings.every(
-        (col) => col.isVisible === false
-      );
-      if (!willAllColumnsBeInvisible) {
-        setColumnVisibilitySettings(updatedColVisibilitySettings);
-      }
+      setColumnVisibilitySettings(updatedColVisibilitySettings);
     },
     [setColumnVisibilitySettings]
   );
@@ -215,8 +209,10 @@ export default function TableColumnVisibilityMenu({
     <Dropdown className="d-flex">
       <OverlayTrigger
         placement="top"
-        container={document.body}
         overlay={<Tooltip id="table-settings">Settings</Tooltip>}
+        popperConfig={{
+          strategy: "fixed",
+        }}
       >
         <Dropdown.Toggle
           variant="outline-primary"
@@ -225,7 +221,7 @@ export default function TableColumnVisibilityMenu({
           disabled={!!disabled}
         >
           <AlignedLabel>
-            <FaGear />
+            <LuSettings className="fs-5" />
           </AlignedLabel>
         </Dropdown.Toggle>
       </OverlayTrigger>

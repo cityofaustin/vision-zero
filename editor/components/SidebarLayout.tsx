@@ -97,18 +97,15 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
    * Render the app
    */
   return (
-    // Full-height outer div stacks children vertically
     <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
       <AppNavBar user={user} logout={logout} />
       {/* Sidebar */}
       <div
-        className={`app-sidebar d-flex flex-column h-100 app-sidebar-${
-          isCollapsed ? "collapsed" : "expanded"
-        }`}
+        className={`app-sidebar offset-top-nav d-flex flex-column h-100 app-sidebar-${isCollapsed ? "collapsed" : "expanded"}`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <div className="flex-grow-1 overflow-y-auto">
+        <div className="flex-grow-1 overflow-y-auto mt-1">
           <ListGroup variant="flush">
             {routes.map((route) => (
               <PermissionsRequired
@@ -128,7 +125,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
         </div>
       </div>
       {/* Main content - essentially a bootstrap "row" — horizontal */}
-      <div className="main-content-pane d-flex flex-grow-1">
+      <div className="main-content-pane d-flex flex-grow-1 offset-top-nav">
         <div className="flex-grow-1 d-flex flex-column w-100 ">
           {/* vertical container */}
           <main className="flex-grow-1 d-flex flex-column">

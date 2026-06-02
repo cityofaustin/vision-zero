@@ -3,12 +3,19 @@ import { gql } from "graphql-request";
 export const GET_EMS_RECORDS = gql`
   query EMSDetails($incident_number: String!) {
     ems__incidents(
-      where: { incident_number: { _eq: $incident_number } }
+      where: {
+        incident_number: { _eq: $incident_number }
+        is_deleted: { _eq: false }
+      }
+
       order_by: { id: asc }
     ) {
       apd_incident_numbers
+      is_deleted
       crash_match_status
       person_match_status
+      person_match_attributes
+      person_match_score
       non_cr3_match_status
       atd_apd_blueform_case_id
       matched_non_cr3_case_ids
@@ -111,12 +118,11 @@ export const GET_MATCHING_PEOPLE = gql`
         case_id
         crash_timestamp
         fhe_collsn_id
+        address_display
         collsn {
           id
           label
         }
-        address_primary
-        address_secondary
         latitude
         longitude
         location_id
@@ -138,6 +144,7 @@ export const GET_MATCHING_PEOPLE = gql`
       }
       ems_pcr {
         id
+        person_match_status
       }
     }
   }
@@ -146,20 +153,27 @@ export const GET_MATCHING_PEOPLE = gql`
 export const GET_NON_CR3_CRASHES = gql`
   query EMSNonCR3Crashes($case_ids: [Int!]) {
     atd_apd_blueform(where: { case_id: { _in: $case_ids } }) {
-      case_id
       address
+      case_id
       case_timestamp
+      latitude
+      longitude
     }
   }
 `;
 
 export const UPDATE_EMS_PCR_CRASH_AND_PERSON = gql`
-  mutation UpdateEMSPersonCrashStatus($id: Int!, $person_id: Int!) {
+  mutation UpdateEMSPersonCrashStatus(
+    $id: Int!
+    $person_id: Int!
+    $updated_by: String!
+  ) {
     update_ems__incidents(
       where: { id: { _eq: $id } }
       _set: {
         person_id: $person_id
         _match_event_name: "match_person_by_manual_qa"
+        updated_by: $updated_by
       }
     ) {
       affected_rows
@@ -174,6 +188,23 @@ export const UPDATE_EMS_PCR = gql`
       returning {
         id
       }
+    }
+  }
+`;
+
+/**
+ * Incident # search used by the navbar search component
+ */
+export const EMS_INCIDENT_NAV_SEARCH = gql`
+  query EMSNavigationSearch($searchValue: String!) {
+    incident_number: ems__incidents(
+      where: {
+        incident_number: { _eq: $searchValue }
+        is_deleted: { _eq: false }
+      }
+      limit: 1
+    ) {
+      incident_number
     }
   }
 `;

@@ -1,0 +1,116 @@
+table:
+  name: locations
+  schema: public
+object_relationships:
+  - name: locations_list_view
+    using:
+      manual_configuration:
+        column_mapping:
+          location_id: location_id
+        insertion_order: null
+        remote_table:
+          name: locations_list_view
+          schema: public
+array_relationships:
+  - name: crashes
+    using:
+      foreign_key_constraint_on:
+        column: location_id
+        table:
+          name: crashes
+          schema: public
+  - name: location_notes
+    using:
+      foreign_key_constraint_on:
+        column: location_id
+        table:
+          name: location_notes
+          schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - apd_sectors
+        - area_eng_areas
+        - council_districts
+        - signal_eng_areas
+        - street_levels
+        - zip_codes
+        - is_deleted
+        - is_hin
+        - is_intersection
+        - is_service_road
+        - is_signalized
+        - location_id
+        - council_district
+        - signal_id
+        - location_group
+        - created_by
+        - location_name
+        - signal_status
+        - signal_type
+        - updated_by
+        - created_at
+        - updated_at
+        - geometry
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - apd_sectors
+        - area_eng_areas
+        - council_districts
+        - signal_eng_areas
+        - street_levels
+        - zip_codes
+        - is_deleted
+        - is_hin
+        - is_intersection
+        - is_service_road
+        - is_signalized
+        - location_id
+        - council_district
+        - signal_id
+        - location_group
+        - created_by
+        - location_name
+        - signal_status
+        - signal_type
+        - updated_by
+        - created_at
+        - updated_at
+        - geometry
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - apd_sectors
+        - area_eng_areas
+        - council_districts
+        - signal_eng_areas
+        - street_levels
+        - zip_codes
+        - is_deleted
+        - is_hin
+        - is_intersection
+        - is_service_road
+        - is_signalized
+        - location_id
+        - council_district
+        - signal_id
+        - location_group
+        - created_by
+        - location_name
+        - signal_status
+        - signal_type
+        - updated_by
+        - created_at
+        - updated_at
+        - geometry
+      filter: {}
+      allow_aggregations: true
+    comment: ""

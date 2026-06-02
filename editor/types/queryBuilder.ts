@@ -5,7 +5,7 @@ import { AllowedPageSize, ExportPageSize } from "@/utils/constants";
  * The types we currently support as filter values
  *
  */
-export type FilterValue = string | number | boolean | number[];
+export type FilterValue = string | number | boolean | number[] | string[];
 
 /**
  * Interface for a single filter that can be
@@ -23,13 +23,15 @@ export interface Filter {
   operator:
     | "_gte"
     | "_lte"
+    | "_lt"
     | "_gt"
     | "_eq"
     | "_neq"
     | "_is_null"
     | "_ilike"
     | "_in"
-    | "_nin";
+    | "_nin"
+    | "_contains";
   /**
    * The filter value
    */
@@ -113,6 +115,13 @@ export type DateFilterMode = "ytd" | "all" | "5y" | "1y" | "custom";
  * Configuration object for the graphql query builder
  */
 export interface QueryConfig {
+  /**
+   * Arbitrary version number which, when incremented, will cause the user's locally-stored copy
+   * of the config to be replaced by the lateset default QueryConfig. The version number should
+   * always be incremented if any breaking changes are made to the config schema itself or to
+   * columns referenced by the config
+   */
+  _version: number;
   /**
    * Table (or view) name to query - todo: specify table schema?
    */

@@ -8,9 +8,8 @@ The API consists of a flask app which is bundled into a docker image and pushed 
 
 Our endpoints can be found at:
 
-Staging: https://vision-zero-cr3-user-api-staging.austinmobility.io/
-
-Production: https://vision-zero-cr3-user-api.austinmobility.io/
+* Staging: https://vision-zero-cr3-user-api-staging.austinmobility.io/
+* Production: https://vision-zero-cr3-user-api.austinmobility.io/
 
 These flask apps are deployed as long-running tasks in ECS and are reverse proxy'd out to the internet by an AWS API gateway via a namespace / VPC link configuration. Specific deployment instructions for the COA deployment are contained in our internal documentation repositories.
 
@@ -18,22 +17,34 @@ These flask apps are deployed as long-running tasks in ECS and are reverse proxy
 
 The API requires certain environment variables to be set. Copy the `.env.example` file in the `api` directory to `.env` and fill in the values.
 
-## Local usage
+## Local development
 
-Update your VZE environment (`/app/.env.local`) to use the local API:
+Copy the `env_template` file in this directory to `.env`. To fill in the missing secret values, see the `DEVELOPMENT` section of the **Vision Zero (VZ) User & CR3 API Secrets** item in 1pass.
 
+Use the `./vision-zero` helper tool to run the API docker container alongside the rest of local stack. Do this from the root of the repo using the `vision-zero` helper script:
+
+```shell
+./vision-zero local-stack-up
 ```
-NEXT_PUBLIC_CR3_API_DOMAIN=http://localhost:8085
+
+You can attach to the API container to stream its logs:
+
+```shell
+docker attach vision-zero-cr3-user-api-1
 ```
 
-You can start the API using either the project wide `docker compose` file with `docker compose up cr3-user-api` or if you prefer, you can use the `docker compose` stack that is concerned only with part of the stack as found in the `api` directory. Use whichever is best for your development needs.
-
-Both docker compose files enable local development by:
+The docker compose enables local development by:
 
 - mounting your local `/api` directory into the container
-- use the `--debug` command so that the web server restarts when it detects code changes
+- using the `--debug` command so that the web server restarts when it detects code changes
 
-Additionally, you can use the `vision-zero` orchestration tool to `vision-zero api-up` and `vision-zero api-down` to start and stop the API.
+When using the VZE, make sure your `NEXT_PUBLIC_CR3_API_DOMAIN` env var is set to `http://localhost:8085` in your `env.local` file.
+
+You can also individually start and stop the API container with `./vision-zero api-up` and `./vision-zero api-down`.
+
+### Tests
+
+This API has some test coverage. See the testing [README](./tests/README.md) for details.
 
 ## Secrets
 

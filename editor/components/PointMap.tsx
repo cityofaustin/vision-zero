@@ -1,16 +1,20 @@
 import {
+  ComponentType,
   useCallback,
   useEffect,
+  useMemo,
   Dispatch,
   SetStateAction,
   MutableRefObject,
+  ReactNode,
 } from "react";
 import MapGL, {
   FullscreenControl,
   NavigationControl,
-  Marker,
+  Marker as MapboxMarker,
   ViewStateChangeEvent,
   MapRef,
+  MarkerProps,
 } from "react-map-gl";
 import MapGeocoderControl from "@/components/MapGeocoderControl";
 import {
@@ -19,10 +23,15 @@ import {
   MAP_COORDINATE_PRECISION,
   MAP_MAX_BOUNDS,
 } from "@/configs/map";
-import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
+import { useBasemap, useCurrentBounds } from "@/utils/map";
+import MapBasemapControl, {
+  CustomLayerToggle,
+} from "@/components/MapBasemapControl";
+import MapFitBoundsControl from "./MapFitBoundsControl";
 import { COLORS } from "@/utils/constants";
 import { z, ZodFormattedError } from "zod";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { MapAerialSourceAndLayer } from "@/components/MapAerialSourceAndLayer";
 
 export interface LatLon {
   latitude: number;
@@ -52,6 +61,11 @@ interface PointMapProps {
    * Ref object which will hold the mapbox instance
    */
   mapRef: MutableRefObject<MapRef | null>;
+
+  /**
+   * The default basemap type
+   */
+  initialBasemapType?: "aerial" | "streets";
   /**
    * The initial latitude - used when not editing
    */
@@ -69,6 +83,19 @@ interface PointMapProps {
    */
   mapLatLon?: LatLon;
   setMapLatLon?: Dispatch<SetStateAction<LatLon>>;
+  /**
+   * Optional custom Marker component to use as the marker.
+   */
+  CustomMarker?: ComponentType<MarkerProps> | null;
+  /**
+   * Additional layers, markers, or any other elements to be
+   * rendered on the map
+   */
+  children?: ReactNode;
+  /**
+   * Configs for adding custom layer toggles to the basemap control
+   */
+  customLayerToggles?: CustomLayerToggle[];
 }
 
 /**
@@ -76,12 +103,26 @@ interface PointMapProps {
  */
 export const PointMap = ({
   mapRef,
+  initialBasemapType,
   savedLatitude,
   savedLongitude,
   isEditing,
   mapLatLon,
   setMapLatLon,
+  CustomMarker,
+  children,
+  customLayerToggles,
 }: PointMapProps) => {
+  const { basemapURL, basemapType, setBasemapType } = useBasemap(
+    initialBasemapType || "aerial"
+  );
+
+  const geojsonBounds = useCurrentBounds({
+    type: "Point",
+    coordinates:
+      savedLatitude && savedLongitude ? [savedLongitude, savedLatitude] : [],
+  });
+
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
       // truncate values to our preferred precision
@@ -101,13 +142,25 @@ export const PointMap = ({
 
   useEffect(() => {
     if (!isEditing && setMapLatLon) {
-      // initialize edit coordiantes and reset them after saving
+      // initialize edit coordinates and reset them after saving
       setMapLatLon({
         latitude: savedLatitude || DEFAULT_MAP_PAN_ZOOM.latitude,
         longitude: savedLongitude || DEFAULT_MAP_PAN_ZOOM.longitude,
       });
     }
   }, [isEditing, setMapLatLon, savedLatitude, savedLongitude]);
+
+  const Marker = CustomMarker ? CustomMarker : MapboxMarker;
+
+  /**
+   * Update the key of the marker when children changes - this is a bit
+   * of a hack to ensure that the marker is always rendered on top of
+   * other map markers
+   */
+  const dynamicMarkerKey = useMemo(() => {
+    if (!children) return "no-children";
+    return Date.now();
+  }, [children]);
 
   return (
     <MapGL
@@ -118,34 +171,48 @@ export const PointMap = ({
         zoom: DEFAULT_MAP_PAN_ZOOM.zoom,
       }}
       {...DEFAULT_MAP_PARAMS}
+      mapStyle={basemapURL}
       cooperativeGestures={true}
       // Resize the map canvas when parent row expands to fit crash
       onLoad={(e) => e.target.resize()}
       onDrag={isEditing ? onDrag : undefined}
       maxZoom={21}
     >
+      {basemapType === "aerial" && <MapAerialSourceAndLayer />}
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
-      {savedLatitude && savedLongitude && !isEditing && (
-        <Marker
-          latitude={savedLatitude}
-          longitude={savedLongitude}
-          color={COLORS.primary}
-        ></Marker>
-      )}
-      {isEditing && mapLatLon && (
-        <Marker
-          latitude={mapLatLon.latitude}
-          longitude={mapLatLon.longitude}
-          color={isEditing ? COLORS.danger : undefined}
-        />
-      )}
+      <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
       {/* add nearmap raster source and style */}
-      <MapAerialSourceAndLayer />
-      {isEditing && setMapLatLon && (
+      {basemapType === "aerial" && <MapAerialSourceAndLayer />}
+      {setMapLatLon && (
         <MapGeocoderControl
           position="top-left"
           onResult={(latLon: LatLon) => setMapLatLon(latLon)}
+        />
+      )}
+      <MapBasemapControl
+        basemapType={basemapType}
+        setBasemapType={setBasemapType}
+        customLayerToggles={customLayerToggles}
+        controlId="pointMap"
+      />
+      {/* Custom layers */}
+      {children}
+      {/* editable + not editable point layers */}
+      {savedLatitude && savedLongitude && !isEditing && (
+        <Marker
+          key={dynamicMarkerKey}
+          latitude={savedLatitude}
+          longitude={savedLongitude}
+          color={COLORS.primary}
+        />
+      )}
+      {isEditing && mapLatLon && (
+        <Marker
+          key={dynamicMarkerKey}
+          latitude={mapLatLon.latitude}
+          longitude={mapLatLon.longitude}
+          color={isEditing ? COLORS.danger : undefined}
         />
       )}
     </MapGL>

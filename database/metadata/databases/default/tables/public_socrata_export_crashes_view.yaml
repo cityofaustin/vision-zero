@@ -5,11 +5,11 @@ select_permissions:
   - role: editor
     permission:
       columns:
-        - address_primary
-        - address_secondary
+        - address_display
         - bicycle_death_count
         - bicycle_serious_injury_count
         - case_id
+        - collsn_desc
         - crash_fatal_fl
         - crash_sev_id
         - crash_speed_limit
@@ -59,11 +59,11 @@ select_permissions:
   - role: readonly
     permission:
       columns:
-        - address_primary
-        - address_secondary
+        - address_display
         - bicycle_death_count
         - bicycle_serious_injury_count
         - case_id
+        - collsn_desc
         - crash_fatal_fl
         - crash_sev_id
         - crash_speed_limit
@@ -113,11 +113,11 @@ select_permissions:
   - role: vz-admin
     permission:
       columns:
-        - address_primary
-        - address_secondary
+        - address_display
         - bicycle_death_count
         - bicycle_serious_injury_count
         - case_id
+        - collsn_desc
         - crash_fatal_fl
         - crash_sev_id
         - crash_speed_limit

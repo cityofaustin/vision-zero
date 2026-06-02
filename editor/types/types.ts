@@ -53,7 +53,17 @@ export interface ColDataCardDef<T extends Record<string, unknown>> {
    * and update the foreign key column when editing
    */
   relationship?: Relationship<T>;
+  /**
+   * Will enable a clickable column header that sorts tables on this column. In the Table
+   * component, sorting is managed server-side via graphql query. In related record
+   * tables, sorting is managed client-side
+   */
   sortable?: boolean;
+  /**
+   * An optional custom sort function to use when sorting related record tables. Default
+   * behavior is to sort values as strings
+   */
+  compareFunc?: (a: unknown, b: unknown) => number;
   /**
    * Function which formats a column value as a string. See formHelpers.getRecordValue()
    * as an example of how the column value arg is supplied

@@ -1,0 +1,25 @@
+table:
+  name: unit_types_involved_view
+  schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - crash_pk
+        - unit_types_involved
+      filter: {}
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - crash_pk
+        - unit_types_involved
+      filter: {}
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - crash_pk
+        - unit_types_involved
+      filter: {}
+    comment: ""

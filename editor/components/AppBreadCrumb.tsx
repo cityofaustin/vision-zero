@@ -1,8 +1,8 @@
 import { useMemo, Fragment } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import Col from "react-bootstrap/Col";
 import { routes } from "@/configs/routes";
+import CopyValueButton from "@/components/CopyValueButton";
 
 interface Crumb {
   path: string;
@@ -54,33 +54,32 @@ export default function AppBreadCrumb() {
   }
 
   return (
-    <div className="pb-2">
-      <Col>
-        {isDetailsPage &&
-          crumbs?.map((crumb, i) => {
-            if (i < crumbs.length - 1) {
-              return (
-                <Fragment key={crumb.label}>
-                  <span>
-                    <Link
-                      className="text-decoration-none"
-                      href={`/${crumb.path}`}
-                    >
-                      {crumb.label}
-                    </Link>
-                  </span>
-                  <span className="mx-2 fw-light text-secondary">{"/"}</span>
-                </Fragment>
-              );
-            } else {
-              return (
-                <span key={crumb.label} className="text-secondary">
-                  {crumb.label}
+    <div className="pb-2 d-flex align-items-center">
+      {isDetailsPage &&
+        crumbs?.map((crumb, i) => {
+          if (i < crumbs.length - 1) {
+            return (
+              <Fragment key={crumb.label}>
+                <span>
+                  <Link
+                    className="text-decoration-none"
+                    href={`/${crumb.path}`}
+                  >
+                    {crumb.label}
+                  </Link>
                 </span>
-              );
-            }
-          })}
-      </Col>
+                <span className="mx-2 fw-light text-secondary">{"/"}</span>
+              </Fragment>
+            );
+          } else {
+            return (
+              <Fragment key={crumb.label}>
+                <span className="text-secondary me-2">{crumb.label}</span>
+                <CopyValueButton tooltipLabel="Copy" value={crumb.label} />
+              </Fragment>
+            );
+          }
+        })}
     </div>
   );
 }

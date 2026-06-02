@@ -1,18 +1,20 @@
 import Link from "next/link";
 import { ColDataCardDef } from "@/types/types";
 import { LocationCrashRow } from "@/types/locationCrashes";
-import { formatDate, formatDollars } from "@/utils/formatters";
+import { formatIsoDate, formatDollars } from "@/utils/formatters";
 
 export const locationCrashesColumns: ColDataCardDef<LocationCrashRow>[] = [
   {
     path: "type",
     label: "Type",
     sortable: true,
+    fetchAlways: true,
   },
   {
     path: "record_locator",
     label: "Crash ID",
     sortable: true,
+    fetchAlways: true,
     valueRenderer: (record: LocationCrashRow) =>
       record.record_locator ? (
         <Link href={`/crashes/${record.record_locator}`}>
@@ -26,22 +28,20 @@ export const locationCrashesColumns: ColDataCardDef<LocationCrashRow>[] = [
     path: "case_id",
     label: "Case ID",
     sortable: true,
+    fetchAlways: true,
   },
   {
     path: "crash_timestamp",
     label: "Date",
     sortable: true,
-    valueFormatter: formatDate,
+    valueFormatter: formatIsoDate,
+    fetchAlways: true,
   },
   {
-    path: "address_primary",
-    label: "Primary address",
+    path: "address_display",
+    label: "Address",
     sortable: true,
-  },
-  {
-    path: "address_secondary",
-    label: "Secondary address",
-    sortable: true,
+    fetchAlways: true,
   },
   {
     path: "sus_serious_injry_count",
@@ -63,5 +63,17 @@ export const locationCrashesColumns: ColDataCardDef<LocationCrashRow>[] = [
     label: "Est Comprehensive Cost",
     sortable: true,
     valueFormatter: formatDollars,
+  },
+  {
+    path: "latitude",
+    label: "latitude",
+    exportOnly: true,
+    fetchAlways: true,
+  },
+  {
+    path: "longitude",
+    label: "longitude",
+    exportOnly: true,
+    fetchAlways: true,
   },
 ];

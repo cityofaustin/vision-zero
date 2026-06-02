@@ -65,6 +65,15 @@ object_relationships:
         remote_table:
           name: prsn_type
           schema: lookups
+  - name: rest
+    using:
+      manual_configuration:
+        column_mapping:
+          prsn_rest_id: id
+        insertion_order: null
+        remote_table:
+          name: rest
+          schema: lookups
   - name: unit
     using:
       manual_configuration:

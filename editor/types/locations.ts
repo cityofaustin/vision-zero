@@ -4,11 +4,16 @@ import { LocationNote } from "@/types/locationNote";
 
 export type Location = {
   location_id: string;
-  description: string | null;
-  latitude: number | null;
-  longitude: number | null;
+  location_name: string | null;
   geometry: MultiPolygon | null;
-  street_level: string | null;
+  street_levels: string[] | null;
   locations_list_view: LocationsListRow | null;
-  location_notes: LocationNote[]
+  location_notes: LocationNote[];
+  apd_sectors?: string[];
+  area_eng_areas?: string[];
+  council_districts?: number[];
+  is_hin?: boolean;
+  is_signalized?: boolean;
+  location_group?: number;
+  signal_eng_areas?: string[];
 };

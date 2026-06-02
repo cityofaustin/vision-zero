@@ -5,42 +5,60 @@ select_permissions:
   - role: editor
     permission:
       columns:
+        - apd_sectors
+        - area_eng_areas
+        - signal_eng_areas
+        - street_levels
         - cr3_crash_count
         - crash_count
         - non_cr3_crash_count
         - total_est_comp_cost
+        - is_hin
+        - is_signalized
         - location_id
-        - council_district
+        - council_districts
         - location_group
-        - description
+        - location_name
       filter: {}
       allow_aggregations: true
     comment: ""
   - role: readonly
     permission:
       columns:
+        - apd_sectors
+        - area_eng_areas
+        - signal_eng_areas
+        - street_levels
         - cr3_crash_count
         - crash_count
         - non_cr3_crash_count
         - total_est_comp_cost
+        - is_hin
+        - is_signalized
         - location_id
-        - council_district
+        - council_districts
         - location_group
-        - description
+        - location_name
       filter: {}
       allow_aggregations: true
     comment: ""
   - role: vz-admin
     permission:
       columns:
+        - apd_sectors
+        - area_eng_areas
+        - signal_eng_areas
+        - street_levels
         - cr3_crash_count
         - crash_count
         - non_cr3_crash_count
         - total_est_comp_cost
+        - is_hin
+        - is_signalized
         - location_id
-        - council_district
+        - council_districts
         - location_group
-        - description
+        - location_name
       filter: {}
       allow_aggregations: true
     comment: ""

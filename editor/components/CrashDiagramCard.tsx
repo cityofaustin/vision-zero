@@ -1,25 +1,29 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
-import {
-  FaMagnifyingGlassPlus,
-  FaMagnifyingGlassMinus,
-  FaRotate,
-} from "react-icons/fa6";
-import { SlActionUndo } from "react-icons/sl";
+import { FaRotate } from "react-icons/fa6";
+import { LuSquarePen } from "react-icons/lu";
 import {
   TransformWrapper,
   TransformComponent,
   ReactZoomPanPinchRef,
-  useControls,
 } from "react-zoom-pan-pinch";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { Crash } from "@/types/crashes";
-
-const CR3_DIAGRAM_BASE_URL = process.env.NEXT_PUBLIC_CR3_DIAGRAM_BASE_URL!;
+import { CrashDiagramOrientation } from "@/types/crashDiagramOrientation";
+import { UPDATE_CRASH } from "@/queries/crash";
+import { useMutation } from "@/utils/graphql";
+import {
+  RotateControls,
+  ZoomResetSaveControls,
+} from "@/components/CrashDiagramControls";
+import AlignedLabel from "@/components/AlignedLabel";
+import { useImage } from "@/utils/images";
+import { hasRole } from "@/utils/auth";
+import ImageUploadModal from "@/components/ImageUploadModal";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface DiagramAlertProps {
   variant: "info" | "danger" | "success" | "warning";
@@ -28,12 +32,19 @@ interface DiagramAlertProps {
     href: string;
     text: string;
   };
+  button?: React.ReactNode;
+}
+
+interface CrashDiagramCardProps {
+  crash: Crash;
+  crashRefetch: () => Promise<unknown>;
 }
 
 const DiagramAlert: React.FC<DiagramAlertProps> = ({
   variant,
   message,
   link,
+  button,
 }) => (
   <Alert variant={variant} className="mt-3">
     {message}
@@ -47,130 +58,184 @@ const DiagramAlert: React.FC<DiagramAlertProps> = ({
         .
       </p>
     )}
+    {button && <div className="mt-2">{button}</div>}
   </Alert>
 );
 
-const ZoomResetControls = ({
-  setRotation,
-  zoomToImage,
-}: {
-  setRotation: (value: number) => void;
-  zoomToImage: () => void;
-}) => {
-  const { zoomIn, zoomOut, resetTransform } = useControls();
-
-  const handleReset = () => {
-    resetTransform();
-    setRotation(0);
-    zoomToImage();
-  };
-
-  return (
-    <div className="d-flex justify-content-between w-100 mb-1">
-      <ButtonGroup>
-        <Button
-          size="sm"
-          variant="outline-primary"
-          onClick={() => zoomIn(0.25)}
-          title="Zoom In"
-        >
-          <FaMagnifyingGlassPlus />
-        </Button>
-        <Button
-          size="sm"
-          variant="outline-primary"
-          onClick={() => zoomOut(0.25)}
-          title="Zoom Out"
-        >
-          <FaMagnifyingGlassMinus />
-        </Button>
-      </ButtonGroup>
-      <Button
-        size="sm"
-        variant="outline-primary"
-        onClick={handleReset}
-        title="Reset"
-      >
-        <SlActionUndo className="me-2" />
-        Reset
-      </Button>
-    </div>
-  );
-};
-
-const RotateControls = ({
-  rotation,
-  setRotation,
-}: {
-  rotation: number;
-  setRotation: (value: number) => void;
-}) => {
-  const rotate = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRotation(Number(event.target.value));
-  };
-
-  return (
-    <div className="mt-2">
-      <Form.Range
-        min="-180"
-        max="180"
-        value={rotation}
-        id="formControlRange"
-        onChange={rotate}
-        title="Rotate Diagram"
-      />
-    </div>
-  );
-};
-
-export default function CrashDiagramCard({ crash }: { crash: Crash }) {
-  const [diagramError, setDiagramError] = useState(false);
-  const [rotation, setRotation] = useState(0);
-
+export default function CrashDiagramCard({
+  crash,
+  crashRefetch,
+}: CrashDiagramCardProps) {
+  const {
+    imageUrl,
+    error: diagramError,
+    refetch,
+    isLoading,
+  } = useImage({
+    recordId: crash.record_locator,
+    recordType: "crash_diagram",
+  });
+  const [isLoaded, setIsLoaded] = useState(true);
+  const [isSaved, setIsSaved] = useState(!!crash.diagram_transform);
+  const [isTouched, setIsTouched] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
 
-  const zoomToImage = () => {
+  const defaultValues = useMemo(() => {
+    return crash.diagram_transform
+      ? {
+          scale: crash.diagram_transform.scale,
+          rotation: crash.diagram_transform.rotation,
+          positionX: crash.diagram_transform.positionX,
+          positionY: crash.diagram_transform.positionY,
+        }
+      : {
+          // scaled undefined zooms to fit whole image in frame
+          scale: undefined,
+          rotation: 0,
+          positionX: undefined,
+          positionY: undefined,
+        };
+  }, [crash]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { isDirty },
+    setValue,
+    watch,
+    reset,
+  } = useForm({
+    defaultValues,
+  });
+
+  const { mutate } = useMutation(UPDATE_CRASH);
+
+  const onSave: SubmitHandler<CrashDiagramOrientation> = async (data) => {
+    await mutate({
+      id: crash.id,
+      updates: { diagram_transform: data },
+    });
+
+    crashRefetch();
+    // do not clear values from form, but clear dirty state to hide saved button
+    reset(data, { keepDirty: false });
+    setIsTouched(false);
+    setIsSaved(true);
+  };
+
+  const rotation = watch("rotation");
+
+  // zoom image to scale "undefined" effectively zooming to fit entire image in frame
+  const resetZoomToImage = () => {
     if (transformComponentRef.current) {
       const { zoomToElement } = transformComponentRef.current;
       zoomToElement("crashDiagramImage", undefined, 1);
+      setValue("scale", undefined, { shouldDirty: true });
     }
   };
 
+  const initPositionImage = (defaultValues: CrashDiagramOrientation) => {
+    if (transformComponentRef.current) {
+      const { zoomToElement, setTransform } = transformComponentRef.current;
+      const { positionX, positionY, scale } = defaultValues;
+      if (positionX && positionY && scale) {
+        setTransform(positionX, positionY, scale, 1);
+      } else {
+        // if x/y position is not saved, zoom to image and let the centering dictate x/y position
+        zoomToElement("crashDiagramImage", defaultValues.scale, 1);
+      }
+    }
+  };
+
+  const { user } = useAuth0();
+
+  const isReadOnlyUser = user && hasRole(["readonly"], user);
+
   return (
     <Card className="h-100">
+      {!isReadOnlyUser && (
+        <ImageUploadModal
+          showModal={showModal}
+          setShowModal={setShowModal}
+          storedUrl={imageUrl}
+          title={`Upload crash diagram`}
+          refetch={refetch}
+          isLoading={isLoading}
+          imageType="crash_diagram"
+          recordId={crash.record_locator}
+        />
+      )}
       <Card.Header>
-        <Card.Title>Diagram</Card.Title>
+        <Card.Title className="d-flex justify-content-between mb-0">
+          Diagram
+          {!isReadOnlyUser && crash.is_temp_record && imageUrl && (
+            <Button
+              size="sm"
+              variant="outline-primary"
+              onClick={() => setShowModal(true)}
+            >
+              <AlignedLabel>
+                <LuSquarePen className="me-2" />
+                <span>Edit diagram</span>
+              </AlignedLabel>
+            </Button>
+          )}
+        </Card.Title>
         <div className="text-secondary fw-light">
-          Use shift + scroll to zoom
+          Use{" "}
+          <span className="font-monospace rounded border px-1 bg-light-use-theme">
+            shift
+          </span>{" "}
+          + scroll to zoom
         </div>
       </Card.Header>
-      <Card.Body className="crash-header-card-body text-center d-flex flex-column">
-        {!diagramError && (
+      <Card.Body
+        className={`crash-header-card-body text-center d-flex flex-column ${!diagramError && !isLoaded ? "image-loading" : ""}`}
+      >
+        {!diagramError && imageUrl && (
           <TransformWrapper
-            initialScale={1}
+            initialScale={defaultValues.scale}
             minScale={0.5}
             centerZoomedOut={true}
             centerOnInit={true}
             ref={transformComponentRef}
             wheel={{ activationKeys: ["Meta", "Shift"] }}
+            onWheel={() => setIsTouched(true)}
+            onTransformed={(e) => {
+              setValue("positionX", e.state.positionX);
+              setValue("positionY", e.state.positionY);
+              setValue("scale", e.state.scale);
+            }}
+            onPanningStop={() => {
+              setIsTouched(true);
+            }}
           >
-            <ZoomResetControls
-              setRotation={setRotation}
-              zoomToImage={zoomToImage}
+            <ZoomResetSaveControls
+              setValue={setValue}
+              resetZoomToImage={resetZoomToImage}
+              isDirty={isDirty || isTouched}
+              onSave={onSave}
+              handleSubmit={handleSubmit}
+              isSaved={isSaved}
+              setIsTouched={setIsTouched}
             />
-            <TransformComponent contentStyle={{ mixBlendMode: "multiply" }}>
+            <TransformComponent
+              wrapperStyle={{ width: "100%", height: "100%" }}
+              contentStyle={{ mixBlendMode: "multiply" }}
+            >
               <Image
                 fluid
                 style={{ transform: `rotate(${rotation}deg)` }}
-                src={`${CR3_DIAGRAM_BASE_URL}/${crash.record_locator}.jpeg`}
+                src={imageUrl}
                 alt="crash diagram"
                 id="crashDiagramImage"
                 onLoad={() => {
-                  zoomToImage();
+                  setIsLoaded(true);
+                  initPositionImage(defaultValues);
                 }}
                 onError={() => {
-                  console.error("Error loading CR3 diagram image");
-                  setDiagramError(true);
+                  console.warn("Error loading CR3 diagram image");
                 }}
               />
             </TransformComponent>
@@ -182,8 +247,15 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
             message={
               <>
                 <i className="fa fa-info-circle" />
-                Crash diagrams are not available for temporary crash records
+                This temporary crash record does not have a diagram
               </>
+            }
+            button={
+              !isReadOnlyUser ? (
+                <Button onClick={() => setShowModal(true)}>
+                  Upload crash diagram
+                </Button>
+              ) : null
             }
           />
         )}
@@ -199,14 +271,14 @@ export default function CrashDiagramCard({ crash }: { crash: Crash }) {
           />
         )}
       </Card.Body>
-      {!diagramError && (
+      {!diagramError && imageUrl && (
         <Card.Footer className="text-center">
           <div className="d-flex align-items-center w-100">
             <div className="me-3 text-secondary fs-5">
               <FaRotate />
             </div>
             <div className="flex-grow-1">
-              <RotateControls rotation={rotation} setRotation={setRotation} />
+              <RotateControls setValue={setValue} register={register} />
             </div>
           </div>
         </Card.Footer>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatDate } from "@/utils/formatters";
+import { formatIsoDate } from "@/utils/formatters";
 import { ColDataCardDef } from "@/types/types";
 import { fatalitiesListRow } from "@/types/fatalitiesList";
 
@@ -13,8 +13,9 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     path: "record_locator",
     label: "Crash ID",
     sortable: true,
+    fetchAlways: true,
     valueRenderer: (record: fatalitiesListRow) => (
-      <Link href={`/crashes/${record.record_locator}`} prefetch={false}>
+      <Link href={`/fatalities/${record.record_locator}`} prefetch={false}>
         {record.record_locator}
       </Link>
     ),
@@ -28,6 +29,7 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     path: "ytd_fatal_crash",
     label: "YTD Fatal Crash",
     sortable: true,
+    fetchAlways: true,
   },
   {
     path: "ytd_fatality",
@@ -43,7 +45,8 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     path: "crash_date_ct",
     label: "Crash Date",
     sortable: true,
-    valueFormatter: formatDate,
+    fetchAlways: true,
+    valueFormatter: formatIsoDate,
     style: { whiteSpace: "nowrap" },
   },
   {
@@ -94,8 +97,8 @@ export const fatalitiesListViewColumns: ColDataCardDef<fatalitiesListRow>[] = [
     fetchAlways: true,
   },
   {
-    path: "address_primary",
-    label: "address_primary",
+    path: "address_display",
+    label: "address_display",
     exportOnly: true,
     fetchAlways: true,
   },

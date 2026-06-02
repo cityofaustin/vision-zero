@@ -41,9 +41,9 @@ export default function ChangeLogDetails({
               <tr key={diff.field}>
                 <td>{diff.field}</td>
                 {!isNewRecordEvent(selectedChange) && (
-                  <td>{String(diff.old)}</td>
+                  <td>{JSON.stringify(diff.old) ?? String(diff.old)}</td>
                 )}
-                <td>{String(diff.new)}</td>
+                <td>{JSON.stringify(diff.new) ?? String(diff.new)}</td>
               </tr>
             ))}
           </tbody>

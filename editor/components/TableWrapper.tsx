@@ -22,6 +22,7 @@ import { useQuery } from "@/utils/graphql";
 import { useExportQuery, useQueryBuilder } from "@/utils/queryBuilder";
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
+import ColumnVisibilityAlert from "@/components/ColumnVisibilityAlert";
 
 interface TableProps<T extends Record<string, unknown>> {
   columns: ColDataCardDef<T>[];
@@ -45,6 +46,18 @@ interface TableProps<T extends Record<string, unknown>> {
    * will be called anytime this prop changes
    */
   refetch?: boolean;
+  /**
+   * If provided, enables logging a user event when filters menu is opened
+   */
+  filtersEventName?: string;
+  /**
+   * If provided, enables logging a user event when map view is activated
+   */
+  mapEventName?: string;
+  /**
+   * If provided, enables logging a user event when download modal is opened
+   */
+  downloadEventName?: string;
 }
 
 /**
@@ -57,6 +70,9 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   localStorageKey,
   contextFilters,
   refetch: _refetch,
+  filtersEventName,
+  mapEventName,
+  downloadEventName,
 }: TableProps<T>) {
   const [areFiltersDirty, setAreFiltersDirty] = useState(false);
   const [isQueryConfigLocalStorageLoaded, setIsQueryConfigLocalStorageLoaded] =
@@ -114,14 +130,22 @@ export default function TableWrapper<T extends Record<string, unknown>>({
 
   const { data, aggregateData, isLoading, error, refetch } = useQuery<T>({
     // don't fire first query until localstorage is loaded
-    query: isQueryConfigLocalStorageLoaded ? query : null,
+    query:
+      isQueryConfigLocalStorageLoaded &&
+      isColVisibilityLocalStorageLoaded &&
+      visibleColumns.length > 0
+        ? query
+        : null,
     typename: queryConfig.tableName,
     hasAggregates: true,
   });
 
-  if (error) {
-    console.error(error);
-  }
+  // Log errors in an effect to avoid setState during render
+  useEffect(() => {
+    if (error) {
+      console.error(error);
+    }
+  }, [error]);
 
   const activeFilterCount = useActiveSwitchFilterCount(queryConfig);
 
@@ -146,11 +170,20 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       setIsQueryConfigLocalStorageLoaded(true);
       return;
     }
+
+    if (
+      queryConfigFromStorage &&
+      queryConfigFromStorage?._version !== initialQueryConfig._version
+    ) {
+      // New config version found — wipe out the cached version from local storage
+      queryConfigFromStorage = initialQueryConfig;
+    }
+
     /**
      * Validate the query config we found in local storage
      */
     try {
-      QueryConfigSchema.parse(queryConfigFromStorage);
+      QueryConfigSchema.strict().parse(queryConfigFromStorage);
     } catch (err) {
       console.error(
         "Invalid QueryConfig found in local storage. Using default config instead."
@@ -183,7 +216,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
     if (queryConfigFromStorage) {
       setQueryConfig(queryConfigFromStorage);
     }
-  }, [localStorageKey]);
+  }, [localStorageKey, initialQueryConfig]);
 
   /**
    * Keep changes to query config in sync with localstorage
@@ -244,6 +277,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   useEffect(() => {
     refetch();
   }, [_refetch, refetch]);
+
   /**
    * wait until the localstorage hook resolves to render anything
    * to prevent filter UI elements from jumping
@@ -282,6 +316,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
               activeFilterCount={activeFilterCount}
               queryConfig={queryConfig}
               setQueryConfig={setQueryConfig}
+              eventName={filtersEventName}
             />
           )}
           <TableSearch
@@ -296,6 +331,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
             <TableMapToggle
               queryConfig={queryConfig}
               setQueryConfig={setQueryConfig}
+              eventName={mapEventName}
             />
           </Col>
         )}
@@ -333,6 +369,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
       {(!queryConfig.mapConfig || !queryConfig.mapConfig.isActive) && (
         <Row>
           <Col>
+            <ColumnVisibilityAlert show={visibleColumns.length === 0} />
             <Table<T>
               rows={rows}
               columns={visibleColumns}
@@ -354,6 +391,7 @@ export default function TableWrapper<T extends Record<string, unknown>>({
           show={showExportModal}
           totalRecordCount={aggregateData?.aggregate?.count || 0}
           typename={queryConfig.tableName}
+          eventName={downloadEventName}
         />
       )}
     </>

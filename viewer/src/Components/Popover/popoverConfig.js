@@ -204,7 +204,7 @@ export const popoverConfig = {
               <li>
                 <strong>Pedestrian</strong>: Person on foot or using{" "}
                 <a
-                  href="https://www.transportation.gov/individuals/aviation-consumer-protection/wheelchairs-and-other-assistive-devices"
+                  href="https://www.transportation.gov/resources/individuals/aviation-consumer-protection/assistive-device-guides/assistive-devices"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -348,7 +348,7 @@ export const popoverConfig = {
             conditions are reflective of the recommended improvements in the
             ASMP. For more information, visit{" "}
             <a
-              href="https://www.austintexas.gov/department/austin-strategic-mobility-plan"
+              href="https://www.austintexas.gov/transportation-public-works/austin-strategic-mobility-plan"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -368,7 +368,7 @@ export const popoverConfig = {
             serious injury or fatal crashes for all modes. For more information,
             visit{" "}
             <a
-              href="https://www.austintexas.gov/department/austin-strategic-mobility-plan"
+              href="https://www.austintexas.gov/transportation-public-works/austin-strategic-mobility-plan"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -381,15 +381,8 @@ export const popoverConfig = {
             people involved in crashes, which has highlighted 13 segments on the
             HIN that have a particularly high concentration of high crash
             locations where Vision Zero is focusing short-term engineering,
-            education, and enforcement initiatives. These 13{" "}
-            <a
-              href="http://austintexas.gov/page/high-injury-roadway-segments"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              “High-Injury Roadways”
-            </a>{" "}
-            are represented by darker, wider lines on the map.
+            education, and enforcement initiatives. These 13 “High-Injury
+            Roadways" are represented by darker, wider lines on the map.
           </div>
         </>
       ),

@@ -1,6 +1,5 @@
 import { getYearsAgoDate, makeDateFilters } from "@/utils/dates";
 import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
-import { DEFAULT_QUERY_LIMIT } from "@/utils/constants";
 
 const emsListViewFilterCards: FilterGroup[] = [
   {
@@ -159,7 +158,6 @@ const emsListViewFilterCards: FilterGroup[] = [
       },
     ],
   },
-
   {
     id: "crash_match_status_filter_card",
     label: "Crash match status",
@@ -237,7 +235,6 @@ const emsListViewFilterCards: FilterGroup[] = [
       },
     ],
   },
-
   {
     id: "person_match_status_filter_card",
     label: "Person match status",
@@ -313,9 +310,57 @@ const emsListViewFilterCards: FilterGroup[] = [
           },
         ],
       },
+      {
+        id: "unmatched_by_automation",
+        label: "Unmatched by automation",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "unmatched_by_automation",
+            column: "person_match_status",
+            operator: "_eq",
+            value: "unmatched_by_automation",
+          },
+        ],
+      },
     ],
   },
-
+  {
+    id: "person_match_score_filter_card",
+    label: "Person match quality",
+    groupOperator: "_or",
+    filterGroups: [
+      {
+        id: "high_quality",
+        label: "High",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "high_quality",
+            column: "person_match_score",
+            operator: "_gte",
+            value: 99,
+          },
+        ],
+      },
+      {
+        id: "low_quality",
+        label: "Low",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "low_quality",
+            column: "person_match_score",
+            operator: "_lt",
+            value: 99,
+          },
+        ],
+      },
+    ],
+  },
   {
     id: "non_cr3_match_status_filter_card",
     label: "Non-CR3 match status",
@@ -365,26 +410,49 @@ const emsListViewFilterCards: FilterGroup[] = [
       },
     ],
   },
+  {
+    id: "geography_filter_card",
+    label: "Jurisdiction",
+    groupOperator: "_and",
+    filterGroups: [
+      {
+        id: "austin_full_purpose",
+        label: "Include outside Austin Full Purpose",
+        groupOperator: "_and",
+        enabled: true,
+        inverted: true,
+        filters: [
+          {
+            id: "austin_full_purpose",
+            column: "austin_full_purpose",
+            operator: "_eq",
+            value: true,
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export const emsListViewQueryConfig: QueryConfig = {
+  _version: 3,
   exportable: true,
   exportFilename: "ems_patient_care_records",
   tableName: "ems__incidents",
-  limit: DEFAULT_QUERY_LIMIT,
+  limit: 1000,
   offset: 0,
   sortColName: "id",
   sortAsc: false,
   searchFilter: {
     id: "search",
     value: "",
-    column: "incident_number",
+    column: "incident_location_address",
     operator: "_ilike",
     wildcard: true,
   },
   searchFields: [
-    { label: "Incident number", value: "incident_number" },
     { label: "Incident address", value: "incident_location_address" },
+    { label: "Incident number", value: "incident_number" },
     { label: "APD Case IDs", value: "unparsed_apd_incident_numbers" },
   ],
   dateFilter: {
@@ -396,4 +464,40 @@ export const emsListViewQueryConfig: QueryConfig = {
     }),
   },
   filterCards: emsListViewFilterCards,
+  mapConfig: {
+    isActive: false,
+    popupComponentName: "emsTableMap",
+    layerProps: {
+      id: "points-layer",
+      type: "circle",
+      paint: {
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          // zoom is 5 (or less)
+          5,
+          2,
+          // zoom is 20 (or greater)
+          20,
+          10,
+        ],
+        "circle-color": "#1276d1",
+        "circle-stroke-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          // zoom is 5 (or less)
+          5,
+          1,
+          // zoom is 20 (or greater)
+          20,
+          3,
+        ],
+        "circle-stroke-color": "#fff",
+      },
+    },
+    geojsonTransformerName: "latLon",
+    defaultBasemap: "streets",
+  },
 };

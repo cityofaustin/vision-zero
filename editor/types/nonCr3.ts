@@ -132,4 +132,6 @@ export type NonCR3Record = {
   case_id: number;
   address: string | null;
   case_timestamp: string | null;
+  latitude?: number;
+  longitude?: number;
 };

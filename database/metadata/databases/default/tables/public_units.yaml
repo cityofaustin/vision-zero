@@ -2,6 +2,12 @@ table:
   name: units
   schema: public
 object_relationships:
+  - name: autonomous_level_engaged
+    using:
+      foreign_key_constraint_on: rpt_autonomous_level_engaged_id
+  - name: autonomous_unit
+    using:
+      foreign_key_constraint_on: autonomous_unit_id
   - name: contrib_factr
     using:
       foreign_key_constraint_on: contrib_factr_1_id
@@ -109,6 +115,7 @@ select_permissions:
         - veh_damage_direction_of_force2_id
         - veh_damage_severity1_id
         - veh_damage_severity2_id
+        - veh_hnr_fl
         - veh_make_id
         - veh_mod_id
         - veh_mod_year
@@ -149,6 +156,7 @@ select_permissions:
         - veh_damage_direction_of_force2_id
         - veh_damage_severity1_id
         - veh_damage_severity2_id
+        - veh_hnr_fl
         - veh_make_id
         - veh_mod_id
         - veh_mod_year
@@ -189,6 +197,7 @@ select_permissions:
         - veh_damage_direction_of_force2_id
         - veh_damage_severity1_id
         - veh_damage_severity2_id
+        - veh_hnr_fl
         - veh_make_id
         - veh_mod_id
         - veh_mod_year
@@ -229,7 +238,6 @@ update_permissions:
         - veh_damage_direction_of_force2_id
         - veh_damage_severity1_id
         - veh_damage_severity2_id
-        - veh_hnr_fl
         - veh_make_id
         - veh_mod_id
         - veh_mod_year

@@ -6,36 +6,59 @@ The design supports an editing environment which enables Vision Zero program sta
 
 ![vision zero data flow](../docs/images/data_flow.png)
 
-- [Data sources](#data-sources)
-  - [TxDOT Crash Records Information System (CRIS)](#txdot-crash-records-information-system-cris)
-    - [Design](#design)
-    - [CRIS Extract configuration and accounts](#cris-extract-configuration-and-accounts)
-    - [CRIS data processing](#cris-data-processing)
-    - [Lookup tables](#lookup-tables)
-      - [Lookup table structure and custom lookup table values](#lookup-table-structure-and-custom-lookup-table-values)
-    - [Charges records](#charges-records)
-    - [Database IDs, CRIS record IDs, and primary keys](#database-ids-cris-record-ids-and-primary-keys)
-    - [User-created crash records, aka "temporary" records](#user-created-crash-records-aka-temporary-records)
-    - [Audit fields](#audit-fields)
-    - [Change logs](#change-logs)
-  - [Austin Police Department non-CR3 or "blueform" crashes](#austin-police-department-non-cr3-or-blueform-crashes)
-  - [Austin-Travis County Emergency Medical Services (EMS)](#austin-travis-county-emergency-medical-services-ems)
-  - [Austin Fire Department (AFD)](#austin-fire-department-afd)
-  - [Geospatial layers](#geospatial-layers)
-- [Common maintenance tasks](#common-maintenance-tasks)
-  - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
-  - [Add a custom column to `crashes`, `units`, or `people`](#add-a-custom-column-to-crashes-units-or-people)
-  - [Adding a computed or generated field to `crashes`, `units`, or `people`](#adding-a-computed-or-generated-field-to-crashes-units-or-people)
-  - [Refresh lookup tables with the latest CRIS values](#refresh-lookup-tables-with-the-latest-cris-values)
-  - [Add a custom lookup value to a CRIS-managed lookup table (todo)](#add-a-custom-lookup-value-to-a-cris-managed-lookup-table-todo)
-  - [Debugging record triggers](#debugging-record-triggers)
-  - [Parsing change log data](#parsing-change-log-data)
-  - [Creating a new geospatial layer](#creating-a-new-geospatial-layer)
-- [Backups](#backups)
-- [Hasura](#hasura)
-- [Development and deployment](#development-and-deployment)
-  - [Generating migrations and metadata changes](#generating-migrations-and-metadata-changes)
-  - [Merging an approved feature branch](#merging-an-approved-feature-branch)
+- [Vision Zero Database (VZD)](#vision-zero-database-vzd)
+  - [Data sources](#data-sources)
+    - [TxDOT Crash Records Information System (CRIS)](#txdot-crash-records-information-system-cris)
+      - [Design](#design)
+      - [CRIS Extract configuration and accounts](#cris-extract-configuration-and-accounts)
+        - [Extract delivery configuration](#extract-delivery-configuration)
+        - [Extract file configuration](#extract-file-configuration)
+      - [CRIS data processing](#cris-data-processing)
+      - [Lookup tables](#lookup-tables)
+        - [Lookup table structure and custom lookup table values](#lookup-table-structure-and-custom-lookup-table-values)
+      - [Charges records](#charges-records)
+      - [Database IDs, CRIS record IDs, and primary keys](#database-ids-cris-record-ids-and-primary-keys)
+      - [User-created crash records, aka "temporary" records](#user-created-crash-records-aka-temporary-records)
+      - [Audit fields](#audit-fields)
+      - [Change logs](#change-logs)
+    - [Austin Police Department non-CR3 or "blueform" crashes](#austin-police-department-non-cr3-or-blueform-crashes)
+      - [De-duplicating non-CR3 records](#de-duplicating-non-cr3-records)
+    - [Austin-Travis County Emergency Medical Services (EMS)](#austin-travis-county-emergency-medical-services-ems)
+      - [Integration](#integration)
+      - [Crash record matching](#crash-record-matching)
+      - [Matching System Overview](#matching-system-overview)
+      - [Database Triggers](#database-triggers)
+        - [CRIS Crash Matching Trigger (`update_crash_ems_match`)](#cris-crash-matching-trigger-update_crash_ems_match)
+        - [EMS Record Update Handler (`ems_update_handle_record_match_event`)](#ems-record-update-handler-ems_update_handle_record_match_event)
+        - [Person Matching Function (`find_matching_person_ids`)](#person-matching-function-find_matching_person_ids)
+        - [Non-CR3 Matching Trigger (`update_noncr3_ems_match`)](#non-cr3-matching-trigger-update_noncr3_ems_match)
+        - [Match Status Values](#match-status-values)
+      - [Injury severity classification](#injury-severity-classification)
+      - [EMS Spatial Attributes](#ems-spatial-attributes)
+    - [Austin Fire Department (AFD)](#austin-fire-department-afd)
+    - [Computer-Aided Dispatch records](#computer-aided-dispatch-records)
+    - [Geospatial layers](#geospatial-layers)
+  - [Common maintenance tasks](#common-maintenance-tasks)
+    - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
+    - [Add a custom column to `crashes`, `units`, or `people`](#add-a-custom-column-to-crashes-units-or-people)
+    - [Adding a computed or generated field to `crashes`, `units`, or `people`](#adding-a-computed-or-generated-field-to-crashes-units-or-people)
+    - [Refresh lookup tables with the latest CRIS values](#refresh-lookup-tables-with-the-latest-cris-values)
+    - [Add a new CRIS lookup table to the database](#add-a-new-cris-lookup-table-to-the-database)
+    - [Add a custom lookup value to a CRIS-managed lookup table (todo)](#add-a-custom-lookup-value-to-a-cris-managed-lookup-table-todo)
+    - [Debugging record triggers](#debugging-record-triggers)
+    - [Parsing change log data](#parsing-change-log-data)
+    - [Creating a new geospatial layer](#creating-a-new-geospatial-layer)
+    - [Updating an existing geospatial layer](#updating-an-existing-geospatial-layer)
+  - [Backups](#backups)
+  - [Hasura](#hasura)
+  - [Development and deployment](#development-and-deployment)
+    - [Generating migrations and metadata changes](#generating-migrations-and-metadata-changes)
+    - [Merging an approved feature branch](#merging-an-approved-feature-branch)
+  - [Database Schema Documentation](#database-schema-documentation)
+  - [Exported database views (`database/views/`)](#exported-database-views-databaseviews)
+    - [How the view export works](#how-the-view-export-works)
+    - [Regenerating view SQL locally](#regenerating-view-sql-locally)
+    - [Adding or changing a view](#adding-or-changing-a-view)
 
 ## Data sources
 
@@ -137,7 +160,7 @@ Any part of the range that is in the future will create daily zips that include 
 
 #### CRIS data processing
 
-We receive CRIS data from TxDOT on a nightly basis through the CRIS "automated interface", which delivers an encrypted `.zip` file to an S3 bucket on our AWS premise. The `.zip` file contains all crash records _processed_ in the last 24 hours, and includes both CSV files and crash report PDFs (aka CR3s).
+We receive CRIS data from TxDOT on a nightly basis through the CRIS "automated interface", which delivers an encrypted `.zip` file to an S3 bucket on our AWS premise. The `.zip` file contains all crash records _processed_ in the last 24 hours, and includes both CSV files and crash report PDFs.
 
 See [our docs](#cris-extract-configuration-and-accounts) about the extract configuration for more details.
 
@@ -166,7 +189,7 @@ In addition to the `source` column, constraint checks must be added to tables wh
 
 For example, consider the `lookups.injry_sev` table, which includes a custom value, `KILLED (NON-ATD)`, which is used by staff to override the CRIS-defined injury severity of a person record:
 
-```
+```text
 | id  | label                    | source |
 | --- | ------------------------ | ------ |
 | 0   | UNKNOWN                  | cris   |
@@ -409,11 +432,19 @@ On the `ems__incidents` table, the `austin_full_purpose` and `location_id` are v
 
 ### Austin Fire Department (AFD)
 
+### Computer-Aided Dispatch records
+
+These records contain information on 911 calls and officer-initiated incidents related to traffic crashes as recorded in the Austin public safety Computer Aided Dispatch (CAD) system. They are referred to colloquially as "CAD calls".
+
+Data is provided by the public safety enterprise data team and has been reviewed and approved by subject matter experts at the Austin Fire Department, Austin Police Department, and Austin-Travis County EMS.
+
+For additional information about CAD records, see the [CAD incident import ETL](../etl/cad_incidents_import/README.md).
+
 ### Geospatial layers
 
 We have a number of tables which function as geospatial layers which are referenced by crashes and various other records. At the Vision Zero team's request, our team is actively working to expand the number of layers available in the database as well as add new attribute columns to crash records which will be populated based on their intersection with these layers.
 
-See also the guidance for creating a new geospatial layer in the common maintenance tasks section, below.
+These layers can be updated with our [ArcGIS Online helper utility](/toolbox/load_agol_layer). See also the guidance for creating and updating geospatial layers in the common maintance tasks section, below.
 
 | Table                   | Geometry type  | description                                                                                                      | owner/source                                                         |
 | ----------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
@@ -421,7 +452,7 @@ See also the guidance for creating a new geospatial layer in the common maintena
 | `jurisdictions`         | `MultiPolygon` | City of Austin jurisdictions                                                                                     | ArcGIS Online authoritative layer owned by CTM GIS                   |
 | `engineering_areas`     | `MultiPolygon` | TPW traffic engineering areas                                                                                    | ArcGIS Online authoritative layer owned by DTS GIS                   |
 | `non_coa_roadways`      | `MultiPolygon` | Polygon layer covering roadways which are not maintained by the City of Austin                                   | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
-| `atd_txdot_locations`   | `MultiPolygon` | Aka, "location polygons", these shapes are used to group crashes based on an intersection or road segment        | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
+| `locations`             | `MultiPolygon` | Aka, "location polygons", these shapes are used to group crashes based on an intersection or road segment        | ArcGIS Online authoritative layer maintained by Vision Zero GIS team |
 | `signal_engineer_areas` | `MultiPolygon` | Polygon zones assigned to traffic signal engineers                                                               | ArcGIS Online authoritative layer owned by DTS GIS                   |
 | `zip_codes`             | `MultiPolygon` | Polygons which represent the Zone Improvement Plan (ZIP) postal code areas in the Austin metro area              | ArcGIS Online authoritative layer owned by DTS GIS                   |
 | `apd_sectors`           | `MultiPolygon` | Polygons which represent Austin Police Department (APD) sectors and districts used for dispatching and reporting | ArcGIS Online authoritative layer owned by APD                       |
@@ -546,6 +577,19 @@ As a best practice, tables should always be configured with `created_at` of type
 
 Typically, any foreign key constraint that references the layer should use the `ON UPDATE SET NULL` directive to ensure that the rows in the layer table can be deleted and re-inserted without being blocked by foreign references.
 
+### Updating an existing geospatial layer
+
+Use the [ArcGIS Online Layer Helper](/toolbox/load_agol_layer) to update layers in our database from their authoritative source on ArcGIS Online.
+
+After a geospatial layer is updated, you must reprocess any records which reference the layer. These updates require manual crafting of SQL statements which mirror the trigger functions that typically set these associations when a record is inserted or updated. For example, after updating the `location` polygons layer, you will need to re-process the `location_id` associations for `crashes`, `atd_apd_blueform`, `ems__incidents`, and `afd__incdents`. 
+
+You can find example SQL statements for reprocessing reference layer associations in the following issues:
+
+* [Refresh the locations polygon layer](https://github.com/cityofaustin/atd-data-tech/issues/26112)
+* [Refresh the jurisdictions layer](https://github.com/cityofaustin/atd-data-tech/issues/20461#issuecomment-2576082208)
+* [Refresh the non-COA roadways layer](https://github.com/cityofaustin/atd-data-tech/issues/19904#issuecomment-2477118070)
+* [Refresh the APD sectors layer](https://github.com/cityofaustin/atd-data-tech/issues/22714#issuecomment-2945543564)
+
 ## Backups
 
 Daily database backups are managed via AWS RDS. Backups are retained for 14 Days.
@@ -594,21 +638,104 @@ Once we see that no errors occur when applying the sequence of migrations locall
 
 ## Database Schema Documentation
 
-CI exists to automatically generate a database schema documentation file. This occurs
-when a PR is created and subsequently when a commit is pushed onto a PR'd branch.
-The CI is performed by a GitHub action which does the following:
+CI exists to automatically generate and publish database schema documentation to `dbdocs.io`.
+This is performed by the GitHub Action workflow at `.github/workflows/dbdocs.yml`, which runs
+on pushes to the `main` and `production` branches (and can also be run manually).
+
+At a high level, the workflow does the following:
 
 1. Install the Hasura CLI for `graphql-engine`.
 2. Spin up a postgres database which is initially empty.
-3. Use the `hasura` CLI to deploy migrations, which build up the VZ DB
-4. Install and use the `dbdocs` npm tool to generate a DBML file for the DB
-5. Use the `dbdocs` tool again to upload the documentation to https://dbdocs.io.
+3. Use the `hasura` CLI to deploy migrations, which build up the VZ database schema.
+4. Install and use the `dbdocs` npm tool to generate a DBML file for the database.
+5. Use the `dbdocs` tool again to publish the documentation to `dbdocs.io`.
 
 The documentation can be found at:
 
-- Staging: https://dbdocs.io/transportation.data/Vision-Zero-Staging
-- Production: https://dbdocs.io/transportation.data/Vision-Zero-Production
+- Staging: [Vision Zero Staging docs](https://dbdocs.io/transportation.data/Vision-Zero-Staging)
+- Production: [Vision Zero Production docs](https://dbdocs.io/transportation.data/Vision-Zero-Production)
 
-The integration with https://dbdocs.io requires a token be generated after logging
+The integration with [dbdocs.io](https://dbdocs.io) requires a token be generated after logging
 into the service locally with the `dbdocs` CLI tool. The token is stored in 1Password
 under the entry named 'DB Docs (dbdocs.io).'
+
+## Exported database views (`database/views/`)
+
+This repository tracks a set of **exported** SQL definitions for views in `database/views/*.sql`
+and materialized views in `database/views/materialized/*.sql`.
+These files are **not** the source of truth for view definitions. Instead, views/materialized views are defined
+and versioned through Hasura migrations (`database/migrations/default/**/up.sql`). And as a result,
+the actual source of truth for the current views is actually the database's concept of what they are.
+
+The `database/views/` SQL export files exist so that:
+
+- View changes are easy to **review in PRs** as plain SQL diffs
+- We have a single, consistent, auto-formatted snapshot of the current view definitions
+
+### How the view export works
+
+On feature branches (any branch except `main` and `production`), GitHub Actions runs the
+workflow `.github/workflows/export_database_views.yml` when database migrations change.
+That workflow:
+
+- Spins up a disposable Postgres + Hasura stack via `docker-compose-github-actions.yml`
+- Applies migrations and Hasura metadata (so all views exist in the database)
+- Runs `.github/workflows/export_database_views.sh` to export all `public` schema views and materialized views to disk
+  - Views are written as `database/views/<view_name>.sql`
+  - The file begins with a header comment:
+    - `-- Most recent migration: <path/to/migration/up.sql>`
+  - The body is generated from Postgres using `pg_get_viewdef(...)` and emitted as a
+    `CREATE OR REPLACE VIEW <view_name> AS ...` statement
+  - Materialized views are written as `database/views/materialized/<view_name>.sql`
+    - The file begins with the same `-- Most recent migration: ...` header
+    - The body is emitted as:
+      - `DROP MATERIALIZED VIEW IF EXISTS <view_name>;`
+      - `CREATE MATERIALIZED VIEW <view_name> AS ...`
+- Formats the exported SQL using `sqruff` (configured in `.sqruff`)
+- Commits and pushes any resulting `database/views/*` changes back to the same branch
+
+This is why you may see commits like `🤖 Export database views for <branch>` show up on PRs:
+the workflow is keeping `database/views/` synchronized with the migrations on that branch.
+
+### Regenerating view SQL locally
+
+If you’re changing or adding views and want to update `database/views/` locally (instead of
+waiting for CI to push a bot commit), you can regenerate them with the same script CI uses.
+
+Please note, while you can push changes on these views, but it's a non-op, they will be
+overwritten. All changes to the views must go through the `graphql-engine` migration process.
+
+Prerequisites:
+
+- The local database stack is running (so `docker compose exec postgis psql ...` works)
+- Migrations have been applied so the views exist in the database
+
+From the repo root:
+
+```bash
+# Export current view/materialized view definitions to database/views/
+./.github/workflows/export_database_views.sh
+
+# Apply repo SQL formatting rules (best-effort auto-fix)
+sqruff fix database/views
+```
+
+Notes:
+
+- By default, the export script uses `docker compose exec postgis psql ...`. In CI it uses
+  the `--github-action` flag so it can call `psql` directly against `localhost` using `PG*`
+  environment variables.
+- The script exports all views and materialized views in the `public` schema (excluding PostGIS helper views like
+  `geometry_columns`/`geography_columns`).
+
+### Adding or changing a view
+
+When updating a view:
+
+- Make the change in a **migration** (e.g. `CREATE OR REPLACE VIEW ...` in an `up.sql`)
+- Ensure Hasura metadata is tracking the view if it needs GraphQL exposure (relationships,
+  permissions, etc.). View metadata lives under:
+  - `database/metadata/databases/default/tables/public_*_view.yaml`
+  - `database/metadata/databases/default/tables/tables.yaml` includes those files
+- Regenerate `database/views/<view>.sql` (locally if you want to peek before a push, or just let CI do it) so reviewers can see the
+  updated definition and the `-- Most recent migration:` breadcrumb

@@ -1,5 +1,6 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import { SymbolLayerSpecification, RasterLayerSpecification } from "mapbox-gl";
+import { CSSProperties } from "react";
 
 // The Nearmap API key is managed by CTM. Contact help desk for maintenance and troubleshooting.
 const NEARMAP_KEY = process.env.NEXT_PUBLIC_NEARMAP_KEY;
@@ -21,7 +22,7 @@ export const MAP_MAX_BOUNDS: [[number, number], [number, number]] = [
 /** Different basemap style options */
 export const mapStyleOptions = {
   darkStreets: "mapbox://styles/mapbox/dark-v11",
-  lightStreets: "mapbox://styles/mapbox/light-v11",
+  lightStreets: "mapbox://styles/mapbox/streets-v12",
   aerial: "mapbox://styles/mapbox/satellite-streets-v12",
 };
 
@@ -31,7 +32,7 @@ export const DEFAULT_MAP_PARAMS = {
   boxZoom: false,
   mapboxAccessToken: MAPBOX_TOKEN,
   maxBounds: MAP_MAX_BOUNDS,
-  mapStyle: "mapbox://styles/mapbox/dark-v11",
+  mapStyle: "mapbox://styles/mapbox/satellite-streets-v12",
 };
 
 interface Layers {
@@ -44,6 +45,18 @@ const LAYERS: Layers = {
     id: "simple-tiles",
     type: "raster",
     source: "raster-tiles",
+    paint: {
+      // This raster layer wont be visible until zoom level 15
+      "raster-opacity": [
+        "interpolate", // continuous/smooth opacity transition between zoom levels
+        ["linear"],
+        ["zoom"],
+        14,
+        0, // zoom 14: invisible
+        15,
+        1, // zoom 15: fully visible
+      ],
+    },
   },
   streetLabels: {
     // borrowed from mapbox mapbox streets v11 style
@@ -127,4 +140,20 @@ export const LOCATION_MAP_CONFIG = {
     },
   },
   layers: LAYERS,
+};
+
+/**
+ * Due to mapGl quirkiness, we must pass marker
+ * styles as inline css — stylesheets dont work
+ */
+export const ICON_MAP_MARKER_STYLES: CSSProperties = {
+  width: 36,
+  height: 36,
+  borderRadius: "50%",
+  border: "1.5px solid #fff",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  cursor: "pointer",
+  boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
 };

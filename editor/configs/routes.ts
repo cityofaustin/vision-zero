@@ -1,12 +1,6 @@
-import {
-  FaGaugeHigh,
-  FaLocationDot,
-  FaUserGroup,
-  FaCloudArrowUp,
-  FaHeart,
-  FaCarBurst,
-  FaTruckMedical,
-} from "react-icons/fa6";
+import { FaRegHeart, FaCarBurst } from "react-icons/fa6";
+import { RiDashboard3Line } from "react-icons/ri";
+import { LuMapPin, LuAmbulance, LuCloudUpload, LuUsers } from "react-icons/lu";
 import { IconType } from "react-icons";
 
 interface Route {
@@ -20,7 +14,7 @@ export const routes: Route[] = [
   {
     path: "dashboard",
     label: "Dashboard",
-    icon: FaGaugeHigh,
+    icon: RiDashboard3Line,
   },
   {
     path: "crashes",
@@ -30,27 +24,27 @@ export const routes: Route[] = [
   {
     path: "fatalities",
     label: "Fatalities",
-    icon: FaHeart,
+    icon: FaRegHeart,
   },
   {
     path: "locations",
     label: "Locations",
-    icon: FaLocationDot,
+    icon: LuMapPin,
   },
   {
     path: "ems",
     label: "EMS",
-    icon: FaTruckMedical,
+    icon: LuAmbulance,
   },
   {
     path: "upload-non-cr3",
     label: "Upload Non-CR3",
-    icon: FaCloudArrowUp,
+    icon: LuCloudUpload,
     allowedRoles: ["editor", "vz-admin"],
   },
   {
     path: "users",
     label: "Users",
-    icon: FaUserGroup,
+    icon: LuUsers,
   },
 ];

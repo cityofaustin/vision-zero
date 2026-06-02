@@ -18,6 +18,7 @@ export const GET_CRASH = gql`
       case_id
       crash_timestamp
       fhe_collsn_id
+      is_coa_roadway
       collsn {
         id
         label
@@ -40,7 +41,7 @@ export const GET_CRASH = gql`
       obj_struck_id
       crash_speed_limit
       traffic_cntl_id
-      address_primary
+      address_display
       rpt_block_num
       rpt_street_name
       rpt_street_desc
@@ -54,11 +55,15 @@ export const GET_CRASH = gql`
         id
         label
       }
+      investigat_agency_id
+      agency {
+        id
+        label
+      }
       rpt_hwy_num
       rpt_street_pfx
       rpt_street_name
       rpt_street_sfx
-      address_secondary
       rpt_sec_block_num
       rpt_sec_street_name
       rpt_sec_street_desc
@@ -80,17 +85,20 @@ export const GET_CRASH = gql`
       onsys_fl
       private_dr_fl
       road_constr_zone_fl
+      road_constr_zone_wrkr_fl
       rr_relat_fl
       schl_bus_fl
       toll_road_fl
       law_enforcement_ytd_fatality_num
       investigator_narrative
+      narrative_summary
       cr3_stored_fl
       latitude
       longitude
       location_id
       is_temp_record
       in_austin_full_purpose
+      diagram_transform
       crash_injury_metrics_view {
         vz_fatality_count
         sus_serious_injry_count
@@ -134,10 +142,15 @@ export const GET_CRASH = gql`
           id
           label
         }
+        veh_hnr_fl
         movement_id
         movt {
           id
           label
+        }
+        people {
+          id
+          prsn_nbr
         }
         contrib_factr {
           id
@@ -159,10 +172,28 @@ export const GET_CRASH = gql`
           id
           label
         }
+        contrib_factr_1_id
+        contrib_factr_2_id
+        contrib_factr_3_id
+        contrib_factr_p1_id
+        contrib_factr_p2_id
         unit_injury_metrics_view {
           vz_fatality_count
           sus_serious_injry_count
         }
+        autonomous_unit_id
+        autonomous_unit {
+          id
+          label
+        }
+        rpt_autonomous_level_engaged_id
+        autonomous_level_engaged {
+          id
+          label
+        }
+      }
+      unit_types_involved {
+        unit_types_involved
       }
       people_list_view(order_by: { unit_nbr: asc, prsn_nbr: asc }) {
         crash_pk
@@ -178,6 +209,11 @@ export const GET_CRASH = gql`
         prsn_mid_name
         prsn_last_name
         prsn_injry_sev_id
+        prsn_rest_id
+        rest {
+          id
+          label
+        }
         injry_sev {
           id
           label
@@ -204,6 +240,7 @@ export const GET_CRASH = gql`
         }
       }
       charges_cris {
+        id
         unit_nbr
         prsn_nbr
         citation_nbr
@@ -251,10 +288,14 @@ export const GET_CRASH = gql`
         id
         updated_by
         created_at
+        updated_at
         text
         crash_pk
       }
-      ems__incidents(order_by: { id: asc }) {
+      ems__incidents(
+        where: { is_deleted: { _eq: false } }
+        order_by: { id: asc }
+      ) {
         id
         apd_incident_numbers
         crash_match_status
@@ -283,6 +324,9 @@ export const GET_CRASH = gql`
   }
 `;
 
+/**
+ * Record locator search used by the navbar search component
+ */
 export const CRASH_NAV_SEARCH = gql`
   query CrashNavigationSearch($searchValue: String!) {
     record_locator: crashes(
@@ -294,11 +338,91 @@ export const CRASH_NAV_SEARCH = gql`
       id
       record_locator
     }
+  }
+`;
+
+/**
+ * Case ID search used by the navbar search component
+ */
+export const CASE_NAV_SEARCH = gql`
+  query CrashNavigationSearch($searchValue: String!) {
     case_id: crashes(
       where: { case_id: { _eq: $searchValue }, is_deleted: { _eq: false } }
     ) {
       id
       record_locator
+    }
+  }
+`;
+
+/**
+ * Type-ahead search for selecting a crash to transfer data to when deleting a temp crash.
+ * Only returns non-temp, non-deleted crashes (excludes current crash).
+ */
+export const CRASH_TRANSFER_SEARCH = gql`
+  query CrashTransferSearch(
+    $searchPattern: String!
+    $currentCrashId: Int!
+    $minCrashTimestamp: timestamptz!
+  ) {
+    crashes(
+      where: {
+        _and: [
+          { id: { _neq: $currentCrashId } }
+          { is_deleted: { _eq: false } }
+          { is_temp_record: { _eq: false } }
+          { crash_timestamp: { _gte: $minCrashTimestamp } }
+          {
+            _or: [
+              { record_locator: { _ilike: $searchPattern } }
+              { address_display: { _ilike: $searchPattern } }
+            ]
+          }
+        ]
+      }
+      limit: 20
+      order_by: { record_locator: asc }
+    ) {
+      id
+      record_locator
+      address_display
+    }
+  }
+`;
+
+/**
+ * Fetch a crash by id with recommendation for transfer flow (overwrite or move).
+ */
+export const GET_CRASH_RECOMMENDATION_BY_ID = gql`
+  query GetCrashRecommendationById($id: Int!) {
+    crashes(where: { id: { _eq: $id }, is_deleted: { _eq: false } }) {
+      id
+      record_locator
+      recommendation {
+        id
+        recommendations_partners {
+          id
+          partner_id
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * Fetch target crash fatalities (people with fatal injury severity) for photo transfer.
+ */
+export const GET_TARGET_CRASH_FATALITY = gql`
+  query GetTargetCrashFatality($id: Int!) {
+    crashes(where: { id: { _eq: $id }, is_deleted: { _eq: false } }) {
+      id
+      people_list_view(
+        where: { prsn_injry_sev_id: { _eq: 4 } }
+        order_by: { unit_nbr: asc, prsn_nbr: asc }
+      ) {
+        id
+        prsn_injry_sev_id
+      }
     }
   }
 `;

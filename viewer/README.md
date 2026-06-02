@@ -1,10 +1,11 @@
 # Vision Zero Viewer (VZV)
 
-Production site: https://visionzero.austin.gov/viewer/
-Staging site: https://visionzero-staging.austinmobility.io/viewer/
-
+![Vision Zero Viewer](../docs/images/vzv.png)
 
 The Vision Zero Viewer is a public-facing interactive web app showing crash data related to Vision Zero. Users can view crash data by different categories, including transportation mode, demographic groups impacted, time of day, and location.
+
+* Production site: https://visionzero.austin.gov/viewer/
+* Staging site: https://visionzero-staging.austinmobility.io/viewer/
 
 Crash data is sourced from TxDOT's Crash Records Information System (CRIS) database. [Vision Zero Editor](https://github.com/cityofaustin/vision-zero/tree/production/editor) provides tools for City of Austin Transportation Department staff to enrich crash data with additional attributes, as well as correct any erroneous or missing data.
 
@@ -13,6 +14,8 @@ For resources and updates, see the [Vision Zero Crash Data System](https://githu
 See our Socrata open datasets for [crash](https://data.austintexas.gov/Transportation-and-Mobility/Vision-Zero-Crash-Report-Data/y2wy-tgr5/data) and [demographics](https://data.austintexas.gov/Transportation-and-Mobility/Vision-Zero-Demographic-Statistics/xecs-rpy9) data.
 
 ## Getting started
+
+Create your environment file by saving a copy the `env_template` file as `.env.local`. The values for this file can be found in 1password under **Vision Zero Viewer (VZV) Environment File**
 
 We use [Node Version Manager](https://github.com/nvm-sh/nvm) (nvm) to keep our `node` versions in sync with our environments. With `nvm` installed, run `nvm use` from this directory to activate the current `node` and `npm` version required for this project. If you don't want to use `nvm`, refer to the `.nvmrc` file for the `node` version you should install.
 

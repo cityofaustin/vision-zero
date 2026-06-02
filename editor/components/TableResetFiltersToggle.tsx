@@ -1,9 +1,9 @@
 import { Dispatch, SetStateAction } from "react";
 import Button from "react-bootstrap/Button";
-import { FaXmark } from "react-icons/fa6";
 import AlignedLabel from "./AlignedLabel";
 import { QueryConfig } from "@/types/queryBuilder";
 import { produce } from "immer";
+import { LuUndo2 } from "react-icons/lu";
 
 interface Props {
   isMapActive: boolean;
@@ -22,7 +22,7 @@ export default function TableResetFiltersToggle({
 }: Props) {
   return (
     <Button
-      variant="outline-secondary"
+      variant="secondary"
       onClick={() => {
         if (isMapActive && initialQueryConfig.mapConfig) {
           /**
@@ -45,8 +45,8 @@ export default function TableResetFiltersToggle({
       }}
     >
       <AlignedLabel>
-        <FaXmark className="me-2" />
-        Reset
+        <LuUndo2 className="me-2" />
+        Reset filters
       </AlignedLabel>
     </Button>
   );

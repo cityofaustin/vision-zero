@@ -102,7 +102,7 @@ const CrashesByMode = () => {
         let newData = {};
         // Use Promise.all to let all requests resolve before setting chart data by year
         await Promise.all(
-          yearsArray().map(async (year) => {
+          yearsArray.map(async (year) => {
             // If getting data for current year (only including years past January), set end of query to last day of previous month,
             // else if getting data for previous years, set end of query to last day of year
             let endDate =
@@ -128,11 +128,11 @@ const CrashesByMode = () => {
       setChartLegend(chartRef.current.chartInstance.generateLegend());
   }, [chartData, legendColors]);
 
-  const createChartLabels = () => yearsArray().map((year) => `${year}`);
+  const createChartLabels = () => yearsArray.map((year) => `${year}`);
 
   // Tabulate fatalities/injuries by mode fields in data
   const getModeData = (fields) =>
-    yearsArray().map((year) => {
+    yearsArray.map((year) => {
       return chartData[year].reduce((accumulator, record) => {
         const isFatalQuery =
           crashType.name === "fatalities" ||
@@ -179,7 +179,7 @@ const CrashesByMode = () => {
 
   // Get an array of annual totals for the selected crash type
   const getYearTotalsArray = useMemo(() => {
-    const yearTotalsArray = yearsArray().map((year, index) => {
+    const yearTotalsArray = yearsArray.map((year, index) => {
       let currentYearTotal = 0;
       data.datasets &&
         data.datasets.forEach((mode) => {

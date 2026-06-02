@@ -30,7 +30,7 @@ import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 import MapGeocoder from "./Geocoder/Geocoder";
 import { arcgisToGeoJSON } from "@terraformer/arcgis";
 
-export const MAPBOX_TOKEN = `pk.eyJ1Ijoiam9obmNsYXJ5IiwiYSI6ImNrM29wNnB3dDAwcXEzY29zMTU5bWkzOWgifQ.KKvoz6s4NKNHkFVSnGZonw`;
+export const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
 const Map = () => {
   // Set initial map config
@@ -338,6 +338,48 @@ const Map = () => {
       interactiveLayerIds={interactiveLayerIds}
       onClick={_onSelectCrashPoint}
       ref={mapRef}
+      onLoad={() => {
+        // Fix accessibility issues inside mapbox attribution
+        const map = mapRef.current?.getMap();
+        const container = map?.getContainer();
+        if (!container) return;
+
+        // Add role="listitem" to attribution links
+        const attrList = container.querySelector(".mapboxgl-ctrl-attrib-inner");
+        if (attrList) {
+          attrList.querySelectorAll("a").forEach((a) => {
+            a.setAttribute("role", "listitem");
+          });
+        }
+
+        // Add a visually hidden label to the attribution toggle button
+        const toggleBtn = container.querySelector(
+          ".mapboxgl-ctrl-attrib-button"
+        );
+        if (toggleBtn) {
+          const hiddenLabel = document.createElement("span");
+          hiddenLabel.textContent = "Toggle attribution";
+          hiddenLabel.setAttribute("aria-hidden", "true");
+          hiddenLabel.style.cssText = `
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0,0,0,0);
+          white-space: nowrap;
+          border: 0;
+        `;
+          toggleBtn.appendChild(hiddenLabel);
+        }
+
+        // Align aria-label with visible text on "Improve this map" link
+        const improveLink = container.querySelector(".mapbox-improve-map");
+        if (improveLink) {
+          improveLink.setAttribute("aria-label", "Improve this map");
+        }
+      }}
     >
       {/* Provide empty source and layer as target for beforeId params to set order of layers */}
       {baseSourceAndLayer}

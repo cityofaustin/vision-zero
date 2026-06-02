@@ -29,6 +29,7 @@ export default function MapGeocoderControl(props: GeocoderControlProps) {
         marker: false,
         accessToken: MAPBOX_TOKEN || "",
         bbox: ATX_BOUNDING_BOX,
+        placeholder: "Find an address",
         flyTo: { speed: 2.5 },
       });
       ctrl.on("result", (evt) => {

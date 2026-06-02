@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "./coa_seal_transparent_white.png";
+import logo from "./COA-Logo-Stacked-Faded-White-RGB.svg";
 
 const SideMapFooter = () => {
   const footerStyle = {

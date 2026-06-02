@@ -5,17 +5,12 @@ import { FaMap, FaChartPie } from "react-icons/fa6";
 import DashboardLinkCard, {
   DashboardLinkCardProps,
 } from "@/components/DashboardLinkCard";
+import UserEventsLogger from "@/components/UserEventsLogger";
 import { useDocumentTitle } from "@/utils/documentTitle";
 
 const VZV_ENDPOINT = process.env.NEXT_PUBLIC_VZV_ENDPOINT || "";
 
 const dashboardLinks: DashboardLinkCardProps[] = [
-  {
-    title: "Arterial Management Division Overview",
-    description: "Top location overview, by collision types and modes",
-    href: "https://app.powerbigov.us/links/GACOsce5fi?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare",
-    icon: FaChartPie,
-  },
   {
     title: "Vision Zero Viewer",
     description:
@@ -24,22 +19,16 @@ const dashboardLinks: DashboardLinkCardProps[] = [
     icon: FaMap,
   },
   {
-    title: "Emerging Hotspots and Bond Locations",
-    description:
-      "Track crash impact of Vision Zero Bond Projects and changing crash trends",
-    href: "https://app.powerbigov.us/links/RmMrnaSMLp?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare",
-    icon: FaChartPie,
-  },
-  {
     title: "Crash Data by Location",
     description: "Based on Vision Zero location polygons",
-    href: "https://austin.maps.arcgis.com/apps/webappviewer/index.html?id=981b687bb68d465cab737792bbf56198",
+    href: "https://experience.arcgis.com/experience/4d642c739efe472b8a86c11be5f1b1dc",
     icon: FaMap,
   },
   {
-    title: "High Injury Roadways",
-    description: "Each High Injury Roadway by Polygon with various statistics",
-    href: "https://app.powerbigov.us/links/pdguGuhSGE?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare",
+    title: "Key Metrics",
+    description:
+      "Collection of internal dashboards enabling a wide range of crash analysis",
+    href: "https://app.powerbigov.us/links/JznhTDu8kc?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare",
     icon: FaChartPie,
   },
   {
@@ -53,7 +42,7 @@ const dashboardLinks: DashboardLinkCardProps[] = [
 export default function Dashboard() {
   useDocumentTitle("Dashboard");
   return (
-    <>
+    <UserEventsLogger eventName="dashboard_view">
       <Row className="mt-3">
         <Col md={9}>
           <p>
@@ -91,6 +80,6 @@ export default function Dashboard() {
           </Col>
         ))}
       </Row>
-    </>
+    </UserEventsLogger>
   );
 }

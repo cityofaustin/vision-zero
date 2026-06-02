@@ -1,0 +1,39 @@
+table:
+  name: user_events
+  schema: public
+insert_permissions:
+  - role: editor
+    permission:
+      check: {}
+      columns:
+        - event_name
+        - user_email
+  - role: readonly
+    permission:
+      check: {}
+      columns:
+        - event_name
+        - user_email
+    comment: ""
+  - role: vz-admin
+    permission:
+      check: {}
+      columns:
+        - event_name
+        - user_email
+select_permissions:
+  - role: editor
+    permission:
+      columns: []
+      filter: {}
+    comment: ""
+  - role: readonly
+    permission:
+      columns: []
+      filter: {}
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns: []
+      filter: {}
+    comment: ""
