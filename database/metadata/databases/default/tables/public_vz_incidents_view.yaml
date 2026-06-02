@@ -1,0 +1,79 @@
+table:
+  name: vz_incidents_view
+  schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - addresses
+        - agencies
+        - call_dispositions
+        - final_problems
+        - incident_numbers
+        - initial_problems
+        - location_ids
+        - cad_incident_count
+        - id
+        - spread_meters
+        - time_spread_minutes
+        - incident_bbox
+        - incident_bounding_circle
+        - incident_centroid
+        - incident_convex_hull
+        - incident_points
+        - first_response_date
+        - time_first_unit_arrived
+        - in_austin_full_purpose
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - addresses
+        - agencies
+        - call_dispositions
+        - final_problems
+        - incident_numbers
+        - initial_problems
+        - location_ids
+        - cad_incident_count
+        - id
+        - spread_meters
+        - time_spread_minutes
+        - incident_bbox
+        - incident_bounding_circle
+        - incident_centroid
+        - incident_convex_hull
+        - incident_points
+        - first_response_date
+        - time_first_unit_arrived
+        - in_austin_full_purpose
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - addresses
+        - agencies
+        - call_dispositions
+        - final_problems
+        - incident_numbers
+        - initial_problems
+        - location_ids
+        - cad_incident_count
+        - id
+        - spread_meters
+        - time_spread_minutes
+        - incident_bbox
+        - incident_bounding_circle
+        - incident_centroid
+        - incident_convex_hull
+        - incident_points
+        - first_response_date
+        - time_first_unit_arrived
+        - in_austin_full_purpose
+      filter: {}
+      allow_aggregations: true
+    comment: ""

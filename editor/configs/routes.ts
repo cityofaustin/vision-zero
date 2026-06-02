@@ -7,6 +7,7 @@ import {
   LuUsers,
   LuPhone,
 } from "react-icons/lu";
+import { FaRoad } from "react-icons/fa6";
 import { IconType } from "react-icons";
 
 interface Route {
@@ -46,6 +47,11 @@ export const routes: Route[] = [
     path: "cad",
     label: "CAD",
     icon: LuPhone,
+  },
+  {
+    path: "vz",
+    label: "VZ",
+    icon: FaRoad,
   },
   {
     path: "upload-non-cr3",
