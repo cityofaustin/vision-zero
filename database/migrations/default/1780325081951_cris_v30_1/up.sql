@@ -1,0 +1,15 @@
+insert into lookups.agency (id, label, source) values (10239, 'CITY OF PLANO', 'cris');
+insert into lookups.agency (id, label, source) values (10240, 'JEFFERSON COUNTY ENGINEERING DEPARTMENT', 'cris');
+insert into lookups.agency (id, label, source) values (10241, 'Genevieve Urueta', 'cris');
+insert into lookups.agency (id, label, source) values (3403, 'ENCHANTED OAKS POLICE DEPARTMENT', 'cris');
+insert into lookups.agency (id, label, source) values (3404, 'SHALLOWATER ISD POLICE DEPARTMENT', 'cris');
+insert into lookups.agency (id, label, source) values (3405, 'FANNIN COUNTY CONSTABLE PRECINCT 1', 'cris');
+insert into lookups.agency (id, label, source) values (3406, 'CANTON INDEPENDENT SCHOOL DISTRICT POLICE DEPARTMENT', 'cris');
+insert into lookups.agency (id, label, source) values (3407, 'FALLS COUNTY SHERIFF''S OFFICE', 'cris');
+insert into lookups.agency (id, label, source) values (3408, 'ATASCOSA COUNTY SHERIFF''S OFFICE', 'cris');
+insert into lookups.agency (id, label, source) values (3409, 'SNOOK POLICE DEPARTMENT', 'cris');
+insert into lookups.agency (id, label, source) values (3410, 'WINK-LOVING ISD POLICE DEPARTMENT', 'cris');
+insert into lookups.agency (id, label, source) values (3411, 'UNITED ISD POLICE DEPARTMENT', 'cris');
+insert into lookups.agency (id, label, source) values (3412, 'REEVES COUNTY CONSTABLE OFFICE PRECINCT 3', 'cris');
+insert into lookups.agency (id, label, source) values (3413, 'TEXAS STATE TECHNICAL COLLEGE - MARSHALL POLICE DEPARTMENT', 'cris');
+update lookups.agency set label = 'FATE POLICE DEPARTMENT' where id = 3176;
