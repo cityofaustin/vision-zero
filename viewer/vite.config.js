@@ -16,12 +16,12 @@ export default defineConfig(() => {
       svgr({ svgrOptions: { icon: true } }),
     ],
     define: {
-      // This ensures the global variable is defined for libraries that expect it
+      // Ensures the global variable is defined for libraries that expect it
       global: "globalThis",
     },
     resolve: {
       alias: {
-        // This provides the EventEmitter polyfill for mapbox-gl-geocoder and similar libraries
+        // Provides the EventEmitter polyfill for mapbox-gl-geocoder and similar libraries
         events: "events",
       },
     },
