@@ -61,7 +61,9 @@
     "build": "vite build",
     "build:staging": "vite build --mode staging",
     "build:production": "vite build --mode production",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint src --max-warnings=0",
+    "format": "prettier --write src"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -94,8 +96,18 @@
     "npm": ">=6"
   },
   "devDependencies": {
+    "@eslint/js": "^9.0.0",
     "@vitejs/plugin-react": "^6.0.2",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.3",
     "react-axe": "^3.5.4",
+    "typescript-eslint": "^8.60.1",
     "vite": "^8.0.14"
   }
 }
