@@ -66,19 +66,11 @@ export default defineConfig(
       "react/jsx-no-target-blank": "error", // Security: prevents tabnabbing attacks
       "react/display-name": "off",
       "react/prop-types": "off", // Using TypeScript instead of PropTypes
+      "no-unused-vars": "off", // Disable the JavaScript version
+      "@typescript-eslint/no-unused-vars": "error", // TypeScript-aware unused vars (replaces no-unused-vars)
 
       // Override hook rule severity if needed
       "react-hooks/exhaustive-deps": "warn",
-
-      // TypeScript-aware unused vars (replaces no-unused-vars)
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        {
-          // Allows intentional unused variables with underscore prefix
-          argsIgnorePattern: "^_", // Allows: function example(_unusedParam)
-          varsIgnorePattern: "^_", // Allows: const _unusedVariable = 42
-        },
-      ],
     },
   }
 );
