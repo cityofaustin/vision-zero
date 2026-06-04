@@ -8,6 +8,15 @@ object_relationships:
   - name: vz_incident
     using:
       foreign_key_constraint_on: vz_incident_id
+  - name: vz_incidents_view
+    using:
+      manual_configuration:
+        column_mapping:
+          vz_incident_id: id
+        insertion_order: null
+        remote_table:
+          name: vz_incidents_view
+          schema: public
 array_relationships:
   - name: cad_incident_groups
     using:
