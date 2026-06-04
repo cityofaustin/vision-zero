@@ -48,3 +48,9 @@ Command line:
 npm run format           # Format all source files
 npm run format:check     # Check formatting without modifying files
 ```
+
+## Deployment
+
+Production and staging instances are deployed on Netlify automatically whenever commits are merged to production or main, respectively.
+
+Netlify deploy previews are automatically deployed for any pull request opened against main.
