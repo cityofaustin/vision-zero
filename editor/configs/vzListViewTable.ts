@@ -5,6 +5,85 @@ import { QueryConfig, FilterGroup } from "@/types/queryBuilder";
 
 const vzListViewfilterCards: FilterGroup[] = [
   {
+    id: "agency_filter_card",
+    label: "Agency",
+    groupOperator: "_and",
+    filterGroups: [
+      {
+        id: "apd",
+        label: "APD",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "apd",
+            column: "agencies",
+            operator: "_contains",
+            value: ["apd"],
+          },
+        ],
+      },
+      {
+        id: "afd",
+        label: "AFD",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "afd",
+            column: "agencies",
+            operator: "_contains",
+            value: ["afd"],
+          },
+        ],
+      },
+      {
+        id: "ems",
+        label: "EMS",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "ems",
+            column: "agencies",
+            operator: "_contains",
+            value: ["ems"],
+          },
+        ],
+      },
+      {
+        id: "no_apd",
+        label: "Non-APD",
+        groupOperator: "_or",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "ems",
+            column: "agencies",
+            operator: "_eq",
+            value: ["ems"],
+          },
+          {
+            id: "afd",
+            column: "agencies",
+            operator: "_eq",
+            value: ["afd"],
+          },
+          {
+            id: "afd_ems",
+            column: "agencies",
+            operator: "_eq",
+            value: ["afd", "ems"],
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: "geography_filter_card",
     label: "Jurisdiction",
     groupOperator: "_and",
