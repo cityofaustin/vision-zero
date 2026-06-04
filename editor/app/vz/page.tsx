@@ -12,7 +12,7 @@ export default function Crashes() {
   useDocumentTitle("Incidents");
 
   return (
-    <UserEventsLogger eventName="cad_list_view">
+    <UserEventsLogger eventName="incidents_list_view">
       <div className="h-100 d-flex flex-column">
         <div className="d-flex justify-content-between">
           <span className="fs-3 fw-bold">Incidents</span>
@@ -21,9 +21,9 @@ export default function Crashes() {
           columns={vzListViewColumns}
           initialQueryConfig={vzListViewQueryConfig}
           localStorageKey={localStorageKey}
-          filtersEventName="vz_list_filters_toggle"
-          mapEventName="vz_map_toggle"
-          downloadEventName="vz_list_download_toggle"
+          filtersEventName="incidents_list_filters_toggle"
+          mapEventName="incidents_map_toggle"
+          downloadEventName="incidents_list_download_toggle"
         />
       </div>
     </UserEventsLogger>
