@@ -1,4 +1,4 @@
-import { GeoJSONFeature } from "mapbox-gl";
+import { Point } from "geojson";
 
 export type VzIncident = {
   id?: number | null;
@@ -15,6 +15,6 @@ export type VzIncident = {
   final_problems?: string[] | null;
   response_date_earliest?: string[] | null;
   time_first_unit_arrived_earliest?: string | null;
-  point_feature?: GeoJSONFeature | null;
+  point_feature?: Point | null;
   in_austin_full_purpose?: boolean | null;
 };

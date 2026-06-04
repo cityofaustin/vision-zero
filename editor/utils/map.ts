@@ -106,6 +106,18 @@ export const useBasemap = (initialBasemapType: "streets" | "aerial") => {
 };
 
 /**
+ * Type guard that returns true if input `geometry` is a valid geojson Point
+ */
+function isPoint(geometry: unknown): geometry is Point {
+  return (
+    typeof geometry === "object" &&
+    geometry !== null &&
+    (geometry as Point).type === "Point" &&
+    Array.isArray((geometry as Point).coordinates)
+  );
+}
+
+/**
  * An index of functions that transform input data into a geojson feature collection
  */
 export const geoJsonTransformers = {
@@ -145,14 +157,19 @@ export const geoJsonTransformers = {
     } else {
       return {
         type: "FeatureCollection" as const,
-        features: data.map((row) => ({
-          type: "Feature" as const,
-          id: Number(row.id),
-          geometry: row.point_feature as Geometry,
-          properties: {
-            ...row,
-          },
-        })),
+        features: data.map((row) => {
+          if (!isPoint(row.point_feature)) {
+            throw new Error(`Invalid Point geometry for row id: ${row.id}`);
+          }
+          return {
+            type: "Feature" as const,
+            id: Number(row.id),
+            geometry: row.point_feature,
+            properties: {
+              ...row,
+            },
+          };
+        }),
       };
     }
   },
