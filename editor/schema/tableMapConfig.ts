@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const TableMapConfigSchema = z.object({
   isActive: z.boolean(),
-  geojsonTransformerName: z.enum(["latLon", "pointArray"]),
+  geojsonTransformerName: z.enum(["latLon", "pointFeature"]),
   layerProps: z.record(z.unknown()).optional(),
   mapProps: z.record(z.unknown()).optional(),
   featureLimit: z.number().optional(),

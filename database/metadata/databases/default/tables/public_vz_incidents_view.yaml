@@ -6,6 +6,7 @@ select_permissions:
     permission:
       columns:
         - addresses
+        - address_earliest
         - agencies
         - call_dispositions
         - final_problems
@@ -16,14 +17,10 @@ select_permissions:
         - id
         - spread_meters
         - time_spread_minutes
-        - incident_bbox
-        - incident_bounding_circle
-        - incident_centroid
-        - incident_convex_hull
-        - incident_points
-        - first_response_date
-        - time_first_unit_arrived
+        - response_date_earliest
+        - time_first_unit_arrived_earliest
         - in_austin_full_purpose
+        - point_feature
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -31,6 +28,7 @@ select_permissions:
     permission:
       columns:
         - addresses
+        - address_earliest
         - agencies
         - call_dispositions
         - final_problems
@@ -41,14 +39,10 @@ select_permissions:
         - id
         - spread_meters
         - time_spread_minutes
-        - incident_bbox
-        - incident_bounding_circle
-        - incident_centroid
-        - incident_convex_hull
-        - incident_points
-        - first_response_date
-        - time_first_unit_arrived
+        - response_date_earliest
+        - time_first_unit_arrived_earliest
         - in_austin_full_purpose
+        - point_feature
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -56,6 +50,7 @@ select_permissions:
     permission:
       columns:
         - addresses
+        - address_earliest
         - agencies
         - call_dispositions
         - final_problems
@@ -66,14 +61,10 @@ select_permissions:
         - id
         - spread_meters
         - time_spread_minutes
-        - incident_bbox
-        - incident_bounding_circle
-        - incident_centroid
-        - incident_convex_hull
-        - incident_points
-        - first_response_date
-        - time_first_unit_arrived
+        - response_date_earliest
+        - time_first_unit_arrived_earliest
         - in_austin_full_purpose
+        - point_feature
       filter: {}
       allow_aggregations: true
     comment: ""

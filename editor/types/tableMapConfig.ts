@@ -50,7 +50,7 @@ export interface TableMapConfig {
   /**
    * Name of the geojson transformer function to use when converting the input table to geojson
    */
-  geojsonTransformerName: "latLon" | "pointArray";
+  geojsonTransformerName: "latLon" | "pointFeature";
   /**
    * Settings to be passed to the geojson layer
    */

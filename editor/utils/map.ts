@@ -1,8 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { bbox } from "@turf/bbox";
 import { AllGeoJSON } from "@turf/helpers";
-import { FeatureCollection, Point, MultiPoint } from "geojson";
-import { LngLatBoundsLike } from "mapbox-gl";
+import {
+  FeatureCollection,
+  Point,
+  MultiPoint,
+  GeoJsonProperties,
+  Feature,
+  Geometry,
+} from "geojson";
+import { GeoJSONFeature, LngLatBoundsLike } from "mapbox-gl";
 import { mapStyleOptions } from "@/configs/map";
 import { useTheme } from "@/contexts/AppThemeProvider";
 
@@ -60,7 +67,6 @@ export const useCurrentBounds = (
   geojson: AllGeoJSON
 ): LngLatBoundsLike | undefined =>
   useMemo(() => {
-    console.log("GEOJSON", geojson);
     const bounds = bbox(geojson);
 
     if (Math.abs(bounds[0]) > 180) {
@@ -128,24 +134,25 @@ export const geoJsonTransformers = {
       features,
     };
   },
-  pointArray: (
+  pointFeature: (
     data: Record<string, unknown>[]
-  ): FeatureCollection<MultiPoint> => {
+  ): FeatureCollection<Geometry> => {
     if (!data || data.length === 0) {
       return {
         type: "FeatureCollection" as const,
         features: [],
       };
     } else {
-      console.log("DATA", data);
       return {
         type: "FeatureCollection" as const,
-        features: data
-        // todo: update view so that these are geometry objects
-        // add propeties to them here?
-        // or update view to include properties  
-        // todo: fix the typing and make the column name more generic
-          .map((row) => row.incident_points),
+        features: data.map((row) => ({
+          type: "Feature" as const,
+          id: Number(row.id),
+          geometry: row.point_feature as Geometry,
+          properties: {
+            ...row,
+          },
+        })),
       };
     }
   },

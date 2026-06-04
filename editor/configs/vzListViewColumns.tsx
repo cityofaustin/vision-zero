@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+    formatArrayToString,
   formatArrayToStringWithLinebreaks,
   formatIsoDateTime,
 } from "@/utils/formatters";
@@ -24,7 +25,7 @@ export const vzListViewColumns: ColDataCardDef<VzIncident>[] = [
     sortable: true,
   },
   {
-    path: "first_response_date",
+    path: "response_date_earliest",
     label: "Date",
     sortable: true,
     style: { minWidth: "8rem" },
@@ -35,16 +36,14 @@ export const vzListViewColumns: ColDataCardDef<VzIncident>[] = [
     path: "agencies",
     label: "Agencies",
     sortable: true,
-    valueFormatter: formatArrayToStringWithLinebreaks,
-    style: { whiteSpace: "pre-wrap" },
+    valueFormatter: formatArrayToString,
+    style: { whiteSpace: "pre-wrap", textTransform: "uppercase" },
     fetchAlways: true
   },
   {
-    path: "addresses",
-    label: "Addresses",
+    path: "address_earliest",
+    label: "Address",
     sortable: true,
-    valueFormatter: formatArrayToStringWithLinebreaks,
-    style: { whiteSpace: "pre-wrap" },
     fetchAlways: true
   },
   {
@@ -62,8 +61,8 @@ export const vzListViewColumns: ColDataCardDef<VzIncident>[] = [
     style: { whiteSpace: "pre-wrap" },
   },
   {
-    path: "incident_points",
-    label: "incident_points",
+    path: "point_feature",
+    label: "point_feature",
     fetchAlways: true,
     exportOnly: true,
   },

@@ -6,6 +6,7 @@ export type CadIncident = {
     updated_by?: string | null;
     address?: string | null;
     agency_type?: string | null;
+    agency_type_short?: string | null;
     call_disposition?: string | null;
     final_problem?: string | null;
     incident_type?: string | null;

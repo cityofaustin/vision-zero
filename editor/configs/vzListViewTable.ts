@@ -35,20 +35,20 @@ export const vzListViewQueryConfig: QueryConfig = {
   tableName: "vz_incidents_view",
   limit: 1000,
   offset: 0,
-  sortColName: "first_response_date",
+  sortColName: "response_date_earliest",
   sortAsc: false,
   searchFilter: {
     id: "search",
     value: "",
-    column: "addresses",
+    column: "address_earliest",
     operator: "_ilike",
     wildcard: true,
   },
-  searchFields: [{ label: "Address", value: "address" }],
+  searchFields: [{ label: "Address", value: "address_earliest" }],
   dateFilter: {
     mode: "1y",
-    column: "first_response_date",
-    filters: makeDateFilters("first_response_date", {
+    column: "response_date_earliest",
+    filters: makeDateFilters("response_date_earliest", {
       start: getYearsAgoDate(1),
       end: null,
     }),
@@ -87,7 +87,7 @@ export const vzListViewQueryConfig: QueryConfig = {
         "circle-stroke-color": "#fff",
       },
     },
-    geojsonTransformerName: "pointArray",
+    geojsonTransformerName: "pointFeature",
     defaultBasemap: "streets",
   },
 };

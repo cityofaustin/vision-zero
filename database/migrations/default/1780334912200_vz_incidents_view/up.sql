@@ -1,9 +1,10 @@
 alter table cad_incidents add column agency_type_short text generated always as 
 (
     case
-      when agency_type = 'AUSTIN PD' then 'APD'
-      when agency_type = 'FIRE' then 'AFD'
-    else 'EMS'
+      when agency_type = 'AUSTIN PD' then 'apd'
+      when agency_type = 'FIRE' then 'afd'
+    else 'ems'
+    end
 ) 
 stored;
 
@@ -24,22 +25,15 @@ SELECT
     ) AS time_spread_minutes,
     ARRAY_AGG(master_incident_number) as incident_numbers,
     ARRAY_AGG(DISTINCT agency_type_short ORDER BY agency_type_short) AS agencies,
-    ARRAY_AGG(DISTINCT address ORDER BY address) as addresses,
+    ARRAY_AGG(DISTINCT c.address ORDER BY c.address) as addresses,
+    (ARRAY_REMOVE(ARRAY_AGG(c.address ORDER BY c.time_first_unit_arrived, c.response_date, c.id), NULL))[1] AS address_earliest,
     ARRAY_AGG(DISTINCT location_id ORDER BY location_id) as location_ids,
     ARRAY_AGG(DISTINCT call_disposition ORDER BY call_disposition) as call_dispositions,
     ARRAY_AGG(DISTINCT initial_problem ORDER BY initial_problem) as initial_problems,
     ARRAY_AGG(DISTINCT final_problem ORDER BY final_problem) as final_problems,
-    MIN(c.response_date) as first_response_date,
-    MIN(c.time_first_unit_arrived) as time_first_unit_arrived,
-    jsonb_build_object(
-        'type', 'Feature',
-        'geometry', ST_AsGeoJSON(ST_Collect(c.geom))::jsonb,
-        'properties', '{}'::jsonb
-    ) AS incident_points,
-    ST_AsGeoJSON(ST_Envelope(ST_Collect(c.geom)))::jsonb AS incident_bbox,
-    ST_AsGeoJSON(ST_ConvexHull(ST_Collect(c.geom)))::jsonb AS incident_convex_hull,
-    ST_AsGeoJSON(ST_MinimumBoundingCircle(ST_Collect(c.geom)))::jsonb AS incident_bounding_circle,
-    ST_AsGeoJSON(ST_Centroid(ST_Collect(c.geom)))::jsonb AS incident_centroid,
+    MIN(c.response_date) as response_date_earliest,
+    MIN(c.time_first_unit_arrived) as time_first_unit_arrived_earliest,
+    (ARRAY_REMOVE(ARRAY_AGG(c.geom ORDER BY c.time_first_unit_arrived, c.response_date, c.id), NULL))[1] AS point_feature,
     BOOL_OR(c.in_austin_full_purpose) AS in_austin_full_purpose
 FROM
     vz_incidents v
