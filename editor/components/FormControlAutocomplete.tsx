@@ -115,10 +115,8 @@ export default function FormControlAutocomplete<
           {results.map((result: LookupTableOption, index: number) => (
             <ListGroup.Item
               key={result.id}
-              className={`list-group-item list-group-item-action${
-                index === highlightedIndex ? " active" : ""
-              }`}
               role="button"
+              active={index === highlightedIndex}
               onMouseDown={(e) => {
                 e.preventDefault();
                 field.onChange(result.id);
