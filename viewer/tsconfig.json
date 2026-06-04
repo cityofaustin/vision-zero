@@ -6,6 +6,7 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "types": ["vite-plugin-svgr/client"],
 
     /* Bundler */
     "moduleResolution": "bundler",
