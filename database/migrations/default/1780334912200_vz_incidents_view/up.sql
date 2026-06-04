@@ -1,3 +1,14 @@
+alter table cad_incidents add column agency_type_short text generated always as 
+(
+    case
+      when agency_type = 'AUSTIN PD' then 'APD'
+      when agency_type = 'FIRE' then 'AFD'
+    else 'EMS'
+) 
+stored;
+
+comment on column cad_incidents.agency_type_short is 'The abbreviated name of the responding agency'
+
 create or replace view vz_incidents_view as (
 SELECT
     v.id AS id,
@@ -12,7 +23,7 @@ SELECT
         1
     ) AS time_spread_minutes,
     ARRAY_AGG(master_incident_number) as incident_numbers,
-    ARRAY_AGG(DISTINCT agency_type ORDER BY agency_type) AS agencies,
+    ARRAY_AGG(DISTINCT agency_type_short ORDER BY agency_type_short) AS agencies,
     ARRAY_AGG(DISTINCT address ORDER BY address) as addresses,
     ARRAY_AGG(DISTINCT location_id ORDER BY location_id) as location_ids,
     ARRAY_AGG(DISTINCT call_disposition ORDER BY call_disposition) as call_dispositions,
