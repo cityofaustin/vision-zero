@@ -8,7 +8,7 @@ alter table cad_incidents add column agency_type_short text generated always as
 ) 
 stored;
 
-comment on column cad_incidents.agency_type_short is 'The abbreviated name of the responding agency'
+comment on column cad_incidents.agency_type_short is 'The abbreviated name of the responding agency';
 
 create or replace view vz_incidents_view as (
 SELECT
