@@ -44,13 +44,8 @@ export const routes: Route[] = [
     icon: LuAmbulance,
   },
   {
-    path: "cad",
-    label: "CAD",
-    icon: LuPhone,
-  },
-  {
-    path: "vz",
-    label: "VZ",
+    path: "incidents",
+    label: "Incidents",
     icon: FaRoad,
   },
   {
