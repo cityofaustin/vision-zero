@@ -27,14 +27,6 @@ Run development server:
 
 `npm run dev`
 
-Create a production build - The build output will be in the build/ directory:
-
-`npm run build`
-
-Locally preview the production build:
-
-`npm run preview`
-
 ### ESLint
 
 We use ESLint with ESLint 9 flat config to catch code issues. Run the linter:
