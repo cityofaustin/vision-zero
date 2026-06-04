@@ -48,7 +48,7 @@ npm run lint:fix    # Automatically fix what's possible
 
 In development, this project uses [Prettier](https://prettier.io/) for code formatting which is set in .prettierrc.
 
-Visit link for installation or install the [extension for VSCode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and enable "Format on Save" for automatic formatting.
+Visit link for installation or install the [extension for VSCode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and enable "Format on Save" for automatic formatting
 
 Command line:
 
