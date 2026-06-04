@@ -1,1 +1,2 @@
 VITE_MAPBOX_TOKEN=<mapbox-token>
+VITE_UNDER_MAINTENANCE="false"

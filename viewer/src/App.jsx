@@ -5,8 +5,8 @@ import Content from "./views/content/Content";
 import UnderMaintenance from "./views/NotFound/UnderMaintenance";
 import "./App.css";
 
-const isUnderMaintenance = import.meta.env.REACT_APP_UNDER_MAINTENANCE === "true";
-console.log("Is under maintenance: ", import.meta.env.REACT_APP_UNDER_MAINTENANCE);
+const isUnderMaintenance = import.meta.env.VITE_UNDER_MAINTENANCE === "true";
+console.log("Is under maintenance: ", import.meta.env.VITE_UNDER_MAINTENANCE);
 
 const App = () => {
   const currentPath = usePath();
