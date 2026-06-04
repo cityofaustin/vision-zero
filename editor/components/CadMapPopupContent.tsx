@@ -15,7 +15,7 @@ export default function CadMapPopupContent({
         {properties?.address}
       </div>
       <div className="d-flex justify-content-between">
-        <span className="fw-bold">VZ Incident ID</span>
+        <span className="fw-bold">Incident ID</span>
         <span className="text-muted">{properties?.vz_incident_id}</span>
       </div>
       <div className="d-flex justify-content-between">

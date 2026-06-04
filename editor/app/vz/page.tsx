@@ -9,13 +9,13 @@ import { useDocumentTitle } from "@/utils/documentTitle";
 const localStorageKey = "vzListViewQueryConfig";
 
 export default function Crashes() {
-  useDocumentTitle("VZ Incidents");
+  useDocumentTitle("Incidents");
 
   return (
     <UserEventsLogger eventName="cad_list_view">
       <div className="h-100 d-flex flex-column">
         <div className="d-flex justify-content-between">
-          <span className="fs-3 fw-bold">VZ Incidents</span>
+          <span className="fs-3 fw-bold">Incidents</span>
         </div>
         <TableWrapper
           columns={vzListViewColumns}
