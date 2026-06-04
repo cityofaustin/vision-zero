@@ -13,6 +13,7 @@ export default defineConfig(() => {
     plugins: [
       react(),
       // svgr options: https://react-svgr.com/docs/options/
+      // allow SVG files to be imported as React components
       svgr({ svgrOptions: { icon: true } }),
     ],
     define: {
