@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import type { KeyboardEvent } from "react";
 import { useController, Control, FieldValues, Path } from "react-hook-form";
 import Form from "react-bootstrap/Form";
@@ -34,6 +34,26 @@ export default function FormControlAutocomplete<
   const [searchInput, setSearchInput] = useState<null | string>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
+
+  // Map to store refs to scroll options into view when using keyboard navigation
+  const itemRefs = useRef(new Map());
+
+  const scrollToItem = (index: number) => {
+    const node = itemRefs.current.get(index);
+    if (node) {
+      node.scrollIntoView({
+        behavior: "smooth",
+        block: "center", // Centers the item vertically within the scrollable box
+      });
+    }
+  };
+
+  // Scroll active item into view when active index changes
+  useEffect(() => {
+    if (itemRefs.current) {
+      scrollToItem(highlightedIndex);
+    }
+  }, [highlightedIndex]);
 
   const { field } = useController({ name, control });
 
@@ -116,6 +136,13 @@ export default function FormControlAutocomplete<
             <ListGroup.Item
               key={result.id}
               role="button"
+              ref={(element) => {
+                if (element) {
+                  itemRefs.current.set(index, element);
+                } else {
+                  itemRefs.current.delete(index);
+                }
+              }}
               active={index === highlightedIndex}
               onMouseDown={(e) => {
                 e.preventDefault();
