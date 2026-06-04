@@ -56,7 +56,6 @@ const Summary = () => {
         <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4 mt-md-3 mt-lg-4">
           <Col className="px-xs-0">
             <StyledSummary>
-              {previewDisclaimer}
               <Row className="summary-child">
                 <Alert className="col-12 mb-0 banner">
                   <div className="mb-2">
