@@ -29,7 +29,7 @@ def time_window(response_date: datetime, minutes: float) -> tuple[datetime, date
 
 def meters_to_degrees(meters):
     """Rough conversion for _st_d_within on a 4326 geometry column."""
-    return meters / 111_000
+    return meters / 104_000
 
 
 def fetch_potential_matches(incident: dict) -> list[dict]:
@@ -51,7 +51,7 @@ def fetch_potential_matches(incident: dict) -> list[dict]:
 def flood_fill_group(anchor: dict) -> set[str]:
     """
     Creates groups of incidents by recursively expanding a group starting
-    from anchor by bread-first search. Each newly discovered member's own
+    from anchor by breadth-first search. Each newly discovered member's own
     neighbors are explored in turn, until the frontier is exhausted.
     """
     group_ids = {anchor["master_incident_id"]}
