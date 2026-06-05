@@ -339,4 +339,10 @@ export const crashesColumns = {
       foreignKey: "investigat_agency_id",
     },
   },
+  is_coa_roadway: {
+    path: "is_coa_roadway",
+    label: "COA roadway",
+    editable: true,
+    inputType: "yes_no",
+  },
 } satisfies Record<string, ColDataCardDef<Crash>>;
