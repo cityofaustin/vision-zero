@@ -19,6 +19,19 @@ interface FormControlAutocomplete<TFieldValues extends FieldValues> {
   disabled?: boolean;
 }
 
+const scrollToItem = (
+  itemRefs: React.RefObject<Map<number, HTMLDivElement>>,
+  index: number
+) => {
+  const node = itemRefs.current.get(index);
+  if (node) {
+    node.scrollIntoView({
+      behavior: "instant",
+      block: "center", // Centers the item vertically within the scrollable box
+    });
+  }
+};
+
 /**
  * Typeahead search input to use with Lookup table options
  */
@@ -38,20 +51,10 @@ export default function FormControlAutocomplete<
   // Map to store refs to scroll options into view when using keyboard navigation
   const itemRefs = useRef(new Map());
 
-  const scrollToItem = (index: number) => {
-    const node = itemRefs.current.get(index);
-    if (node) {
-      node.scrollIntoView({
-        behavior: "smooth",
-        block: "center", // Centers the item vertically within the scrollable box
-      });
-    }
-  };
-
   // Scroll active item into view when active index changes
   useEffect(() => {
     if (itemRefs.current) {
-      scrollToItem(highlightedIndex);
+      scrollToItem(itemRefs, highlightedIndex);
     }
   }, [highlightedIndex]);
 
