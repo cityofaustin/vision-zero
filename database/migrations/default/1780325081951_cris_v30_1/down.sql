@@ -1,0 +1,15 @@
+delete from lookups.agency where id = 10239;
+delete from lookups.agency where id = 10240;
+delete from lookups.agency where id = 10241;
+delete from lookups.agency where id = 3403;
+delete from lookups.agency where id = 3404;
+delete from lookups.agency where id = 3405;
+delete from lookups.agency where id = 3406;
+delete from lookups.agency where id = 3407;
+delete from lookups.agency where id = 3408;
+delete from lookups.agency where id = 3409;
+delete from lookups.agency where id = 3410;
+delete from lookups.agency where id = 3411;
+delete from lookups.agency where id = 3412;
+delete from lookups.agency where id = 3413;
+update lookups.agency set label = 'FATE DEPARTMENT OF PUBLIC SAFETY' where id = 3176;
