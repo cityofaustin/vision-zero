@@ -1,12 +1,14 @@
 import { CrashInjuryMetric } from "@/types/crashInjuryMetrics";
 import AlignedLabel from "@/components/AlignedLabel";
+import Link from "next/link";
+import { ReactNode } from "react";
 
 const InjuryBadge = ({
   label,
   value,
   className,
 }: {
-  label: string;
+  label: string | ReactNode;
   value: number | null;
   className?: string;
 }) => {
@@ -35,15 +37,23 @@ const InjuryBadge = ({
  */
 export default function CrashInjuryIndicators({
   injuries,
+  recordLocator,
 }: {
   injuries: CrashInjuryMetric;
+  recordLocator: string;
 }) {
   return (
     <div className="bg-light-use-theme fs-6 d-flex align-items-center align-self-center py-2 rounded-3 px-3 border">
       <span className="fw-bold me-3">Injuries</span>
       <InjuryBadge
         value={injuries.vz_fatality_count}
-        label="Fatal"
+        label={
+          injuries.vz_fatality_count && injuries.vz_fatality_count > 0 ? (
+            <Link href={`/fatalities/${recordLocator}`}>Fatal</Link>
+          ) : (
+            "Fatal"
+          )
+        }
         className="me-3"
       />
       <InjuryBadge
