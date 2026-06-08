@@ -1,3 +1,4 @@
+import { CadIncident } from "@/types/cadIncident";
 import { Point } from "geojson";
 
 export type VzIncident = {
@@ -17,4 +18,5 @@ export type VzIncident = {
   time_first_unit_arrived_earliest?: string | null;
   point_feature?: Point | null;
   in_austin_full_purpose?: boolean | null;
+  cad_incidents?: CadIncident[];
 };

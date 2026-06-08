@@ -14,7 +14,7 @@ export const vzListViewColumns: ColDataCardDef<VzIncident>[] = [
     sortable: true,
     fetchAlways: true,
     valueRenderer: (record: VzIncident) => (
-      <Link href={`/cad/${record.id}`} prefetch={false}>
+      <Link href={`/incidents/${record.id}`} prefetch={false}>
         {record.id}
       </Link>
     ),
