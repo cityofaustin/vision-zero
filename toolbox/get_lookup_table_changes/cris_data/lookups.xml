@@ -1752,32 +1752,6 @@
                 <Entry ID="5" Description="NONE"/>
             </Entries>
         </LookupTable>
-        <LookupTable Name="CHARGE_CAT_LKP" IDColumn="CHARGE_CAT_ID">
-            <Entries>
-                <Entry ID="0" Description="CITATION ISSUED (Historical Data)"/>
-                <Entry ID="10" Description="ALCOHOL/DRUGS"/>
-                <Entry ID="11" Description="ASSAULT/MANSLAUGHTER WITH VEHICLE"/>
-                <Entry ID="12" Description="BICYCLE OFFENSES"/>
-                <Entry ID="13" Description="COMMERCIAL &amp; MOTOR CARRIER VIOLATIONS"/>
-                <Entry ID="14" Description="DRIVER LICENSE &amp; REGISTRATION VIOLATIONS"/>
-                <Entry ID="15" Description="DRIVER'S MISCELLANEOUS VIOLATIONS"/>
-                <Entry ID="16" Description="INSURANCE AND INSPECTION"/>
-                <Entry ID="17" Description="MOTORCYCLE VIOLATIONS"/>
-                <Entry ID="18" Description="OVERTAKING (PASSING)"/>
-                <Entry ID="19" Description="PARKING VIOLATIONS"/>
-                <Entry ID="20" Description="REPORTING VIOLATIONS (TRAFFIC VIOLATIONS)"/>
-                <Entry ID="21" Description="RIGHT OF WAY"/>
-                <Entry ID="22" Description="SEATBELT /  HELMET USAGE"/>
-                <Entry ID="23" Description="SIGNAL INTENTION"/>
-                <Entry ID="24" Description="SPEEDING"/>
-                <Entry ID="25" Description="TRAFFIC SIGNS, SIGNALS, AND ROAD MARKINGS"/>
-                <Entry ID="26" Description="TURNING VIOLATIONS"/>
-                <Entry ID="27" Description="VEHICLE/EQUIPMENT DEFECTS"/>
-                <Entry ID="28" Description="WRONG SIDE/WRONG WAY"/>
-                <Entry ID="29" Description="OTHER"/>
-                <Entry ID="30" Description="NONE"/>
-            </Entries>
-        </LookupTable>
         <LookupTable Name="CITY_LKP" IDColumn="CITY_ID">
             <Entries>
                 <Entry ID="1" Description="ABERNATHY"/>
@@ -4672,7 +4646,6 @@
                 <Entry ID="69" Description="WRONG SIDE - APPROACH OR INTERSECTION"/>
                 <Entry ID="70" Description="WRONG SIDE - NOT PASSING"/>
                 <Entry ID="71" Description="WRONG WAY - ONE WAY ROAD"/>
-                <Entry ID="72" Description="CELL/MOBILE  PHONE USE"/>
                 <Entry ID="73" Description="ROAD RAGE"/>
                 <Entry ID="74" Description="OTHER (EXPLAIN IN NARRATIVE)"/>
                 <Entry ID="75" Description="CELL/MOBILE DEVICE USE - TALKING"/>
@@ -4821,7 +4794,6 @@
                 <Entry ID="29" Description="LOFS 21 OR OVER VEHICLE ABOVE CLASS C"/>
                 <Entry ID="30" Description="VEHICLE NOT TO EXCEED CLASS C (EFF. END 12/31/2016)"/>
                 <Entry ID="31" Description="VALID TX VISION OR LIMB WAIVER REQUIRED"/>
-                <Entry ID="32" Description="VALID FED. VISION OR LIMB WAIVER REQD."/>
                 <Entry ID="33" Description="FOR CLASS M TRC 545.424 UNTIL MM/DD/YY"/>
                 <Entry ID="34" Description="TO/FROM WORK/SCHOOL"/>
                 <Entry ID="35" Description="TO/FROM WORK"/>
@@ -8577,7 +8549,7 @@
                 <Entry ID="51" Description="District of Columbia"/>
                 <Entry ID="52" Description="Aguascalientes"/>
                 <Entry ID="53" Description="Alberta"/>
-                <Entry ID="54" Description="American Samoa (Islands)"/>
+                <Entry ID="54" Description="American Samoa Islands"/>
                 <Entry ID="55" Description="Baja California"/>
                 <Entry ID="56" Description="Baja California Sur"/>
                 <Entry ID="57" Description="British Columbia"/>
