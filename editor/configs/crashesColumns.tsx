@@ -342,7 +342,6 @@ export const crashesColumns = {
   is_coa_roadway: {
     path: "is_coa_roadway",
     label: "COA roadway",
-    editable: true,
-    inputType: "yes_no",
+    editable: false,
   },
 } satisfies Record<string, ColDataCardDef<Crash>>;
