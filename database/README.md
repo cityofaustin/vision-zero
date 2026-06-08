@@ -151,7 +151,7 @@ Follow these steps to configure a new extract delivery:
   - If you request a process date of today, the extract will not be delivered until the next day.
   - To set up a recurring request, add a range of dates that ends in the future.
 
-Any part of the range that falls in the past will be delivered in a single zip that is separate from the zips that will deliver in the future. The includes - all records with process dates available including today.
+Any part of the date range that falls in the past will be delivered in a single zip that is separate from the zips that will deliver in the future.
 
 Any part of the range that is in the future will create daily zips that include each day available going forward. For example, on 4/19/2024, you make a request for Process Begin Date = 01/01/2024 and Process End Date = 12/31/2024 The would receive two zips: One containing all records with process date from 01/01/2024 to 04/18/2024, and one containing all records with process date from 04/19/2024 to 04/19/2024. Going forward, you will receive one zip per day for each process date that passes
 
@@ -282,9 +282,9 @@ The view `crashes_change_log_view` provides a unioned view of the unified table 
 
 ### Austin Police Department non-CR3 or "blueform" crashes
 
-Non-CR3 crashes, known colloquially as "blueform" crashes, are crash incidents reported by the Austin Police Department which were not investigated as a TxDOT-reportable crash. These are typically minor traffic incidents with minimal damage or injuries, for which no CR3 crash report was submitted.
+Non-CR3 crashes, known colloquially as "blueform" crashes, are crash incidents reported by the Austin Police Department which were not investigated as a TxDOT-reportable crash. These are typically minor traffic incidents with minimal damage or injuries, for which no crash report was submitted.
 
-These records provide very little detail beyond the date and location of the incident. These records reach are stored in the `atd_apd_blueform` table, and are inserted via the Vision Zero Editor's **Non-CR3 Upload** UI, which allows Vision Zero staff to upload a CSV of records which they receive periodically from APD.
+These records provide very little detail beyond the date and location of the incident. These records are stored in the `atd_apd_blueform` table, and are inserted via the Vision Zero Editor's **Non-CR3 Upload** UI, which allows Vision Zero staff to upload a CSV of records which they receive periodically from APD.
 
 As far as we know, the CSV files that the Vision Zero team receives are created as extracts from APD's Brazos system, which itself is integrated with the City's central Computer-Aided Dispatch (CAD) system.
 
