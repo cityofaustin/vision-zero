@@ -61,7 +61,7 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
           </AlignedLabel>
         </Button>
       </Card.Header>
-      <Card.Body className="crash-header-card-body">
+      <Card.Body>
         <Card.Text>{crash.investigator_narrative || ""}</Card.Text>
       </Card.Body>
     </Card>

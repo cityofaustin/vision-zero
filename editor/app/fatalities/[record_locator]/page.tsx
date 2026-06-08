@@ -100,8 +100,8 @@ export default function FatalCrashDetailsPage({
           <CrashIsTemporaryBanner crash={crash} allowDelete={false} />
         )
       }
-      <Row>
-        <Col className="mb-3" sm={12} md={6}>
+      <Row style={{ fontSize: "18px" }}>
+        <Col className="mb-3" sm={12} md={5}>
           <Card className="h-100">
             <Card.Body>
               <Table>
@@ -156,31 +156,37 @@ export default function FatalCrashDetailsPage({
             </Card.Body>
           </Card>
         </Col>
-        <Col className="mb-3" sm={12} md={6}>
+        <Col className="mb-3" sm={12} md={7}>
           <FatalityUnitsCards crash={crash} onSaveCallback={onSaveCallback} />
         </Col>
       </Row>
-      <Row>
-        <Col className="mb-3" sm={12} md={6} lg={4}>
+      <Row style={{ fontSize: "18px" }}>
+        <Col className="mb-3" sm={12} md={6} style={{ minHeight: "625px" }}>
           <CrashDiagramCard crash={crash} crashRefetch={refetch} />
         </Col>
-        <Col className="mb-3" sm={12} md={6} lg={4}>
-          <CrashNarrativeEditableCard
-            crash={crash}
-            onSaveCallback={onSaveCallback}
-          />
-        </Col>
-        <Col className="mb-3">
-          <DataCard<Crash>
-            record={crash}
-            isValidating={false}
-            title="Details"
-            columns={otherCardColumns}
-            mutation={UPDATE_CRASH}
-            onSaveCallback={onSaveCallback}
-            shouldShowColumnVisibilityPicker={true}
-            localStorageKey="crashPageOther"
-          />
+        <Col className="mb-3" sm={12} md={6}>
+          <Row>
+            <Col className="mb-3">
+              <CrashNarrativeEditableCard
+                crash={crash}
+                onSaveCallback={onSaveCallback}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <DataCard<Crash>
+                record={crash}
+                isValidating={false}
+                title="Details"
+                columns={otherCardColumns}
+                mutation={UPDATE_CRASH}
+                onSaveCallback={onSaveCallback}
+                shouldShowColumnVisibilityPicker={true}
+                localStorageKey="crashPageOther"
+              />
+            </Col>
+          </Row>
         </Col>
       </Row>
       <Row>
