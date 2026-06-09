@@ -79,7 +79,7 @@ export const crashesColumns = {
   },
   law_enforcement_ytd_fatality_num: {
     path: "law_enforcement_ytd_fatality_num",
-    label: "Law Enf. YTD Fatal Crash",
+    label: "Law Enforcement YTD Fatal Crash",
     editable: true,
     inputType: "text",
   },
