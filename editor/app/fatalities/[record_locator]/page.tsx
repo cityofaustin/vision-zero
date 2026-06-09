@@ -87,8 +87,8 @@ export default function FatalCrashDetailsPage({
             <span className="fs-4 me-3">
               {formatYear(data[0].crash_timestamp)}
             </span>
-            <span className="fs-5 fw-bold me-1">Fatal Crash</span>
-            <span className="fs-5">
+            <span className="fs-4 fw-bold me-1">Fatal Crash</span>
+            <span className="fs-4">
               #{data[0].law_enforcement_ytd_fatality_num}
             </span>
           </span>
