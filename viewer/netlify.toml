@@ -1,21 +1,2 @@
 [build]
   publish = "build"
-
-  # Let static assets through without redirecting
-[[redirects]]
-  from = "/assets/*"
-  to = "/assets/:splat"
-  status = 200
-
-
-# This rule handles the root path and redirects to /viewer/
-[[redirects]]
-  from = "/"
-  to = "/viewer/"
-  status = 302
-
-# Redirect to the index page of the SPA
-[[redirects]]
-  from = "/viewer/*"
-  to = "/index.html"
-  status = 200
