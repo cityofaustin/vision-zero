@@ -1,2 +1,14 @@
 [build]
   publish = "build"
+
+# This rule handles the root path and redirects to /viewer/
+[[redirects]]
+  from = "/"
+  to = "/viewer/"
+  status = 302
+
+# Redirect to the index page of the SPA
+[[redirects]]
+  from = "/viewer/*"
+  to = "/viewer/index.html"
+  status = 200
