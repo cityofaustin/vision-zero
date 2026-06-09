@@ -79,12 +79,12 @@ export default function FatalCrashDetailsPage({
     <UserEventsLogger eventName="fatality_details_view">
       <Row>
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <span className="fs-3 fw-bold text-uppercase">
+          <span className="fs-2 fw-bold text-uppercase">
             {data[0].address_display}
           </span>
           <span className="text-nowrap bg-light-use-theme py-2 rounded-3 px-3 border">
-            <span className="fs-5 fw-bold me-1">Year</span>
-            <span className="fs-5 me-3">
+            <span className="fs-4 fw-bold me-1">Year</span>
+            <span className="fs-4 me-3">
               {formatYear(data[0].crash_timestamp)}
             </span>
             <span className="fs-5 fw-bold me-1">Fatal Crash</span>
