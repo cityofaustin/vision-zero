@@ -4,6 +4,7 @@ import svgr from "vite-plugin-svgr";
 
 export default defineConfig(() => {
   return {
+    base: "/viewer/",
     build: {
       outDir: "build",
     },
