@@ -1,8 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { bbox } from "@turf/bbox";
 import { AllGeoJSON } from "@turf/helpers";
-import { FeatureCollection, Point } from "geojson";
-import { LngLatBoundsLike } from "mapbox-gl";
+import {
+  FeatureCollection,
+  Point,
+  MultiPoint,
+  GeoJsonProperties,
+  Feature,
+  Geometry,
+} from "geojson";
+import { GeoJSONFeature, LngLatBoundsLike } from "mapbox-gl";
 import { mapStyleOptions } from "@/configs/map";
 import { useTheme } from "@/contexts/AppThemeProvider";
 
@@ -99,6 +106,18 @@ export const useBasemap = (initialBasemapType: "streets" | "aerial") => {
 };
 
 /**
+ * Type guard that returns true if input `geometry` is a valid geojson Point
+ */
+function isPoint(geometry: unknown): geometry is Point {
+  return (
+    typeof geometry === "object" &&
+    geometry !== null &&
+    (geometry as Point).type === "Point" &&
+    Array.isArray((geometry as Point).coordinates)
+  );
+}
+
+/**
  * An index of functions that transform input data into a geojson feature collection
  */
 export const geoJsonTransformers = {
@@ -126,5 +145,32 @@ export const geoJsonTransformers = {
       type: "FeatureCollection" as const,
       features,
     };
+  },
+  pointFeature: (
+    data: Record<string, unknown>[]
+  ): FeatureCollection<Geometry> => {
+    if (!data || data.length === 0) {
+      return {
+        type: "FeatureCollection" as const,
+        features: [],
+      };
+    } else {
+      return {
+        type: "FeatureCollection" as const,
+        features: data.map((row) => {
+          if (!isPoint(row.point_feature)) {
+            throw new Error(`Invalid Point geometry for row id: ${row.id}`);
+          }
+          return {
+            type: "Feature" as const,
+            id: Number(row.id),
+            geometry: row.point_feature,
+            properties: {
+              ...row,
+            },
+          };
+        }),
+      };
+    }
   },
 };

@@ -82,6 +82,20 @@ export const formatArrayToString = (value: unknown): string => {
 };
 
 /**
+ * Format an array of values to a line-broken, removing
+ * null, undefined, and empty strings
+ */
+export const formatArrayToStringWithLinebreaks = (value: unknown): string => {
+  if (value && Array.isArray(value)) {
+    return value
+      .filter((val) => val !== undefined && val !== null && val !== "")
+      .map((val) => String(val))
+      .join("\n");
+  }
+  return "";
+};
+
+/**
  * Format a user name from an email address or other string value.
  * Attempts to create a readable display name by:
  * - Extracting the local part of email addresses

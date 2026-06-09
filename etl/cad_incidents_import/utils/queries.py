@@ -34,7 +34,7 @@ query GetUnprocessed($record_limit: Int!, $date_limit: timestamptz = "") {
             vz_incident_id: { _is_null: true }
             response_date: { _lt: $date_limit } 
         }
-        order_by: { response_date: desc }
+        order_by: { response_date: asc }
         limit: $record_limit
     ) {
         master_incident_id

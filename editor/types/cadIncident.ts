@@ -1,0 +1,27 @@
+export type CadIncident = {
+    id?: number;
+    created_at?: string | null;
+    updated_at?: string | null;
+    created_by?: string | null;
+    updated_by?: string | null;
+    address?: string | null;
+    agency_type?: string | null;
+    agency_type_short?: string | null;
+    call_disposition?: string | null;
+    final_problem?: string | null;
+    incident_type?: string | null;
+    initial_problem?: string | null;
+    master_incident_id?: number | null;
+    master_incident_number?: string | null;
+    priority_description?: string | null;
+    priority_number?: number | null;
+    response_date?: string | null;
+    time_call_closed?: string | null;
+    time_first_unit_arrived?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
+    location_id?: string | null;
+    in_austin_full_purpose?: boolean | null;
+    vz_incident_id?: number | null;
+    is_cancelled_call?: boolean | null;
+};

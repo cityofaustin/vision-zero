@@ -95,3 +95,4 @@
 - "!include public_user_events.yaml"
 - "!include public_view_crash_narratives_ocr_todo.yaml"
 - "!include public_vz_incidents.yaml"
+- "!include public_vz_incidents_view.yaml"
