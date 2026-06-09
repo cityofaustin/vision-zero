@@ -28,6 +28,7 @@ export default function CrashIsTemporaryBanner({
   return (
     <>
       <Alert
+        dismissible
         variant="warning"
         className="d-flex justify-content-between align-items-center"
       >
