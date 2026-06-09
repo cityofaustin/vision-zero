@@ -189,7 +189,7 @@ export default function FatalCrashDetailsPage({
           </Row>
         </Col>
       </Row>
-      <Row>
+      <Row style={{ fontSize: "18px" }}>
         <Col className="mb-3" sm={12} md={12} lg={6}>
           <CrashRecommendationCard
             crash_pk={crash.id}
