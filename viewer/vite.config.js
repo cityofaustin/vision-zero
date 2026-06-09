@@ -6,7 +6,7 @@ export default defineConfig(() => {
   return {
     base: "/viewer/",
     build: {
-      outDir: "build",
+      outDir: "build/viewer",
     },
     server: {
       port: 3000,
