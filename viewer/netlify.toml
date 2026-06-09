@@ -7,5 +7,5 @@
 # Redirect to the index page of the SPA
 [[redirects]]
   from = "/viewer/*"
-  to = "/viewer/index.html"
+  to = "/index.html"
   status = 200
