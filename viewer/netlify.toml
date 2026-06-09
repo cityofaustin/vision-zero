@@ -1,3 +1,6 @@
+[build]
+  publish = "build"
+
 # This rule handles the root path and redirects to /viewer/
 [[redirects]]
   from = "/"
