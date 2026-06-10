@@ -1,0 +1,11 @@
+table:
+  name: vz_incidents
+  schema: public
+array_relationships:
+  - name: cad_incidents
+    using:
+      foreign_key_constraint_on:
+        column: vz_incident_id
+        table:
+          name: cad_incidents
+          schema: public

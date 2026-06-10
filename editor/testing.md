@@ -83,7 +83,10 @@ The below features should be tested with each role. Features with role-based acc
 - Verify page `<title>` element is formatted as `<record-locator> - <crash-address>` (check how the title is rendered in your browser tab)
 - Crash address header looks correct. Use copy button to copy the crash address to the clipboard
 - [role: editor, admin] Click crash address to edit form inputs. Use **Swap addresses** button to swap primary and secondary address inputs. Confirm changes save correctly.
-- Crash injury widget reflects injuries from **People** card (test by editing person injuries)
+- Crash injury widget (top right of page) 
+  - Reflects injuries correftly from **People** card (test by editing person injuries)
+  - While looking at a crash with at least one fatality, confirm that the **Fatality** indicator is hyperlinked. Click on the hyperlink to navigate to the `/fatalities/[record_locator]` page for the corresponding crash.
+  - Confirm the **Fatality** indicator is not hyperlinked for crashes with no fatalities
 - Temporary record banner is visible for (temp crashes only)
 - [role: editor, admin] Delete tempoary crash record button inside temp record banner (temp crashes only)
 - Crash map: card header: displays hyperlinked **Location ID** (if crash is matched to a location)

@@ -53,7 +53,10 @@ export default function CrashHeader({ crash, refetch }: CrashHeaderProps) {
       </Col>
       {crash.crash_injury_metrics_view && (
         <Col xs="auto">
-          <CrashInjuryIndicators injuries={crash.crash_injury_metrics_view} />
+          <CrashInjuryIndicators
+            injuries={crash.crash_injury_metrics_view}
+            recordLocator={crash.record_locator}
+          />
         </Col>
       )}
       <EditCrashAddressModal
