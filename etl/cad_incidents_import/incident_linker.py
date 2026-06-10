@@ -15,7 +15,7 @@ from utils.queries import (
 MIN_RECORD_AGE_HOURS = 24
 DISTANCE_THRESHOLD_M = 500
 TIME_THRESHOLD_MINUTES = 60
-MAX_RECORD_TO_PROCESS = 1000
+MAX_RECORD_TO_PROCESS = 5000
 
 
 def point_geojson(lon, lat):
@@ -84,6 +84,10 @@ def main(args):
     incidents = data["cad_incidents"]
     logging.info(f"  Found {len(incidents):,} unprocessed incidents\n")
 
+    if args.dry_run:
+        logging.info(f"Dry run: aborting further processing")
+        return
+
     processed_ids = set()
     counts = {
         "cad_incidents_processed": 0,
@@ -141,6 +145,11 @@ if __name__ == "__main__":
         type=int,
         default=MAX_RECORD_TO_PROCESS,
         help="The maximum number of records to process",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Log if there are incidents to link without actually doing it",
     )
     args = parser.parse_args()
     main(args)
