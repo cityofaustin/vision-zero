@@ -14,7 +14,7 @@ services:
       - postgis
 
   postgis:
-    shm_size: ${PG_SHM_SIZE:-1gb}
+    shm_size: ${PG_SHM_SIZE:-2gb}
     image: atddocker/postgis:unified-db
     env_file:
       - .env
@@ -29,7 +29,7 @@ services:
       - -c
       - max_wal_size=${PG_MAX_WAL_SIZE:-2GB}
       - -c
-      - shared_buffers=${PG_SHARED_BUFFERS:-1GB}
+      - shared_buffers=${PG_SHARED_BUFFERS:-2GB}
       - -c
       - work_mem=${PG_WORK_MEM:-16MB}
       - -c
