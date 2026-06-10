@@ -21,6 +21,8 @@ Data is imported into our database via a two step process:
 
 This shared network drive is mounted to our on-prem ETL server at `/mnt/vision_zero_cad`, and the scripts in this repo can be configured to use that mount path or a local file as needed (see **Local Development**).
 
+Once data has been imported, a third script, `incident_linker.py` is used to group incidents based on their time and location.
+
 ## Daily extract files
 
 We process two distinct files on a daily basis:
@@ -70,6 +72,22 @@ docker compose -f docker-compose.yml -f docker-compose.local.yml run import inci
 - `--archive`: Move each processed file to the S3 bucket's `/archive` directory
 - `--local-files`: Process files from local `COACD_MOUNT_PATH` directory instead of AWS S3
 
+### `incident_linker.py`
+
+It is common for multiple CAD records to be created in response to a single incident that happens in the real-world. The `incident_linker.py` script groups CAD incidents together based on their time and location, creating a new `vz_incidents` record for each group it finds.
+
+The script works as follows:
+
+* Only CAD incidents older than 24 hours are considered, to ensure records have had time to be fully populated before processing.
+
+* Starting from an unprocessed anchor incident, the script flood-fills outward, pulling in any neighboring incidents within 500 meters and 60 minutes of each group member. This process repeats for each newly added member until no new neighbors are found.
+  
+* Once a group is finalized, a parent `vz_incidents` record is created and all CAD incidents in the group are linked to it. Any incident already assigned to a group is skipped if it comes up again as an anchor.
+
+The matching alogrithm is illustrated below, in which CAD incidents A, B, C are grouped into a single incident based on their spatial proximity. Although A and C are not within the search radius of each other, the recursive matching of A → B → C leads to formation of the three-member group.
+
+![diagram](docs/cad_incidents_chained.png)
+
 ## Production run
 
 In production, ensure the env var for `BUCKET_ENV` is set to `prod`, and the
@@ -83,6 +101,10 @@ python incidents_to_s3.py --remove
 
 ```shell
 python incidents_import.py --archive
+```
+
+```shell
+python incident_linker.py
 ```
 
 ## Deployment + CI

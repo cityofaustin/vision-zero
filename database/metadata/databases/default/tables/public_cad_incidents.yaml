@@ -1,3 +1,20 @@
 table:
   name: cad_incidents
   schema: public
+object_relationships:
+  - name: location
+    using:
+      foreign_key_constraint_on: location_id
+  - name: vz_incident
+    using:
+      foreign_key_constraint_on: vz_incident_id
+array_relationships:
+  - name: cad_incident_groups
+    using:
+      manual_configuration:
+        column_mapping:
+          master_incident_id: master_incident_id
+        insertion_order: null
+        remote_table:
+          name: cad_incident_groups
+          schema: public

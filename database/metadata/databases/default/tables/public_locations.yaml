@@ -12,6 +12,13 @@ object_relationships:
           name: locations_list_view
           schema: public
 array_relationships:
+  - name: cad_incidents
+    using:
+      foreign_key_constraint_on:
+        column: location_id
+        table:
+          name: cad_incidents
+          schema: public
   - name: crashes
     using:
       foreign_key_constraint_on:
