@@ -17,8 +17,8 @@ PGDATA="/var/lib/postgresql/data/pgdata"
 # postgres tuning for local docker stack (docker-compose.yml)
 PG_MAINTENANCE_WORK_MEM="256MB"        # Increased for faster index builds/VACUUM on 4GB RAM.
 PG_MAX_WAL_SIZE="2GB"                  # Larger WAL allowance reduces checkpoint frequency.
-PG_SHARED_BUFFERS="2GB"                # Standard 25% allocation; provides 1GB of dedicated data cache.
-PG_SHM_SIZE="2gb"                       # Docker shared memory size; matches PG_SHARED_BUFFERS.
+PG_SHARED_BUFFERS="2GB"                # More than the standard 25% allocation, but seems to have better start up time. This provides for 2GB of dedicated data cache.
+PG_SHM_SIZE="2gb"                      # Docker shared memory size; matches PG_SHARED_BUFFERS.
 PG_EFFECTIVE_CACHE_SIZE="3GB"          # Planner hint that 75% of RAM is available for OS + DB caching.
 PG_CHECKPOINT_COMPLETION_TARGET="0.9"  # Spreads checkpoint I/O over 90% of the interval to avoid spikes.
 PG_WORK_MEM="16MB"                     # RAM dedicated for sorts and hashing
