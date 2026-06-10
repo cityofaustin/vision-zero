@@ -293,8 +293,7 @@ This work is ongoing and in a state of flux. The below queries can be used to ex
 
 #### Sample queries
 
-
-* VZ incident stats (number of member CAD incidents, distance spread, response time spread)
+- VZ incident stats (number of member CAD incidents, distance spread, response time spread)
 
 ```sql
 SELECT
@@ -320,8 +319,7 @@ ORDER BY
     v.id
 ```
 
-* Generates a geojson of VZ incidents with simple styles that can be visualized in mapping tools such as https://geojson.io.
-
+- Generates a geojson of VZ incidents with simple styles that can be visualized in mapping tools such as https://geojson.io.
 
 ```sql
 SELECT
@@ -504,14 +502,14 @@ Typically, any foreign key constraint that references the layer should use the `
 
 Use the [ArcGIS Online Layer Helper](/toolbox/load_agol_layer) to update layers in our database from their authoritative source on ArcGIS Online.
 
-After a geospatial layer is updated, you must reprocess any records which reference the layer. These updates require manual crafting of SQL statements which mirror the trigger functions that typically set these associations when a record is inserted or updated. For example, after updating the `location` polygons layer, you will need to re-process the `location_id` associations for `crashes`, `atd_apd_blueform`, `ems__incidents`, and `afd__incdents`. 
+After a geospatial layer is updated, you must reprocess any records which reference the layer. These updates require manual crafting of SQL statements which mirror the trigger functions that typically set these associations when a record is inserted or updated. For example, after updating the `location` polygons layer, you will need to re-process the `location_id` associations for `crashes`, `atd_apd_blueform`, `ems__incidents`, and `afd__incdents`.
 
 You can find example SQL statements for reprocessing reference layer associations in the following issues:
 
-* [Refresh the locations polygon layer](https://github.com/cityofaustin/atd-data-tech/issues/26112)
-* [Refresh the jurisdictions layer](https://github.com/cityofaustin/atd-data-tech/issues/20461#issuecomment-2576082208)
-* [Refresh the non-COA roadways layer](https://github.com/cityofaustin/atd-data-tech/issues/19904#issuecomment-2477118070)
-* [Refresh the APD sectors layer](https://github.com/cityofaustin/atd-data-tech/issues/22714#issuecomment-2945543564)
+- [Refresh the locations polygon layer](https://github.com/cityofaustin/atd-data-tech/issues/26112)
+- [Refresh the jurisdictions layer](https://github.com/cityofaustin/atd-data-tech/issues/20461#issuecomment-2576082208)
+- [Refresh the non-COA roadways layer](https://github.com/cityofaustin/atd-data-tech/issues/28227#issuecomment-4673371512)
+- [Refresh the APD sectors layer](https://github.com/cityofaustin/atd-data-tech/issues/22714#issuecomment-2945543564)
 
 ## Backups
 
