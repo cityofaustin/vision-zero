@@ -85,6 +85,7 @@ def main(args):
     logging.info(f"  Found {len(incidents):,} unprocessed incidents\n")
 
     if args.dry_run:
+        logging.info(f"Dry run: aborting further processing")
         return
 
     processed_ids = set()
