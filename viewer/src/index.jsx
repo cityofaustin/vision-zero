@@ -1,5 +1,3 @@
-import "react-app-polyfill/ie11";
-import "react-app-polyfill/stable";
 import "events-polyfill";
 
 import React from "react";
@@ -37,7 +35,7 @@ if (import.meta.env.MODE !== "production") {
       <StoreProvider>
         <App />
       </StoreProvider>,
-      document.getElementById("root")
+      document.getElementById("root"),
     );
   });
 } else {
@@ -45,7 +43,7 @@ if (import.meta.env.MODE !== "production") {
     <StoreProvider>
       <App />
     </StoreProvider>,
-    document.getElementById("root")
+    document.getElementById("root"),
   );
 }
 
