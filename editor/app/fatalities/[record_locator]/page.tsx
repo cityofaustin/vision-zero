@@ -99,7 +99,6 @@ export default function FatalCrashDetailsPage({
         crash.is_temp_record && (
           <CrashIsTemporaryBanner
             crash={crash}
-            allowDelete={false}
             dismissible
           />
         )
