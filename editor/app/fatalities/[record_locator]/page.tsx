@@ -97,7 +97,11 @@ export default function FatalCrashDetailsPage({
       {
         // show alert if crash is a temp record, hide delete button on fatalities pages
         crash.is_temp_record && (
-          <CrashIsTemporaryBanner crash={crash} allowDelete={false} />
+          <CrashIsTemporaryBanner
+            crash={crash}
+            allowDelete={false}
+            dismissible
+          />
         )
       }
       <Row className="fatality-details-row">
@@ -174,7 +178,7 @@ export default function FatalCrashDetailsPage({
             </Col>
           </Row>
           <Row>
-            <Col >
+            <Col>
               <DataCard<Crash>
                 record={crash}
                 isValidating={false}
