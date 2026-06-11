@@ -1,6 +1,6 @@
 {
   "name": "viewer",
-  "version": "2.32.0",
+  "version": "2.33.0",
   "homepage": "/viewer",
   "description": "Vision Zero Viewer",
   "author": "Austin Transportation & Public Works - Data & Technology Services",
@@ -21,7 +21,7 @@
     "@tippyjs/react": "^4.2.6",
     "@turf/difference": "6.0.1",
     "aphrodite": "^2.4.0",
-    "axios": "^1.16.0",
+    "axios": "^1.17.0",
     "bootstrap": "^4.6.2",
     "chart.js": "^2.9.4",
     "chartjs-plugin-stacked100": "^0.7.1",
@@ -86,7 +86,7 @@
     "prettier": "^3.8.3",
     "react-axe": "^3.5.4",
     "typescript-eslint": "^8.60.1",
-    "vite": "^8.0.14",
+    "vite": "^8.0.16",
     "vite-plugin-svgr": "^5.2.0"
   }
 }
