@@ -300,7 +300,7 @@ const PeopleByDemographics = () => {
           <hr />
         </Col>
       </Row>
-      {!!chartData.datasets ? (
+      {chartData.datasets ? (
         <div>
           <ChartTypeSelector
             chartTypes={Object.values(chartConfigs).map((value) => value.label)}

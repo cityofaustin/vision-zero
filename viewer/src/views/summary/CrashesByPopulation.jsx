@@ -109,7 +109,7 @@ const CrashesByPopulation = () => {
           <hr />
         </Col>
       </Row>
-      {!!chartData.datasets ? (
+      {chartData.datasets ? (
         <div>
           <Row className="pb-2">
             <Col xs={4} s={2} m={2} l={2} xl={2}>

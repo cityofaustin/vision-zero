@@ -243,7 +243,7 @@ const CrashesByMode = () => {
           <hr />
         </Col>
       </Row>
-      {!!data.datasets ? (
+      {data.datasets ? (
         <Row className="mt-1">
           <Col>
             {chartLegend}

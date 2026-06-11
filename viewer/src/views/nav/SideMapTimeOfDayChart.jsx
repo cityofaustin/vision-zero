@@ -44,7 +44,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   useMemo(() => {
     const crashes = chartData;
     // When chartData is set, accumulate time window data
-    if (!!crashes) {
+    if (crashes) {
       const crashTimeWindowAccumulatorArray = Object.keys(filters).map(
         (filter) => 0
       );
@@ -66,7 +66,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
 
   useMemo(() => {
     // When timeWindowData is set, calc percentages
-    if (!!timeWindowData) {
+    if (timeWindowData) {
       const timeWindowPercentages = timeWindowData.map((timeWindow) => {
         const timeWindowsTotal = timeWindowData.reduce(
           (accumulator, timeWindowTotal) => {
@@ -90,7 +90,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     const index = elems.length > 0 ? elems[0]._index : null;
 
     // If valid click, set mapTimeWindow state
-    if (!!timeWindow) {
+    if (timeWindow) {
       const timeWindowArray = filters[timeWindow];
       const timeWindowStart = timeWindowArray[0];
       const timeWindowEnd = timeWindowArray[1];
