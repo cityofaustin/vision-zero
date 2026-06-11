@@ -64,7 +64,7 @@ const ViewTheMap = () => {
       width: 100%;
       height: ${size.width > 1325 ? "403px" : "442px"};
       vertical-align: top;
-      background-image: url(${process.env.PUBLIC_URL + "/map_preview.jpg"});
+      background-image: url(${import.meta.env.BASE_URL + "map_preview.jpg"});
       background-position: center;
     }
     .map-icon-row {

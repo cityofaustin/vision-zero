@@ -49,25 +49,6 @@ const Summary = () => {
 
   const lastUpdated = format(dataEndDate, "MMMM dd, yyyy");
 
-  // Display disclaimer when viewing preview instance
-  const previewDisclaimer = process.env.REACT_APP_VZV_ENVIRONMENT ===
-    "PREVIEW" && (
-    <Row className="summary-child">
-      <Alert color="danger" className="col-12 mb-0">
-        <div className="mb-2">
-          This instance of the Vision Zero Viewer is for internal use only and
-          the quality of the data presented here has not yet been assured by
-          Austin Transportation Department staff.
-        </div>
-        <div>
-          For quality assured data, visit the current instance of the{" "}
-          <a href="https://visionzero.austin.gov/viewer/">Vision Zero Viewer</a>
-          .
-        </div>
-      </Alert>
-    </Row>
-  );
-
   return (
     <main>
       <Container fluid>
@@ -75,16 +56,13 @@ const Summary = () => {
         <Row className="px-xs-0 mx-xs-0 px-lg-3 mx-lg-4 mt-md-3 mt-lg-4">
           <Col className="px-xs-0">
             <StyledSummary>
-              {previewDisclaimer}
               <Row className="summary-child">
                 <Alert className="col-12 mb-0 banner">
                   <div className="mb-2">
-                    Austin is consistently ranked as one of America's best
-                    places to live, but too many of our fellow Austinites are
-                    killed or seriously injured in traffic crashes each year. To
-                    learn more about the City's transportation safety
-                    initiatives, visit Austin Transportation's Vision Zero
-                    Program{" "}
+                    Austin is consistently ranked as one of America's best places to live, but too
+                    many of our fellow Austinites are killed or seriously injured in traffic crashes
+                    each year. To learn more about the City's transportation safety initiatives,
+                    visit Austin Transportation's Vision Zero Program{" "}
                     <a
                       href="https://www.austintexas.gov/transportation-public-works/programs/vision-zero"
                       target="_blank"
@@ -104,10 +82,9 @@ const Summary = () => {
                   </div>
                   <div>
                     Data through {lastUpdated}. <strong>Crash data</strong>{" "}
-                    <InfoPopover config={popoverConfig.map.trafficCrashes} />{" "}
-                    includes crashes that occurred within the current City of
-                    Austin Full Purpose jurisdiction, inclusive of all public
-                    safety jurisdictions.
+                    <InfoPopover config={popoverConfig.map.trafficCrashes} /> includes crashes that
+                    occurred within the current City of Austin Full Purpose jurisdiction, inclusive
+                    of all public safety jurisdictions.
                   </div>
                 </Alert>
               </Row>

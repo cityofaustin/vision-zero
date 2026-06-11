@@ -7,7 +7,7 @@ import { Container } from "reactstrap";
 import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
 
-const LOGO_URL = `${process.env.PUBLIC_URL}/vz_logo.png`;
+const LOGO_URL = `${import.meta.env.BASE_URL}vz_logo.png`;
 
 const StyledDrawerHeader = styled.div`
   background-color: ${colors.white};
