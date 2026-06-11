@@ -10,9 +10,10 @@ export const crashDataCards = {
   ],
   flags: [
     crashesColumns.private_dr_fl,
+    crashesColumns.is_coa_roadway,
+    crashesColumns.onsys_fl,
     crashesColumns.at_intrsct_fl,
     crashesColumns.active_school_zone_fl,
-    crashesColumns.onsys_fl,
     crashesColumns.rr_relat_fl,
     crashesColumns.schl_bus_fl,
     crashesColumns.toll_road_fl,

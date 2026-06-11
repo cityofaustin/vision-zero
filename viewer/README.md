@@ -4,8 +4,8 @@
 
 The Vision Zero Viewer is a public-facing interactive web app showing crash data related to Vision Zero. Users can view crash data by different categories, including transportation mode, demographic groups impacted, time of day, and location.
 
-* Production site: https://visionzero.austin.gov/viewer/
-* Staging site: https://visionzero-staging.austinmobility.io/viewer/
+- Production site: https://visionzero.austin.gov/viewer/
+- Staging site: https://visionzero-staging.austinmobility.io/viewer/
 
 Crash data is sourced from TxDOT's Crash Records Information System (CRIS) database. [Vision Zero Editor](https://github.com/cityofaustin/vision-zero/tree/production/editor) provides tools for City of Austin Transportation Department staff to enrich crash data with additional attributes, as well as correct any erroneous or missing data.
 
@@ -19,12 +19,38 @@ Create your environment file by saving a copy the `env_template` file as `.env.l
 
 We use [Node Version Manager](https://github.com/nvm-sh/nvm) (nvm) to keep our `node` versions in sync with our environments. With `nvm` installed, run `nvm use` from this directory to activate the current `node` and `npm` version required for this project. If you don't want to use `nvm`, refer to the `.nvmrc` file for the `node` version you should install.
 
-Install dependencies
+Install dependencies:
 
 `npm install`
 
-Run development server
+Run development server:
 
-`npm start`
+`npm run dev`
 
-In development, this project uses [Prettier](https://prettier.io/) for code formatting which is set in .prettierrc. Visit link for installation or install the [extension for VSCode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
+### ESLint
+
+We use ESLint with ESLint 9 flat config to catch code issues. Run the linter:
+
+```
+npm run lint        # Check for issues
+npm run lint:fix    # Automatically fix what's possible
+```
+
+### Prettier
+
+In development, this project uses [Prettier](https://prettier.io/) for code formatting which is set in .prettierrc.
+
+Visit link for installation or install the [extension for VSCode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and enable "Format on Save" for automatic formatting
+
+Command line:
+
+```
+npm run format           # Format all source files
+npm run format:check     # Check formatting without modifying files
+```
+
+## Deployment
+
+Production and staging instances are deployed on Netlify automatically whenever commits are merged to production or main, respectively.
+
+Netlify deploy previews are automatically deployed for any pull request opened against main.

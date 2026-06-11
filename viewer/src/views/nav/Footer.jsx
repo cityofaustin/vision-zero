@@ -6,7 +6,7 @@ import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
 import logo from "./COA-Logo-Stacked-Faded-White-RGB.svg";
 
-let pckg = require("../../../package.json");
+import pckg from "../../../package.json"
 
 console.log(pckg.version);
 

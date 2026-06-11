@@ -1,5 +1,3 @@
-import "react-app-polyfill/ie11";
-import "react-app-polyfill/stable";
 import "events-polyfill";
 
 import React from "react";
@@ -30,14 +28,14 @@ SVGElement.prototype.contains = function contains(node) {
   return false;
 };
 
-if (process.env.NODE_ENV !== "production") {
+if (import.meta.env.MODE !== "production") {
   import("react-axe").then((axe) => {
     axe.default(React, ReactDOM, 1000);
     ReactDOM.render(
       <StoreProvider>
         <App />
       </StoreProvider>,
-      document.getElementById("root")
+      document.getElementById("root"),
     );
   });
 } else {
@@ -45,7 +43,7 @@ if (process.env.NODE_ENV !== "production") {
     <StoreProvider>
       <App />
     </StoreProvider>,
-    document.getElementById("root")
+    document.getElementById("root"),
   );
 }
 
