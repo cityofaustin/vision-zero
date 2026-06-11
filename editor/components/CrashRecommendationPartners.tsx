@@ -25,15 +25,15 @@ export default function CrashRecommendationPartners({
   const selectedPartners = watch("recommendations_partners");
 
   const togglePartner = (id: number, add: boolean) => {
-    let updated: Partial<RecommendationPartner>[] = selectedPartners || [];
+    let updated = selectedPartners ? [...selectedPartners] : [];
     if (add) {
       updated.push({ partner_id: id });
     } else {
-      updated = updated.filter((partner) => partner.partner_id !== id) || null;
+      updated = updated.filter((partner) => partner.partner_id !== id);
     }
     setValue("recommendations_partners", updated, { shouldDirty: true });
   };
-
+  console.log("render");
   return (
     <ListGroup>
       {partners.map((partner) => {
@@ -46,6 +46,7 @@ export default function CrashRecommendationPartners({
             action
             onClick={(e) => {
               e.preventDefault();
+              console.log("CLICK", partner);
               togglePartner(partner.id, !checked);
             }}
           >
