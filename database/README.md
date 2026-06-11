@@ -674,7 +674,7 @@ You can find example SQL statements for reprocessing reference layer association
 
 - [Refresh the locations polygon layer](https://github.com/cityofaustin/atd-data-tech/issues/26112)
 - [Refresh the jurisdictions layer](https://github.com/cityofaustin/atd-data-tech/issues/20461#issuecomment-2576082208)
-- [Refresh the non-COA roadways layer](https://github.com/cityofaustin/atd-data-tech/issues/19904#issuecomment-2477118070)
+- [Refresh the non-COA roadways layer](https://github.com/cityofaustin/atd-data-tech/issues/28227#issuecomment-4673371512)
 - [Refresh the APD sectors layer](https://github.com/cityofaustin/atd-data-tech/issues/22714#issuecomment-2945543564)
 
 ## Backups
