@@ -95,7 +95,7 @@ export default function FatalityUnitsCards({
       <Card className="h-100">
         <Card.Header>
           <div className="d-flex flex-row justify-content-between">
-            <div className="fs-5 fw-bold">
+            <div className="fw-bold">
               {showAllUnits && !isSingleUnitCrash
                 ? "Units involved"
                 : "Victims"}
