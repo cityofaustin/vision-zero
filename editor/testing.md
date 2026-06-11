@@ -248,6 +248,7 @@ refresh materialized view location_crashes_view;
 
 - The page should be tested with a temporary crash record and a non-temporary crash record
 - Page title is `Fatalities <record-locator>`
+- If viewing a temp record—yellow temporary record banner is *visible*, *dismissible*, and there is *no* red delete button.
 - Observe that summary/map card renders normally with hyperlinked crash ID
 - Units/victims card
   - If the crash has multiple units, all units invovled should be displayed with the **Show all units** toggle enabled
