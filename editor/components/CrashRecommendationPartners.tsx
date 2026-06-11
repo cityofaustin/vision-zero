@@ -33,7 +33,7 @@ export default function CrashRecommendationPartners({
     }
     setValue("recommendations_partners", updated, { shouldDirty: true });
   };
-  console.log("render");
+
   return (
     <ListGroup>
       {partners.map((partner) => {
