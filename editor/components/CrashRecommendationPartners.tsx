@@ -1,10 +1,7 @@
 import Form from "react-bootstrap/Form";
 import ListGroup from "react-bootstrap/ListGroup";
 import { UseFormSetValue, UseFormWatch } from "react-hook-form";
-import {
-  CoordinationPartner,
-  RecommendationPartner,
-} from "@/types/recommendation";
+import { CoordinationPartner } from "@/types/recommendation";
 import { RecommendationFormInputs } from "@/types/recommendation";
 
 interface CrashRecommendationPartnersProps {
