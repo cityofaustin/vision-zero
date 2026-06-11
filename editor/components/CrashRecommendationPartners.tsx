@@ -46,7 +46,6 @@ export default function CrashRecommendationPartners({
             action
             onClick={(e) => {
               e.preventDefault();
-              console.log("CLICK", partner);
               togglePartner(partner.id, !checked);
             }}
           >
