@@ -395,6 +395,10 @@ to make sure it renders on top is a common fix */
   opacity: 1;
 }
 
+.row.fatality-details-row {
+  font-size: 16px !important;
+}
+
 /* Used in fatal victim PersonImages*/
 .editable-image {
   cursor: pointer;

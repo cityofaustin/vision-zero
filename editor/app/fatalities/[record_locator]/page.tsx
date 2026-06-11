@@ -100,7 +100,7 @@ export default function FatalCrashDetailsPage({
           <CrashIsTemporaryBanner crash={crash} allowDelete={false} />
         )
       }
-      <Row style={{ fontSize: "16px" }}>
+      <Row className="fatality-details-row">
         <Col className="mb-3" sm={12} md={5}>
           <Card className="h-100">
             <Card.Body>
@@ -160,7 +160,7 @@ export default function FatalCrashDetailsPage({
           <FatalityUnitsCards crash={crash} onSaveCallback={onSaveCallback} />
         </Col>
       </Row>
-      <Row style={{ fontSize: "16px" }}>
+      <Row className="fatality-details-row">
         <Col className="mb-3" sm={12} md={6} style={{ minHeight: "625px" }}>
           <CrashDiagramCard crash={crash} crashRefetch={refetch} />
         </Col>
@@ -189,7 +189,7 @@ export default function FatalCrashDetailsPage({
           </Row>
         </Col>
       </Row>
-      <Row style={{ fontSize: "16px" }}>
+      <Row className="fatality-details-row">
         <Col className="mb-3" sm={12} md={12} lg={6}>
           <CrashRecommendationCard
             crash_pk={crash.id}
