@@ -1,10 +1,7 @@
 import Form from "react-bootstrap/Form";
 import ListGroup from "react-bootstrap/ListGroup";
 import { UseFormSetValue, UseFormWatch } from "react-hook-form";
-import {
-  CoordinationPartner,
-  RecommendationPartner,
-} from "@/types/recommendation";
+import { CoordinationPartner } from "@/types/recommendation";
 import { RecommendationFormInputs } from "@/types/recommendation";
 
 interface CrashRecommendationPartnersProps {
@@ -25,11 +22,11 @@ export default function CrashRecommendationPartners({
   const selectedPartners = watch("recommendations_partners");
 
   const togglePartner = (id: number, add: boolean) => {
-    let updated: Partial<RecommendationPartner>[] = selectedPartners || [];
+    let updated = selectedPartners ? [...selectedPartners] : [];
     if (add) {
       updated.push({ partner_id: id });
     } else {
-      updated = updated.filter((partner) => partner.partner_id !== id) || null;
+      updated = updated.filter((partner) => partner.partner_id !== id);
     }
     setValue("recommendations_partners", updated, { shouldDirty: true });
   };
