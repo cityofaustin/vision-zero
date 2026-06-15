@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer } from "react";
+import React, { useEffect, useState, useReducer, useMemo } from "react";
 import axios from "axios";
 import { HorizontalBar } from "react-chartjs-2";
 import "chartjs-plugin-stacked100";
@@ -18,7 +18,7 @@ const url = `${personEndpointUrl}?$query=`;
 
 const dateCondition = `crash_timestamp_ct BETWEEN '${format(
   dataStartDate,
-  "yyyy-MM-dd"
+  "yyyy-MM-dd",
 )}T00:00:00' and '${format(dataEndDate, "yyyy-MM-dd")}T23:59:59'`;
 
 const chartColors = [
@@ -109,7 +109,6 @@ const chartConfigs = {
 const PeopleByDemographics = () => {
   const [chartType, setChartType] = useState("Race/Ethnicity");
   const [crashType, setCrashType] = useState(null);
-  const [chartData, setChartData] = useState({});
   const [demoData, demoDataDispatch] = useReducer(demoDataReducer, {});
 
   function demoDataReducer(demoData, action) {
@@ -127,13 +126,13 @@ const PeopleByDemographics = () => {
       const requests = Object.entries(chartConfigs).map(([dataKey, config]) =>
         axios.get(url + encodeURIComponent(config.query), {
           dataKey,
-        })
+        }),
       );
 
       axios.all(requests).then((resArr) => {
         const responses = resArr.reduce(
           (acc, res) => ({ ...acc, ...{ [res.config.dataKey]: res.data } }),
-          {}
+          {},
         );
 
         demoDataDispatch({
@@ -151,11 +150,13 @@ const PeopleByDemographics = () => {
 
       return data.reduce(
         (acc, record) => {
-          record.prsn_injry_sev_id === typeMap.fatal &&
+          if (record.prsn_injry_sev_id === typeMap.fatal) {
             acc.fatalities.push(record);
+          }
 
-          record.prsn_injry_sev_id === typeMap.injury &&
+          if (record.prsn_injry_sev_id === typeMap.injury) {
             acc.seriousInjuries.push(record);
+          }
 
           acc.fatalitiesAndSeriousInjuries.push(record);
 
@@ -165,7 +166,7 @@ const PeopleByDemographics = () => {
           seriousInjuries: [],
           fatalities: [],
           fatalitiesAndSeriousInjuries: [],
-        }
+        },
       );
     };
 
@@ -254,27 +255,37 @@ const PeopleByDemographics = () => {
     }
   }, [chartType, demoData, crashType]);
 
-  // On crash or chart type change, replace chart data and colors from config
-  useEffect(() => {
-    if (demoData.status === "formatted") {
-      const [configName, config] = Object.entries(chartConfigs).find(
-        ([configName, config]) => config.label === chartType
-      );
-
-      const data = {
-        labels: yearsArray,
-        datasets: config.labelCategories.map((category, i) => ({
-          label: config.labelCategories[i],
-          data: demoData[configName][crashType.name][category],
-          backgroundColor: config.colors[i],
-          borderColor: config.colors[i],
-          hoverBackgroundColor: config.colors[i],
-          hoverBorderColor: config.colors[i],
-        })),
-      };
-
-      setChartData(data);
+  // Derive chart data
+  const chartData = useMemo(() => {
+    if (demoData.status !== "formatted" || !crashType) {
+      return {};
     }
+
+    const found = Object.entries(chartConfigs).find(
+      ([, config]) => config.label === chartType,
+    );
+
+    if (!found) {
+      return {};
+    }
+
+    const [configName, config] = found;
+
+    if (!demoData[configName] || !demoData[configName][crashType.name]) {
+      return {};
+    }
+
+    return {
+      labels: yearsArray,
+      datasets: config.labelCategories.map((category, i) => ({
+        label: config.labelCategories[i],
+        data: demoData[configName][crashType.name][category] || [],
+        backgroundColor: config.colors[i],
+        borderColor: config.colors[i],
+        hoverBackgroundColor: config.colors[i],
+        hoverBorderColor: config.colors[i],
+      })),
+    };
   }, [demoData, chartType, crashType]);
 
   return (
