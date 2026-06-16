@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useMemo } from "react";
 import { format, setMonth } from "date-fns";
 import { Line } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
 const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
-  const [chartData, setChartData] = useState({});
-
-  useEffect(() => {
+  const chartData = useMemo(() => {
     const formatChartData = (avgData, currentYearData) => {
       const labels = avgData.map((data) =>
-        format(setMonth(new Date(), parseInt(data.month - 1)), "LLL")
+        format(setMonth(new Date(), parseInt(data.month - 1)), "LLL"),
       );
 
       const reduceCumulativeTotals = (data, valueKey) =>
@@ -17,8 +15,11 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
           const num = parseFloat(data[valueKey]);
           const roundNum = (num) => Math.floor(num * 100) / 100;
 
-          i === 0 && acc.push(roundNum(num));
-          i !== 0 && acc.push(roundNum(acc[i - 1] + num));
+          if (i === 0) {
+            acc.push(roundNum(num));
+          } else {
+            acc.push(roundNum(acc[i - 1] + num));
+          }
           return acc;
         }, []);
 
@@ -53,14 +54,13 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
           formatDataset(
             currentValues,
             "Current Year",
-            colors.viridis1Of6Highest
+            colors.viridis1Of6Highest,
           ),
         ],
       };
     };
 
-    const formattedData = formatChartData(avgData, currentYearData);
-    setChartData(formattedData);
+    return formatChartData(avgData, currentYearData);
   }, [avgData, currentYearData]);
 
   return (
