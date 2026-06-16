@@ -17,7 +17,7 @@ UNION ALL
 SELECT
     ci.vz_incident_id,
     'cad_incident'::text      AS record_type,
-    ci.agency_type            AS record_responding_agency,
+    ci.agency_type_short      AS record_responding_agency,
     ci.id                     AS record_id,
     ci.master_incident_number AS record_incident_number,
     ci.response_date          AS record_timestamp,
