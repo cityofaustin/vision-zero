@@ -155,8 +155,7 @@ $function$;
 comment on function crashes_match_vz_incident is 'Function which matches crashes to vz_incidents and creates new vz_incidents when no match can be found.'
 
 -- todo: check trigger order
--- todo: we need an UPDATE trigger for backfill only
 CREATE OR REPLACE TRIGGER crashes_match_vz_incident_trigger
-    BEFORE INSERT OR UPDATE ON public.crashes
+    BEFORE INSERT ON public.crashes
     FOR EACH ROW
     EXECUTE FUNCTION public.crashes_match_vz_incident();
