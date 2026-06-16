@@ -509,6 +509,7 @@ GROUP BY
     v.id
 ORDER BY
     v.id
+LIMIT 10000
 ```
 
 - Generates a geojson of VZ incidents with simple styles that can be visualized in mapping tools such as https://geojson.io.
@@ -529,14 +530,18 @@ SELECT
                 jsonb_build_object(
                     'vz_incident_id',
                     vz_incident_id,
-                    'master_incident_id',
-                    master_incident_id,
-                    'agency_type',
-                    agency_type,
-                    'response_date',
-                    response_date,
-                    'address',
-                    address,
+                    'record_type',
+                    record_type,
+                    'record_id',
+                    record_id,
+                    'record_incident_number',
+                    record_incident_number,
+                    'record_responding_agency',
+                    record_responding_agency,
+                    'record_timestamp',
+                    record_timestamp,
+                    'record_address',
+                    record_address,
                     'marker-color',
                     '#' || lpad(to_hex(('x' || substr(md5(vz_incident_id::text), 1, 6))::bit(24)::int), 6, '0'),
                     'marker-size',
@@ -546,11 +551,18 @@ SELECT
         )
     ) AS geojson
 FROM
-    cad_incidents
-WHERE
-    vz_incident_id IS NOT NULL
-LIMIT
-    2000;
+    (
+        SELECT
+            *
+        FROM
+            vz_incident_records_view
+        WHERE
+            geom IS NOT NULL
+        ORDER BY
+            record_timestamp DESC
+        LIMIT
+            500
+    ) sub;
 ```
 
 ### Geospatial layers
