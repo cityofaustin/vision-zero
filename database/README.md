@@ -458,7 +458,7 @@ For additional information about CAD records, see the [CAD incident import ETL](
 
 ### Vision Zero Incidents
 
-The `vz_incidents` table holds Vision Zero incidents — a composite record type that organizes various crash-related records under a single containing object. A VZ incident may be linked to multiple record types; it attempts to provide a complete picture of the public safety response to a single real-world crash.
+The `vz_incidents` table holds Vision Zero incidents — a composite record type that organizes [various crash-related records](#data-sources) under a single containing object. A VZ incident may be linked to multiple record types; it attempts to provide a complete picture of the public safety response to a single real-world crash. This work is ongoing.
 
 - Vision Zero incident
   - Fire CAD incident
@@ -487,7 +487,7 @@ The outcome of each crash's matching attempt is recorded in `crashes.vz_incident
 - `multiple_matches_by_automation` — more than one VZ incident matched; the candidate IDs are stored in `crashes.vz_incident_matched_ids` for manual review
 - `matched_by_manual_qa` — manually assigned to a VZ incident by a staff member
 
-This work is ongoing. The queries below can be used to explore and visualize VZ incidents as they currently exist in the database.
+The queries below can be used to explore and visualize VZ incidents as they currently exist in the database.
 
 #### Sample queries
 
