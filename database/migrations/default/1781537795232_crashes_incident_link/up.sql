@@ -13,6 +13,8 @@ ADD CONSTRAINT crashes_vz_incident_match_status_check CHECK (
 );
 
 COMMENT ON COLUMN public.crashes.vz_incident_id is 'The vz_incidents foreign key.';
+COMMENT ON COLUMN public.crashes.vz_incident_match_status is 'Indicates the status of automated crash-vz_incident matching.';
+COMMENT ON COLUMN public.crashes.vz_incident_matched_ids is 'Array of  vz_incident_id''s to which this crash was matched.';
 
 CREATE INDEX idx_crashes_vz_incident_id ON crashes(vz_incident_id);
 CREATE INDEX idx_vz_incident_match_status ON crashes(vz_incident_match_status);
@@ -80,6 +82,8 @@ BEGIN
 
     IF (NEW.investigat_agency_id = 74 AND NEW.case_id IS NOT NULL) THEN
         -- First try: exact match APD crashes on case_id
+        raise debug 'Attempting to match case ID %', NEW.case_id;
+
         SELECT vz_incident_id
         INTO v_vz_incident_id
         FROM cad_incidents
@@ -91,8 +95,11 @@ BEGIN
             NEW.vz_incident_id := v_vz_incident_id;
             NEW.vz_incident_matched_ids := ARRAY[v_vz_incident_id];
             NEW.vz_incident_match_status := 'matched_by_automation_case_id';
+
+            raise debug 'Matched to incident % based on case ID %', v_vz_incident_id, NEW.case_id;
             -- no further processing needed
             RETURN NEW;
+        raise debug 'Case ID match not found';
         END IF;
     END IF;
 
@@ -115,17 +122,19 @@ BEGIN
               AND v.record_timestamp <= (NEW.crash_timestamp + time_threshold)
               AND ST_DWithin(v.geom::geography, NEW.position::geography, meters_threshold)
             GROUP BY v.vz_incident_id
-        ) g;
+        ) v;
 
         IF v_match_count > 1 THEN
             NEW.vz_incident_id := NULL;
             NEW.vz_incident_matched_ids := v_matched_ids;
             NEW.vz_incident_match_status := 'multiple_matches_by_automation';
+            raise debug 'Multiple incident matches found';
 
         ELSIF v_match_count = 1 THEN
             NEW.vz_incident_id := v_matched_ids[1];
             NEW.vz_incident_matched_ids := v_matched_ids;
             NEW.vz_incident_match_status := 'matched_by_automation_geo_temporal';
+            raise debug 'Matched to incident % based on geo/temporal', v_matched_ids[1];
 
         -- no match found: create a new VZ incident
         ELSE
@@ -134,6 +143,7 @@ BEGIN
             NEW.vz_incident_id := v_vz_incident_id;
             NEW.vz_incident_matched_ids := NULL;
             NEW.vz_incident_match_status := 'created_by_automation';
+            raise debug 'No matching incident found. Created incident %', v_vz_incident_id;
         END IF;
         -- Done processing
         RETURN NEW;
@@ -145,6 +155,7 @@ BEGIN
         NEW.vz_incident_id := v_vz_incident_id;
         NEW.vz_incident_matched_ids := NULL;
         NEW.vz_incident_match_status := 'created_by_automation';
+        raise debug 'Not enough data to match incident. Created incident %', v_vz_incident_id;
         RETURN NEW;
     END IF;
     RETURN NEW;
