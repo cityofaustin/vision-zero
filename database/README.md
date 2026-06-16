@@ -460,15 +460,9 @@ For additional information about CAD records, see the [CAD incident import ETL](
 
 The `vz_incidents` table holds Vision Zero incidents — a composite record type that organizes [various crash-related records](#data-sources) under a single containing object. A VZ incident may be linked to multiple record types; it attempts to provide a complete picture of the public safety response to a single real-world crash. This work is ongoing.
 
-- Vision Zero incident
-  - Fire CAD incident
-  - EMS CAD incident
-  - Police CAD incident
-  - Police crash report
-  - EMS patient care record (future state)
-  - Fire department patient care record (future state)
+![illustrative incident diagram](../docs/images/vz_incident.jpg)
 
-VZ incidents are populated through two automated pathways.
+VZ incidents are currently populated through two automated pathways.
 
 **CAD incidents** are grouped by the `incident_linker.py` script in the [CAD incident import ETL](../etl/cad_incidents_import/README.md), which searches outward from each unprocessed CAD incident to pull in neighbors within 500 meters and 60 minutes, then creates a `vz_incidents` record for each resulting group.
 
