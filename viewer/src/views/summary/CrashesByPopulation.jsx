@@ -23,7 +23,7 @@ const CrashesByPopulation = () => {
   useEffect(() => {
     const dateCondition = `crash_timestamp_ct BETWEEN '${format(
       dataStartDate,
-      "yyyy-MM-dd"
+      "yyyy-MM-dd",
     )}T00:00:00' and '${fiveYearAvgEndDateByPop}T23:59:59'`;
     const queryGroupAndOrder = `GROUP BY year ORDER BY year`;
 
@@ -39,7 +39,7 @@ const CrashesByPopulation = () => {
     const calculateRatePer100000 = (data) => {
       const round = (num) => Math.floor(num * 10) / 10;
 
-      return data.map((year, i) => {
+      return data.map((year) => {
         const population = popEsts["years"][year["year"]];
         const rate = (year.total / population) * 100000;
         year.total = round(rate);
@@ -66,7 +66,7 @@ const CrashesByPopulation = () => {
       };
     };
 
-    !!crashType &&
+    if (crashType) {
       axios
         .get(url + encodeURIComponent(queries[crashType.name]))
         .then((res) => {
@@ -74,6 +74,7 @@ const CrashesByPopulation = () => {
           const formattedData = formatChartData(calculatedData);
           setChartData(formattedData);
         });
+    }
   }, [crashType, url]);
 
   const StyledDiv = styled.div`
