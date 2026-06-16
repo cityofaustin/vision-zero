@@ -17,15 +17,17 @@ COMMENT ON COLUMN public.crashes.vz_incident_id is 'The vz_incidents foreign key
 CREATE INDEX idx_crashes_vz_incident_id ON crashes(vz_incident_id);
 CREATE INDEX idx_vz_incident_match_status ON crashes(vz_incident_match_status);
 
-alter table cad_incidents add column agency_type_short text generated always as 
-(
-    case
-      when agency_type = 'AUSTIN PD' then 'apd'
-      when agency_type = 'FIRE' then 'afd'
-    else 'ems'
-    end
-) 
-stored;
+ALTER TABLE cad_incidents
+    ADD CONSTRAINT cad_incidents_agency_type_check CHECK (
+            agency_type IN ('AUSTIN PD', 'FIRE', 'AUSTIN-TRAVIS COUNTY  EMS')
+    ),
+    ADD COLUMN agency_type_short text generated always AS (
+        CASE
+            WHEN agency_type = 'AUSTIN PD' THEN 'apd'
+            WHEN agency_type = 'FIRE' THEN 'afd'
+            ELSE 'ems'
+        END
+    ) stored;
 
 comment on column cad_incidents.agency_type_short is 'The abbreviated name of the responding agency';
 
