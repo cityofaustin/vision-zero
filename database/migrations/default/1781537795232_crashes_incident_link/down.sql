@@ -1,4 +1,4 @@
-DROP TRIGGER IF EXISTS crashes_match_vz_incident_trigger on crashes;
+DROP TRIGGER IF EXISTS crashes_vz_incident_match_insert_trigger on crashes;
 DROP FUNCTION IF EXISTS crashes_match_vz_incident;
 DROP VIEW IF EXISTS vz_incident_records_view;
 

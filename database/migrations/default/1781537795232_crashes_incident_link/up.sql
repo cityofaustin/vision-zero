@@ -60,7 +60,7 @@ CREATE OR REPLACE VIEW public.vz_incident_records_view AS
     FROM cad_incidents ci
     WHERE ci.vz_incident_id IS NOT NULL;
 
-COMMENT ON VIEW public.vz_incident_records_view is 'Something helpful';
+COMMENT ON VIEW public.vz_incident_records_view IS 'Unified view of records (crashes, cad_incidents) belonging to a vz_incident, exposed under a common schema for cross-type queries and geo-temporal matching.';
 
 CREATE OR REPLACE FUNCTION public.crashes_match_vz_incident()
 RETURNS trigger
@@ -121,7 +121,6 @@ BEGIN
             NEW.vz_incident_id := NULL;
             NEW.vz_incident_matched_ids := v_matched_ids;
             NEW.vz_incident_match_status := 'multiple_matches_by_automation';
-            -- todo: create an incident for this case?
 
         ELSIF v_match_count = 1 THEN
             NEW.vz_incident_id := v_matched_ids[1];
@@ -152,10 +151,9 @@ BEGIN
 END;
 $function$;
 
-comment on function crashes_match_vz_incident is 'Function which matches crashes to vz_incidents and creates new vz_incidents when no match can be found.'
+comment on function crashes_match_vz_incident is 'Function which matches crashes to vz_incidents and creates new vz_incidents when no match can be found.';
 
--- todo: check trigger order
-CREATE OR REPLACE TRIGGER crashes_match_vz_incident_trigger
+CREATE OR REPLACE TRIGGER crashes_vz_incident_match_insert_trigger
     BEFORE INSERT ON public.crashes
     FOR EACH ROW
     EXECUTE FUNCTION public.crashes_match_vz_incident();
