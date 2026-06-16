@@ -443,19 +443,38 @@ Data is provided by the public safety enterprise data team and has been reviewed
 For additional information about CAD records, see the [CAD incident import ETL](../etl/cad_incidents_import/README.md).
 
 ### Vision Zero Incidents
+### Vision Zero Incidents
 
-[Under active development]
-
-The `vz_incidents` table holds Vision Zero incidents, which is a composite record type which attempts to unify various crash-related records under a single containing object. Currently, VZ incidents are only linked to CAD records; they are created as part of the [CAD incident import ETL](../etl/cad_incidents_import/README.md). In the future a VZ incident may be linked to any number of record types, enabling a picture of the total public safety response to a crash:
+The `vz_incidents` table holds Vision Zero incidents — a composite record type that organizes various crash-related records under a single containing object. A VZ incident may be linked to multiple record types; it attempts to provide a complete picture of the public safety response to a single real-world crash.
 
 - Vision Zero incident
   - Fire CAD incident
   - EMS CAD incident
-  - Police CAD inicdent
-  - EMS Patient care record (future state)
-  - Police crash report (future state)
+  - Police CAD incident
+  - Police crash report
+  - EMS patient care record (future state)
+  - Fire department patient care record (future state)
 
-This work is ongoing and in a state of flux. The below queries can be used to explore and visualize VZ incidents as they currently exist in the database.
+VZ incidents are populated through two automated pathways.
+
+**CAD incidents** are grouped by the `incident_linker.py` script in the [CAD incident import ETL](../etl/cad_incidents_import/README.md), which searches outward from each unprocessed CAD incident to pull in neighbors within 500 meters and 60 minutes, then creates a `vz_incidents` record for each resulting group.
+
+**Crash reports** are linked via a database trigger (`crashes_match_vz_incident`) that fires on insert. For each crash, the trigger attempts to match it to an existing VZ incident using the following strategies, in order:
+
+1. **Case ID match** — For APD crashes (`investigat_agency_id` = `74`) with a `case_id`, look for a CAD incident whose `master_incident_number` is equal to the crash's `case_id` and link the crash to that CAD incident's VZ incident.
+2. **Geo-temporal proximity** — For APD crashes with a position and timestamp, search the `vz_incident_records_view` for any linked record within 500 meters and 60 minutes. If exactly one VZ incident matches, link to it; if more than one matches, leave the crash unlinked for manual QA.
+3. **New incident** — If no match is found, or the crash is non-APD, or the crash is missing position/timestamp data, create a new `vz_incidents` record and link the crash to it.
+
+The outcome of each crash's matching attempt is recorded in `crashes.vz_incident_match_status`. Possible values are:
+
+- `unprocessed` — default state, pending trigger execution (e.g. legacy records awaiting backfill)
+- `created_by_automation` — a new VZ incident was created for this crash
+- `matched_by_automation_case_id` — linked via APD case ID
+- `matched_by_automation_geo_temporal` — linked via spatial/temporal proximity
+- `multiple_matches_by_automation` — more than one VZ incident matched; the candidate IDs are stored in `crashes.vz_incident_matched_ids` for manual review
+- `matched_by_manual_qa` — manually assigned to a VZ incident by a staff member
+
+This work is ongoing. The queries below can be used to explore and visualize VZ incidents as they currently exist in the database.
 
 #### Sample queries
 
