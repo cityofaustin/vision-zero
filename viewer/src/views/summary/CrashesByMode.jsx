@@ -114,7 +114,7 @@ const CrashesByMode = () => {
               newData = { ...newData, ...{ [year]: res.data } };
             });
             return null;
-          })
+          }),
         );
         setChartData(newData);
       };
@@ -123,9 +123,11 @@ const CrashesByMode = () => {
   }, [crashType]);
 
   useEffect(() => {
-    !!chartRef.current &&
-      !!chartData &&
-      setChartLegend(chartRef.current.chartInstance.generateLegend());
+    if (chartRef.current) {
+      if (chartData) {
+        setChartLegend(chartRef.current.chartInstance.generateLegend());
+      }
+    }
   }, [chartData, legendColors]);
 
   const createChartLabels = () => yearsArray.map((year) => `${year}`);
@@ -181,10 +183,11 @@ const CrashesByMode = () => {
   const getYearTotalsArray = useMemo(() => {
     const yearTotalsArray = yearsArray.map((year, index) => {
       let currentYearTotal = 0;
-      data.datasets &&
+      if (data.datasets) {
         data.datasets.forEach((mode) => {
           currentYearTotal += mode.data[index];
         });
+      }
       return currentYearTotal;
     });
     return yearTotalsArray;
@@ -287,13 +290,15 @@ const CrashesByMode = () => {
                               {chart.data.datasets.map((dataset, i) => {
                                 const updateLegendColors = () => {
                                   const legendColorsClone = [...legendColors];
-                                  legendColors[i] !== "dimgray"
-                                    ? legendColorsClone.splice(i, 1, "dimgray")
-                                    : legendColorsClone.splice(
-                                        i,
-                                        1,
-                                        chartColors[i]
-                                      );
+                                  if (legendColors[i] !== "dimgray") {
+                                    legendColorsClone.splice(i, 1, "dimgray");
+                                  } else {
+                                    legendColorsClone.splice(
+                                      i,
+                                      1,
+                                      chartColors[i],
+                                    );
+                                  }
                                   setLegendColors(legendColorsClone);
                                 };
 
@@ -378,7 +383,7 @@ const CrashesByMode = () => {
                                             </p>
                                           </div>
                                         );
-                                      }
+                                      },
                                     )}
                                     <hr className="my-0"></hr>
                                     <p className={`h6 text-center my-1 pb-1`}>
