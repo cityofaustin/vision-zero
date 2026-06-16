@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { StoreContext } from "../../utils/store";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import MapControls from "./MapControls";
@@ -30,8 +36,6 @@ import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 import MapGeocoder from "./Geocoder/Geocoder";
 import { arcgisToGeoJSON } from "@terraformer/arcgis";
 
-export const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
-
 const Map = () => {
   // Set initial map config
   const [viewport, setViewport] = useState({
@@ -44,7 +48,6 @@ const Map = () => {
   const isTablet = useIsTablet();
 
   const [mapData, setMapData] = useState("");
-  const [interactiveLayerIds, setInteractiveLayerIds] = useState(null);
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
@@ -73,7 +76,9 @@ const Map = () => {
         data.features &&
         data.features.reduce(
           (acc, feature) => {
-            crashCounts["injury"] += parseInt(feature.properties.sus_serious_injry_cnt);
+            crashCounts["injury"] += parseInt(
+              feature.properties.sus_serious_injry_cnt,
+            );
             crashCounts["fatality"] += parseInt(feature.properties.death_cnt);
 
             if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {
@@ -87,7 +92,7 @@ const Map = () => {
           {
             fatalities: { ...data, features: [] },
             injuries: { ...data, features: [] },
-          }
+          },
         );
 
       setCrashCounts(crashCounts);
@@ -99,16 +104,16 @@ const Map = () => {
       filters,
       dateRange,
       mapPolygon,
-      mapTimeWindow
+      mapTimeWindow,
     );
 
-    setCrashCounts(null); // Clear stale totals before fetch
-    !!apiUrl &&
+    // setCrashCounts(null); // Clear stale totals before fetch
+    if (apiUrl) {
       axios.get(apiUrl).then((res) => {
         const sortedMapData = sortAndCountMapData(res.data);
-
         setMapData(sortedMapData);
       });
+    }
   }, [filters, dateRange, mapTimeWindow, mapPolygon, setMapData]);
 
   // Fetch City Council Districts geojson
@@ -153,21 +158,25 @@ const Map = () => {
     isDragging ? "grab" : isHovering ? "pointer" : "default";
 
   // Set interactive layer IDs to allow cursor to change if isHovering
-  useEffect(() => {
-    const interactiveLayerIds = [
+  const interactiveLayerIds = useMemo(() => {
+    const layers = [
       isMapTypeSet.fatal && "fatalities",
       isMapTypeSet.injury && "seriousInjuries",
       cityCouncilOverlay && overlay.name === "cityCouncil" && "cityCouncil",
     ];
 
-    const filteredInteractiveIds = interactiveLayerIds.filter((id) => !!id);
-    setInteractiveLayerIds(filteredInteractiveIds);
+    const filteredInteractiveIds = layers.filter((id) => !!id);
+    return filteredInteractiveIds;
   }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
 
   const _onSelectCrashPoint = (event) => {
     // Prevent events from map controls from selecting features below
     // or from creating City Council district pop-up on mobile polygon draw
-    if (event.srcEvent && event.srcEvent.srcElement && event.srcEvent.srcElement.classList) {
+    if (
+      event.srcEvent &&
+      event.srcEvent.srcElement &&
+      event.srcEvent.srcElement.classList
+    ) {
       if (
         event.srcEvent.srcElement.classList.value.includes("mapbox") ||
         event.srcEvent.target.localName === "circle"
@@ -183,11 +192,14 @@ const Map = () => {
           f.layer.id === "fatalities" ||
           f.layer.id === "seriousInjuries" ||
           f.layer.id === "cityCouncil" ||
-          null
+          null,
       );
 
     let selectedFeatureLayer =
-      (!!selectedFeature && selectedFeature.layer && selectedFeature.layer.id) || null;
+      (!!selectedFeature &&
+        selectedFeature.layer &&
+        selectedFeature.layer.id) ||
+      null;
 
     // Supplement feature properties with lat/long to set popup coords if not in feature metadata
     if (!!selectedFeature && selectedFeatureLayer === "cityCouncil") {
@@ -227,13 +239,22 @@ const Map = () => {
     // Layer order depends on order set, so set fatalities last to keep on top
     const injuryLayer = (
       <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
-        <Layer beforeId="place_label_city_small_s" {...seriousInjuriesOutlineDataLayer} />
-        <Layer beforeId="place_label_city_small_s" {...seriousInjuriesDataLayer} />
+        <Layer
+          beforeId="place_label_city_small_s"
+          {...seriousInjuriesOutlineDataLayer}
+        />
+        <Layer
+          beforeId="place_label_city_small_s"
+          {...seriousInjuriesDataLayer}
+        />
       </Source>
     );
     const fatalityLayer = (
       <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
-        <Layer beforeId="place_label_city_small_s" {...fatalitiesOutlineDataLayer} />
+        <Layer
+          beforeId="place_label_city_small_s"
+          {...fatalitiesOutlineDataLayer}
+        />
         <Layer beforeId="place_label_city_small_s" {...fatalitiesDataLayer} />
       </Source>
     );
@@ -255,9 +276,15 @@ const Map = () => {
 
   const renderSelectedLayer = () => {
     const color = {
-      r: selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].r * 255,
-      g: selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].g * 255,
-      b: selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].b * 255,
+      r:
+        selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].r *
+        255,
+      g:
+        selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].g *
+        255,
+      b:
+        selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].b *
+        255,
       a: selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].a,
     };
 
@@ -282,7 +309,9 @@ const Map = () => {
     const map = mapRef.current.getMap();
 
     const setLayersVisibility = (idArray, visibilityString) => {
-      idArray.forEach((id) => map.setLayoutProperty(id, "visibility", visibilityString));
+      idArray.forEach((id) =>
+        map.setLayoutProperty(id, "visibility", visibilityString),
+      );
     };
 
     if (map.getLayer("fatalities") && map.getLayer("fatalitiesOutline")) {
@@ -291,7 +320,10 @@ const Map = () => {
       setLayersVisibility(fatalityIds, fatalVisibility);
     }
 
-    if (map.getLayer("seriousInjuries") && map.getLayer("seriousInjuriesOutline")) {
+    if (
+      map.getLayer("seriousInjuries") &&
+      map.getLayer("seriousInjuriesOutline")
+    ) {
       const injuryIds = ["seriousInjuries", "seriousInjuriesOutline"];
       const injuryVisibility = isMapTypeSet.injury ? "visible" : "none";
       setLayersVisibility(injuryIds, injuryVisibility);
@@ -304,7 +336,7 @@ const Map = () => {
       width="100%"
       height="100%"
       onViewportChange={_onViewportChange}
-      mapboxApiAccessToken={MAPBOX_TOKEN}
+      mapboxApiAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
       getCursor={_getCursor}
       interactiveLayerIds={interactiveLayerIds}
       onClick={_onSelectCrashPoint}
@@ -324,7 +356,9 @@ const Map = () => {
         }
 
         // Add a visually hidden label to the attribution toggle button
-        const toggleBtn = container.querySelector(".mapboxgl-ctrl-attrib-button");
+        const toggleBtn = container.querySelector(
+          ".mapboxgl-ctrl-attrib-button",
+        );
         if (toggleBtn) {
           const hiddenLabel = document.createElement("span");
           hiddenLabel.textContent = "Toggle attribution";
@@ -379,7 +413,10 @@ const Map = () => {
         />
       )}
       {!!crashCounts && !!mapPolygon && !selectedFeature && (
-        <MapPolygonInfoBox crashCounts={crashCounts} isMapTypeSet={isMapTypeSet} />
+        <MapPolygonInfoBox
+          crashCounts={crashCounts}
+          isMapTypeSet={isMapTypeSet}
+        />
       )}
       <MapCompassSpinner isSpinning={isMapDataLoading} />
       <MapControls setViewport={setViewport} />
