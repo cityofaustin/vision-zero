@@ -68,7 +68,7 @@ A single real-world crash typically generates data across multiple independent s
 
 | Data Source                   | Vision Zero access | Vision Zero table name | Note                                                                                                                 |
 | ----------------------------- | ------------------ | ---------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Crash reports                 | Yes                | `crashes`              | Crash reports are written based on law enforcement officer discretion and written on if a motor vehicle was involved |
+| Crash reports                 | Yes                | `crashes`              | Crash reports are written based on law enforcement officer discretion and written only if a motor vehicle was involved |
 | Computer-aided dispatch (CAD) | Partial            | `cad_incidents`        | Motor-vehicle-involved records only. Vision Zero access is limited to incidents which are coded as crash-related.    |
 | EMS patient care records      | Partial            | `ems__incidents`       | Motor-vehicle-involved records only                                                                                  |
 | AFD patient care records      | Partial\*          | `afd__incidents`       | Motor-vehicle-involved records only                                                                                  |
