@@ -16,7 +16,21 @@ COMMENT ON COLUMN public.crashes.vz_incident_id is 'The vz_incidents foreign key
 
 CREATE INDEX idx_crashes_vz_incident_id ON crashes(vz_incident_id);
 CREATE INDEX idx_vz_incident_match_status ON crashes(vz_incident_match_status);
+
+alter table cad_incidents add column agency_type_short text generated always as 
+(
+    case
+      when agency_type = 'AUSTIN PD' then 'apd'
+      when agency_type = 'FIRE' then 'afd'
+    else 'ems'
+    end
+) 
+stored;
+
+comment on column cad_incidents.agency_type_short is 'The abbreviated name of the responding agency';
+
 CREATE INDEX idx_cad_incidents_master_incident_number ON cad_incidents(master_incident_number);
+CREATE INDEX idx_cad_incidents_agency_type_short ON cad_incidents(agency_type_short);
 
 CREATE OR REPLACE VIEW public.vz_incident_records_view AS
     SELECT
@@ -35,7 +49,7 @@ CREATE OR REPLACE VIEW public.vz_incident_records_view AS
     SELECT
         ci.vz_incident_id,
         'cad_incident'::text        AS record_type,
-        ci.agency_type              AS record_responding_agency,
+        ci.agency_type_short        AS record_responding_agency,
         ci.id                       AS record_id,
         ci.master_incident_number   AS record_incident_number,
         ci.response_date            AS record_timestamp,
