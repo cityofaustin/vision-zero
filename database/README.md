@@ -66,15 +66,15 @@ The design supports an editing environment which enables Vision Zero program sta
 
 A single real-world crash typically generates data across multiple independent systems — police crash reports, public safety dispatch logs, EMS and fire department patient care records, hospital admissions, medical examiner reports, and so on. No single dataset captures the whole picture of a given crash, and the Vision Zero team has direct access to only a subset of them. The table below summarizes the data sources we currently work with, our level of access to each, and the Vision Zero database tables where applicable.
 
-| Data Source                   | Vision Zero access | Vision Zero table name | Note                                                                                                                 |
-| ----------------------------- | ------------------ | ---------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Data Source                   | Vision Zero access | Vision Zero table name | Note                                                                                                                   |
+| ----------------------------- | ------------------ | ---------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Crash reports                 | Yes                | `crashes`              | Crash reports are written based on law enforcement officer discretion and written only if a motor vehicle was involved |
-| Computer-aided dispatch (CAD) | Partial            | `cad_incidents`        | Motor-vehicle-involved records only. Vision Zero access is limited to incidents which are coded as crash-related.    |
-| EMS patient care records      | Partial            | `ems__incidents`       | Motor-vehicle-involved records only                                                                                  |
-| AFD patient care records      | Partial\*          | `afd__incidents`       | Motor-vehicle-involved records only                                                                                  |
-| Medical examiner reports      | Yes                | N/A                    | Ad-hoc exchange of XLSX files for Motor-vehicle-involved fatalities                                                  |
-| Vehicle telemetry             | No                 | N/A                    |                                                                                                                      |
-| Hospital records              | No                 | N/A                    |                                                                                                                      |
+| Computer-aided dispatch (CAD) | Partial            | `cad_incidents`        | Motor-vehicle-involved records only. Vision Zero access is limited to incidents which are coded as crash-related.      |
+| EMS patient care records      | Partial            | `ems__incidents`       | Motor-vehicle-involved records only                                                                                    |
+| AFD patient care records      | Partial\*          | `afd__incidents`       | Motor-vehicle-involved records only                                                                                    |
+| Medical examiner reports      | Yes                | N/A                    | Ad-hoc exchange of XLSX files for Motor-vehicle-involved fatalities                                                    |
+| Vehicle telemetry             | No                 | N/A                    |  Aspirational                                                                                                          |
+| Hospital records              | No                 | N/A                    |  Aspirational                                                                                                          |
 
 \*_Work in progress_
 
