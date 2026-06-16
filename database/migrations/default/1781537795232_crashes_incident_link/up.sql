@@ -71,7 +71,7 @@ DECLARE
     v_matched_ids bigint[];
     v_match_count integer;
     meters_threshold integer := 500;
-    time_threshold interval := '30 minutes';
+    time_threshold interval := '60 minutes';
 BEGIN
     -- safety check: vz_incident_id should never be non-null
     IF (NEW.vz_incident_id IS NOT NULL) THEN
@@ -121,6 +121,7 @@ BEGIN
             NEW.vz_incident_id := NULL;
             NEW.vz_incident_matched_ids := v_matched_ids;
             NEW.vz_incident_match_status := 'multiple_matches_by_automation';
+            -- todo: create an incident for this case?
 
         ELSIF v_match_count = 1 THEN
             NEW.vz_incident_id := v_matched_ids[1];
@@ -150,6 +151,8 @@ BEGIN
     RETURN NEW;
 END;
 $function$;
+
+comment on function crashes_match_vz_incident is 'Function which matches crashes to vz_incidents and creates new vz_incidents when no match can be found.'
 
 -- todo: check trigger order
 -- todo: we need an UPDATE trigger for backfill only
