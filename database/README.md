@@ -64,6 +64,20 @@ The design supports an editing environment which enables Vision Zero program sta
 
 ## Data sources
 
+A single real-world crash typically generates data across multiple independent systems — police crash reports, public safety dispatch logs, EMS and fire department patient care records, hospital admissions, medical examiner reports, and so on. No single dataset captures the whole picture of a given crash, and the Vision Zero team has direct access to only a subset of them. The table below summarizes the data sources we currently work with, our level of access to each, and the Vision Zero database tables where applicable.
+
+| Data Source                   | Vision Zero access | Vision Zero table name | Note                                                                                                                 |
+| ----------------------------- | ------------------ | ---------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Crash reports                 | Yes                | `crashes`              | Crash reports are written based on law enforcement officer discretion and written on if a motor vehicle was involved |
+| Computer-aided dispatch (CAD) | Partial            | `cad_incidents`        | Motor-vehicle-involved records only. Vision Zero access is limited to incidents which are coded as crash-related.    |
+| EMS patient care records      | Partial            | `ems__incidents`       | Motor-vehicle-involved records only                                                                                  |
+| AFD patient care records      | Partial\*          | `afd__incidents`       | Motor-vehicle-involved records only                                                                                  |
+| Medical examiner reports      | Yes                | N/A                    | Ad-hoc exchange of XLSX files for Motor-vehicle-involved fatalities                                                  |
+| Vehicle telemetry             | No                 | N/A                    |                                                                                                                      |
+| Hospital records              | No                 | N/A                    |                                                                                                                      |
+
+\*_Work in progress_
+
 ### TxDOT Crash Records Information System (CRIS)
 
 The [TxDOT Crash Record Information System](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html) (CRIS) is a statewide, automated database for traffic crashes reports.
@@ -442,7 +456,6 @@ Data is provided by the public safety enterprise data team and has been reviewed
 
 For additional information about CAD records, see the [CAD incident import ETL](../etl/cad_incidents_import/README.md).
 
-### Vision Zero Incidents
 ### Vision Zero Incidents
 
 The `vz_incidents` table holds Vision Zero incidents — a composite record type that organizes various crash-related records under a single containing object. A VZ incident may be linked to multiple record types; it attempts to provide a complete picture of the public safety response to a single real-world crash.
