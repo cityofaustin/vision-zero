@@ -1,5 +1,5 @@
 import React from "react";
-import { StoreContext } from "../../utils/store";
+import { StoreContext } from "src/constants/context";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 

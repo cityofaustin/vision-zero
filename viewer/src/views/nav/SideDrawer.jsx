@@ -1,5 +1,5 @@
 import React from "react";
-import { StoreContext } from "../../utils/store";
+import { StoreContext } from "src/constants/context";
 import { usePath } from "hookrouter";
 
 import CssBaseline from "@material-ui/core/CssBaseline";

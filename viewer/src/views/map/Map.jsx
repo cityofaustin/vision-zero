@@ -5,7 +5,7 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { StoreContext } from "../../utils/store";
+import { StoreContext } from "src/constants/context";
 import ReactMapGL, { Source, Layer } from "react-map-gl";
 import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";

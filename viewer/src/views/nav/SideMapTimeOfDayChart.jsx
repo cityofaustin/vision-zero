@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { StoreContext } from "../../utils/store";
+import { StoreContext } from "src/constants/context";
 import axios from "axios";
 import { format } from "date-fns";
 import { createMapDataUrl } from "../map/helpers";
@@ -33,7 +33,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
       crashEndpointUrl,
       mapFilters,
       dateRange,
-      mapPolygon
+      mapPolygon,
     );
     !!apiUrl &&
       axios.get(apiUrl).then((res) => {
@@ -46,7 +46,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     // When chartData is set, accumulate time window data
     if (crashes) {
       const crashTimeWindowAccumulatorArray = Object.keys(filters).map(
-        (filter) => 0
+        (filter) => 0,
       );
       const crashTimeWindows = Object.values(filters).map((filter) => filter);
       const crashTimeTotals = crashes.reduce((accumulator, crash) => {
@@ -72,10 +72,10 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
           (accumulator, timeWindowTotal) => {
             return (accumulator += timeWindowTotal);
           },
-          0
+          0,
         );
         const percentString = ((timeWindow / timeWindowsTotal) * 100).toFixed(
-          0
+          0,
         );
         return parseInt(percentString);
       });
@@ -101,7 +101,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     // Style unselected bars as inactive
     if (index !== null) {
       const newBarColors = Object.keys(filters).map((filter, i) =>
-        i === index ? defaultBarColor : inactiveBarColor
+        i === index ? defaultBarColor : inactiveBarColor,
       );
       setBarColors(newBarColors);
     }

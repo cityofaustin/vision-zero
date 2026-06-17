@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useReducer } from "react";
 import { mapStartDate, mapEndDate } from "../constants/time";
 import { useIsTablet } from "../constants/responsive";
-import { mapFilterReducer } from "../views/nav/SideMapControl";
-
-export const StoreContext = React.createContext(null);
+import { mapFilterReducer } from "src/constants/map";
+import { StoreContext } from "src/constants/context";
 
 export default function StoreProvider({ children }) {
   const [isOpen, setIsOpen] = useState(false);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StoreContext } from "../../utils/store";
+import { StoreContext } from "src/constants/context";
 import ThemedStyleSheet from "react-with-styles/lib/ThemedStyleSheet";
 import aphroditeInterface from "react-with-styles-interface-aphrodite";
 import DefaultTheme from "react-dates/lib/theme/DefaultTheme";

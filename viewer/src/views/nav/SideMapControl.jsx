@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { StoreContext } from "../../utils/store";
-
+import { StoreContext } from "src/constants/context";
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";
 import SideMapControlOverlays from "./SideMapControlOverlays";
@@ -97,29 +96,6 @@ const createModeFilterString = (isMapTypeSet, config) => {
   }
 };
 
-export const mapFilterReducer = (mapFilters, action) => {
-  const { type, payload } = action;
-
-  switch (type) {
-    case "setInitialModeFilters":
-      const initialFiltersArray = payload;
-      return initialFiltersArray;
-    case "updateModeSyntax":
-      const isMapTypeSet = payload;
-
-      const updatedModeFilters = mapFilters.map((filter) => ({
-        ...filter,
-        syntax: createModeFilterString(isMapTypeSet, filter),
-      }));
-      return updatedModeFilters;
-    case "updateModeFilters":
-      const updatedFiltersArray = payload;
-      return updatedFiltersArray;
-    default:
-      return null;
-  }
-};
-
 const SideMapControl = ({ type }) => {
   const {
     mapFilters: [filters, dispatchFilters],
@@ -140,7 +116,7 @@ const SideMapControl = ({ type }) => {
 
       setIsMapTypeSet(updatedState);
     },
-    [isMapTypeSet, setIsMapTypeSet]
+    [isMapTypeSet, setIsMapTypeSet],
   );
 
   // Update mode syntax (fatal, injury, or both) when type filter updates
@@ -152,7 +128,7 @@ const SideMapControl = ({ type }) => {
     (filterArr) => {
       setTypeFilters(filterArr);
     },
-    [setTypeFilters]
+    [setTypeFilters],
   );
 
   // Define groups of map button filters
@@ -251,7 +227,7 @@ const SideMapControl = ({ type }) => {
         },
       },
     }),
-    [handleTypeFilterClick, isMapTypeSet.fatal, isMapTypeSet.injury]
+    [handleTypeFilterClick, isMapTypeSet.fatal, isMapTypeSet.injury],
   );
 
   const mapOtherFilters = {
@@ -285,18 +261,18 @@ const SideMapControl = ({ type }) => {
             if (type === "mode") {
               filterConfig["syntax"] = createModeFilterString(
                 isMapTypeSet,
-                filterConfig
+                filterConfig,
               );
             }
 
             return groupFiltersAccumulator;
           },
-          []
+          [],
         );
         allFiltersAccumulator = [...allFiltersAccumulator, ...groupFilters];
         return allFiltersAccumulator;
       },
-      []
+      [],
     );
 
     dispatchFilters({
@@ -439,7 +415,7 @@ const SideMapControl = ({ type }) => {
                   default:
                     return null;
                 }
-              }
+              },
             )}
           </Row>
         ))}
