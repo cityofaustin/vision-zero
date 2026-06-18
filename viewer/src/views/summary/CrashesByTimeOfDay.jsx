@@ -3,7 +3,8 @@ import axios from "axios";
 import { format, parseISO } from "date-fns";
 import clonedeep from "lodash.clonedeep";
 
-import CrashTypeSelector, { CRASH_TYPES } from "./Components/CrashTypeSelector";
+import CrashTypeSelector from "./Components/CrashTypeSelector";
+import { CRASH_TYPES } from "src/constants/crashTypes";
 import { Row, Col, Container, Button } from "reactstrap";
 import styled from "styled-components";
 import classnames from "classnames";
@@ -28,7 +29,7 @@ const dayOfWeekArray = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const hourFormat = "ha";
 
 const hourBlockArray = [...Array(24).keys()].map((hour) =>
-  format(new Date().setHours(hour), hourFormat)
+  format(new Date().setHours(hour), hourFormat),
 );
 
 /**
@@ -156,7 +157,7 @@ const CrashesByTimeOfDay = () => {
 
   const maxForLegend = useMemo(
     () => getMaxCrashCount(heatmapData),
-    [heatmapData]
+    [heatmapData],
   );
 
   // Set styles to override Bootstrap default styling
@@ -202,7 +203,7 @@ const CrashesByTimeOfDay = () => {
                     key={year}
                     className={classnames(
                       { active: activeYear === year },
-                      "year-selector"
+                      "year-selector",
                     )}
                     onClick={() => {
                       setActiveYear(year);
@@ -215,7 +216,7 @@ const CrashesByTimeOfDay = () => {
                 key="all_years"
                 className={classnames(
                   { active: activeYear === "all_years" },
-                  "year-selector"
+                  "year-selector",
                 )}
                 onClick={() => {
                   setActiveYear("all_years");

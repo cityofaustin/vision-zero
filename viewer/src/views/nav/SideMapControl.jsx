@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import { StoreContext } from "src/constants/context";
+import { createModeFilterString } from "src/constants/map";
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";
 import SideMapControlOverlays from "./SideMapControlOverlays";
@@ -84,17 +85,6 @@ const StyledCard = styled.div`
     }
   }
 `;
-
-// Build query string for crash type filter
-const createModeFilterString = (isMapTypeSet, config) => {
-  if (isMapTypeSet.fatal && isMapTypeSet.injury) {
-    return `${config.fatalSyntax} ${config.operator} ${config.injurySyntax}`;
-  } else if (isMapTypeSet.fatal) {
-    return `${config.fatalSyntax}`;
-  } else if (isMapTypeSet.injury) {
-    return `${config.injurySyntax}`;
-  }
-};
 
 const SideMapControl = ({ type }) => {
   const {

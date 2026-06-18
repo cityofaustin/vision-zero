@@ -22,6 +22,8 @@ export default defineConfig(() => {
       global: "globalThis",
     },
     resolve: {
+      // Respect the import path aliases set in tsconfig.json
+      tsconfigPaths: true,
       alias: {
         // Provides the EventEmitter polyfill for mapbox-gl-geocoder and similar libraries
         events: "events",

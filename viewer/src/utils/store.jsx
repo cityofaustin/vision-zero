@@ -25,7 +25,9 @@ export default function StoreProvider({ children }) {
   // SideDrawer should never be open when not mobile
   const isTablet = useIsTablet();
   useEffect(() => {
-    !isTablet && setIsOpen(false);
+    if (!isTablet) {
+      setIsOpen(false);
+    }
   }, [isTablet, setIsOpen]);
 
   const store = {
