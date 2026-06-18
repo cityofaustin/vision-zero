@@ -35,27 +35,30 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
       dateRange,
       mapPolygon,
     );
-    !!apiUrl &&
+    if (apiUrl) {
       axios.get(apiUrl).then((res) => {
         setChartData(res.data);
       });
+    }
   }, [dateRange, mapPolygon, mapFilters]);
 
   useMemo(() => {
     const crashes = chartData;
     // When chartData is set, accumulate time window data
     if (crashes) {
-      const crashTimeWindowAccumulatorArray = Object.keys(filters).map(
-        (filter) => 0,
-      );
+      const crashTimeWindowAccumulatorArray = new Array(
+        Object.keys(filters).length,
+      ).fill(0);
       const crashTimeWindows = Object.values(filters).map((filter) => filter);
       const crashTimeTotals = crashes.reduce((accumulator, crash) => {
         crashTimeWindows.forEach((timeWindow, i) => {
           const crashDate = crash.crash_timestamp_ct;
           const crashHour = parseInt(format(new Date(crashDate), "H"));
-          crashHour >= timeWindow[0] &&
-            crashHour <= timeWindow[1] &&
-            accumulator[i]++;
+          if (crashHour >= timeWindow[0]) {
+            if (crashHour <= timeWindow[1]) {
+              accumulator[i]++;
+            }
+          }
         });
         return accumulator;
       }, crashTimeWindowAccumulatorArray);
@@ -107,7 +110,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     }
   };
 
-  const createTooltipData = (tooltipItem, data) => {
+  const createTooltipData = (tooltipItem) => {
     const index = tooltipItem.index;
     return `${timeWindowPercentages[index]}% (${timeWindowData[index]})`;
   };
@@ -117,7 +120,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
 
   const isMapTimeWindowSet = !!mapTimeWindow;
 
-  const handleAllButtonClick = (event) => {
+  const handleAllButtonClick = () => {
     setMapTimeWindow("");
     setBarColors(defaultBarColor);
   };
@@ -172,7 +175,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
             tooltips: {
               callbacks: {
                 label: createTooltipData,
-                title: (tooltipItem, data) => null, // Render nothing for tooltip title
+                title: () => null, // Render nothing for tooltip title
               },
             },
           }}
