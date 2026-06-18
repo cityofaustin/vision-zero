@@ -13,10 +13,11 @@ export const mapFilterReducer = (mapFilters, action) => {
   const { type, payload } = action;
 
   switch (type) {
-    case "setInitialModeFilters":
+    case "setInitialModeFilters": {
       const initialFiltersArray = payload;
-      return payload;
-    case "updateModeSyntax":
+      return initialFiltersArray;
+    }
+    case "updateModeSyntax": {
       const isMapTypeSet = payload;
 
       const updatedModeFilters = mapFilters.map((filter) => ({
@@ -24,9 +25,11 @@ export const mapFilterReducer = (mapFilters, action) => {
         syntax: createModeFilterString(isMapTypeSet, filter),
       }));
       return updatedModeFilters;
-    case "updateModeFilters":
+    }
+    case "updateModeFilters": {
       const updatedFiltersArray = payload;
       return updatedFiltersArray;
+    }
     default:
       return null;
   }

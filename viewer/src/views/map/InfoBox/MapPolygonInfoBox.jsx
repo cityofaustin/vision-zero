@@ -5,16 +5,19 @@ import { StyledPoylgonInfo } from "./infoBoxStyles";
 const MapPolygonInfoBox = ({ crashCounts, isMapTypeSet }) => {
   const createCrashContent = (crashCounts) => {
     const content = [];
-    isMapTypeSet.fatal &&
+    if (isMapTypeSet.fatal) {
       content.push({
         title: "Fatalities",
         content: `${crashCounts?.fatality || 0}`,
       });
-    isMapTypeSet.injury &&
+    }
+
+    if (isMapTypeSet.injury) {
       content.push({
         title: "Serious Injuries",
         content: `${crashCounts?.injury || 0}`,
       });
+    }
     return content;
   };
 
