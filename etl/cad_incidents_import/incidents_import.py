@@ -109,6 +109,22 @@ def transform_lat_lon(data):
             row["latitude"] = float(lat) / 1000000
 
 
+def prune_columns(data, allowed_columns):
+    """_summary_
+
+    Args:
+        data (list): list of cad records
+        allowed_columns (list): list of column name strings
+
+    Returns:
+        list: data with record dicts containing only allowed columns
+    """
+    allowed = set(allowed_columns)
+    return [
+        {key: val for key, val in record.items() if key in allowed} for record in data
+    ]
+
+
 def main(args):
     logging.info(f"Running CAD incident import")
 
@@ -128,6 +144,8 @@ def main(args):
         )
 
     for file_obj_key_or_path in files_todo:
+        is_group_id_file = "GroupID" in file_obj_key_or_path
+        table_name = "cad_incidents" if not is_group_id_file else "cad_incident_groups"
 
         if args.local_files:
             logging.info(f"Loading local file: {file_obj_key_or_path}")
@@ -138,16 +156,21 @@ def main(args):
 
         reader = csv.DictReader(csv_content.splitlines())
         data = list(reader)
-        data = lower_case_keys(data)
 
         if not data:
             raise Exception("CAD file contains no records")
 
+        data = lower_case_keys(data)
+
+        columns_to_rename = COLUMNS["cols_to_rename"].get(table_name)
+        if columns_to_rename:
+            rename_columns(data, columns_to_rename)
+
+        data = prune_columns(data, COLUMNS["allowed_columns"][table_name])
+
         set_empty_strings_to_none(data)
 
-        is_group_id_file = "GroupID" in file_obj_key_or_path
         if not is_group_id_file:
-            rename_columns(data, COLUMNS["cols_to_rename"])
             transform_lat_lon(data)
             make_fields_timezone_aware(
                 data,
@@ -161,6 +184,7 @@ def main(args):
         if not is_group_id_file:
             # add update column names to the muation "on conflict" directive
             column_names_to_upsert = list(data[0].keys())
+            # remove master_incident_id because it is the unique record ID
             column_names_to_upsert.remove("master_incident_id")
             upsert_mutation = UPSERT_CAD_INCIDENTS_MUTATION.replace(
                 "$updateColumns", "\n".join(column_names_to_upsert)
