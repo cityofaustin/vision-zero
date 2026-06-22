@@ -16,8 +16,6 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   const inactiveBarColor = colors.white;
 
   const [chartData, setChartData] = useState(null);
-  const [timeWindowData, setTimeWindowData] = useState([]);
-  const [timeWindowPercentages, setTimeWindowPercentages] = useState([]);
   const [barColors, setBarColors] = useState(defaultBarColor);
 
   const {
@@ -42,51 +40,52 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     }
   }, [dateRange, mapPolygon, mapFilters]);
 
-  useMemo(() => {
+  // Compute time window data from crash data
+  // Returns array of crash counts per time window
+  const timeWindowData = useMemo(() => {
     const crashes = chartData;
-    // When chartData is set, accumulate time window data
-    if (crashes) {
-      const crashTimeWindowAccumulatorArray = new Array(
-        Object.keys(filters).length,
-      ).fill(0);
-      const crashTimeWindows = Object.values(filters).map((filter) => filter);
-      const crashTimeTotals = crashes.reduce((accumulator, crash) => {
-        crashTimeWindows.forEach((timeWindow, i) => {
-          const crashDate = crash.crash_timestamp_ct;
-          const crashHour = parseInt(format(new Date(crashDate), "H"));
-          if (crashHour >= timeWindow[0]) {
-            if (crashHour <= timeWindow[1]) {
-              accumulator[i]++;
-            }
-          }
-        });
-        return accumulator;
-      }, crashTimeWindowAccumulatorArray);
-
-      setTimeWindowData(crashTimeTotals);
+    if (!crashes || crashes.length === 0) {
+      return [];
     }
+
+    const crashTimeWindowAccumulatorArray = new Array(
+      Object.keys(filters).length,
+    ).fill(0);
+    const crashTimeWindows = Object.values(filters).map((filter) => filter);
+
+    return crashes.reduce((accumulator, crash) => {
+      crashTimeWindows.forEach((timeWindow, i) => {
+        const crashDate = crash.crash_timestamp_ct;
+        const crashHour = parseInt(format(new Date(crashDate), "H"));
+        if (crashHour >= timeWindow[0] && crashHour <= timeWindow[1]) {
+          accumulator[i]++;
+        }
+      });
+      return accumulator;
+    }, crashTimeWindowAccumulatorArray);
   }, [chartData, filters]);
 
-  useMemo(() => {
-    // When timeWindowData is set, calc percentages
-    if (timeWindowData) {
-      const timeWindowPercentages = timeWindowData.map((timeWindow) => {
-        const timeWindowsTotal = timeWindowData.reduce(
-          (accumulator, timeWindowTotal) => {
-            return (accumulator += timeWindowTotal);
-          },
-          0,
-        );
-        const percentString = ((timeWindow / timeWindowsTotal) * 100).toFixed(
-          0,
-        );
-        return parseInt(percentString);
-      });
+  // Compute percentage distribution from time window counts
+  // Returns array of percentages for each time window
 
-      setTimeWindowPercentages(timeWindowPercentages);
+  const timeWindowPercentages = useMemo(() => {
+    if (!timeWindowData || timeWindowData.length === 0) {
+      return [];
     }
-  }, [timeWindowData]);
 
+    const timeWindowsTotal = timeWindowData.reduce(
+      (accumulator, timeWindowTotal) => accumulator + timeWindowTotal,
+      0,
+    );
+
+    if (timeWindowsTotal === 0) {
+      return timeWindowData.map(() => 0);
+    }
+
+    return timeWindowData.map((timeWindow) => {
+      return parseInt(((timeWindow / timeWindowsTotal) * 100).toFixed(0));
+    });
+  }, [timeWindowData]);
   const handleBarClick = (elems) => {
     // Store bar label, if click is within a bar
     const timeWindow = elems.length > 0 ? elems[0]._model.label : null;

@@ -26,6 +26,7 @@ export default function StoreProvider({ children }) {
   const isTablet = useIsTablet();
   useEffect(() => {
     if (!isTablet) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsOpen(false);
     }
   }, [isTablet, setIsOpen]);
