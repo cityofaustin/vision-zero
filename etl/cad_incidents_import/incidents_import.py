@@ -109,31 +109,31 @@ def transform_lat_lon(data):
             row["latitude"] = float(lat) / 1000000
 
 
-def prune_and_validate_columns(data, allowed_columns):
+def prune_and_validate_columns(data, required_columns):
     """
     Removes unknown columns from each record and raises an error if any
     required columns are missing.
 
     Args:
         data (list): list of cad records
-        allowed_columns (list): list of column name strings
+        required_columns (list): list of column name strings
 
     Returns:
-        list: data with record dicts containing only allowed columns
+        list: data with record dicts containing only required columns
 
     Raises:
-        ValueError: if any record is missing one or more allowed columns
+        ValueError: if any record is missing one or more required columns
     """
-    allowed = set(allowed_columns)
+    required = set(required_columns)
     pruned = []
     for i, record in enumerate(data):
         record_keys = set(record.keys())
-        missing = allowed - record_keys
+        missing = required - record_keys
         if missing:
             raise ValueError(
                 f"Record at index {i} is missing required columns: {sorted(missing)}"
             )
-        pruned.append({key: val for key, val in record.items() if key in allowed})
+        pruned.append({key: val for key, val in record.items() if key in required})
     return pruned
 
 
@@ -180,7 +180,7 @@ def main(args):
         if columns_to_rename:
             rename_columns(data, columns_to_rename)
 
-        data = prune_and_validate_columns(data, COLUMNS["allowed_columns"][table_name])
+        data = prune_and_validate_columns(data, COLUMNS["required_columns"][table_name])
 
         set_empty_strings_to_none(data)
 
