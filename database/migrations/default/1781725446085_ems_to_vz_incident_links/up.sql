@@ -6,7 +6,7 @@ ADD CONSTRAINT ems__incidents_vz_incident_match_status_check CHECK (
     vz_incident_match_status IN (
         'unprocessed',
         'created_by_automation',
-        'matched_by_automation_case_id',
+        'matched_by_automation_incident_number',
         'matched_by_automation_geo_temporal',
         'multiple_matches_by_automation',
         'matched_by_manual_qa')
@@ -78,7 +78,7 @@ BEGIN
     END IF;
 
     
-    -- First try: exact match APD crashes on case_id
+    -- First try: exact match on incident number
     raise debug 'Attempting to match incident # %', NEW.incident_number;
 
     SELECT vz_incident_id
@@ -91,16 +91,13 @@ BEGIN
     IF v_vz_incident_id IS NOT NULL THEN
         NEW.vz_incident_id := v_vz_incident_id;
         NEW.vz_incident_matched_ids := ARRAY[v_vz_incident_id];
-        NEW.vz_incident_match_status := 'matched_by_automation_case_id';
+        NEW.vz_incident_match_status := 'matched_by_automation_incident_number';
 
         raise debug 'Matched to VZ incident ID % based on incident # %', v_vz_incident_id, NEW.incident_number;
         -- no further processing needed
         RETURN NEW;
     raise debug 'Incident number match not found';
     END IF;
-
-
-    -- TODO HAVENTUPDATED HER
 
     -- Fallback: spatial + temporal proximity (only if we have the data to do it)
     IF NEW.geometry IS NOT NULL AND NEW.incident_received_datetime IS NOT NULL THEN
@@ -132,7 +129,7 @@ BEGIN
             NEW.vz_incident_matched_ids := v_matched_ids;
             NEW.vz_incident_match_status := 'matched_by_automation_geo_temporal';
             raise debug 'Matched to incident % based on geo/temporal', v_matched_ids[1];
-
+ 
         -- no match found: create a new VZ incident
         ELSE
             INSERT INTO vz_incidents (id) VALUES (DEFAULT)
