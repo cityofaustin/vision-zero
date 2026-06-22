@@ -151,6 +151,8 @@ def main(args):
     )
 
     if not files_todo:
+        if args.no_files_pass:
+            return
         raise Exception(
             f"No CAD files found in {"local directory" if args.local_files else "S3 inbox"}"
         )
@@ -249,6 +251,11 @@ if __name__ == "__main__":
         "--local-files",
         action="store_true",
         help="If true, process files from local COACD_MOUNT_PATH directory instead of AWS S3",
+    )
+    parser.add_argument(
+        "--no-files-pass",
+        action="store_true",
+        help="Don't throw an error if there are no files to process",
     )
     args = parser.parse_args()
     main(args)

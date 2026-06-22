@@ -23,10 +23,12 @@ def main(args):
 
     files_todo = get_local_files_to_process(dir_name=COACD_MOUNT_PATH)
 
-    if not files_todo:
-        raise Exception("No files found in COACD network directory")
-
     logger.info(f"Found {len(files_todo)} file(s) to process.")
+
+    if not files_todo:
+        if args.no_files_pass:
+            return
+        raise Exception("No files found in COACD network directory")
 
     for file_path in files_todo:
         filename = os.path.basename(file_path)
@@ -62,6 +64,11 @@ if __name__ == "__main__":
         "--remove",
         action="store_true",
         help="Delete the file(s) from the file system processing",
+    )
+    parser.add_argument(
+        "--no-files-pass",
+        action="store_true",
+        help="Don't throw an error if there are no files to process",
     )
     args = parser.parse_args()
 
