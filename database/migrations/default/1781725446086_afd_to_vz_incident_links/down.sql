@@ -39,7 +39,7 @@ CREATE OR REPLACE VIEW public.vz_incident_records_view AS
 
 COMMENT ON VIEW public.vz_incident_records_view IS 'Unified view of records (crashes, cad_incidents, ems__incidents) belonging to a vz_incident, exposed under a common schema for cross-type queries and geo-temporal matching.';
 
-DROP TRIGGER IF EXISTS afd__incidents_vz_incident_match_insert_trigger ON public.afd__incidents;
+DROP TRIGGER IF EXISTS afd_incidents_trigger_vz_incident_match_insert ON public.afd__incidents;
 
 DROP FUNCTION if exists public.afd_match_vz_incident;
 

@@ -96,7 +96,7 @@ BEGIN
     SELECT vz_incident_id
     INTO v_vz_incident_id
     FROM cad_incidents
-    WHERE agency_type_short = 'ems'
+    WHERE agency_type_short = 'afd'
     AND master_incident_number = NEW.incident_number::text
     LIMIT 1;
 
@@ -170,14 +170,7 @@ $function$;
 
 comment on function afd_match_vz_incident is 'Function which matches afd__incidents to vz_incidents and creates new vz_incidents when no match can be found.';
 
---todo: check trigger order
---todo: check DAG processing order
--- CREATE OR REPLACE TRIGGER afd__incidents_vz_incident_match_insert_trigger
---     BEFORE INSERT ON public.afd__incidents
---     FOR EACH ROW
---     EXECUTE FUNCTION public.afd_match_vz_incident();
-
-CREATE OR REPLACE TRIGGER afd__incidents_vz_incident_match_insert_trigger
-    BEFORE INSERT OR UPDATE ON public.afd__incidents
+CREATE OR REPLACE TRIGGER afd_incidents_trigger_vz_incident_match_insert
+    BEFORE INSERT ON public.afd__incidents
     FOR EACH ROW
     EXECUTE FUNCTION public.afd_match_vz_incident();

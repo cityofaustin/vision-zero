@@ -158,14 +158,7 @@ $function$;
 
 comment on function ems_match_vz_incident is 'Function which matches ems__incidents to vz_incidents and creates new vz_incidents when no match can be found.';
 
---todo: check trigger order
---todo: check DAG processing order
--- CREATE OR REPLACE TRIGGER ems__incidents_vz_incident_match_insert_trigger
---     BEFORE INSERT ON public.ems__incidents
---     FOR EACH ROW
---     EXECUTE FUNCTION public.ems_match_vz_incident();
-
-CREATE OR REPLACE TRIGGER ems__incidents_vz_incident_match_insert_trigger
-    BEFORE INSERT OR UPDATE ON public.ems__incidents
+CREATE OR REPLACE TRIGGER ems_incidents_trigger_vz_incident_match_insert
+    BEFORE INSERT ON public.ems__incidents
     FOR EACH ROW
     EXECUTE FUNCTION public.ems_match_vz_incident();
