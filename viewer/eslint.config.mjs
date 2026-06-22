@@ -71,6 +71,7 @@ export default defineConfig(
 
       // Override hook rule severity if needed
       "react-hooks/exhaustive-deps": "warn",
+      ignoreRestSiblings: true,
     },
-  }
+  },
 );
