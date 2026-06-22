@@ -4,7 +4,7 @@ COLUMNS = {
             "time_callclosed": "time_call_closed",
         },
     },
-    "allowed_columns": {
+    "required_columns": {
         "cad_incidents": [
             "address",
             "agency_type",
