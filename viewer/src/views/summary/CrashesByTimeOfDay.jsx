@@ -140,6 +140,7 @@ const CrashesByTimeOfDay = () => {
 
     if (!chartDataStore[crashType.name][activeYear]) {
       // we have not fetched this data yet, so do that
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHeatmapData([]);
       axios
         .get(getFatalitiesByYearsAgoUrl(activeYear, crashType))
