@@ -39,7 +39,7 @@ const CrashesByPopulation = () => {
     const calculateRatePer100000 = (data) => {
       const round = (num) => Math.floor(num * 10) / 10;
 
-      return data.map((year, i) => {
+      return data.map((year) => {
         const population = popEsts["years"][year["year"]];
         const rate = (year.total / population) * 100000;
         year.total = round(rate);

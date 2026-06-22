@@ -1,3 +1,14 @@
+// Build query string for crash type filter
+export const createModeFilterString = (isMapTypeSet, config) => {
+  if (isMapTypeSet.fatal && isMapTypeSet.injury) {
+    return `${config.fatalSyntax} ${config.operator} ${config.injurySyntax}`;
+  } else if (isMapTypeSet.fatal) {
+    return `${config.fatalSyntax}`;
+  } else if (isMapTypeSet.injury) {
+    return `${config.injurySyntax}`;
+  }
+};
+
 export const mapFilterReducer = (mapFilters, action) => {
   const { type, payload } = action;
 

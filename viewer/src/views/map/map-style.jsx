@@ -239,7 +239,7 @@ export const cityCouncilDataLayer = {
 };
 
 // Styles for MapPolygonFilter
-export function getEditHandleStyle({ feature, state }) {
+export function getEditHandleStyle({ state }) {
   switch (state) {
     case RenderStates.UNCOMMITTED:
       return {
@@ -261,7 +261,7 @@ export function getEditHandleStyle({ feature, state }) {
   }
 }
 
-export function getFeatureStyle({ feature, index, state }) {
+export function getFeatureStyle({ state }) {
   switch (state) {
     case RenderStates.CLOSING:
       return {
