@@ -1,4 +1,4 @@
--- Most recent migration: database/migrations/default/1781725446085_ems_to_vz_incident_links/up.sql
+-- Most recent migration: database/migrations/default/1781725446086_afd_to_vz_incident_links/up.sql
 
 CREATE OR REPLACE VIEW vz_incident_records_view AS
 SELECT
@@ -36,4 +36,16 @@ SELECT
     ems.incident_location_address  AS record_address,
     ems.geometry                   AS geom
 FROM ems__incidents ems
-WHERE ems.vz_incident_id IS NOT NULL;
+WHERE ems.vz_incident_id IS NOT NULL
+UNION ALL
+SELECT
+    afd.vz_incident_id,
+    'afd__incidents'::text    AS record_type,
+    'afd'::text               AS record_responding_agency,
+    afd.id                    AS record_id,
+    afd.incident_number::text AS record_incident_number,
+    afd.call_datetime         AS record_timestamp,
+    afd.address               AS record_address,
+    afd.geometry              AS geom
+FROM afd__incidents afd
+WHERE afd.vz_incident_id IS NOT NULL;
