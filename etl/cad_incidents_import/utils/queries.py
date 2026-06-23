@@ -28,44 +28,72 @@ mutation UpsertCADIncidentGRoups($objects: [cad_incident_groups_insert_input!]!)
 
 
 GET_UNPROCESSED_INCIDENTS = """
-query GetUnprocessed($record_limit: Int!, $date_limit: timestamptz = "") {
-    cad_incidents(
+query GetUnprocessed(
+    $record_table_name: String!
+    $match_status: String!
+    $record_limit: Int!
+    $date_limit: timestamptz!
+) {
+    vz_incident_records_view(
         where: { 
-            vz_incident_id: { _is_null: true }
-            response_date: { _lt: $date_limit } 
+            vz_incident_match_status: { _eq: $match_status } 
+            record_table_name: { _eq: $record_table_name }
+            record_timestamp: { _lt: $date_limit } 
         }
-        order_by: { response_date: desc }
+        # todo: flip order to asc
+        order_by: { record_timestamp: desc }
         limit: $record_limit
     ) {
-        master_incident_id
-        response_date
-        latitude
-        longitude
-        address
+        record_id
+        record_incident_number
+        record_responding_agency
+        record_timestamp
+        record_address
+        geom
     }
 }
 """
 
-GET_POTENTIAL_MATCHES = """
-query GetPotentialMatches(
-    $incident_id: Int!
+GET_INCIDENT_NUMBER_MATCHES = """
+query GetIncidentNumberMatches(
+    $record_id: bigint!
+    $target_table_name: String!
+    $target_incident_number: String!
+) {
+    vz_incident_records_view(
+        where: {
+            vz_incident_id: { _is_null: false }
+            record_id: { _neq: $record_id }
+            record_table_name: { _eq: $target_table_name }
+            record_incident_number: { _eq: $target_incident_number }
+        }
+    ) {
+        vz_incident_id
+        record_id
+        record_table_name
+    }
+}
+"""
+
+GET_GEO_TEMPORAL_MATCHES = """
+query GetGeoTemporalMatches(
+    $record_id: bigint!
     $geom: geometry!
     $start: timestamptz!
     $end: timestamptz!
     $distance: Float!
 ) {
-    cad_incidents(
+    vz_incident_records_view(
         where: {
-            master_incident_id: { _neq: $incident_id }
-            response_date: { _gte: $start, _lte: $end }
+            vz_incident_id: { _is_null: false }
+            record_id: { _neq: $record_id }
+            record_timestamp: { _gte: $start, _lte: $end }
             geom: { _st_d_within: { distance: $distance, from: $geom } }
         }
     ) {
-        master_incident_id
-        response_date
-        latitude
-        longitude
-        address
+        vz_incident_id
+        record_id
+        record_table_name
     }
 }
 """
@@ -78,11 +106,63 @@ mutation InsertVzIncident {
 }
 """
 
-SET_VZ_INCIDENT_IDS = """
-mutation UpdateGroupMembers($ids: [Int!]!, $vz_incident_id: bigint!) {
-    update_cad_incidents(
-        where: { master_incident_id: { _in: $ids } }
-        _set: { vz_incident_id: $vz_incident_id }
+SET_CRASH_VZ_INCIDENT_MATCH = """
+mutation SetVzIncidentId(
+    $record_id: Int!
+    $vz_incident_id: bigint = null
+    $vz_incident_match_status: String!
+    $vz_incident_matched_ids: [bigint!] = []
+    ) {
+    update_crashes(
+        where: { id: { _eq: $record_id } }
+        _set: { 
+            vz_incident_id: $vz_incident_id
+            vz_incident_matched_ids: $vz_incident_matched_ids 
+            vz_incident_match_status: $vz_incident_match_status
+        }
+    ) {
+        affected_rows
+    }
+}
+"""
+
+
+SET_CAD_VZ_INCIDENT_MATCH = """"""
+
+SET_EMS_VZ_INCIDENT_MATCH = """
+mutation SetVzIncidentId(
+    $record_id: Int!
+    $vz_incident_id: bigint = null
+    $vz_incident_match_status: String!
+    $vz_incident_matched_ids: [bigint!] = []
+    ) {
+    update_ems__incidents(
+        where: { id: { _eq: $record_id } }
+        _set: { 
+            vz_incident_id: $vz_incident_id
+            vz_incident_matched_ids: $vz_incident_matched_ids 
+            vz_incident_match_status: $vz_incident_match_status
+        }
+    ) {
+        affected_rows
+    }
+}
+"""
+
+SET_AFD_INCIDENT_MATCH = """
+mutation SetVzIncidentId(
+    $record_id: Int!
+    $vz_incident_id: bigint = null
+    $vz_incident_match_status: String!
+    $vz_incident_matched_ids: [bigint!] = []
+    ) {
+    update_afd__incidents(
+        where: { id: { _eq: $record_id } }
+        _set: { 
+            vz_incident_id: $vz_incident_id
+            vz_incident_matched_ids: $vz_incident_matched_ids 
+            vz_incident_match_status: $vz_incident_match_status
+        }
     ) {
         affected_rows
     }
