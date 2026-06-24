@@ -10,9 +10,10 @@ from utils.queries import (
     INSERT_VZ_INCIDENT,
     GET_GEO_TEMPORAL_MATCHES,
     GET_INCIDENT_NUMBER_MATCHES,
+    SET_AFD_INCIDENT_MATCH,
+    SET_CAD_VZ_INCIDENT_MATCH,
     SET_CRASH_VZ_INCIDENT_MATCH,
     SET_EMS_VZ_INCIDENT_MATCH,
-    SET_AFD_INCIDENT_MATCH,
 )
 
 MIN_RECORD_AGE_HOURS = 24
@@ -25,31 +26,31 @@ UNPROCESSED_MATCH_STATUS = "unprocessed"
 RECORD_TYPES_LOOKUP = {
     "cad": {
         "table_name": "cad_incidents",
+        # we don't currently use incident number matching for cad incidents
+        # although the cad_incident_groups metadata table holds promise for this
+        "incident_number_match_table_name": None,
+        "incident_number_match_responding_agency": None,
+        "update_mutation": SET_CAD_VZ_INCIDENT_MATCH,
     },
     "ems": {
         "table_name": "ems__incidents",
-        "target_record_table_name": "cad_incidents",
-        "target_record_responding_agency": "ems",
+        "incident_number_match_table_name": "cad_incidents",
+        "incident_number_match_responding_agency": "ems",
         "update_mutation": SET_EMS_VZ_INCIDENT_MATCH,
     },
     "afd": {
         "table_name": "afd__incidents",
-        "target_record_table_name": "cad_incidents",
-        "target_record_responding_agency": "afd",
+        "incident_number_match_table_name": "cad_incidents",
+        "incident_number_match_responding_agency": "afd",
         "update_mutation": SET_AFD_INCIDENT_MATCH,
     },
     "crashes": {
         "table_name": "crashes",
-        "target_record_table_name": "cad_incidents",
-        # TODO: how to implement this extra condition?
-        "target_record_responding_agency": "apd",
+        "incident_number_match_table_name": "cad_incidents",
+        "incident_number_match_responding_agency": "apd",
         "update_mutation": SET_CRASH_VZ_INCIDENT_MATCH,
     },
 }
-
-
-def point_geojson(lon, lat):
-    return {"type": "Point", "coordinates": [lon, lat]}
 
 
 def time_window(response_date: datetime, minutes: float) -> tuple[datetime, datetime]:
@@ -62,12 +63,31 @@ def meters_to_degrees(meters):
     return meters / 104_000
 
 
-def fetch_incident_number_matches(record: dict, target_table_name: str) -> list[dict]:
+def fetch_incident_number_matches(
+    record: dict,
+    incident_number_match_table_name: str,
+    incident_number_match_responding_agency: str,
+) -> list[dict]:
+    """Search the vz_incident_records_view for records which match the current record
+    based on incident number. Used to match crashes, ems__incidents, and afd__incidents
+    to their corresponding CAD incident records based on a common incident number.
+
+    Args:
+        record (dict): The record to be matched
+        incident_number_match_table_name (str): The target `record_table_name` in the
+            vz_incident_records_view table name to search for matches (effectively always `cad_incidents`)
+        incident_number_match_responding_agency (str): The agency name in the vz_incident_records_view to filter
+            on for matches (effectively always `afd`, `apd`, or `ems`)
+
+    Returns:
+        list[dict]: an array of `vz_incident_id` values from vz_incident_records_view.
+    """
     data = make_hasura_request(
         query=GET_INCIDENT_NUMBER_MATCHES,
         variables={
             "record_id": record["record_id"],
-            "target_table_name": target_table_name,
+            "incident_number_match_table_name": incident_number_match_table_name,
+            "incident_number_match_responding_agency": incident_number_match_responding_agency,
             "target_incident_number": record["record_incident_number"],
         },
     )
@@ -90,30 +110,17 @@ def fetch_geo_temporal_matches(record: dict) -> list[dict]:
     return data["vz_incident_records_view"]
 
 
-# def flood_fill_group(anchor: dict) -> set[str]:
-#     """
-#     Creates groups of incidents by recursively expanding a group starting
-#     from anchor by breadth-first search. Each newly discovered member's own
-#     neighbors are explored in turn, until the frontier is exhausted.
-#     """
-#     group_ids = {anchor["master_incident_id"]}
-#     # frontier holds full incident dicts so we can call fetch_potential_matches
-#     frontier = [anchor]
-
-#     while frontier:
-#         current = frontier.pop()
-#         for neighbor in fetch_potential_matches(current):
-#             nid = neighbor["master_incident_id"]
-#             if nid not in group_ids:
-#                 group_ids.add(nid)
-#                 frontier.append(neighbor)
-
-#     return group_ids
-
-
 def main(args):
+    # get config data for this record type
     record_type = args.record_type
     record_table_name = RECORD_TYPES_LOOKUP[record_type]["table_name"]
+    incident_number_match_table_name = RECORD_TYPES_LOOKUP[record_type].get(
+        "incident_number_match_table_name"
+    )
+    incident_number_match_responding_agency = RECORD_TYPES_LOOKUP[record_type].get(
+        "incident_number_match_responding_agency"
+    )
+
     record_limit = args.limit
     date_limit = datetime.now(UTC) - timedelta(hours=MIN_RECORD_AGE_HOURS)
 
@@ -139,7 +146,6 @@ def main(args):
         logging.info(f"Dry run: aborting further processing")
         return
 
-    processed_ids = set()
     counts = {
         "records_processed": 0,
         "matched_by_automation_incident_number": 0,
@@ -150,12 +156,14 @@ def main(args):
 
     for record in records:
         iid = record["record_id"]
-        # todo: incident match search
-
+        logging.info(
+            f"Processing record ID {iid} from {record["record_responding_agency"]} at {record["record_address"]} on {record["record_timestamp"]}"
+        )
         vz_incident_matched_ids = []
         vz_incident_match_status = None
 
-        if record["record_incident_number"]:
+        # attempt to match based on a common incident number
+        if record["record_incident_number"] and incident_number_match_table_name:
             if (
                 record_type == "crashes"
                 and record["record_responding_agency"] != "AUSTIN POLICE DEPARTMENT"
@@ -165,15 +173,18 @@ def main(args):
                 )
             else:
                 logging.info(f"Attempting to match record on incident number")
-                target_record_table_name = RECORD_TYPES_LOOKUP[record_type][
-                    "target_record_table_name"
-                ]
+
                 matches = fetch_incident_number_matches(
-                    record, target_record_table_name
+                    record,
+                    incident_number_match_table_name,
+                    incident_number_match_responding_agency,
                 )
                 logging.info(f"{len(matches)} incident number matches found")
 
-                vz_incident_matched_ids = [i["vz_incident_id"] for i in matches]
+                # get unique vz_incident_ids from results
+                vz_incident_matched_ids = list(
+                    set([i["vz_incident_id"] for i in matches])
+                )
 
                 if vz_incident_matched_ids:
                     vz_incident_match_status = (
@@ -182,7 +193,7 @@ def main(args):
                         else "matched_by_automation_incident_number"
                     )
 
-        # geo-temporal matching
+        # Proceed to geo-temporal matching if we don't have matched IDs yet
         if (
             not vz_incident_matched_ids
             and record["geom"]
@@ -191,7 +202,9 @@ def main(args):
             matches = fetch_geo_temporal_matches(record)
             logging.info(f"{len(matches)} geo-temporal matches found")
 
-            vz_incident_matched_ids = [m["vz_incident_id"] for m in matches]
+            # get unique vz_incident_ids from results
+            vz_incident_matched_ids = list(set([m["vz_incident_id"] for m in matches]))
+
             if vz_incident_matched_ids:
                 vz_incident_match_status = (
                     "multiple_matches_by_automation"
@@ -261,7 +274,7 @@ def main(args):
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     parser = argparse.ArgumentParser(
-        description=" Todo......spatial+temporal neighbors and inserting new vz_incident_groups records",
+        description="Groups various crash-related records into Vision Zero incidents (vz_incidents)",
         usage="incident_linker.py --limit 1000",
     )
     parser.add_argument(

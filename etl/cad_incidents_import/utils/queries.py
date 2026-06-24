@@ -57,14 +57,16 @@ query GetUnprocessed(
 GET_INCIDENT_NUMBER_MATCHES = """
 query GetIncidentNumberMatches(
     $record_id: bigint!
-    $target_table_name: String!
+    $incident_number_match_table_name: String!
+    $incident_number_match_responding_agency: String!
     $target_incident_number: String!
 ) {
     vz_incident_records_view(
         where: {
             vz_incident_id: { _is_null: false }
             record_id: { _neq: $record_id }
-            record_table_name: { _eq: $target_table_name }
+            record_table_name: { _eq: $incident_number_match_table_name }
+            record_responding_agency: { _eq: $incident_number_match_responding_agency }
             record_incident_number: { _eq: $target_incident_number }
         }
     ) {
@@ -126,8 +128,24 @@ mutation SetVzIncidentId(
 }
 """
 
-
-SET_CAD_VZ_INCIDENT_MATCH = """"""
+SET_CAD_VZ_INCIDENT_MATCH = """
+mutation SetVzIncidentId(
+    $record_id: bigint!
+    $vz_incident_id: bigint = null
+    $vz_incident_match_status: String!
+    $vz_incident_matched_ids: [bigint!] = []
+    ) {
+    update_cad_incidents(
+        where: { id: { _eq: $record_id } }
+        _set: { 
+            vz_incident_id: $vz_incident_id
+            vz_incident_matched_ids: $vz_incident_matched_ids 
+            vz_incident_match_status: $vz_incident_match_status
+        }
+    ) {
+        affected_rows
+    }
+}"""
 
 SET_EMS_VZ_INCIDENT_MATCH = """
 mutation SetVzIncidentId(
