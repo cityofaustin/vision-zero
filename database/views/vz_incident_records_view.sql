@@ -1,4 +1,4 @@
--- Most recent migration: database/migrations/default/1782228387810_redux/up.sql
+-- Most recent migration: database/migrations/default/1782228387810_incident_matching/up.sql
 
 CREATE OR REPLACE VIEW vz_incident_records_view AS
 SELECT
