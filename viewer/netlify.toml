@@ -1,11 +1,20 @@
 # Default used by main/deploy previews
 [build]
   publish = "build"
-  command = "npm run lint && npm run build:staging"
+  command = "echo 'Environment not recognized'"
 
 # Production specific build command
 [context.production]
   command = "npm run lint && npm run build:production"
+
+# Staging specific build command
+[context.main]
+  command = "npm run lint && npm run build:staging"
+
+# Deploy previews use staging environment
+[context.deploy-preview]
+  command = "npm run lint && npm run build:staging"
+
 
 # This rule handles the root path and redirects to /viewer/
 [[redirects]]
