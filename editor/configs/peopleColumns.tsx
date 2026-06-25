@@ -94,6 +94,12 @@ export const ALL_PEOPLE_COLUMNS = {
     defaultHidden: true,
     editable: false,
   },
+  prsn_taken_by: {
+    path: "prsn_taken_by",
+    label: "Transported by",
+    defaultHidden: true,
+    editable: false
+  },
   gndr: {
     path: "gndr.label",
     label: "Sex",
