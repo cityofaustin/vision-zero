@@ -134,7 +134,7 @@ export const popoverConfig = {
                     <tr>
                       <th scope="row">{new Date().getFullYear()}</th>
                       <td>
-                        {!!popEsts["years"][new Date().getFullYear()]
+                        {popEsts["years"][new Date().getFullYear()]
                           ? addCommasToNumber(
                               popEsts["years"][new Date().getFullYear()]
                             )

@@ -1,5 +1,5 @@
 import React from "react";
-import { StoreContext } from "../../utils/store";
+import { StoreContext } from "src/constants/context";
 import { A, usePath } from "hookrouter";
 
 import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
@@ -154,7 +154,7 @@ const Header = () => {
                         </span>
                       </NavLink>
                     </NavItem>
-                  )
+                  ),
               )}
             </Nav>
           </Container>

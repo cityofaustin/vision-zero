@@ -23,6 +23,7 @@ export type PeopleListRow = {
   prsn_mid_name: string | null;
   prsn_nbr?: number | null;
   prsn_taken_to?: string | null;
+  prsn_taken_by?: string | null;
   prsn_type?: LookupTableOption;
   prsn_type_id: number | null;
   unit_nbr: number;
