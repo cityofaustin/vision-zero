@@ -107,7 +107,6 @@ const Map = () => {
       mapTimeWindow,
     );
 
-    // setCrashCounts(null); // Clear stale totals before fetch
     if (apiUrl) {
       axios.get(apiUrl).then((res) => {
         const sortedMapData = sortAndCountMapData(res.data);
