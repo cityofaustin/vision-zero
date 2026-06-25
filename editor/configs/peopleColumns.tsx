@@ -91,6 +91,13 @@ export const ALL_PEOPLE_COLUMNS = {
     path: "prsn_taken_to",
     label: "Transported to",
     sortable: true,
+    editable: false,
+  },
+  prsn_taken_by: {
+    path: "prsn_taken_by",
+    label: "Transported by",
+    defaultHidden: true,
+    editable: false
   },
   gndr: {
     path: "gndr.label",
