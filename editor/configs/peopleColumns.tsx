@@ -91,7 +91,6 @@ export const ALL_PEOPLE_COLUMNS = {
     path: "prsn_taken_to",
     label: "Transported to",
     sortable: true,
-    defaultHidden: true,
     editable: false,
   },
   prsn_taken_by: {
