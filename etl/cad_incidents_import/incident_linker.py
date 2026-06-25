@@ -24,12 +24,25 @@ MAX_RECORD_TO_PROCESS = 5000
 UNPROCESSED_MATCH_STATUS = "unprocessed"
 
 RECORD_TYPES_LOOKUP = {
-    "cad": {
+    # We use separate entries for each CAD agency because they differ in
+    # incident number matching rules. E.g. APD cad calls can be matches to
+    # crashes, while EMS CAD calls match to ems__incidents
+    "cad_apd": {
         "table_name": "cad_incidents",
-        # we don't currently use incident number matching for cad incidents
-        # although the cad_incident_groups metadata table holds promise for this
-        "incident_number_match_table_name": None,
-        "incident_number_match_responding_agency": None,
+        "incident_number_match_table_name": "crashes",
+        "incident_number_match_responding_agency": "AUSTIN POLICE DEPARTMENT",
+        "update_mutation": SET_CAD_VZ_INCIDENT_MATCH,
+    },
+    "cad_ems": {
+        "table_name": "cad_incidents",
+        "incident_number_match_table_name": "ems__incidents",
+        "incident_number_match_responding_agency": "ems",
+        "update_mutation": SET_CAD_VZ_INCIDENT_MATCH,
+    },
+    "cad_afd": {
+        "table_name": "cad_incidents",
+        "incident_number_match_table_name": "afd__incidents",
+        "incident_number_match_responding_agency": "afd",
         "update_mutation": SET_CAD_VZ_INCIDENT_MATCH,
     },
     "ems": {
@@ -279,7 +292,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "record_type",
-        choices=["cad", "ems", "afd", "crashes"],
+        choices=list(RECORD_TYPES_LOOKUP.keys()),
         help="The type of records to process",
     )
     parser.add_argument(
