@@ -42,7 +42,7 @@
     "react-map-gl": "^5.3.21",
     "react-map-gl-draw": "^0.16.1",
     "react-map-gl-geocoder": "^2.2.0",
-    "react-use": "^14.3.0",
+    "react-use": "^17.6.1",
     "react-with-styles-interface-aphrodite": "^6.0.1",
     "reactstrap": "^8.10.1",
     "reaviz": "^8.3.0",
