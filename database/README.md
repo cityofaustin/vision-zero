@@ -78,6 +78,10 @@ A single real-world crash typically generates data across multiple independent s
 
 \*_Work in progress_
 
+This diagram provides illustrates the systems and processes which make up our Crash Data System. It is not meant to be exhaustive.
+
+![Diagram of the various networks, systems, and databases which entail the Crash Data System](../docs/images/system_diagram.jpg)
+
 ### TxDOT Crash Records Information System (CRIS)
 
 The [TxDOT Crash Record Information System](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html) (CRIS) is a statewide, automated database for traffic crash reports.
