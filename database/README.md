@@ -461,8 +461,8 @@ For additional information about CAD records, see the [CAD incident import ETL](
 A single real-world crash is often seen by multiple public-safety systems — an APD crash report, one or more CAD calls, an EMS patient record, an AFD response — each recorded in its own table. **Vision Zero incidents** (`vz_incidents`) are a composite record type that organizes [various crash-related records](#data-sources) under a single containing object. A VZ incident may be linked to multiple record types; it attempts to provide a complete picture of the public safety response to a single real-world crash. This work is ongoing.
 
 <figure>
-  <img src="../docs/images/vz_incident.jpg" alt="Diagram of vision zero incident with points overlaid on a map which represent different agencies responding to the same crash">
   <figcaption>This diagram illustrates how a multi-agency crash response may be represented in our database.</figcaption>
+  <img src="../docs/images/vz_incident.jpg" alt="Diagram of vision zero incident with points overlaid on a map which represent different agencies responding to the same crash">
 </figure>
 
 VZ incidents are populated by the `incident_linker.py` script in the [CAD incident import ETL](../etl/cad_incidents_import/README.md). The script processes one source record type at a time — CAD incidents, crash reports, EMS incidents, and AFD incidents — reading from the unified `vz_incident_records_view` and linking each record to a VZ incident (or creating a new one).
@@ -489,6 +489,13 @@ The queries below can be used to explore and visualize VZ incidents as they curr
 Crash reports arrive from all regional law-enforcement agencies, but CAD coverage is Austin-only. A crash can only have a CAD counterpart when APD was the responding agency; crashes from county, state, or neighboring-city agencies can only be linked by geo-temporal proximity or seeded as new incidents.
 
 Note that the responding agency is normalized to `apd` in the `vz_incident_records_view` for both crash and CAD records, though the underlying crashes table stores the full agency label.
+
+| vz_incident_id | record_responding_agency | record_address           | record_timestamp    | record_table_name | record_incident_number |
+| -------------- | ------------------------ | ------------------------ | ------------------- | ----------------- | ---------------------- |
+| 102            | apd                      | BISCUIT DR / E BRAKER LN | 2021-10-18 14:12:33 | crashes           | 212910112              |
+| 102            | apd                      | 11600-11610 E Braker Ln  | 2021-10-18 14:12:33 | cad_incidents     | 212910112              |
+| 102            | afd                      | 1436 Biscuit Dr          | 2021-10-18 14:12:10 | cad_incidents     | 21148739               |
+| 102            | ems                      | 1436 Biscuit Dr          | 2021-10-18 14:13:12 | ems\_\_incidents  | 21148739               |
 
 #### Sample queries
 
