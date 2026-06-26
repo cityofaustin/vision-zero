@@ -460,7 +460,7 @@ For additional information about CAD records, see the [CAD incident import ETL](
 
 A single real-world crash is often seen by multiple public-safety systems — an APD crash report, one or more CAD calls, an EMS patient record, an AFD response — each recorded in its own table. **Vision Zero incidents** (`vz_incidents`) are a composite record type that organizes [various crash-related records](#data-sources) under a single containing object. A VZ incident may be linked to multiple record types; it attempts to provide a complete picture of the public safety response to a single real-world crash. This work is ongoing.
 
-![illustrative incident diagram](../docs/images/vz_incident.jpg)
+![illustrative vision zero incident diagram](../docs/images/vz_incident.jpg)
 
 VZ incidents are populated by the `incident_linker.py` script in the [CAD incident import ETL](../etl/cad_incidents_import/README.md). The script processes one source record type at a time — CAD incidents, crash reports, EMS incidents, and AFD incidents — reading from the unified `vz_incident_records_view` and linking each record to a VZ incident (or creating a new one).
 
@@ -472,7 +472,7 @@ For each record, the script attempts to match it to an existing VZ incident usin
 
 3. **New incident** — If no match is found, create a new `vz_incidents` record and link the record to it.
 
-Crash reports arrive from all regional law-enforcement agencies, but CAD coverage is Austin-only. A crash can only have a CAD counterpart when APD was the responding agency; crashes from county, state, or neighboring-city agencies can only be linked by geo-temporal proximity or seeded as new incidents. 
+Crash reports arrive from all regional law-enforcement agencies, but CAD coverage is Austin-only. A crash can only have a CAD counterpart when APD was the responding agency; crashes from county, state, or neighboring-city agencies can only be linked by geo-temporal proximity or seeded as new incidents.
 
 Note that the responding agency is normalized to `apd` in the `vz_incident_records_view` for both crash and CAD records, though the underlying crashes table stores the full agency label.
 
