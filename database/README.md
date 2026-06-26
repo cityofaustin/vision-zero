@@ -460,10 +460,9 @@ For additional information about CAD records, see the [CAD incident import ETL](
 
 A single real-world crash is often seen by multiple public-safety systems — an APD crash report, one or more CAD calls, an EMS patient record, an AFD response — each recorded in its own table. **Vision Zero incidents** (`vz_incidents`) are a composite record type that organizes [various crash-related records](#data-sources) under a single containing object. A VZ incident may be linked to multiple record types; it attempts to provide a complete picture of the public safety response to a single real-world crash. This work is ongoing.
 
-<figure>
-  <figcaption>This diagram illustrates how a multi-agency crash response may be represented in our database.</figcaption>
-  <img src="../docs/images/vz_incident.jpg" alt="Diagram of vision zero incident with points overlaid on a map which represent different agencies responding to the same crash">
-</figure>
+![Diagram of vision zero incident with points overlaid on a map which represent different agencies responding to the same crash](../docs/images/vz_incident.jpg)
+
+_This diagram illustrates how a multi-agency crash response may be represented in our database_
 
 VZ incidents are populated by the `incident_linker.py` script in the [CAD incident import ETL](../etl/cad_incidents_import/README.md). The script processes one source record type at a time — CAD incidents, crash reports, EMS incidents, and AFD incidents — reading from the unified `vz_incident_records_view` and linking each record to a VZ incident (or creating a new one).
 
