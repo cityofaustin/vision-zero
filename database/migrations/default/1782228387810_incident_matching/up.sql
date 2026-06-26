@@ -113,7 +113,12 @@ CREATE OR REPLACE VIEW public.vz_incident_records_view AS
     SELECT
         
         'crashes'::text            AS record_table_name,
-        agency.label               AS record_responding_agency,
+        case when 
+            --  'AUSTIN POLICE DEPARTMENT' -> 'apd'
+            c.investigat_agency_id = 74
+                then 'apd'
+            else agency.label
+        end                        AS record_responding_agency,
         c.id                       AS record_id,
         c.case_id                  AS record_incident_number,
         c.crash_timestamp          AS record_timestamp,
