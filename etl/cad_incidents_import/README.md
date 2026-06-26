@@ -87,16 +87,21 @@ For each unprocessed record, the script attempts to link it to an existing VZ in
 1 **Incident-number match**. When the record carries a shared identifier that another system uses for the same event, the script matches on that number. The valid edges are: crashes ↔ CAD (on `case_id` / `master_incident_number`), EMS ↔ CAD, and AFD ↔ CAD. 
 This is the most reliable signal, since a shared incident number is a near-certain indication of the same real-world event.
 
-1. **Geo-temporal proximity**. If no incident-number match is found (or none is possible for this record), the script searches `vz_incident_records_view` for any already-linked record within 500 meters and 60 minutes. If exactly one VZ incident matches, the record links to it; if more than one matches, the record is left for manual QA with its candidate IDs preserved.
+2. **Geo-temporal proximity**. If no incident-number match is found (or none is possible for this record), the script searches `vz_incident_records_view` for any already-linked record within 500 meters and 60 minutes. If exactly one VZ incident matches, the record links to it; if more than one incident matches, the record is left for manual QA with its matched candidate IDs stored in the `vz_incident_matched_ids` column.
 
-If neither strategy produces a match, the script creates a new `vz_incidents` record and links the current record to it.
+3. If no existing proximal incidents are found, the script uses a **recursive breadth-first search** to find geo-temporal matches for *unprocessed* incidents. Starting from an unprocessed anchor incident, the script flood-fills outward, pulling in any neighboring incidents within 500 meters and 60 minutes of each group member. This process repeats for each newly added member until no new neighbors are found. Once a group is finalized, a parent `vz_incidents` record is created and all CAD incidents in the group are linked to it.
+
+    The geo-temporal matching alogrithm is illustrated below, in which CAD incidents A, B, C are grouped into a single incident based on their spatial proximity. Although A and C are not within the search radius of each other, the recursive matching of A → B → C leads to formation of the three-member group.
+
+![diagram](docs/cad_incidents_chained.png)
 
 **A note on crash–CAD matching and agency coverage**. Crash reports arrive from every law-enforcement agency operating in the tri-county area, but CAD data exists only for the City of Austin's responders (APD, AFD, EMS). A crash can therefore only have a CAD counterpart when APD was the responding agency. The script encodes this by skipping incident-number matching for any crash where `record_responding_agency` is not `apd`. 
 
 The outcome of each record's matching attempt is written back to the source table's `vz_incident_match_status` column.
-docker compose -f docker-compose.yml -f docker-compose.local.yml run import incident_linker.py afd  --limit 1000
 
-![diagram](docs/cad_incidents_chained.png)
+```shell
+docker compose -f docker-compose.yml -f docker-compose.local.yml run import incident_linker.py afd  --limit 1000
+```
 
 ## Production run
 

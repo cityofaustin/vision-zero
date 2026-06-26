@@ -464,37 +464,9 @@ A single real-world crash is often seen by multiple public-safety systems — an
 
 _This diagram illustrates how a multi-agency crash response may be represented in our database_
 
-VZ incidents are populated by the `incident_linker.py` script in the [CAD incident import ETL](../etl/cad_incidents_import/README.md). The script processes one source record type at a time — CAD incidents, crash reports, EMS incidents, and AFD incidents — reading from the unified `vz_incident_records_view` and linking each record to a VZ incident (or creating a new one).
+VZ incidents are populated by the `incident_linker.py` script in the [CAD incident import ETL](../etl/cad_incidents_import/README.md). The script processes one source record type at a time — CAD incidents, crash reports, EMS incidents, and AFD incidents — reading from the unified `vz_incident_records_view` and linking each record to a VZ incident (or creating a new one). Refer to the ETL readme for details on how `vz_incident` records are identified and created.
 
-For each record, the script attempts to match it to an existing VZ incident using the following strategies, in order:
-
-1. **Incident-number match** — When a record shares an incident number with a record from another system (crashes ↔ CAD on `case_id`/`master_incident_number`, EMS ↔ CAD, AFD ↔ CAD), they are linked to the same VZ incident. For crashes, this is attempted only when the responding agency is APD (`record_responding_agency` = `apd`), since CAD data exists only for Austin responders — see note below.
-
-2. **Geo-temporal proximity** — If no incident-number match applies, search `vz_incident_records_view` for any linked record within 500 meters and 60 minutes. If exactly one VZ incident matches, link to it; if more than one matches, leave the record unlinked for manual QA.
-
-3. **New incident** — If no match is found, create a new `vz_incidents` record and link the record to it.
-
-The outcome of each record's matching attempt is recorded in the source table's `vz_incident_match_status` column. Possible values are:
-
-- `unprocessed` — default state, new records pending processing
-- `created_by_automation` — a new VZ incident was created for this record
-- `matched_by_automation_incident_number` — linked via a shared incident number
-- `matched_by_automation_geo_temporal` — linked via spatial/temporal proximity
-- `multiple_matches_by_automation` — more than one VZ incident matched; candidate IDs are stored in vz_incident_matched_ids for manual review
-- `matched_by_manual_qa` — manually assigned to a VZ incident by a staff member
-
-The queries below can be used to explore and visualize VZ incidents as they currently exist in the database.
-
-Crash reports arrive from all regional law-enforcement agencies, but CAD coverage is Austin-only. A crash can only have a CAD counterpart when APD was the responding agency; crashes from county, state, or neighboring-city agencies can only be linked by geo-temporal proximity or seeded as new incidents.
-
-Note that the responding agency is normalized to `apd` in the `vz_incident_records_view` for both crash and CAD records, though the underlying crashes table stores the full agency label.
-
-| vz_incident_id | record_responding_agency | record_address           | record_timestamp    | record_table_name | record_incident_number |
-| -------------- | ------------------------ | ------------------------ | ------------------- | ----------------- | ---------------------- |
-| 102            | apd                      | BISCUIT DR / E BRAKER LN | 2021-10-18 14:12:33 | crashes           | 212910112              |
-| 102            | apd                      | 11600-11610 E Braker Ln  | 2021-10-18 14:12:33 | cad_incidents     | 212910112              |
-| 102            | afd                      | 1436 Biscuit Dr          | 2021-10-18 14:12:10 | cad_incidents     | 21148739               |
-| 102            | ems                      | 1436 Biscuit Dr          | 2021-10-18 14:13:12 | ems\_\_incidents  | 21148739               |
+The queries below can be used to explore and visualize `vz_incidents`.
 
 #### Sample queries
 
@@ -524,7 +496,7 @@ GROUP BY
     v.id
 ORDER BY
     v.id
-LIMIT 10000
+LIMIT 10000;
 ```
 
 - Generates a geojson of VZ incidents with simple styles that can be visualized in mapping tools such as https://geojson.io.
