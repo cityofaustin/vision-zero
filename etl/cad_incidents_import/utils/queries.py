@@ -47,6 +47,7 @@ query GetUnprocessed(
         record_id
         record_incident_number
         record_responding_agency
+        record_table_name
         record_timestamp
         record_address
         geom
@@ -96,6 +97,34 @@ query GetGeoTemporalMatches(
         vz_incident_id
         record_id
         record_table_name
+    }
+}
+"""
+
+GET_UNPROCESSED_GEO_TEMPORAL_MATCHES = """
+query GetGeoTemporalMatches(
+    $record_id: bigint!
+    $record_table_name: String!
+    $geom: geometry!
+    $start: timestamptz!
+    $end: timestamptz!
+    $distance: Float!
+) {
+    vz_incident_records_view(
+        where: {
+            vz_incident_id: { _is_null: true }
+            vz_incident_match_status: { _eq: "unprocessed" } 
+            record_id: { _neq: $record_id }
+            record_timestamp: { _gte: $start, _lte: $end }
+            record_table_name: { _eq: $record_table_name }
+            geom: { _st_d_within: { distance: $distance, from: $geom } }
+        }
+    ) {
+        vz_incident_id
+        record_id
+        record_table_name
+        record_timestamp
+        geom
     }
 }
 """
