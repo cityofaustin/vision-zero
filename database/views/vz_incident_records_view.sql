@@ -3,7 +3,10 @@
 CREATE OR REPLACE VIEW vz_incident_records_view AS
 SELECT
     'crashes'::text   AS record_table_name,
-    agency.label      AS record_responding_agency,
+    CASE
+        WHEN c.investigat_agency_id = 74 THEN 'apd'::text
+        ELSE agency.label
+    END               AS record_responding_agency,
     c.id              AS record_id,
     c.case_id         AS record_incident_number,
     c.crash_timestamp AS record_timestamp,
