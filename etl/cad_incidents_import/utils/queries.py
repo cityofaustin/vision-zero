@@ -113,7 +113,7 @@ mutation SetVzIncidentId(
     $record_id: Int!
     $vz_incident_id: bigint = null
     $vz_incident_match_status: String!
-    $vz_incident_matched_ids: [bigint!] = []
+    $vz_incident_matched_ids: [bigint!] = null
     ) {
     update_crashes(
         where: { id: { _eq: $record_id } }

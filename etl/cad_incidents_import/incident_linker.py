@@ -23,39 +23,37 @@ MAX_RECORD_TO_PROCESS = 5000
 
 UNPROCESSED_MATCH_STATUS = "unprocessed"
 
-RECORD_TYPES_LOOKUP = {
-    # We use separate entries for each CAD agency because they differ in
-    # incident number matching rules. E.g. APD cad calls can be matches to
-    # crashes, while EMS CAD calls match to ems__incidents
-    "cad_apd": {
-        "table_name": "cad_incidents",
+CAD_INCIDENT_NUMBER_MATCH_BY_AGENCY = {
+    "apd": {
         "incident_number_match_table_name": "crashes",
-        "incident_number_match_responding_agency": "AUSTIN POLICE DEPARTMENT",
-        "update_mutation": SET_CAD_VZ_INCIDENT_MATCH,
-    },
-    "cad_ems": {
-        "table_name": "cad_incidents",
-        "incident_number_match_table_name": "ems__incidents",
-        "incident_number_match_responding_agency": "ems",
-        "update_mutation": SET_CAD_VZ_INCIDENT_MATCH,
-    },
-    "cad_afd": {
-        "table_name": "cad_incidents",
-        "incident_number_match_table_name": "afd__incidents",
-        "incident_number_match_responding_agency": "afd",
-        "update_mutation": SET_CAD_VZ_INCIDENT_MATCH,
+        "incident_number_match_responding_agency": "apd",
     },
     "ems": {
-        "table_name": "ems__incidents",
-        "incident_number_match_table_name": "cad_incidents",
+        "incident_number_match_table_name": "ems__incidents",
         "incident_number_match_responding_agency": "ems",
-        "update_mutation": SET_EMS_VZ_INCIDENT_MATCH,
+    },
+    "afd": {
+        "incident_number_match_table_name": "afd__incidents",
+        "incident_number_match_responding_agency": "afd",
+    },
+}
+
+RECORD_TYPES_LOOKUP = {
+    "cad": {
+        "table_name": "cad_incidents",
+        "update_mutation": SET_CAD_VZ_INCIDENT_MATCH,
     },
     "afd": {
         "table_name": "afd__incidents",
         "incident_number_match_table_name": "cad_incidents",
         "incident_number_match_responding_agency": "afd",
         "update_mutation": SET_AFD_INCIDENT_MATCH,
+    },
+    "ems": {
+        "table_name": "ems__incidents",
+        "incident_number_match_table_name": "cad_incidents",
+        "incident_number_match_responding_agency": "ems",
+        "update_mutation": SET_EMS_VZ_INCIDENT_MATCH,
     },
     "crashes": {
         "table_name": "crashes",
@@ -124,18 +122,11 @@ def fetch_geo_temporal_matches(record: dict) -> list[dict]:
 
 
 def main(args):
-    # get config data for this record type
-    record_type = args.record_type
-    record_table_name = RECORD_TYPES_LOOKUP[record_type]["table_name"]
-    incident_number_match_table_name = RECORD_TYPES_LOOKUP[record_type].get(
-        "incident_number_match_table_name"
-    )
-    incident_number_match_responding_agency = RECORD_TYPES_LOOKUP[record_type].get(
-        "incident_number_match_responding_agency"
-    )
-
     record_limit = args.limit
     date_limit = datetime.now(UTC) - timedelta(hours=MIN_RECORD_AGE_HOURS)
+
+    record_type = args.record_type
+    record_table_name = RECORD_TYPES_LOOKUP[record_type]["table_name"]
 
     logging.info(
         f"Fetching unprocessed {args.record_type} incidents that occurred before {date_limit}..."
@@ -175,17 +166,38 @@ def main(args):
         vz_incident_matched_ids = []
         vz_incident_match_status = None
 
+        if record_type == "cad":
+            """
+            For cad_incident records, we determine the table and incident number to match to based 
+            on the responding agency. This allows us to match CAD AFD record to `afd__incidents`,
+            EMS to `ems__incidents`, and APD records to APD crashes.
+            """
+            agency_cfg = CAD_INCIDENT_NUMBER_MATCH_BY_AGENCY.get(
+                record["record_responding_agency"], {}
+            )
+            incident_number_match_table_name = agency_cfg.get("incident_number_match_table_name")
+            incident_number_match_responding_agency = agency_cfg.get("incident_number_match_responding_agency")
+
+        else:
+            incident_number_match_table_name = RECORD_TYPES_LOOKUP[record_type].get(
+                "incident_number_match_table_name"
+            )
+            incident_number_match_responding_agency = RECORD_TYPES_LOOKUP[record_type].get(
+                "incident_number_match_responding_agency"
+            )
+
         # attempt to match based on a common incident number
         if record["record_incident_number"] and incident_number_match_table_name:
+            # only APD crashes can be matched to cad incidents
             if (
                 record_type == "crashes"
-                and record["record_responding_agency"] != "AUSTIN POLICE DEPARTMENT"
+                and record["record_responding_agency"] != "apd"
             ):
                 logging.info(
                     f"Skipping incident number match for agency {record["record_responding_agency"]}"
                 )
             else:
-                logging.info(f"Attempting to match record on incident number")
+                logging.info(f"Attempting incident number match to {incident_number_match_responding_agency} records in the {incident_number_match_table_name} table")
 
                 matches = fetch_incident_number_matches(
                     record,
@@ -256,13 +268,13 @@ def main(args):
                 f"Assigning {record_table_name} ID {iid} to newly created vz_incidents_id {vz_incident_id}"
             )
 
-            # todo: make sure we're not setting an empty array of incident ids
+            # todo: make sure we're not setting an empty array of incident ids (check the mutation default)
             make_hasura_request(
                 query=RECORD_TYPES_LOOKUP[record_type]["update_mutation"],
                 variables={
                     "record_id": iid,
                     "vz_incident_id": vz_incident_id,
-                    "vz_incident_matched_ids": vz_incident_matched_ids,
+                    "vz_incident_matched_ids": None,
                     "vz_incident_match_status": "created_by_automation",
                 },
             )
