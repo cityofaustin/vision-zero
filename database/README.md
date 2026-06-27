@@ -78,7 +78,7 @@ A single real-world crash typically generates data across multiple independent s
 
 \*_Work in progress_
 
-This diagram provides illustrates the systems and processes which make up our Crash Data System. It is not meant to be exhaustive.
+This diagram illustrates the systems and processes which make up our Crash Data System. It is not meant to be exhaustive.
 
 ![Diagram of the various networks, systems, and databases which entail the Crash Data System](../docs/images/system_diagram.jpg)
 
@@ -558,9 +558,7 @@ FROM
 
 ### Geospatial layers
 
-We have a number of tables which function as geospatial layers which are referenced by crashes and various other records. At the Vision Zero team's request, our team is actively working to expand the number of layers available in the database as well as add new attribute columns to crash records which will be populated based on their intersection with these layers.
-
-These layers can be updated with our [ArcGIS Online helper utility](/toolbox/load_agol_layer). See also the guidance for creating and updating geospatial layers in the common maintance tasks section, below.
+The database holds geospatial reference layers — jurisdicitonal boundaries, council districts, etc — which are referenced by crashes and various other records. These layers are not actively maintained, but can be easily refreshed following the update process [described below](#updating-an-existing-geospatial-layer).
 
 | Table                   | Geometry type  | description                                                                                                      | owner/source                                                         |
 | ----------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
