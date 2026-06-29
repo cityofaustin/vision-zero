@@ -114,6 +114,8 @@ def fetch_incident_number_matches(
 
 
 def fetch_geo_temporal_matches(record: dict) -> list[dict]:
+    """Find VZ incident members that are spatially and temporally
+    proximal to the given record"""
     record_timestamp = datetime.fromisoformat(record["record_timestamp"])
     start, end = time_window(record_timestamp, TIME_THRESHOLD_MINUTES)
     data = make_hasura_request(
