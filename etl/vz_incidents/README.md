@@ -4,7 +4,7 @@
 This script is responsible for creating and linking crash-related records to [Vision Zero Incidents](../../database/README.md#vision-zero-incidents).
 
 
-## Backgrond
+## Background
 
 A single real-world crash is often seen by multiple public-safety systems — an APD crash report, one or more CAD calls, an EMS patient record, an AFD response — each recorded in its own table. `incident_linker.py` groups these disparate records under a shared `vz_incidents` record so that downstream consumers can reason about the complete response to a single event.
 
