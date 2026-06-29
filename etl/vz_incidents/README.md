@@ -23,7 +23,7 @@ This is the most reliable signal, since a shared incident number is a near-certa
 
    The geo-temporal matching alogrithm is illustrated below, in which CAD incidents A, B, C are grouped into a single incident based on their spatial proximity. Although A and C are not within the search radius of each other, the recursive matching of A → B → C leads to formation of the three-member group.
 
-![diagram](docs/cad_incidents_chained.png)
+![diagram](docs/cad_incidents_chained.jpg)
 
 **A note on crash–CAD matching and agency coverage**. Crash reports arrive from every law-enforcement agency operating in the tri-county area, but CAD data exists only for the City of Austin's responders (APD, AFD, EMS). A crash can therefore only have a CAD counterpart when APD was the responding agency. The script encodes this by skipping incident-number matching for any crash where `record_responding_agency` is not `apd`.
 
@@ -31,7 +31,7 @@ The outcome of each record's matching attempt is written back to the source tabl
 
 ## Local development
 
-1. Save a copy of the `env_template` file as `.env`, and fill in the details. Make sure to set the `BUCKET_ENV` variable to `dev` in order to safely run the S3 operations locally.
+1. Save a copy of the `env_template` file as `.env`, and fill in the details.
 
 2. Start your local Vision Zero cluster (database + Hasura + editor).
 
