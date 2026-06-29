@@ -15,6 +15,7 @@ on:
       - "etl/moped_projects/**"
       - "etl/run_sql/**"
       - "etl/socrata_export/**"
+      - "etl/vz_incidents/**"
   workflow_dispatch:
 
 jobs:
@@ -53,6 +54,8 @@ jobs:
               - 'etl/socrata_export/**'
             user_cr3_api:
               - 'api/**'
+            vz_incidents:
+              - 'etl/vz_incidents/**'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -128,6 +131,15 @@ jobs:
           context: api
           push: true
           tags: atddocker/vz-user-cr3-api:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
+
+      - name: Build and push VZ incidents image
+        if: steps.changes.outputs.vz_incidents == 'true'
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: etl/vz_incidents
+          push: true
+          tags: atddocker/vz-incidents:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
 
       - name: Set environment for ECS update
         if: steps.changes.outputs.user_cr3_api == 'true'

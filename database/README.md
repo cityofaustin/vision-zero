@@ -64,11 +64,29 @@ The design supports an editing environment which enables Vision Zero program sta
 
 ## Data sources
 
+A single real-world crash typically generates data across multiple independent systems — police crash reports, public safety dispatch logs, EMS and fire department patient care records, hospital admissions, medical examiner reports, and so on. No single dataset captures the whole picture of a given crash, and the Vision Zero team has direct access to only a subset of them. The table below summarizes the data sources we currently work with, our level of access to each, and the Vision Zero database tables where applicable.
+
+| Data Source                   | Vision Zero access | Vision Zero table name | Note                                                                                                                   |
+| ----------------------------- | ------------------ | ---------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Crash reports                 | Yes                | `crashes`              | Crash reports are written based on law enforcement officer discretion and written only if a motor vehicle was involved |
+| Computer-aided dispatch (CAD) | Partial            | `cad_incidents`        | Motor-vehicle-involved records only. Vision Zero access is limited to incidents which are coded as crash-related.      |
+| EMS patient care records      | Partial            | `ems__incidents`       | Motor-vehicle-involved records only                                                                                    |
+| AFD patient care records      | Partial\*          | `afd__incidents`       | Motor-vehicle-involved records only                                                                                    |
+| Medical examiner reports      | Yes                | N/A                    | Ad-hoc exchange of XLSX files for Motor-vehicle-involved fatalities                                                    |
+| Vehicle telemetry             | No                 | N/A                    |  Aspirational                                                                                                          |
+| Hospital records              | No                 | N/A                    |  Aspirational                                                                                                          |
+
+\*_Work in progress_
+
+This diagram illustrates the systems and processes which make up our Crash Data System. It is not meant to be exhaustive.
+
+![Diagram of the various networks, systems, and databases which entail the Crash Data System](../docs/images/system_diagram.jpg)
+
 ### TxDOT Crash Records Information System (CRIS)
 
-The [TxDOT Crash Record Information System](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html) (CRIS) is a statewide, automated database for traffic crashes reports.
+The [TxDOT Crash Record Information System](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html) (CRIS) is a statewide, automated database for traffic crash reports.
 
-CRIS data accounts for the vast majority of records in the database: the [Vision Zero Editor (VZE)](../editor/README.md) is designed primarily as a tool for editing and enriching data received from CRIS, and the [Vision Zero Viewer (VZV)](../viewer/README.md) is powered entirely by enriched CRIS data.
+CRIS data accounts for the vast majority of records in the database: the [Vision Zero Editor (VZE)](../editor/README.md) is designed primarily as a tool for editing and enriching crash reports received from CRIS, and the [Vision Zero Viewer (VZV)](../viewer/README.md) is powered entirely by enriched CRIS crash report data.
 
 The CRIS data in our database consists of four record types:
 
@@ -444,45 +462,63 @@ For additional information about CAD records, see the [CAD incident import ETL](
 
 ### Vision Zero Incidents
 
-[Under active development]
+A single real-world crash is often seen by multiple public-safety systems — an APD crash report, one or more CAD calls, an EMS patient record, an AFD response — each recorded in its own table. **Vision Zero incidents** (`vz_incidents`) are a composite record type that organizes [various crash-related records](#data-sources) under a single containing object. A VZ incident may be linked to multiple record types; it attempts to provide a complete picture of the public safety response to a single real-world crash. This work is ongoing.
 
-The `vz_incidents` table holds Vision Zero incidents, which is a composite record type which attempts to unify various crash-related records under a single containing object. Currently, VZ incidents are only linked to CAD records; they are created as part of the [CAD incident import ETL](../etl/cad_incidents_import/README.md). In the future a VZ incident may be linked to any number of record types, enabling a picture of the total public safety response to a crash:
+![Diagram of vision zero incident with points overlaid on a map which represent different agencies responding to the same crash](../docs/images/vz_incident.jpg)
 
-- Vision Zero incident
-  - Fire CAD incident
-  - EMS CAD incident
-  - Police CAD inicdent
-  - EMS Patient care record (future state)
-  - Police crash report (future state)
+_This diagram illustrates how a multi-agency crash response may be represented in our database_
 
-This work is ongoing and in a state of flux. The below queries can be used to explore and visualize VZ incidents as they currently exist in the database.
+VZ incidents are populated by the `incident_linker.py` script in the [VZ incidentsETL](../etl/vz_incidents/README.md). The script processes one source record type at a time — CAD incidents, crash reports, EMS incidents, and AFD incidents — reading from the unified `vz_incident_records_view` and linking each record to a VZ incident (or creating a new one). Refer to the ETL readme for details on how `vz_incident` records are identified and created.
+
+The queries below can be used to explore and visualize `vz_incidents`.
 
 #### Sample queries
 
-- VZ incident stats (number of member CAD incidents, distance spread, response time spread)
+- VZ incident stats (number of member incidents, distance spread, response time spread)
 
 ```sql
 SELECT
-    v.id AS vz_incident_id,
-    COUNT(c.id) AS cad_incident_count,
-    ROUND(ST_Length (ST_LongestLine (ST_Collect (c.geom), ST_Collect (c.geom))::geography)::numeric, 1) AS spread_meters,
+    v.vz_incident_id,
+    COUNT(*) AS record_count,
+    COUNT(*) FILTER (
+        WHERE
+            record_table_name = 'crashes'
+    ) AS crashes_count,
+    COUNT(*) FILTER (
+        WHERE
+            record_table_name = 'cad_incidents'
+    ) AS cad_incidents_count,
+    COUNT(*) FILTER (
+        WHERE
+            record_table_name = 'ems__inicidents'
+    ) AS ems_inicidents_count,
+    COUNT(*) FILTER (
+        WHERE
+            record_table_name = 'afd__inicidents'
+    ) AS afd__incidents_count,
+    COUNT(*) FILTER (
+        WHERE
+            record_table_name = 'crashes'
+    ) AS crash_count,
+    ROUND(ST_Length (ST_LongestLine (ST_Collect (v.geom), ST_Collect (v.geom))::geography)::numeric, 1) AS spread_meters,
     ROUND(
         EXTRACT(
             EPOCH
             FROM
-                (MAX(c.response_date) - MIN(c.response_date))
+                (MAX(v.record_timestamp) - MIN(v.record_timestamp))
         ) / 60.0,
         1
     ) AS time_spread_minutes
 FROM
-    vz_incidents v
-    JOIN cad_incidents c ON c.vz_incident_id = v.id
+    vz_incident_records_view v
 WHERE
-    v.is_deleted = FALSE
+    v.vz_incident_id IS NOT NULL
 GROUP BY
-    v.id
+    v.vz_incident_id
 ORDER BY
-    v.id
+    v.vz_incident_id
+LIMIT
+    1000;
 ```
 
 - Generates a geojson of VZ incidents with simple styles that can be visualized in mapping tools such as https://geojson.io.
@@ -503,14 +539,18 @@ SELECT
                 jsonb_build_object(
                     'vz_incident_id',
                     vz_incident_id,
-                    'master_incident_id',
-                    master_incident_id,
-                    'agency_type',
-                    agency_type,
-                    'response_date',
-                    response_date,
-                    'address',
-                    address,
+                    'record_table_name',
+                    record_table_name,
+                    'record_id',
+                    record_id,
+                    'record_incident_number',
+                    record_incident_number,
+                    'record_responding_agency',
+                    record_responding_agency,
+                    'record_timestamp',
+                    record_timestamp,
+                    'record_address',
+                    record_address,
                     'marker-color',
                     '#' || lpad(to_hex(('x' || substr(md5(vz_incident_id::text), 1, 6))::bit(24)::int), 6, '0'),
                     'marker-size',
@@ -520,18 +560,23 @@ SELECT
         )
     ) AS geojson
 FROM
-    cad_incidents
-WHERE
-    vz_incident_id IS NOT NULL
-LIMIT
-    2000;
+    (
+        SELECT
+            *
+        FROM
+            vz_incident_records_view
+        WHERE
+            geom IS NOT NULL
+        ORDER BY
+            record_timestamp DESC
+        LIMIT
+            500
+    ) sub;
 ```
 
 ### Geospatial layers
 
-We have a number of tables which function as geospatial layers which are referenced by crashes and various other records. At the Vision Zero team's request, our team is actively working to expand the number of layers available in the database as well as add new attribute columns to crash records which will be populated based on their intersection with these layers.
-
-These layers can be updated with our [ArcGIS Online helper utility](/toolbox/load_agol_layer). See also the guidance for creating and updating geospatial layers in the common maintance tasks section, below.
+The database holds geospatial reference layers — jurisdicitonal boundaries, council districts, etc — which are referenced by crashes and various other records. These layers are not actively maintained, but can be easily refreshed following the update process [described below](#updating-an-existing-geospatial-layer).
 
 | Table                   | Geometry type  | description                                                                                                      | owner/source                                                         |
 | ----------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
