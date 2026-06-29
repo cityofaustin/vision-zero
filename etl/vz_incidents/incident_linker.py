@@ -387,7 +387,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Groups various crash-related records into Vision Zero incidents (vz_incidents)",
-        usage="incident_linker.py --limit 1000",
+        usage="incident_linker.py cad --limit 1000",
     )
     parser.add_argument(
         "record_type",
