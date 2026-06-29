@@ -49,8 +49,20 @@ This is the most reliable signal, since a shared incident number is a near-certa
 
 The outcome of each record's matching attempt is written back to the source table's `vz_incident_match_status` column.
 
+
+#### Usage
+
+The script is run on a per-record-type basis by passing the record type name as the first argument (`cad`,`afd`,`ems`,`crashes`). 
+
 ```shell
-docker compose run incidents incident_linker.py afd  --limit 100
+docker compose run incidents incident_linker.py afd --dry-run --limit 100
+```
+
+Additional options
+
+```
+  --limit (default: 5000)  The maximum number of records to process
+  --dry-run                Log if there are records to process without actually doing it
 ```
 
 ## Production run
