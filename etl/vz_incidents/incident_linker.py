@@ -113,18 +113,13 @@ def fetch_incident_number_matches(
     return data["vz_incident_records_view"]
 
 
-def fetch_unprocessed_neighbors(record: dict) -> list[dict]:
-    """Geo-temporal neighbors that are themselves still unprocessed.
-    Inverse of fetch_geo_temporal_matches: that one finds already-assigned
-    records to match *to*; this one finds unassigned peers to cluster *with*.
-    """
+def fetch_geo_temporal_matches(record: dict) -> list[dict]:
     record_timestamp = datetime.fromisoformat(record["record_timestamp"])
     start, end = time_window(record_timestamp, TIME_THRESHOLD_MINUTES)
     data = make_hasura_request(
-        query=GET_UNPROCESSED_GEO_TEMPORAL_MATCHES,  # new query, see below
+        query=GET_GEO_TEMPORAL_MATCHES,
         variables={
             "record_id": record["record_id"],
-            "record_table_name": record["record_table_name"],
             "geom": record["geom"],
             "start": start.isoformat(),
             "end": end.isoformat(),
@@ -152,13 +147,18 @@ def flood_fill_unprocessed(anchor: dict) -> tuple[list[dict], list[str]]:
     return list(members_by_id.values())
 
 
-def fetch_geo_temporal_matches(record: dict) -> list[dict]:
+def fetch_unprocessed_neighbors(record: dict) -> list[dict]:
+    """Geo-temporal neighbors that are themselves still unprocessed.
+    Inverse of fetch_geo_temporal_matches: that one finds already-assigned
+    records to match *to*; this one finds unassigned peers to cluster *with*.
+    """
     record_timestamp = datetime.fromisoformat(record["record_timestamp"])
     start, end = time_window(record_timestamp, TIME_THRESHOLD_MINUTES)
     data = make_hasura_request(
-        query=GET_GEO_TEMPORAL_MATCHES,
+        query=GET_UNPROCESSED_GEO_TEMPORAL_MATCHES,  # new query, see below
         variables={
             "record_id": record["record_id"],
+            "record_table_name": record["record_table_name"],
             "geom": record["geom"],
             "start": start.isoformat(),
             "end": end.isoformat(),
