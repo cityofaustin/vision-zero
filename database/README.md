@@ -468,39 +468,57 @@ A single real-world crash is often seen by multiple public-safety systems — an
 
 _This diagram illustrates how a multi-agency crash response may be represented in our database_
 
-VZ incidents are populated by the `incident_linker.py` script in the [CAD incident import ETL](../etl/cad_incidents_import/README.md). The script processes one source record type at a time — CAD incidents, crash reports, EMS incidents, and AFD incidents — reading from the unified `vz_incident_records_view` and linking each record to a VZ incident (or creating a new one). Refer to the ETL readme for details on how `vz_incident` records are identified and created.
+VZ incidents are populated by the `incident_linker.py` script in the [VZ incidentsETL](../etl/vz_incidents/README.md). The script processes one source record type at a time — CAD incidents, crash reports, EMS incidents, and AFD incidents — reading from the unified `vz_incident_records_view` and linking each record to a VZ incident (or creating a new one). Refer to the ETL readme for details on how `vz_incident` records are identified and created.
 
 The queries below can be used to explore and visualize `vz_incidents`.
 
 #### Sample queries
 
-TODO—update these once more?
-
-- VZ incident stats (number of member CAD incidents, distance spread, response time spread)
+- VZ incident stats (number of member incidents, distance spread, response time spread)
 
 ```sql
 SELECT
-    v.id AS vz_incident_id,
-    COUNT(c.id) AS cad_incident_count,
-    ROUND(ST_Length (ST_LongestLine (ST_Collect (c.geom), ST_Collect (c.geom))::geography)::numeric, 1) AS spread_meters,
+    v.vz_incident_id,
+    COUNT(*) AS record_count,
+    COUNT(*) FILTER (
+        WHERE
+            record_table_name = 'crashes'
+    ) AS crashes_count,
+    COUNT(*) FILTER (
+        WHERE
+            record_table_name = 'cad_incidents'
+    ) AS cad_incidents_count,
+    COUNT(*) FILTER (
+        WHERE
+            record_table_name = 'ems__inicidents'
+    ) AS ems_inicidents_count,
+    COUNT(*) FILTER (
+        WHERE
+            record_table_name = 'afd__inicidents'
+    ) AS afd__incidents_count,
+    COUNT(*) FILTER (
+        WHERE
+            record_table_name = 'crashes'
+    ) AS crash_count,
+    ROUND(ST_Length (ST_LongestLine (ST_Collect (v.geom), ST_Collect (v.geom))::geography)::numeric, 1) AS spread_meters,
     ROUND(
         EXTRACT(
             EPOCH
             FROM
-                (MAX(c.response_date) - MIN(c.response_date))
+                (MAX(v.record_timestamp) - MIN(v.record_timestamp))
         ) / 60.0,
         1
     ) AS time_spread_minutes
 FROM
-    vz_incidents v
-    JOIN cad_incidents c ON c.vz_incident_id = v.id
+    vz_incident_records_view v
 WHERE
-    v.is_deleted = FALSE
+    v.vz_incident_id IS NOT NULL
 GROUP BY
-    v.id
+    v.vz_incident_id
 ORDER BY
-    v.id
-LIMIT 10000;
+    v.vz_incident_id
+LIMIT
+    1000;
 ```
 
 - Generates a geojson of VZ incidents with simple styles that can be visualized in mapping tools such as https://geojson.io.
@@ -521,8 +539,8 @@ SELECT
                 jsonb_build_object(
                     'vz_incident_id',
                     vz_incident_id,
-                    'record_type',
-                    record_type,
+                    'record_table_name',
+                    record_table_name,
                     'record_id',
                     record_id,
                     'record_incident_number',
