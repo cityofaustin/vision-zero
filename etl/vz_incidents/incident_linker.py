@@ -24,21 +24,6 @@ MAX_RECORD_TO_PROCESS = 5000
 
 UNPROCESSED_MATCH_STATUS = "unprocessed"
 
-CAD_INCIDENT_NUMBER_MATCH_BY_AGENCY = {
-    "apd": {
-        "incident_number_match_table_name": "crashes",
-        "incident_number_match_responding_agency": "apd",
-    },
-    "ems": {
-        "incident_number_match_table_name": "ems__incidents",
-        "incident_number_match_responding_agency": "ems",
-    },
-    "afd": {
-        "incident_number_match_table_name": "afd__incidents",
-        "incident_number_match_responding_agency": "afd",
-    },
-}
-
 RECORD_TYPES_LOOKUP = {
     "cad": {
         "table_name": "cad_incidents",
@@ -61,6 +46,21 @@ RECORD_TYPES_LOOKUP = {
         "incident_number_match_table_name": "cad_incidents",
         "incident_number_match_responding_agency": "apd",
         "update_mutation": SET_CRASH_VZ_INCIDENT_MATCH,
+    },
+}
+
+CAD_INCIDENT_NUMBER_MATCH_BY_AGENCY = {
+    "apd": {
+        "incident_number_match_table_name": "crashes",
+        "incident_number_match_responding_agency": "apd",
+    },
+    "ems": {
+        "incident_number_match_table_name": "ems__incidents",
+        "incident_number_match_responding_agency": "ems",
+    },
+    "afd": {
+        "incident_number_match_table_name": "afd__incidents",
+        "incident_number_match_responding_agency": "afd",
     },
 }
 
