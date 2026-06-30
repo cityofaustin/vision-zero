@@ -6,7 +6,7 @@ import MapPolygonFilter from "./MapPolygonFilter";
 import MapCompassSpinner from "./MapCompassSpinner";
 import { createMapDataUrl, useMapEventHandler } from "./helpers";
 import { mapInit, travisCountyBboxGeoJSON, mapNavBbox } from "./mapData";
-import { crashGeoJSONEndpointUrl } from "../../views/summary/queries/socrataQueries";
+import { crashGeoJSONEndpointUrl } from "../summary/queries/socrataQueries";
 import {
   baseSourceAndLayer,
   fatalitiesDataLayer,
@@ -30,7 +30,7 @@ import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 import MapGeocoder from "./Geocoder/Geocoder";
 import { arcgisToGeoJSON } from "@terraformer/arcgis";
 
-export const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
+export const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
 const Map = () => {
   // Set initial map config
@@ -73,9 +73,7 @@ const Map = () => {
         data.features &&
         data.features.reduce(
           (acc, feature) => {
-            crashCounts["injury"] += parseInt(
-              feature.properties.sus_serious_injry_cnt
-            );
+            crashCounts["injury"] += parseInt(feature.properties.sus_serious_injry_cnt);
             crashCounts["fatality"] += parseInt(feature.properties.death_cnt);
 
             if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {
@@ -169,11 +167,7 @@ const Map = () => {
   const _onSelectCrashPoint = (event) => {
     // Prevent events from map controls from selecting features below
     // or from creating City Council district pop-up on mobile polygon draw
-    if (
-      event.srcEvent &&
-      event.srcEvent.srcElement &&
-      event.srcEvent.srcElement.classList
-    ) {
+    if (event.srcEvent && event.srcEvent.srcElement && event.srcEvent.srcElement.classList) {
       if (
         event.srcEvent.srcElement.classList.value.includes("mapbox") ||
         event.srcEvent.target.localName === "circle"
@@ -193,10 +187,7 @@ const Map = () => {
       );
 
     let selectedFeatureLayer =
-      (!!selectedFeature &&
-        selectedFeature.layer &&
-        selectedFeature.layer.id) ||
-      null;
+      (!!selectedFeature && selectedFeature.layer && selectedFeature.layer.id) || null;
 
     // Supplement feature properties with lat/long to set popup coords if not in feature metadata
     if (!!selectedFeature && selectedFeatureLayer === "cityCouncil") {
@@ -236,22 +227,13 @@ const Map = () => {
     // Layer order depends on order set, so set fatalities last to keep on top
     const injuryLayer = (
       <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
-        <Layer
-          beforeId="place_label_city_small_s"
-          {...seriousInjuriesOutlineDataLayer}
-        />
-        <Layer
-          beforeId="place_label_city_small_s"
-          {...seriousInjuriesDataLayer}
-        />
+        <Layer beforeId="place_label_city_small_s" {...seriousInjuriesOutlineDataLayer} />
+        <Layer beforeId="place_label_city_small_s" {...seriousInjuriesDataLayer} />
       </Source>
     );
     const fatalityLayer = (
       <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
-        <Layer
-          beforeId="place_label_city_small_s"
-          {...fatalitiesOutlineDataLayer}
-        />
+        <Layer beforeId="place_label_city_small_s" {...fatalitiesOutlineDataLayer} />
         <Layer beforeId="place_label_city_small_s" {...fatalitiesDataLayer} />
       </Source>
     );
@@ -273,15 +255,9 @@ const Map = () => {
 
   const renderSelectedLayer = () => {
     const color = {
-      r:
-        selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].r *
-        255,
-      g:
-        selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].g *
-        255,
-      b:
-        selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].b *
-        255,
+      r: selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].r * 255,
+      g: selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].g * 255,
+      b: selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].b * 255,
       a: selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].a,
     };
 
@@ -306,9 +282,7 @@ const Map = () => {
     const map = mapRef.current.getMap();
 
     const setLayersVisibility = (idArray, visibilityString) => {
-      idArray.forEach((id) =>
-        map.setLayoutProperty(id, "visibility", visibilityString)
-      );
+      idArray.forEach((id) => map.setLayoutProperty(id, "visibility", visibilityString));
     };
 
     if (map.getLayer("fatalities") && map.getLayer("fatalitiesOutline")) {
@@ -317,10 +291,7 @@ const Map = () => {
       setLayersVisibility(fatalityIds, fatalVisibility);
     }
 
-    if (
-      map.getLayer("seriousInjuries") &&
-      map.getLayer("seriousInjuriesOutline")
-    ) {
+    if (map.getLayer("seriousInjuries") && map.getLayer("seriousInjuriesOutline")) {
       const injuryIds = ["seriousInjuries", "seriousInjuriesOutline"];
       const injuryVisibility = isMapTypeSet.injury ? "visible" : "none";
       setLayersVisibility(injuryIds, injuryVisibility);
@@ -353,9 +324,7 @@ const Map = () => {
         }
 
         // Add a visually hidden label to the attribution toggle button
-        const toggleBtn = container.querySelector(
-          ".mapboxgl-ctrl-attrib-button"
-        );
+        const toggleBtn = container.querySelector(".mapboxgl-ctrl-attrib-button");
         if (toggleBtn) {
           const hiddenLabel = document.createElement("span");
           hiddenLabel.textContent = "Toggle attribution";
@@ -410,10 +379,7 @@ const Map = () => {
         />
       )}
       {!!crashCounts && !!mapPolygon && !selectedFeature && (
-        <MapPolygonInfoBox
-          crashCounts={crashCounts}
-          isMapTypeSet={isMapTypeSet}
-        />
+        <MapPolygonInfoBox crashCounts={crashCounts} isMapTypeSet={isMapTypeSet} />
       )}
       <MapCompassSpinner isSpinning={isMapDataLoading} />
       <MapControls setViewport={setViewport} />

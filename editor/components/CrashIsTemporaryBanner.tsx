@@ -12,6 +12,7 @@ const allowedDeleteCrashRecordEditRoles = ["vz-admin", "editor"];
 interface CrashIsTemporaryBannerProps {
   crash: Crash;
   allowDelete?: boolean;
+  dismissible?: boolean;
 }
 
 /**
@@ -21,7 +22,8 @@ interface CrashIsTemporaryBannerProps {
  */
 export default function CrashIsTemporaryBanner({
   crash,
-  allowDelete = true,
+  allowDelete,
+  dismissible,
 }: CrashIsTemporaryBannerProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -30,6 +32,7 @@ export default function CrashIsTemporaryBanner({
       <Alert
         variant="warning"
         className="d-flex justify-content-between align-items-center"
+        dismissible={dismissible}
       >
         <span className="d-flex align-items-center">
           <FaTriangleExclamation className="me-2 d-none d-lg-inline" />

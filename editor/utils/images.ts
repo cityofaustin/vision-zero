@@ -76,7 +76,11 @@ export function useImage({
         setImageUrl(data.url);
         setIsLoading(false);
       } catch (err) {
-        console.error(`Error fetching ${recordType} image:`, err);
+        if (`${err}`.includes("404")) {
+          console.warn(err);
+        } else {
+          console.error(`Error fetching ${recordType} image:`, err);
+        }
         setError(err instanceof Error ? err : new Error("Unknown error"));
         setImageUrl(null);
         setIsLoading(false);

@@ -92,7 +92,7 @@ export default function CrashNarrativeEditableCard({
             </AlignedLabel>
           </Button>
         </Card.Header>
-        <Card.Body className="crash-header-card-body">
+        <Card.Body>
           <Tab.Content>
             <Tab.Pane eventKey="narrative">
               <div style={{ whiteSpace: "pre-wrap" }}>

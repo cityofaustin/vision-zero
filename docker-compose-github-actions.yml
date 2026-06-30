@@ -1,6 +1,6 @@
 services:
   graphql-engine:
-    image: hasura/graphql-engine:v2.48.16
+    image: hasura/graphql-engine:v2.49.1
     volumes:
       - ./viewer/graphql-engine-metadata:/metadata
     container_name: visionzero-graphql-engine

@@ -79,16 +79,16 @@ export default function FatalCrashDetailsPage({
     <UserEventsLogger eventName="fatality_details_view">
       <Row>
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <span className="fs-3 fw-bold text-uppercase">
+          <span className="fs-2 fw-bold text-uppercase">
             {data[0].address_display}
           </span>
           <span className="text-nowrap bg-light-use-theme py-2 rounded-3 px-3 border">
-            <span className="fs-5 fw-bold me-1">Year</span>
-            <span className="fs-5 me-3">
+            <span className="fs-4 fw-bold me-1">Year</span>
+            <span className="fs-4 me-3">
               {formatYear(data[0].crash_timestamp)}
             </span>
-            <span className="fs-5 fw-bold me-1">Fatal Crash</span>
-            <span className="fs-5">
+            <span className="fs-4 fw-bold me-1">Fatal Crash</span>
+            <span className="fs-4">
               #{data[0].law_enforcement_ytd_fatality_num}
             </span>
           </span>
@@ -97,11 +97,14 @@ export default function FatalCrashDetailsPage({
       {
         // show alert if crash is a temp record, hide delete button on fatalities pages
         crash.is_temp_record && (
-          <CrashIsTemporaryBanner crash={crash} allowDelete={false} />
+          <CrashIsTemporaryBanner
+            crash={crash}
+            dismissible
+          />
         )
       }
-      <Row>
-        <Col className="mb-3" sm={12} md={6}>
+      <Row className="fatality-details-row">
+        <Col className="mb-3" sm={12} md={5}>
           <Card className="h-100">
             <Card.Body>
               <Table>
@@ -156,34 +159,40 @@ export default function FatalCrashDetailsPage({
             </Card.Body>
           </Card>
         </Col>
-        <Col className="mb-3" sm={12} md={6}>
+        <Col className="mb-3" sm={12} md={7}>
           <FatalityUnitsCards crash={crash} onSaveCallback={onSaveCallback} />
         </Col>
       </Row>
-      <Row>
-        <Col className="mb-3" sm={12} md={6} lg={4}>
+      <Row className="fatality-details-row">
+        <Col className="mb-3" sm={12} md={6} style={{ minHeight: "625px" }}>
           <CrashDiagramCard crash={crash} crashRefetch={refetch} />
         </Col>
-        <Col className="mb-3" sm={12} md={6} lg={4}>
-          <CrashNarrativeEditableCard
-            crash={crash}
-            onSaveCallback={onSaveCallback}
-          />
-        </Col>
-        <Col className="mb-3">
-          <DataCard<Crash>
-            record={crash}
-            isValidating={false}
-            title="Details"
-            columns={otherCardColumns}
-            mutation={UPDATE_CRASH}
-            onSaveCallback={onSaveCallback}
-            shouldShowColumnVisibilityPicker={true}
-            localStorageKey="crashPageOther"
-          />
+        <Col className="mb-3 d-flex flex-column" sm={12} md={6}>
+          <Row className="flex-grow-1">
+            <Col className="mb-3">
+              <CrashNarrativeEditableCard
+                crash={crash}
+                onSaveCallback={onSaveCallback}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <DataCard<Crash>
+                record={crash}
+                isValidating={false}
+                title="Details"
+                columns={otherCardColumns}
+                mutation={UPDATE_CRASH}
+                onSaveCallback={onSaveCallback}
+                shouldShowColumnVisibilityPicker={true}
+                localStorageKey="crashPageOther"
+              />
+            </Col>
+          </Row>
         </Col>
       </Row>
-      <Row>
+      <Row className="fatality-details-row">
         <Col className="mb-3" sm={12} md={12} lg={6}>
           <CrashRecommendationCard
             crash_pk={crash.id}

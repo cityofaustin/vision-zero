@@ -34,6 +34,52 @@ Rebuild the stack's images based on the Dockerfiles found in the repository. The
 
 Start and stop the postgres database
 
+Postgres tunables used by the local container are configurable via `.env`:
+
+- `PG_MAINTENANCE_WORK_MEM`
+- `PG_MAX_WAL_SIZE`
+- `PG_SHARED_BUFFERS`
+- `PG_WORK_MEM`
+- `PG_EFFECTIVE_CACHE_SIZE`
+- `PG_CHECKPOINT_COMPLETION_TARGET`
+- `PG_RANDOM_PAGE_COST`
+- `PG_EFFECTIVE_IO_CONCURRENCY`
+- `PG_MAX_CONNECTIONS`
+- `PG_DEFAULT_STATISTICS_TARGET`
+- `PG_JIT`
+- `PG_WAL_COMPRESSION`
+- `PG_SHM_SIZE` (Docker size format, e.g. `8g`; should be >= `PG_SHARED_BUFFERS`)
+
+After updating one or more of these values, restart the database container for them to take effect:
+
+```shell
+./vision-zero db-down
+./vision-zero db-up
+```
+
+You can verify the active values with:
+
+```shell
+docker compose exec postgis sh -lc 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "
+SHOW maintenance_work_mem;
+SHOW max_wal_size;
+SHOW shared_buffers;
+SHOW work_mem;
+SHOW effective_cache_size;
+SHOW checkpoint_completion_target;
+SHOW random_page_cost;
+SHOW effective_io_concurrency;
+SHOW max_connections;
+SHOW default_statistics_target;
+SHOW jit;
+SHOW wal_compression;
+"'
+```
+
+This runs `psql` through a shell in the `postgis` container so `POSTGRES_USER` and `POSTGRES_DB` are read from container environment variables (instead of host shell variables, which are often unset).
+
+Alternatively, you can connect with `./vision-zero psql` and run the same `SHOW ...;` statements interactively.
+
 #### `vision-zero graphql-engine-up` & `vision-zero graphql-engine-down`
 
 Start and stop the Hasura graphql-engine software as well as the database

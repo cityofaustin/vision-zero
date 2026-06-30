@@ -1,6 +1,6 @@
 {
   "name": "viewer",
-  "version": "2.32.0",
+  "version": "2.33.0",
   "homepage": "/viewer",
   "description": "Vision Zero Viewer",
   "author": "Austin Transportation & Public Works - Data & Technology Services",
@@ -21,19 +21,19 @@
     "@tippyjs/react": "^4.2.6",
     "@turf/difference": "6.0.1",
     "aphrodite": "^2.4.0",
-    "axios": "^1.15.2",
+    "axios": "^1.17.0",
     "bootstrap": "^4.6.2",
     "chart.js": "^2.9.4",
     "chartjs-plugin-stacked100": "^0.7.1",
     "chroma-js": "2.4.2",
     "date-fns": "^2.30.0",
+    "events": "^3.3.0",
     "events-polyfill": "^2.1.2",
     "hookrouter": "^1.2.5",
     "lodash.clonedeep": "^4.5.0",
     "moment": "^2.30.1",
     "patch-package": "^6.5.1",
     "react": "^16.14.0",
-    "react-app-polyfill": "^1.0.6",
     "react-chartjs-2": "^2.11.2",
     "react-dates": "^21.8.0",
     "react-dom": "^16.14.0",
@@ -42,7 +42,6 @@
     "react-map-gl": "^5.3.21",
     "react-map-gl-draw": "^0.16.1",
     "react-map-gl-geocoder": "^2.2.0",
-    "react-scripts": "5.0.1",
     "react-use": "^14.3.0",
     "react-with-styles-interface-aphrodite": "^6.0.1",
     "reactstrap": "^8.10.1",
@@ -56,46 +55,38 @@
     "react-dev-utils/chalk/ansi-styles": "https://github.com/codercodingthecode/ansi-styles"
   },
   "scripts": {
-    "start": "REACT_APP_UNDER_MAINTENANCE=false REACT_APP_VZV_ENVIRONMENT=STAGING react-scripts start",
-    "build": "CI= react-scripts build && cp _redirects build && cp -r build viewer && mv viewer build",
-    "build:staging": "REACT_APP_VZV_ENVIRONMENT=STAGING npm run build",
-    "build:production": "REACT_APP_VZV_ENVIRONMENT=PRODUCTION npm run build",
-    "build:preview": "REACT_APP_VZV_ENVIRONMENT=PREVIEW npm run build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "postinstall": "patch-package"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "dev": "vite",
+    "build": "vite build",
+    "build:staging": "vite build --mode staging",
+    "build:production": "vite build --mode production",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --max-warnings=0",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --write src",
+    "format:check": "prettier --check src"
   },
   "bugs": {
     "url": "https://github.com/cityofaustin/vision-zero/issues"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all",
-      "ie 11"
-    ],
-    "preview": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all",
-      "ie 11"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version",
-      "ie 11"
-    ]
   },
   "engines": {
     "node": ">=8.10",
     "npm": ">=6"
   },
   "devDependencies": {
-    "react-axe": "^3.5.4"
+    "@eslint/js": "^9.0.0",
+    "@vitejs/plugin-react": "^6.0.2",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.3",
+    "react-axe": "^3.5.4",
+    "typescript-eslint": "^8.60.1",
+    "vite": "^8.0.16",
+    "vite-plugin-svgr": "^5.2.0"
   }
 }
