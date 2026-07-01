@@ -37,7 +37,6 @@ if (import.meta.env.MODE !== "production") {
       <StoreProvider>
         <App />
       </StoreProvider>,
-      document.getElementById("root"),
     );
   });
 } else {
@@ -45,7 +44,6 @@ if (import.meta.env.MODE !== "production") {
     <StoreProvider>
       <App />
     </StoreProvider>,
-    document.getElementById("root"),
   );
 }
 
