@@ -1,7 +1,7 @@
 import "events-polyfill";
 
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { setBasepath } from "hookrouter";
 import { basepath } from "./routes/routes";
 import "./index.css";
@@ -28,10 +28,12 @@ SVGElement.prototype.contains = function contains(node) {
   return false;
 };
 
+const root = ReactDOM.createRoot(document.getElementById("root"));
+
 if (import.meta.env.MODE !== "production") {
   import("react-axe").then((axe) => {
     axe.default(React, ReactDOM, 1000);
-    ReactDOM.render(
+    root.render(
       <StoreProvider>
         <App />
       </StoreProvider>,
@@ -39,7 +41,7 @@ if (import.meta.env.MODE !== "production") {
     );
   });
 } else {
-  ReactDOM.render(
+  root.render(
     <StoreProvider>
       <App />
     </StoreProvider>,
