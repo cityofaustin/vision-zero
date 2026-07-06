@@ -1,0 +1,2 @@
+ALTER TABLE cad_incidents
+DROP COLUMN upstream_record_update_timestamp;
