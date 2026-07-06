@@ -62,7 +62,7 @@ def make_fields_timezone_aware(
     data, date_field_names, date_format="%Y-%m-%d %H:%M:%S", tz="America/Chicago"
 ):
     """Update a field to be timezone aware by replacing the input value with a ISO string with a
-    tz offset
+    tz offset. The CAD data we receive are in America/Chicago time.
 
     Args:
         data (list): list of incident dicts
