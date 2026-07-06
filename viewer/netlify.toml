@@ -1,6 +1,13 @@
-# Default used by main/deploy previews
 [build]
   publish = "build"
+  command = "echo 'Environment not recognized'"
+
+# Staging specific build command
+[context.main]
+  command = "npm run lint && npm run build:staging"
+
+# Deploy previews use staging environment
+[context.deploy-preview]
   command = "npm run lint && npm run build:staging"
 
 # Production specific build command
