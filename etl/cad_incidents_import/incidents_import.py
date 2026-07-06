@@ -137,9 +137,6 @@ def prune_and_validate_columns(data, required_columns):
     return pruned
 
 
-from datetime import datetime
-
-
 def dedupe_records_by_timestamp(
     data,
     key_field="master_incident_id",
