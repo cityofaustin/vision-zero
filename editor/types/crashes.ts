@@ -76,6 +76,7 @@ export type Crash = {
   updated_at: string | null;
   updated_by: string | null;
   wthr_cond_id: number | null;
+  wthr_cond: LookupTableOption | null;
   change_logs: ChangeLogEntry[] | null;
   units: Unit[] | null;
   charges_cris: Charge[] | null;

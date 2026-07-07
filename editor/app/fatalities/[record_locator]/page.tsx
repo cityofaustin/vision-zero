@@ -27,6 +27,7 @@ const otherCardColumns = [
   crashesColumns.case_id,
   crashesColumns.law_enforcement_ytd_fatality_num,
   crashesColumns.light_cond,
+  crashesColumns.wthr_cond,
   crashesColumns.crash_speed_limit,
   crashesColumns.obj_struck,
 ];

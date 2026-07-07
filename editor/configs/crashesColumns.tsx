@@ -327,6 +327,19 @@ export const crashesColumns = {
     editable: true,
     inputType: "number",
   },
+  wthr_cond: {
+    path: "wthr_cond.label",
+    label: "Weather condition",
+    editable: false,
+    inputType: "select",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "wthr_cond",
+      idColumnName: "id",
+      labelColumnName: "label",
+      foreignKey: "wthr_cond_id",
+    },
+  },
   agency: {
     path: "agency.label",
     label: "Investigating agency",
