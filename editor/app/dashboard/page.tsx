@@ -31,12 +31,6 @@ const dashboardLinks: DashboardLinkCardProps[] = [
     href: "https://app.powerbigov.us/links/JznhTDu8kc?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare",
     icon: FaChartPie,
   },
-  {
-    title: "Access Management Crashes",
-    description: "Summary of crashes for individual locations",
-    href: "https://austin.maps.arcgis.com/apps/instant/interactivelegend/index.html?appid=ea84226e6e5a4ecf998082b73b8c6cca",
-    icon: FaMap,
-  },
 ];
 
 export default function Dashboard() {
