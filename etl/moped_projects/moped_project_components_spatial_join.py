@@ -67,7 +67,14 @@ def buffer_geometries(row):
     if row.geometry.geom_type == "Point" or row.geometry.geom_type == "MultiPoint":
         return row.geometry.buffer(BUFFER_DISTANCE_POINTS)
     else:
-        return row.geometry.buffer(BUFFER_DISTANCE_LINES)
+        # Moped line geometry is always stored in a MultiLineString, even if it just has one Line feature.
+        # If we have one of these, use the flat caps for buffering
+        # see https://github.com/cityofaustin/atd-data-tech/issues/28126
+        if row.geometry.geom_type == "MultiLineString" and len(row.geometry.geoms) == 1:
+            return row.geometry.geoms[0].buffer(BUFFER_DISTANCE_LINES, cap_style="flat")
+        if row.geometry.geom_type in ("MultiLineString"):
+            return row.geometry.buffer(BUFFER_DISTANCE_LINES, cap_style="round")
+    raise ValueError(f"Unexpected geometry type: {row.geometry.geom_type}")
 
 
 def main():
