@@ -6,7 +6,7 @@ import { createMapDataUrl } from "../map/helpers";
 import { crashEndpointUrl } from "../summary/queries/socrataQueries";
 
 import { Container, Button } from "reactstrap";
-import { HorizontalBar } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
 export const SideMapTimeOfDayChart = ({ filters }) => {
@@ -152,12 +152,13 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   return (
     <Container className="px-0 mt-3">
       {!!timeWindowData && !!timeWindowPercentages && (
-        <HorizontalBar
+        <Bar
           ref={(ref) => (chartRef.current = ref)}
           data={data}
           height={250}
           onElementsClick={handleBarClick}
           options={{
+            indexAxis: "y",
             onHover: handleHover,
             legend: {
               display: false,

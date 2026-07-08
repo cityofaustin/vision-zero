@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useReducer, useMemo } from "react";
 import axios from "axios";
-import { HorizontalBar } from "react-chartjs-2";
-import "chartjs-plugin-stacked100";
+// import { Bar } from "react-chartjs-2";
+// import "chartjs-plugin-stacked100";
 import ChartTypeSelector from "./Components/ChartTypeSelector";
 import { Container, Row, Col } from "reactstrap";
 import { format } from "date-fns";
@@ -320,12 +320,13 @@ const PeopleByDemographics = () => {
           />
           <Row>
             <Col>
-              <HorizontalBar
+              {/* <Bar
                 redraw
                 data={chartData}
                 height={null}
                 width={null}
                 options={{
+                  indexAxis: "y",
                   responsive: true,
                   aspectRatio: 1,
                   maintainAspectRatio: false,
@@ -347,7 +348,7 @@ const PeopleByDemographics = () => {
                     },
                   },
                 }}
-              />
+              /> */}
             </Col>
           </Row>
         </div>

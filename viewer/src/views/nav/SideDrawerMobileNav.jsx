@@ -1,5 +1,5 @@
 import React from "react";
-import { A, usePath } from "hookrouter";
+import { Link, useLocation } from "react-router-dom";
 import { Button, Nav, NavItem, NavLink } from "reactstrap";
 import { navConfig, trackPageEvent } from "../../constants/nav";
 import { responsive } from "../../constants/responsive";
@@ -29,14 +29,15 @@ const StyledMobileNav = styled.div`
 `;
 
 const SideDrawerMobileNav = () => {
-  const currentPath = usePath();
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   return (
     <StyledMobileNav>
       <Nav className="mr-auto mb-2" navbar>
         {navConfig.map((config, i) => (
           <NavItem key={i}>
-            <NavLink tag={A} href={config.url}>
+            <NavLink tag={Link} to={config.url}>
               <Button
                 className={`nav-button ${
                   currentPath === config.url ? "active" : "inactive"

@@ -1,10 +1,10 @@
 import React from "react";
 import { StoreContext } from "src/constants/context";
-import { usePath } from "hookrouter";
+import { useLocation } from "react-router-dom";
+import { makeStyles, useTheme } from "@mui/styles";
 
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Drawer from "@material-ui/core/Drawer";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import Drawer from "@mui/material/Drawer";
 import styled from "styled-components";
 
 import SideDrawerContent from "./SideDrawerContent";
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => {
     },
     content: {
       flexGrow: 1,
-      padding: theme.spacing(3),
+      // padding: theme.spacing(3),
     },
   };
 });
@@ -74,7 +74,8 @@ const StyledDrawer = styled.div`
 `;
 
 const SideDrawer = () => {
-  const currentPath = usePath();
+  const location = useLocation();
+  const currentPath = location.pathname;
   const classes = useStyles();
   const theme = useTheme();
 
@@ -94,7 +95,7 @@ const SideDrawer = () => {
           <Drawer
             id="temporary-drawer"
             variant="temporary"
-            anchor={theme.direction === "rtl" ? "right" : "left"}
+            // anchor={theme.direction === "rtl" ? "right" : "left"}
             open={isOpen}
             onClose={() => setIsOpen(!isOpen)}
             classes={{
