@@ -6,8 +6,24 @@ import Map from "../views/map/Map";
 // Set basepath for VZV url
 export const basepath = "/viewer";
 
-export const routes = {
-  "/": () => <Summary />,
-  "/map": () => <Map />,
-  "/measures": () => <SummaryView />,
-};
+// Route configuration for React Router v6
+export const routeConfig = [
+  {
+    path: "/",
+    element: <Summary />,
+  },
+  {
+    path: "/map",
+    element: <Map />,
+  },
+  {
+    path: "/measures",
+    element: <SummaryView />,
+  },
+];
+
+// export const routes = {
+//   "/": () => <Summary />,
+//   "/map": () => <Map />,
+//   "/measures": () => <SummaryView />,
+// };

@@ -1,6 +1,6 @@
 import React from "react";
 import { StoreContext } from "src/constants/context";
-import { A, usePath } from "hookrouter";
+import { Link, useLocation } from "react-router-dom";
 
 import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
@@ -11,7 +11,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
-  const currentPath = usePath();
+  const location = useLocation();
+  const currentPath = location.pathname;
   const isSummaryView = currentPath === "/";
 
   const StyledNavbar = styled.div`
@@ -141,8 +142,8 @@ const Header = () => {
                   currentPath !== config.url && (
                     <NavItem key={i}>
                       <NavLink
-                        tag={A}
-                        href={config.url}
+                        tag={Link}
+                        to={config.url}
                         className="pr-0 pl-2 mr-0 ml-2 "
                         style={{ color: "#fff" }}
                       >

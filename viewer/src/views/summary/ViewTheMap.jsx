@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Container, Row, Col } from "reactstrap";
-import { A } from "hookrouter";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMap } from "@fortawesome/free-solid-svg-icons";
 
@@ -95,26 +95,30 @@ const ViewTheMap = () => {
   return (
     <Container className="m-0 p-0">
       <StyledViewTheMap>
-        <A href="/map" className="text-dark text-decoration-none">
+        <Link to="/map" className="text-dark text-decoration-none">
           <Row>
             <Col>
-                <div className="img-wrapper">
-                  <div className={"map-image"}></div>
-                </div>
+              <div className="img-wrapper">
+                <div className={"map-image"}></div>
+              </div>
             </Col>
           </Row>
           <Row className={"justify-content-center map-icon-row"}>
             <div className={"map-icon-circle"}>
-              <FontAwesomeIcon size="3x" icon={faMap} className={"map-fa-icon"} />
+              <FontAwesomeIcon
+                size="3x"
+                icon={faMap}
+                className={"map-fa-icon"}
+              />
             </div>
           </Row>
           <Row className="mb-4 justify-content-center">
-              <h2 className="text-center card-link">
-                View crash data <br />
-                on interactive map
-              </h2>
+            <h2 className="text-center card-link">
+              View crash data <br />
+              on interactive map
+            </h2>
           </Row>
-        </A>
+        </Link>
       </StyledViewTheMap>
     </Container>
   );

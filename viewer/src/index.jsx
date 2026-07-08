@@ -1,17 +1,16 @@
+import "./utils/chartjs-setup.js";
 import "events-polyfill";
 
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { setBasepath } from "hookrouter";
+import { BrowserRouter } from "react-router-dom";
+// import "./utils/chartjs-setup";
 import { basepath } from "./routes/routes";
 import "./index.css";
 import App from "./App";
 import StoreProvider from "./utils/store";
 import * as serviceWorker from "./serviceWorker";
 import "bootstrap/dist/css/bootstrap.css";
-
-// Account for /viewer/ basepath in all routing
-setBasepath(basepath);
 
 // IE11 SVG Polyfill
 SVGElement.prototype.contains = function contains(node) {
@@ -35,14 +34,18 @@ if (import.meta.env.MODE !== "production") {
     axe.default(React, ReactDOM, 1000);
     root.render(
       <StoreProvider>
-        <App />
+        <BrowserRouter basename={basepath}>
+          <App />
+        </BrowserRouter>
       </StoreProvider>,
     );
   });
 } else {
   root.render(
     <StoreProvider>
-      <App />
+      <BrowserRouter basename={basepath}>
+        <App />
+      </BrowserRouter>
     </StoreProvider>,
   );
 }

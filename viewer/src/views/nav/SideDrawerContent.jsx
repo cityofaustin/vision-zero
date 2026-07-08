@@ -1,5 +1,5 @@
 import React from "react";
-import { usePath } from "hookrouter";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import SideMapControl from "./SideMapControl";
 import SideDrawerMobileNav from "./SideDrawerMobileNav";
@@ -30,7 +30,8 @@ const StyledDrawerHeader = styled.div`
 `;
 
 const SideDrawerContent = ({ type }) => {
-  const currentPath = usePath();
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   return (
     <div className="side-menu">

@@ -122,13 +122,13 @@ const CrashesByMode = () => {
     }
   }, [crashType]);
 
-  useEffect(() => {
-    if (chartRef.current) {
-      if (chartData) {
-        setChartLegend(chartRef.current.chartInstance.generateLegend());
-      }
-    }
-  }, [chartData, legendColors]);
+  // useEffect(() => {
+  //   if (chartRef.current) {
+  //     if (chartData) {
+  //       setChartLegend(chartRef.current.generateLegend());
+  //     }
+  //   }
+  // }, [chartData, legendColors]);
 
   const createChartLabels = () => yearsArray.map((year) => `${year}`);
 
@@ -253,7 +253,7 @@ const CrashesByMode = () => {
             {
               <Container>
                 <Bar
-                  ref={(ref) => (chartRef.current = ref)}
+                  ref={chartRef}
                   data={data}
                   height={null}
                   width={null}
@@ -306,8 +306,7 @@ const CrashesByMode = () => {
                                   const legendItem =
                                     chart.legend.legendItems[i];
                                   const index = legendItem.datasetIndex;
-                                  const ci =
-                                    chartRef.current.chartInstance.chart;
+                                  const ci = chartRef.current.chart;
                                   const meta = ci.getDatasetMeta(index);
 
                                   // See controller.isDatasetVisible comment

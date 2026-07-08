@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import ReactGA from "react-ga";
-import { useRoutes, usePath } from "hookrouter";
+import { useLocation } from "react-router-dom";
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartBar, faMap } from "@fortawesome/free-solid-svg-icons";
@@ -23,16 +23,17 @@ export const navConfig = [
 // Initialize analytics
 export const Tracker = ReactGA.initialize("UA-85076727-3");
 
-// Custom hook that returns hookrouter route and tracks route change with GA
-export function useTrackedRoutes(routes) {
-  const routeResult = useRoutes(routes);
-  const currentPath = usePath();
+// Custom hook that tracks route changes with GA
+export function useTrackedRoutes() {
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   useEffect(() => {
     ReactGA.pageview(currentPath);
-  }, [routeResult, currentPath]);
+  }, [currentPath]);
 
-  return routeResult;
+  // This hook just tracks pageviews
+  return null;
 }
 
 // Events to track with GA
