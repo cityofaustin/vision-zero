@@ -38,6 +38,11 @@ export const GET_CRASH = gql`
         id
         label
       }
+      surf_cond_id
+      surf_cond {
+        id
+        label
+      }
       obj_struck {
         id
         label

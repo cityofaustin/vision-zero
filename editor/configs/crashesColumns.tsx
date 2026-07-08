@@ -340,6 +340,19 @@ export const crashesColumns = {
       foreignKey: "wthr_cond_id",
     },
   },
+    surf_cond: {
+    path: "surf_cond.label",
+    label: "Surface condition",
+    editable: false,
+    inputType: "select",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "surf_cond",
+      idColumnName: "id",
+      labelColumnName: "label",
+      foreignKey: "surf_cond_id",
+    },
+  },
   agency: {
     path: "agency.label",
     label: "Investigating agency",
