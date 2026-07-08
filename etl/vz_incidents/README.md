@@ -21,7 +21,7 @@ This is the most reliable signal, since a shared incident number is a near-certa
 
 3. If no existing proximal incidents are found, the script uses a **recursive breadth-first search** to find geo-temporal matches for _unprocessed_ incidents. Starting from an unprocessed anchor incident, the script flood-fills outward, pulling in any neighboring incidents within 500 meters and 60 minutes of each group member. This process repeats for each newly added member until no new neighbors are found. Once a group is finalized, a parent `vz_incidents` record is created and all CAD incidents in the group are linked to it.
 
-   The geo-temporal matching alogrithm is illustrated below, in which CAD incidents A, B, C are grouped into a single incident based on their spatial proximity. Although A and C are not within the search radius of each other, the recursive matching of A → B → C leads to formation of the three-member group.
+   The geo-temporal matching algorithm is illustrated below, in which CAD incidents A, B, C are grouped into a single incident based on their spatial proximity. Although A and C are not within the search radius of each other, the recursive matching of A → B → C leads to formation of the three-member group.
 
 ![diagram](docs/cad_incidents_chained.jpg)
 

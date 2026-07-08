@@ -576,7 +576,7 @@ FROM
 
 ### Geospatial layers
 
-The database holds geospatial reference layers — jurisdicitonal boundaries, council districts, etc — which are referenced by crashes and various other records. These layers are not actively maintained, but can be easily refreshed following the update process [described below](#updating-an-existing-geospatial-layer).
+The database holds geospatial reference layers — jurisdicitional boundaries, council districts, etc — which are referenced by crashes and various other records. These layers are not actively maintained, but can be easily refreshed following the update process [described below](#updating-an-existing-geospatial-layer).
 
 | Table                   | Geometry type  | description                                                                                                      | owner/source                                                         |
 | ----------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
