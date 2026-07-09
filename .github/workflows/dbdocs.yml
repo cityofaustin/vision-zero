@@ -20,7 +20,7 @@ jobs:
 
       # Checkout our code
       - name: "Checkout Code"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Install the graphql-engine CLI
       - name: "Install the graphql-engine CLI"

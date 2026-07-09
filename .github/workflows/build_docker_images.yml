@@ -30,7 +30,7 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: "Paths filter"
         uses: dorny/paths-filter@v4
