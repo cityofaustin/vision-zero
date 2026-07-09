@@ -23,7 +23,7 @@ export default function DashboardLinkCard({
     <a href={href} className="d-block h-100" style={{ textDecoration: "none" }}>
       <Card className="my-2 h-100 hover-shadow">
         <CardBody className="d-flex align-items-center">
-          <div className="d-flex align-items-center me-4 py-3 px-3 bg-primary rounded fs-1 text-light fw-bold text-white border border-primary-subtle">
+          <div className="d-flex align-items-center me-4 py-3 px-3 bg-light-subtle rounded fs-1 fw-bold text-primary border border-primary-subtle">
             <Icon />
           </div>
           <div className="d-flex flex-column">
