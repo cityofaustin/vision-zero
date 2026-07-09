@@ -58,7 +58,7 @@ export default function Dashboard() {
       <Row>
         <Col>
           <iframe
-            src={`https://visionzero.austin.gov/viewer/measures`}
+            src={`${VZV_ENDPOINT}/measures`}
             title="Vision Zero Viewer Stats"
             style={{
               width: "100%",
