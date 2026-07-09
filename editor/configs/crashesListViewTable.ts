@@ -66,6 +66,20 @@ const crashesListViewfilterCards: FilterGroup[] = [
           },
         ],
       },
+      {
+        id: "suspected_minor_injury_crashes",
+        label: "Suspected minor injuries",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "suspected_minor_injury_crashes",
+            column: "nonincap_injry_count",
+            operator: "_gt",
+            value: 0,
+          },
+        ],
+      },
     ],
   },
   {
@@ -265,7 +279,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
 ];
 
 export const crashesListViewQueryConfig: QueryConfig = {
-  _version: 1,
+  _version: 2,
   exportable: true,
   exportFilename: "crashes",
   tableName: "crashes_list_view",
