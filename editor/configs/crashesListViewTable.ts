@@ -66,6 +66,20 @@ const crashesListViewfilterCards: FilterGroup[] = [
           },
         ],
       },
+      {
+        id: "suspected_minor_injury_crashes",
+        label: "Suspected minor injuries",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "suspected_minor_injury_crashes",
+            column: "nonincap_injry_count",
+            operator: "_gt",
+            value: 0,
+          },
+        ],
+      },
     ],
   },
   {
