@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { StoreContext } from "../../utils/store";
+import { StoreContext } from "src/constants/context";
 import axios from "axios";
 import { format } from "date-fns";
 import { createMapDataUrl } from "../map/helpers";
@@ -16,8 +16,6 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   const inactiveBarColor = colors.white;
 
   const [chartData, setChartData] = useState(null);
-  const [timeWindowData, setTimeWindowData] = useState([]);
-  const [timeWindowPercentages, setTimeWindowPercentages] = useState([]);
   const [barColors, setBarColors] = useState(defaultBarColor);
 
   const {
@@ -33,64 +31,68 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
       crashEndpointUrl,
       mapFilters,
       dateRange,
-      mapPolygon
+      mapPolygon,
     );
-    !!apiUrl &&
+    if (apiUrl) {
       axios.get(apiUrl).then((res) => {
         setChartData(res.data);
       });
+    }
   }, [dateRange, mapPolygon, mapFilters]);
 
-  useMemo(() => {
+  // Compute time window data from crash data
+  // Returns array of crash counts per time window
+  const timeWindowData = useMemo(() => {
     const crashes = chartData;
-    // When chartData is set, accumulate time window data
-    if (!!crashes) {
-      const crashTimeWindowAccumulatorArray = Object.keys(filters).map(
-        (filter) => 0
-      );
-      const crashTimeWindows = Object.values(filters).map((filter) => filter);
-      const crashTimeTotals = crashes.reduce((accumulator, crash) => {
-        crashTimeWindows.forEach((timeWindow, i) => {
-          const crashDate = crash.crash_timestamp_ct;
-          const crashHour = parseInt(format(new Date(crashDate), "H"));
-          crashHour >= timeWindow[0] &&
-            crashHour <= timeWindow[1] &&
-            accumulator[i]++;
-        });
-        return accumulator;
-      }, crashTimeWindowAccumulatorArray);
-
-      setTimeWindowData(crashTimeTotals);
+    if (!crashes || crashes.length === 0) {
+      return [];
     }
+
+    const crashTimeWindowAccumulatorArray = new Array(
+      Object.keys(filters).length,
+    ).fill(0);
+    const crashTimeWindows = Object.values(filters).map((filter) => filter);
+
+    return crashes.reduce((accumulator, crash) => {
+      crashTimeWindows.forEach((timeWindow, i) => {
+        const crashDate = crash.crash_timestamp_ct;
+        const crashHour = parseInt(format(new Date(crashDate), "H"));
+        if (crashHour >= timeWindow[0] && crashHour <= timeWindow[1]) {
+          accumulator[i]++;
+        }
+      });
+      return accumulator;
+    }, crashTimeWindowAccumulatorArray);
   }, [chartData, filters]);
 
-  useMemo(() => {
-    // When timeWindowData is set, calc percentages
-    if (!!timeWindowData) {
-      const timeWindowPercentages = timeWindowData.map((timeWindow) => {
-        const timeWindowsTotal = timeWindowData.reduce(
-          (accumulator, timeWindowTotal) => {
-            return (accumulator += timeWindowTotal);
-          },
-          0
-        );
-        const percentString = ((timeWindow / timeWindowsTotal) * 100).toFixed(
-          0
-        );
-        return parseInt(percentString);
-      });
+  // Compute percentage distribution from time window counts
+  // Returns array of percentages for each time window
 
-      setTimeWindowPercentages(timeWindowPercentages);
+  const timeWindowPercentages = useMemo(() => {
+    if (!timeWindowData || timeWindowData.length === 0) {
+      return [];
     }
-  }, [timeWindowData]);
 
+    const timeWindowsTotal = timeWindowData.reduce(
+      (accumulator, timeWindowTotal) => accumulator + timeWindowTotal,
+      0,
+    );
+
+    if (timeWindowsTotal === 0) {
+      return timeWindowData.map(() => 0);
+    }
+
+    return timeWindowData.map((timeWindow) => {
+      return parseInt(((timeWindow / timeWindowsTotal) * 100).toFixed(0));
+    });
+  }, [timeWindowData]);
   const handleBarClick = (elems) => {
     // Store bar label, if click is within a bar
     const timeWindow = elems.length > 0 ? elems[0]._model.label : null;
     const index = elems.length > 0 ? elems[0]._index : null;
 
     // If valid click, set mapTimeWindow state
-    if (!!timeWindow) {
+    if (timeWindow) {
       const timeWindowArray = filters[timeWindow];
       const timeWindowStart = timeWindowArray[0];
       const timeWindowEnd = timeWindowArray[1];
@@ -101,13 +103,13 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     // Style unselected bars as inactive
     if (index !== null) {
       const newBarColors = Object.keys(filters).map((filter, i) =>
-        i === index ? defaultBarColor : inactiveBarColor
+        i === index ? defaultBarColor : inactiveBarColor,
       );
       setBarColors(newBarColors);
     }
   };
 
-  const createTooltipData = (tooltipItem, data) => {
+  const createTooltipData = (tooltipItem) => {
     const index = tooltipItem.index;
     return `${timeWindowPercentages[index]}% (${timeWindowData[index]})`;
   };
@@ -117,7 +119,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
 
   const isMapTimeWindowSet = !!mapTimeWindow;
 
-  const handleAllButtonClick = (event) => {
+  const handleAllButtonClick = () => {
     setMapTimeWindow("");
     setBarColors(defaultBarColor);
   };
@@ -172,7 +174,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
             tooltips: {
               callbacks: {
                 label: createTooltipData,
-                title: (tooltipItem, data) => null, // Render nothing for tooltip title
+                title: () => null, // Render nothing for tooltip title
               },
             },
           }}

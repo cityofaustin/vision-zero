@@ -67,10 +67,20 @@ export default defineConfig(
       "react/display-name": "off",
       "react/prop-types": "off", // Using TypeScript instead of PropTypes
       "no-unused-vars": "off", // Disable the JavaScript version
-      "@typescript-eslint/no-unused-vars": "error", // TypeScript-aware unused vars (replaces no-unused-vars)
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          vars: "all",
+          args: "after-used",
+          caughtErrors: "all",
+          ignoreRestSiblings: true,
+          ignoreUsingDeclarations: false,
+          reportUsedIgnorePattern: false,
+        },
+      ], // TypeScript-aware unused vars (replaces no-unused-vars)
 
       // Override hook rule severity if needed
       "react-hooks/exhaustive-deps": "warn",
     },
-  }
+  },
 );

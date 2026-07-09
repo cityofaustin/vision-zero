@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StoreContext } from "../../utils/store";
+import { StoreContext } from "src/constants/context";
 import ThemedStyleSheet from "react-with-styles/lib/ThemedStyleSheet";
 import aphroditeInterface from "react-with-styles-interface-aphrodite";
 import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
@@ -251,7 +251,10 @@ const SideMapControlDateRange = ({ type }) => {
         focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
         onFocusChange={(focusedInput) => {
           setFocused(focusedInput);
-          isTablet && document.activeElement.blur(); // Do not prompt the keyboard on mobile/tablet
+          // Do not prompt the keyboard on mobile/tablet
+          if (isTablet) {
+            document.activeElement.blur();
+          }
         }} // PropTypes.func.isRequired,
         keepFocusOnInput
         minDate={moment(dataStartDate)}

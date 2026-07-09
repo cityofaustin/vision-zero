@@ -1,6 +1,6 @@
 services:
   graphql-engine:
-    image: hasura/graphql-engine:v2.49.1
+    image: hasura/graphql-engine:v2.49.3
     volumes:
       - ./viewer/graphql-engine-metadata:/metadata
     ports:
