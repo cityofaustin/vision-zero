@@ -60,6 +60,9 @@ object_relationships:
   - name: rwy_sys_sec
     using:
       foreign_key_constraint_on: rpt_sec_rdwy_sys_id
+  - name: surf_cond
+    using:
+      foreign_key_constraint_on: surf_cond_id
   - name: traffic_cntl
     using:
       foreign_key_constraint_on: traffic_cntl_id

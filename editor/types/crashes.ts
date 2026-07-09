@@ -71,11 +71,14 @@ export type Crash = {
   rpt_hwy_sfx: string | null;
   rr_relat_fl: boolean | null;
   schl_bus_fl: boolean | null;
+  surf_cond_id: number | null;
+  surf_cond: LookupTableOption | null;
   toll_road_fl: boolean | null;
   traffic_cntl_id: number | null;
   updated_at: string | null;
   updated_by: string | null;
   wthr_cond_id: number | null;
+  wthr_cond: LookupTableOption | null;
   change_logs: ChangeLogEntry[] | null;
   units: Unit[] | null;
   charges_cris: Charge[] | null;

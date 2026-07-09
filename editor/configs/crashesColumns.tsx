@@ -327,6 +327,32 @@ export const crashesColumns = {
     editable: true,
     inputType: "number",
   },
+  wthr_cond: {
+    path: "wthr_cond.label",
+    label: "Weather condition",
+    editable: false,
+    inputType: "select",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "wthr_cond",
+      idColumnName: "id",
+      labelColumnName: "label",
+      foreignKey: "wthr_cond_id",
+    },
+  },
+    surf_cond: {
+    path: "surf_cond.label",
+    label: "Surface condition",
+    editable: false,
+    inputType: "select",
+    relationship: {
+      tableSchema: "lookups",
+      tableName: "surf_cond",
+      idColumnName: "id",
+      labelColumnName: "label",
+      foreignKey: "surf_cond_id",
+    },
+  },
   agency: {
     path: "agency.label",
     label: "Investigating agency",
