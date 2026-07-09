@@ -1,7 +1,11 @@
 "use client";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import { FaMap, FaChartPie } from "react-icons/fa6";
+import {
+  LuMapPinned,
+  LuFileChartColumn,
+  LuPanelsTopLeft,
+} from "react-icons/lu";
 import DashboardLinkCard, {
   DashboardLinkCardProps,
 } from "@/components/DashboardLinkCard";
@@ -16,20 +20,20 @@ const dashboardLinks: DashboardLinkCardProps[] = [
     description:
       "Our public-facing dashboard with official Vision Zero statistics",
     href: "https://visionzero.austin.gov/viewer/",
-    icon: FaMap,
+    icon: LuPanelsTopLeft,
   },
   {
     title: "Crash Data by Location",
     description: "Based on Vision Zero location polygons",
     href: "https://experience.arcgis.com/experience/4d642c739efe472b8a86c11be5f1b1dc",
-    icon: FaMap,
+    icon: LuMapPinned,
   },
   {
     title: "Key Metrics",
     description:
       "Collection of internal dashboards enabling a wide range of crash analysis",
     href: "https://app.powerbigov.us/links/JznhTDu8kc?ctid=5c5e19f6-a6ab-4b45-b1d0-be4608a9a67f&pbi_source=linkShare",
-    icon: FaChartPie,
+    icon: LuFileChartColumn,
   },
 ];
 
@@ -54,7 +58,7 @@ export default function Dashboard() {
       <Row>
         <Col>
           <iframe
-            src={`${VZV_ENDPOINT}/measures`}
+            src={`https://visionzero.austin.gov/viewer/measures`}
             title="Vision Zero Viewer Stats"
             style={{
               width: "100%",
@@ -69,7 +73,7 @@ export default function Dashboard() {
       </Row>
       <Row>
         {dashboardLinks.map((item) => (
-          <Col md={6} key={item.href}>
+          <Col md={3} key={item.href} className="mb-2">
             <DashboardLinkCard {...item} />
           </Col>
         ))}

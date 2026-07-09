@@ -20,10 +20,10 @@ export default function DashboardLinkCard({
   icon: Icon,
 }: DashboardLinkCardProps) {
   return (
-    <a href={href} style={{ textDecoration: "none" }}>
-      <Card className="my-2 dashboard-link-card">
-        <CardBody className="d-flex">
-          <div className="d-flex align-items-center me-4 py-3 px-3 bg-dark rounded fs-3 fw-bold text-white border">
+    <a href={href} className="d-block h-100" style={{ textDecoration: "none" }}>
+      <Card className="my-2 h-100 hover-shadow">
+        <CardBody className="d-flex align-items-center">
+          <div className="d-flex align-items-center me-4 py-3 px-3 bg-primary rounded fs-1 text-light fw-bold text-white border border-primary-subtle">
             <Icon />
           </div>
           <div className="d-flex flex-column">
