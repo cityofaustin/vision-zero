@@ -1,7 +1,7 @@
 # Moped Hasura
-MOPED_HASURA_ADMIN_SECRET=
-MOPED_HASURA_ENDPOINT=
+MOPED_HASURA_ADMIN_SECRET=<Moped Hasura Admin Key - Staging>
+MOPED_HASURA_ENDPOINT=<Moped Hasura Admin Key - Staging>
 
 # Vision Zero Hasura
-VZ_HASURA_ADMIN_SECRET=hasurapassword
-VZ_HASURA_ENDPOINT=http://host.docker.internal:8084/v1/graphql
+VZ_HASURA_ADMIN_SECRET=<VZD - Staging - Hasura Admin key>
+VZ_HASURA_ENDPOINT=<VZD - Staging - Hasura Admin key>
