@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {
-    formatArrayToString,
+  formatArrayToString,
   formatArrayToStringWithLinebreaks,
   formatIsoDateTime,
 } from "@/utils/formatters";
@@ -20,45 +20,46 @@ export const vzListViewColumns: ColDataCardDef<VzIncident>[] = [
     ),
   },
   {
-    path: "cad_incident_count",
-    label: "CAD count",
-    sortable: true,
-  },
-  {
-    path: "response_date_earliest",
+    path: "record_timestamp",
     label: "Date",
     sortable: true,
-    style: { minWidth: "8rem" },
+    style: { minWidth: "12rem" },
     valueFormatter: formatIsoDateTime,
     fetchAlways: true,
   },
   {
-    path: "agencies",
-    label: "Agencies",
-    sortable: true,
-    valueFormatter: formatArrayToString,
-    style: { whiteSpace: "pre-wrap", textTransform: "uppercase" },
-    fetchAlways: true
-  },
-  {
-    path: "address_earliest",
+    path: "address",
     label: "Address",
     sortable: true,
-    fetchAlways: true
+    fetchAlways: true,
   },
   {
-    path: "final_problems",
-    label: "Final problems",
+    path: "responding_agencies",
+    label: "Agencies",
     sortable: true,
     valueFormatter: formatArrayToStringWithLinebreaks,
-    style: { whiteSpace: "pre-wrap" },
+    style: { whiteSpace: "pre-wrap", textTransform: "uppercase" },
+    fetchAlways: true,
   },
   {
-    path: "call_dispositions",
-    label: "Call dispositions",
-    valueFormatter: formatArrayToStringWithLinebreaks,
+    path: "location_ids",
+    label: "Location ID(s)",
+    valueFormatter: formatArrayToString,
+  },
+  {
+    path: "incident_numbers",
+    label: "Incident #(s)",
+    valueFormatter: formatArrayToString,
+  },
+  {
+    path: "record_count",
+    label: "Record count",
     sortable: true,
-    style: { whiteSpace: "pre-wrap" },
+  },
+  {
+    path: "record_tables",
+    label: "record_tables",
+    valueFormatter: formatArrayToString,
   },
   {
     path: "point_feature",

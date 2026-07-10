@@ -18,7 +18,7 @@ const vzListViewfilterCards: FilterGroup[] = [
         filters: [
           {
             id: "apd",
-            column: "agencies",
+            column: "responding_agencies",
             operator: "_contains",
             value: ["apd"],
           },
@@ -33,7 +33,7 @@ const vzListViewfilterCards: FilterGroup[] = [
         filters: [
           {
             id: "afd",
-            column: "agencies",
+            column: "responding_agencies",
             operator: "_contains",
             value: ["afd"],
           },
@@ -48,36 +48,73 @@ const vzListViewfilterCards: FilterGroup[] = [
         filters: [
           {
             id: "ems",
-            column: "agencies",
+            column: "responding_agencies",
             operator: "_contains",
             value: ["ems"],
           },
         ],
       },
       {
-        id: "no_apd",
-        label: "Non-APD",
-        groupOperator: "_or",
+        id: "other",
+        label: "Other",
+        groupOperator: "_and",
         enabled: false,
         inverted: false,
         filters: [
           {
-            id: "ems",
-            column: "agencies",
-            operator: "_eq",
-            value: ["ems"],
+            id: "other",
+            column: "responding_agencies_str",
+            operator: "_nlike",
+            value: "%$ems$%",
           },
           {
-            id: "afd",
-            column: "agencies",
-            operator: "_eq",
-            value: ["afd"],
+            id: "other",
+            column: "responding_agencies_str",
+            operator: "_nlike",
+            value: "%$apd$%",
           },
           {
-            id: "afd_ems",
-            column: "agencies",
-            operator: "_eq",
-            value: ["afd", "ems"],
+            id: "other",
+            column: "responding_agencies_str",
+            operator: "_nlike",
+            value: "%$afd$%",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "crash_report_filter_card",
+    label: "Crash report",
+    groupOperator: "_and",
+    filterGroups: [
+      {
+        id: "has_crash_report",
+        label: "Has crash report",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "has_crash_report",
+            column: "record_tables_str",
+            operator: "_ilike",
+            value: "%$crashes$%",
+          },
+        ],
+      },
+      {
+        id: "no_crash_report",
+        label: "No crash report",
+        groupOperator: "_and",
+        enabled: false,
+        inverted: false,
+        filters: [
+          {
+            id: "no_crash_report",
+            column: "record_tables_str",
+            operator: "_nlike",
+            value: "%$crashes$%",
           },
         ],
       },
@@ -114,7 +151,7 @@ export const vzListViewQueryConfig: QueryConfig = {
   tableName: "vz_incidents_view",
   limit: 1000,
   offset: 0,
-  sortColName: "response_date_earliest",
+  sortColName: "record_timestamp",
   sortAsc: false,
   searchFilter: {
     id: "search",
@@ -126,8 +163,8 @@ export const vzListViewQueryConfig: QueryConfig = {
   searchFields: [{ label: "Address", value: "address_earliest" }],
   dateFilter: {
     mode: "1y",
-    column: "response_date_earliest",
-    filters: makeDateFilters("response_date_earliest", {
+    column: "record_timestamp",
+    filters: makeDateFilters("record_timestamp", {
       start: getYearsAgoDate(1),
       end: null,
     }),

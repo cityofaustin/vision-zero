@@ -21,17 +21,20 @@ export interface Filter {
    * Hasura comparison operator, e.g. _eq, _gte
    */
   operator:
-    | "_gte"
-    | "_lte"
-    | "_lt"
-    | "_gt"
+    | "_contains"
     | "_eq"
-    | "_neq"
-    | "_is_null"
+    | "_gt"
+    | "_gte"
     | "_ilike"
     | "_in"
+    | "_is_null"
+    | "_like"
+    | "_lt"
+    | "_lte"
+    | "_neq"
+    | "_nilike"
     | "_nin"
-    | "_contains";
+    | "_nlike";
   /**
    * The filter value
    */
