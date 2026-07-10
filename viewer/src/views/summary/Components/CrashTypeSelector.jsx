@@ -6,27 +6,7 @@ import classnames from "classnames";
 import { colors } from "../../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeartbeat, faMedkit } from "@fortawesome/free-solid-svg-icons";
-
-export const CRASH_TYPES = {
-  fatalitiesAndSeriousInjuries: {
-    name: "fatalitiesAndSeriousInjuries",
-    textString: "Fatalities and Serious Injuries",
-    queryStringCrash: "(death_cnt > 0 OR sus_serious_injry_cnt > 0)",
-    queryStringPerson: "(prsn_injry_sev_id = 4 OR prsn_injry_sev_id = 1)",
-  },
-  fatalities: {
-    name: "fatalities",
-    textString: "Fatalities",
-    queryStringCrash: "(death_cnt > 0)",
-    queryStringPerson: "(prsn_injry_sev_id = 4)",
-  },
-  seriousInjuries: {
-    name: "seriousInjuries",
-    textString: "Serious Injuries",
-    queryStringCrash: "(sus_serious_injry_cnt > 0)",
-    queryStringPerson: "(prsn_injry_sev_id = 1)",
-  },
-};
+import { CRASH_TYPES } from "src/constants/crashTypes";
 
 // Set styles to override Bootstrap default styling
 const StyledButton = styled.div`
@@ -59,7 +39,7 @@ const seriousInjuriesIcon = (
 
 const CrashTypeSelector = ({ setCrashType, componentName }) => {
   const [activeTab, setActiveTab] = useState(
-    CRASH_TYPES.fatalitiesAndSeriousInjuries
+    CRASH_TYPES.fatalitiesAndSeriousInjuries,
   );
 
   const toggle = (tab) => {
@@ -79,7 +59,7 @@ const CrashTypeSelector = ({ setCrashType, componentName }) => {
         type="button"
         className={classnames(
           { active: activeTab.name === "fatalitiesAndSeriousInjuries" },
-          "crash-type"
+          "crash-type",
         )}
         onClick={() => {
           toggle(CRASH_TYPES.fatalitiesAndSeriousInjuries);
@@ -92,7 +72,7 @@ const CrashTypeSelector = ({ setCrashType, componentName }) => {
         type="button"
         className={classnames(
           { active: activeTab.name === "fatalities" },
-          "crash-type"
+          "crash-type",
         )}
         onClick={() => {
           toggle(CRASH_TYPES.fatalities);
@@ -106,7 +86,7 @@ const CrashTypeSelector = ({ setCrashType, componentName }) => {
         type="button"
         className={classnames(
           { active: activeTab.name === "seriousInjuries" },
-          "crash-type"
+          "crash-type",
         )}
         onClick={() => {
           toggle(CRASH_TYPES.seriousInjuries);

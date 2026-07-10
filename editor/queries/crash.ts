@@ -34,6 +34,15 @@ export const GET_CRASH = gql`
         label
       }
       wthr_cond_id
+      wthr_cond {
+        id
+        label
+      }
+      surf_cond_id
+      surf_cond {
+        id
+        label
+      }
       obj_struck {
         id
         label
@@ -210,6 +219,8 @@ export const GET_CRASH = gql`
         prsn_last_name
         prsn_injry_sev_id
         prsn_rest_id
+        prsn_taken_to
+        prsn_taken_by
         rest {
           id
           label

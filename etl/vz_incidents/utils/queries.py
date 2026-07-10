@@ -11,8 +11,7 @@ query GetUnprocessed(
             record_table_name: { _eq: $record_table_name }
             record_timestamp: { _lt: $date_limit } 
         }
-        # todo: flip order to asc
-        order_by: { record_timestamp: desc }
+        order_by: { record_timestamp: asc }
         limit: $record_limit
     ) {
         record_id

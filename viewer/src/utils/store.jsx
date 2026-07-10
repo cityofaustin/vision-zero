@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useReducer } from "react";
 import { mapStartDate, mapEndDate } from "../constants/time";
 import { useIsTablet } from "../constants/responsive";
-import { mapFilterReducer } from "../views/nav/SideMapControl";
-
-export const StoreContext = React.createContext(null);
+import { mapFilterReducer } from "src/constants/map";
+import { StoreContext } from "src/constants/context";
 
 export default function StoreProvider({ children }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +25,10 @@ export default function StoreProvider({ children }) {
   // SideDrawer should never be open when not mobile
   const isTablet = useIsTablet();
   useEffect(() => {
-    !isTablet && setIsOpen(false);
+    if (!isTablet) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- fix in issue #29044
+      setIsOpen(false);
+    }
   }, [isTablet, setIsOpen]);
 
   const store = {

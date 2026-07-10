@@ -52,19 +52,19 @@ const CrashesByYear = () => {
                         WHERE sus_serious_injry_cnt > 0 AND ${currentYearDateCondition} ${queryGroupAndOrder}`,
     };
 
-    !!crashType &&
+    if (crashType) {
       axios
         .get(url + encodeURIComponent(avgQueries[crashType.name]))
         .then((res) => {
           setAvgData(res.data);
         });
 
-    !!crashType &&
       axios
         .get(url + encodeURIComponent(currentYearQueries[crashType.name]))
         .then((res) => {
           setCurrentYearData(res.data);
         });
+    }
   }, [crashType, url]);
 
   const renderChartByType = (chartType) => {

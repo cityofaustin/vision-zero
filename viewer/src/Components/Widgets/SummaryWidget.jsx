@@ -86,7 +86,7 @@ const SummaryWidget = ({
         <Row>
           <Col>
             {/* Show spinner while waiting for data, add thousands separator to total */}
-            {!!totalsObject ? (
+            {totalsObject ? (
               <h2 className="h1 total">
                 {numberWithCommas(totalsObject[currentYear])}
               </h2>

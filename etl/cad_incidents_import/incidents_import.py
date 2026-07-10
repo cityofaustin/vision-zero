@@ -62,7 +62,7 @@ def make_fields_timezone_aware(
     data, date_field_names, date_format="%Y-%m-%d %H:%M:%S", tz="America/Chicago"
 ):
     """Update a field to be timezone aware by replacing the input value with a ISO string with a
-    tz offset
+    tz offset. The CAD data we receive are in America/Chicago time.
 
     Args:
         data (list): list of incident dicts
@@ -137,6 +137,48 @@ def prune_and_validate_columns(data, required_columns):
     return pruned
 
 
+def dedupe_records_by_timestamp(
+    data,
+    key_field="master_incident_id",
+    timestamp_field="upstream_record_update_timestamp",
+):
+    """Dedupe incident records with the same `master_incident_id` value.
+
+    It occasionally happens that CAD records are duplicated in our daily extract due to a bug
+    in the upstream data warehouse. This function identifies dupes based on `master_incident_id`
+    and selects the most recent record version based on the `upstream_record_update_timestamp`.
+
+    If dupe records have an identical timestamp, the first record encountered in the list is
+    preserved.
+
+    See https://github.com/cityofaustin/atd-data-tech/issues/29125.
+
+    Args:
+        data (list): List of CAD incident records
+        key_field (str, optional): The record key used to identify dupes. Defaults to
+            "master_incident_id".
+        timestamp_field (str, optional): The timestamp field to select the correct record version.
+            Defaults to "upstream_record_update_timestamp".
+
+    Returns:
+        list(dict): The de-duped list of CAD incident records.
+    """
+    latest = {}
+    for row in data:
+        key = row[key_field]
+        if key not in latest:
+            latest[key] = row
+        else:
+            # Dupe found - compare timestamps and replace with latest if needed
+            logging.info(f"Deduping record with master incident ID: {key}")
+            current_ts = datetime.fromisoformat(row[timestamp_field])
+            existing_ts = datetime.fromisoformat(latest[key][timestamp_field])
+            if current_ts > existing_ts:
+                latest[key] = row
+
+    return list(latest.values())
+
+
 def main(args):
     logging.info(f"Running CAD incident import")
 
@@ -192,8 +234,10 @@ def main(args):
                     "response_date",
                     "time_call_closed",
                     "time_first_unit_arrived",
+                    "upstream_record_update_timestamp",
                 ],
             )
+            data = dedupe_records_by_timestamp(data)
 
         if not is_group_id_file:
             # add update column names to the muation "on conflict" directive

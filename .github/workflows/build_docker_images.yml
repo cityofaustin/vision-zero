@@ -24,16 +24,16 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Login to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: "Paths filter"
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         id: changes
         with:
           base: ${{ github.ref }}
@@ -58,11 +58,11 @@ jobs:
               - 'etl/vz_incidents/**'
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v4
 
       - name: Build and push AFD / EMS image
         if: steps.changes.outputs.afd_ems == 'true'
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v7
         with:
           platforms: linux/amd64,linux/arm64
           context: etl/afd_ems_import
@@ -71,7 +71,7 @@ jobs:
 
       - name: Build and push CAD incidents image
         if: steps.changes.outputs.cad_incidents == 'true'
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v7
         with:
           platforms: linux/amd64,linux/arm64
           context: etl/cad_incidents_import
@@ -80,7 +80,7 @@ jobs:
 
       - name: Build and push CRIS import image
         if: steps.changes.outputs.cris == 'true'
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v7
         with:
           platforms: linux/amd64,linux/arm64
           context: etl/cris_import
@@ -89,7 +89,7 @@ jobs:
 
       - name: Build and push EMS person match ETL image
         if: steps.changes.outputs.ems_person_match == 'true'
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v7
         with:
           platforms: linux/amd64
           context: etl/ems_person_match
@@ -98,7 +98,7 @@ jobs:
 
       - name: Build and push Socrata export image
         if: steps.changes.outputs.socrata_export == 'true'
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v7
         with:
           platforms: linux/amd64,linux/arm64
           context: etl/socrata_export
@@ -107,7 +107,7 @@ jobs:
 
       - name: Build and push VZ-Moped projects ETL image
         if: steps.changes.outputs.moped_projects == 'true'
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v7
         with:
           platforms: linux/amd64
           context: etl/moped_projects
@@ -116,7 +116,7 @@ jobs:
 
       - name: Build and push Run-SQL ETL image
         if: steps.changes.outputs.run_sql == 'true'
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v7
         with:
           platforms: linux/amd64
           context: etl/run_sql
@@ -125,7 +125,7 @@ jobs:
 
       - name: Build and push VZ User & CR3 API image
         if: steps.changes.outputs.user_cr3_api == 'true'
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v7
         with:
           platforms: linux/amd64,linux/arm64
           context: api
@@ -134,7 +134,7 @@ jobs:
 
       - name: Build and push VZ incidents image
         if: steps.changes.outputs.vz_incidents == 'true'
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v7
         with:
           platforms: linux/amd64,linux/arm64
           context: etl/vz_incidents

@@ -468,7 +468,7 @@ A single real-world crash is often seen by multiple public-safety systems — an
 
 _This diagram illustrates how a multi-agency crash response may be represented in our database_
 
-VZ incidents are populated by the `incident_linker.py` script in the [VZ incidentsETL](../etl/vz_incidents/README.md). The script processes one source record type at a time — CAD incidents, crash reports, EMS incidents, and AFD incidents — reading from the unified `vz_incident_records_view` and linking each record to a VZ incident (or creating a new one). Refer to the ETL readme for details on how `vz_incident` records are identified and created.
+VZ incidents are populated by the `incident_linker.py` script in the [VZ incidents ETL](../etl/vz_incidents/README.md). The script processes one source record type at a time — CAD incidents, crash reports, EMS incidents, and AFD incidents — reading from the unified `vz_incident_records_view` and linking each record to a VZ incident (or creating a new one). Refer to the ETL readme for details on how `vz_incident` records are identified and created.
 
 The queries below can be used to explore and visualize `vz_incidents`.
 
@@ -576,7 +576,7 @@ FROM
 
 ### Geospatial layers
 
-The database holds geospatial reference layers — jurisdicitonal boundaries, council districts, etc — which are referenced by crashes and various other records. These layers are not actively maintained, but can be easily refreshed following the update process [described below](#updating-an-existing-geospatial-layer).
+The database holds geospatial reference layers — jurisdicitional boundaries, council districts, etc — which are referenced by crashes and various other records. These layers are not actively maintained, but can be easily refreshed following the update process [described below](#updating-an-existing-geospatial-layer).
 
 | Table                   | Geometry type  | description                                                                                                      | owner/source                                                         |
 | ----------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
