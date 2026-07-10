@@ -1,4 +1,4 @@
--- Most recent migration: database/migrations/default/1783347751353_incident_matching/up.sql
+-- Most recent migration: database/migrations/default/1783347751354_vz_incidents_view/up.sql
 
 CREATE OR REPLACE VIEW vz_incident_records_view AS
 SELECT
@@ -13,10 +13,17 @@ SELECT
     c.address_display AS record_address,
     c."position"      AS geom,
     c.vz_incident_id,
-    c.vz_incident_match_status
+    c.vz_incident_match_status,
+    c.in_austin_full_purpose,
+    c.location_id,
+    CASE
+        WHEN c.latitude <> cris.latitude OR c.longitude <> cris.longitude THEN true
+        ELSE false
+    END               AS is_location_reviewed
 FROM crashes c
 LEFT JOIN lookups.agency agency ON agency.id = c.investigat_agency_id
-WHERE c.is_deleted IS FALSE
+LEFT JOIN crashes_cris cris ON c.id = cris.id
+WHERE c.is_deleted IS false
 UNION ALL
 SELECT
     'cad_incidents'::text     AS record_table_name,
@@ -27,7 +34,10 @@ SELECT
     ci.address                AS record_address,
     ci.geom,
     ci.vz_incident_id,
-    ci.vz_incident_match_status
+    ci.vz_incident_match_status,
+    ci.in_austin_full_purpose,
+    ci.location_id,
+    false                     AS is_location_reviewed
 FROM cad_incidents ci
 UNION ALL
 SELECT
@@ -39,9 +49,12 @@ SELECT
     ems.incident_location_address  AS record_address,
     ems.geometry                   AS geom,
     ems.vz_incident_id,
-    ems.vz_incident_match_status
+    ems.vz_incident_match_status,
+    ems.austin_full_purpose        AS in_austin_full_purpose,
+    ems.location_id,
+    false                          AS is_location_reviewed
 FROM ems__incidents ems
-WHERE ems.is_deleted IS FALSE
+WHERE ems.is_deleted IS false
 UNION ALL
 SELECT
     'afd__incidents'::text    AS record_table_name,
@@ -52,5 +65,8 @@ SELECT
     afd.address               AS record_address,
     afd.geometry              AS geom,
     afd.vz_incident_id,
-    afd.vz_incident_match_status
+    afd.vz_incident_match_status,
+    afd.austin_full_purpose   AS in_austin_full_purpose,
+    afd.location_id,
+    false                     AS is_location_reviewed
 FROM afd__incidents afd;

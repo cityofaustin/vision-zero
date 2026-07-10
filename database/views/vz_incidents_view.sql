@@ -1,67 +1,52 @@
--- Most recent migration: 
+-- Most recent migration: database/migrations/default/1783347751354_vz_incidents_view/up.sql
 
 CREATE OR REPLACE VIEW vz_incidents_view AS
 SELECT
-    v.id,
+    v.vz_incident_id AS id,
     count(
-        c.id
-    )    AS cad_incident_count,
-    round(
-        st_length(st_longestline(st_collect(c.geom), st_collect(c.geom))::geography)::numeric, 1
-    )    AS spread_meters,
-    round(
-        extract(EPOCH FROM max(c.response_date) - min(c.response_date)) / 60.0, 1
-    )    AS time_spread_minutes,
+        *
+    )                AS record_count,
     array_agg(
-        c.master_incident_number
-    )    AS incident_numbers,
+        DISTINCT v.record_incident_number
+        ORDER BY v.record_incident_number
+    )                AS incident_numbers,
     array_agg(
-        DISTINCT c.agency_type_short
-        ORDER BY c.agency_type_short
-    )    AS agencies,
+        DISTINCT v.record_table_name
+        ORDER BY v.record_table_name
+    )                AS record_tables,
+    string_agg(
+        DISTINCT ('$'::text || v.record_table_name) || '$'::text, ','::text
+        ORDER BY (('$'::text || v.record_table_name) || '$'::text)
+    )                AS record_tables_str,
     array_agg(
-        DISTINCT c.address
-        ORDER BY c.address
-    )    AS addresses,
+        DISTINCT v.record_responding_agency
+        ORDER BY v.record_responding_agency
+    )                AS responding_agencies,
+    string_agg(
+        DISTINCT ('$'::text || v.record_responding_agency) || '$'::text, ','::text
+        ORDER BY (('$'::text || v.record_responding_agency) || '$'::text)
+    )                AS responding_agencies_str,
     (
         array_remove(array_agg(
-            c.address
-            ORDER BY c.time_first_unit_arrived, c.response_date, c.id
+            v.record_address
+            ORDER BY v.is_location_reviewed DESC, v.record_timestamp ASC, v.record_id ASC
         ), NULL::text)
-    )[1] AS address_earliest,
+    )[1]             AS address,
     array_agg(
-        DISTINCT c.location_id
-        ORDER BY c.location_id
-    )    AS location_ids,
-    array_agg(
-        DISTINCT c.call_disposition
-        ORDER BY c.call_disposition
-    )    AS call_dispositions,
-    array_agg(
-        DISTINCT c.initial_problem
-        ORDER BY c.initial_problem
-    )    AS initial_problems,
-    array_agg(
-        DISTINCT c.final_problem
-        ORDER BY c.final_problem
-    )    AS final_problems,
-    min(
-        c.response_date
-    )    AS response_date_earliest,
-    min(
-        c.time_first_unit_arrived
-    )    AS time_first_unit_arrived_earliest,
+        DISTINCT v.location_id
+        ORDER BY v.location_id
+    )                AS location_ids,
+    min(v.record_timestamp
+    )                AS record_timestamp,
     (
         array_remove(array_agg(
-            c.geom
-            ORDER BY c.time_first_unit_arrived, c.response_date, c.id
+            v.geom
+            ORDER BY v.is_location_reviewed DESC, v.record_timestamp ASC, v.record_id ASC
         ), NULL::geometry)
-    )[1] AS point_feature,
-    bool_or(
-        c.in_austin_full_purpose
-    )    AS in_austin_full_purpose
-FROM vz_incidents v
-INNER JOIN cad_incidents c ON c.vz_incident_id = v.id
-WHERE v.is_deleted = FALSE
-GROUP BY v.id
-ORDER BY v.id;
+    )[1]             AS point_feature,
+    bool_or(v.in_austin_full_purpose
+    )                AS in_austin_full_purpose
+FROM vz_incident_records_view v
+WHERE v.vz_incident_id IS NOT NULL
+GROUP BY v.vz_incident_id
+ORDER BY (min(record_timestamp)) DESC;
