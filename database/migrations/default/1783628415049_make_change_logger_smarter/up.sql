@@ -11,7 +11,7 @@ begin
         -- E.g., when importing ems__incidents
        (to_jsonb(NEW) - 'updated_at') = (to_jsonb(OLD) - 'updated_at')
     THEN
-        RAISE NOTICE 'No change detected - skipping change log entry';
+        RAISE DEBUG 'No change detected - skipping change log entry';
         RETURN NULL;
     END IF;
 
