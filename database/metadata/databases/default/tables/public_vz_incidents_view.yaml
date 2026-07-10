@@ -1,35 +1,21 @@
 table:
   name: vz_incidents_view
   schema: public
-array_relationships:
-  - name: cad_incidents
-    using:
-      manual_configuration:
-        column_mapping:
-          id: vz_incident_id
-        insertion_order: null
-        remote_table:
-          name: cad_incidents
-          schema: public
 select_permissions:
   - role: editor
     permission:
       columns:
-        - addresses
-        - address_earliest
-        - agencies
-        - call_dispositions
-        - final_problems
         - incident_numbers
-        - initial_problems
         - location_ids
-        - cad_incident_count
+        - record_tables
+        - record_tables_str
+        - responding_agencies
+        - responding_agencies_str
         - id
-        - spread_meters
-        - time_spread_minutes
-        - response_date_earliest
-        - time_first_unit_arrived_earliest
+        - record_count
         - in_austin_full_purpose
+        - address
+        - record_timestamp
         - point_feature
       filter: {}
       allow_aggregations: true
@@ -37,21 +23,17 @@ select_permissions:
   - role: readonly
     permission:
       columns:
-        - addresses
-        - address_earliest
-        - agencies
-        - call_dispositions
-        - final_problems
         - incident_numbers
-        - initial_problems
         - location_ids
-        - cad_incident_count
+        - record_tables
+        - record_tables_str
+        - responding_agencies
+        - responding_agencies_str
         - id
-        - spread_meters
-        - time_spread_minutes
-        - response_date_earliest
-        - time_first_unit_arrived_earliest
+        - record_count
         - in_austin_full_purpose
+        - address
+        - record_timestamp
         - point_feature
       filter: {}
       allow_aggregations: true
@@ -59,21 +41,17 @@ select_permissions:
   - role: vz-admin
     permission:
       columns:
-        - addresses
-        - address_earliest
-        - agencies
-        - call_dispositions
-        - final_problems
         - incident_numbers
-        - initial_problems
         - location_ids
-        - cad_incident_count
+        - record_tables
+        - record_tables_str
+        - responding_agencies
+        - responding_agencies_str
         - id
-        - spread_meters
-        - time_spread_minutes
-        - response_date_earliest
-        - time_first_unit_arrived_earliest
+        - record_count
         - in_austin_full_purpose
+        - address
+        - record_timestamp
         - point_feature
       filter: {}
       allow_aggregations: true
