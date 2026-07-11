@@ -1,15 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { bbox } from "@turf/bbox";
 import { AllGeoJSON } from "@turf/helpers";
-import {
-  FeatureCollection,
-  Point,
-  MultiPoint,
-  GeoJsonProperties,
-  Feature,
-  Geometry,
-} from "geojson";
-import { GeoJSONFeature, LngLatBoundsLike } from "mapbox-gl";
+import { FeatureCollection, Point, Geometry } from "geojson";
+import { LngLatBoundsLike } from "mapbox-gl";
 import { mapStyleOptions } from "@/configs/map";
 import { useTheme } from "@/contexts/AppThemeProvider";
 
@@ -157,19 +150,21 @@ export const geoJsonTransformers = {
     } else {
       return {
         type: "FeatureCollection" as const,
-        features: data .filter((row) => row.point_feature).map((row) => {
-          if (!isPoint(row.point_feature)) {
-            throw new Error(`Invalid Point geometry for row id: ${row.id}`);
-          }
-          return {
-            type: "Feature" as const,
-            id: Number(row.id),
-            geometry: row.point_feature,
-            properties: {
-              ...row,
-            },
-          };
-        }),
+        features: data
+          .filter((row) => row.point_feature)
+          .map((row) => {
+            if (!isPoint(row.point_feature)) {
+              throw new Error(`Invalid Point geometry for row id: ${row.id}`);
+            }
+            return {
+              type: "Feature" as const,
+              id: Number(row.id),
+              geometry: row.point_feature,
+              properties: {
+                ...row,
+              },
+            };
+          }),
       };
     }
   },
