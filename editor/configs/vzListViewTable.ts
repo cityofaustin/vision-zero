@@ -156,11 +156,11 @@ export const vzListViewQueryConfig: QueryConfig = {
   searchFilter: {
     id: "search",
     value: "",
-    column: "address_earliest",
+    column: "address",
     operator: "_ilike",
     wildcard: true,
   },
-  searchFields: [{ label: "Address", value: "address_earliest" }],
+  searchFields: [{ label: "Address", value: "address" }],
   dateFilter: {
     mode: "1y",
     column: "record_timestamp",
