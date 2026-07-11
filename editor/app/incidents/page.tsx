@@ -8,7 +8,7 @@ import { useDocumentTitle } from "@/utils/documentTitle";
 
 const localStorageKey = "vzListViewQueryConfig";
 
-export default function Crashes() {
+export default function Incidents() {
   useDocumentTitle("Incidents");
 
   return (
