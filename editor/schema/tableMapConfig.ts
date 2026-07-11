@@ -11,7 +11,6 @@ export const TableMapConfigSchema = z.object({
       "locationTableMap",
       "fatalitiesTableMap",
       "emsTableMap",
-      "cadTableMap",
       "vzTableMap",
     ])
     .optional(),

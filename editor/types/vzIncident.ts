@@ -1,9 +1,7 @@
-import { CadIncident } from "@/types/cadIncident";
 import { Point } from "geojson";
 
 export type VzIncident = {
   address?: string[] | null;
-  cad_incidents?: CadIncident[];
   id?: number | null;
   in_austin_full_purpose?: boolean | null;
   incident_numbers?: string[] | null;

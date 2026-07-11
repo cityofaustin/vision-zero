@@ -17,7 +17,6 @@ export const getPopupComponent = (
     | "locationTableMap"
     | "fatalitiesTableMap"
     | "emsTableMap"
-    | "cadTableMap"
     | "vzTableMap"
     | undefined
 ) => {
