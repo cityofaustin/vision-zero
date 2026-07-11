@@ -5,8 +5,8 @@ import {
   useMemo,
   Dispatch,
   SetStateAction,
+  MutableRefObject,
   ReactNode,
-  RefObject,
 } from "react";
 import MapGL, {
   FullscreenControl,
@@ -60,7 +60,7 @@ interface PointMapProps {
   /**
    * Ref object which will hold the mapbox instance
    */
-  mapRef: RefObject<MapRef | null>;
+  mapRef: MutableRefObject<MapRef | null>;
 
   /**
    * The default basemap type

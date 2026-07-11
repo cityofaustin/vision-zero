@@ -1,4 +1,4 @@
-import { useMemo, RefObject } from "react";
+import { useMemo, MutableRefObject } from "react";
 import MapGL, {
   FullscreenControl,
   NavigationControl,
@@ -19,7 +19,7 @@ interface LocationMapProps {
   /**
    * Ref object which will hold the mapbox instance
    */
-  mapRef: RefObject<MapRef | null>;
+  mapRef: MutableRefObject<MapRef | null>;
   polygon: MultiPolygon;
   locationId: string;
 }
