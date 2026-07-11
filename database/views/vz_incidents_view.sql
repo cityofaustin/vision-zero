@@ -44,6 +44,18 @@ SELECT
             ORDER BY v.is_location_reviewed DESC, v.record_timestamp ASC, v.record_id ASC
         ), NULL::geometry)
     )[1]             AS point_feature,
+    (
+        array_remove(array_agg(
+            v.latitude
+            ORDER BY v.is_location_reviewed DESC, v.record_timestamp ASC, v.record_id ASC
+        ), NULL::double precision)
+    )[1]             AS latitude,
+    (
+        array_remove(array_agg(
+            v.longitude
+            ORDER BY v.is_location_reviewed DESC, v.record_timestamp ASC, v.record_id ASC
+        ), NULL::double precision)
+    )[1]             AS longitude,
     bool_or(v.in_austin_full_purpose
     )                AS in_austin_full_purpose
 FROM vz_incident_records_view v
