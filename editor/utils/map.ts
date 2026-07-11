@@ -157,7 +157,7 @@ export const geoJsonTransformers = {
     } else {
       return {
         type: "FeatureCollection" as const,
-        features: data.map((row) => {
+        features: data .filter((row) => row.point_feature).map((row) => {
           if (!isPoint(row.point_feature)) {
             throw new Error(`Invalid Point geometry for row id: ${row.id}`);
           }
