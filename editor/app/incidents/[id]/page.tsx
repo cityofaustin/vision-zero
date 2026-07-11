@@ -78,7 +78,7 @@ export default function IncidentDetailsPage({
    */
   useEffect(() => {
     if (incident) {
-      document.title = `VZ ${incident.id} - ${incident.address_earliest}`;
+      document.title = `VZ ${incident.id} - ${incident.address}`;
     }
   }, [incident]);
 
@@ -95,7 +95,7 @@ export default function IncidentDetailsPage({
       <Row>
         <Col className="d-flex fs-3 align-items-center mb-3">
           <FaRoad className="me-2" />
-          <span>{incident.address_earliest}</span>
+          <span>{incident.address}</span>
         </Col>
       </Row>
       <Row>
