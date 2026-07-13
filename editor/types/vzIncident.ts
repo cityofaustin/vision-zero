@@ -1,7 +1,9 @@
 import { Point } from "geojson";
+import { CadIncident } from "@/types/cadIncident";
 
 export type VzIncident = {
   address?: string[] | null;
+  cad_incidents?: CadIncident[] | null;
   id?: number | null;
   in_austin_full_purpose?: boolean | null;
   incident_numbers?: string[] | null;
@@ -13,6 +15,6 @@ export type VzIncident = {
   record_tables_str?: string;
   record_tables?: string[];
   record_timestamp?: string;
-  responding_agencies_str?: string | null; // todo: ensure no nulls in string?
-  responding_agencies?: string[];  // todo: ensure no nulls in array
+  responding_agencies_str?: string | null;
+  responding_agencies?: string[];
 };
