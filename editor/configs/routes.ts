@@ -41,6 +41,7 @@ export const routes: Route[] = [
     path: "incidents",
     label: "Incidents",
     icon: FaRoad,
+    allowedRoles: ["editor", "vz-admin"],
   },
   {
     path: "upload-non-cr3",
