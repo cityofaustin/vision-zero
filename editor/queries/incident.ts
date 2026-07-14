@@ -3,19 +3,11 @@ import { gql } from "graphql-request";
 export const GET_INCIDENT = gql`
   query GetIncident($id: bigint!) {
     vz_incidents_view(where: { id: { _eq: $id } }) {
-      id
-      in_austin_full_purpose
-      incident_numbers
-      latitude
-      location_ids
-      longitude
-      point_feature
-      record_count
-      record_tables_str
-      record_tables
-      record_timestamp
-      responding_agencies_str
-      responding_agencies
+      address
+      afd__incidents {
+        id
+      }
+
       cad_incidents {
         address
         agency_type_short
@@ -32,12 +24,12 @@ export const GET_INCIDENT = gql`
         response_date
         time_first_unit_arrived
       }
-      afd__incidents {
-        id
-      }
-      address
       crashes {
         address_display
+        agency {
+          id
+          label
+        }
         crash_timestamp
         id
         in_austin_full_purpose
@@ -48,12 +40,11 @@ export const GET_INCIDENT = gql`
           id
           label
         }
-        agency {
-          id
-          label
-        }
       }
       ems__incidents {
+        crash {
+          cris_crash_id
+        }
         id
         incident_number
         incident_received_datetime
@@ -66,10 +57,20 @@ export const GET_INCIDENT = gql`
           id
           label
         }
-        crash {
-          cris_crash_id
-        }
       }
+      id
+      in_austin_full_purpose
+      incident_numbers
+      latitude
+      location_ids
+      longitude
+      point_feature
+      record_count
+      record_tables_str
+      record_tables
+      record_timestamp
+      responding_agencies_str
+      responding_agencies
     }
   }
 `;
