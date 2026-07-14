@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useReducer, useMemo } from "react";
 import axios from "axios";
-// import { Bar } from "react-chartjs-2";
-// import "chartjs-plugin-stacked100";
+import { Bar } from "react-chartjs-2";
+import { Chart } from "chart.js";
+import ChartjsPluginStacked100 from "chartjs-plugin-stacked100";
 import ChartTypeSelector from "./Components/ChartTypeSelector";
 import { Container, Row, Col } from "reactstrap";
 import { format } from "date-fns";
@@ -13,6 +14,8 @@ import { personEndpointUrl } from "./queries/socrataQueries";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import ColorSpinner from "../../Components/Spinner/ColorSpinner";
+
+Chart.register(ChartjsPluginStacked100);
 
 const url = `${personEndpointUrl}?$query=`;
 
@@ -320,11 +323,12 @@ const PeopleByDemographics = () => {
           />
           <Row>
             <Col>
-              {/* <Bar
+              <Bar
                 redraw
                 data={chartData}
                 height={null}
                 width={null}
+                aria-label="TODO"
                 options={{
                   indexAxis: "y",
                   responsive: true,
@@ -348,7 +352,7 @@ const PeopleByDemographics = () => {
                     },
                   },
                 }}
-              /> */}
+              />
             </Col>
           </Row>
         </div>
