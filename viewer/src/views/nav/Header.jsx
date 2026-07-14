@@ -117,11 +117,11 @@ const Header = () => {
               color="dark"
               onClick={() => setIsOpen(!isOpen)}
             >
-              <span className="sr-only">Menu Button</span>
+              <span className="visually-hidden">Menu Button</span>
               <FontAwesomeIcon icon={faBars} />
             </Button>
             <div className="vz-logo-wrapper">
-              <h1 className="sr-only">
+              <h1 className="visually-hidden">
                 Vision Zero -- Help Austin reach zero traffic deaths
               </h1>
               <img
