@@ -1,3 +1,5 @@
+import { Point } from "geojson";
+
 export type CadIncident = {
     address?: string | null;
     agency_type_short?: string | null;
@@ -6,6 +8,7 @@ export type CadIncident = {
     created_at?: string | null;
     created_by?: string | null;
     final_problem?: string | null;
+    geom?: Point | null;
     id?: number;
     in_austin_full_purpose?: boolean | null;
     incident_type?: string | null;
