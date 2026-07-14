@@ -71,7 +71,7 @@ const SideMapControlOverlays = () => {
             key={i}
             id={name}
             color="dark"
-            className="w-100 pt-1 pb-1 pl-0 pr-0"
+            className="w-100 pt-1 pb-1 ps-0 pe-0"
             onClick={(event) => handleOverlayClick(event, parameters)}
             active={name === overlay.name}
             outline={name !== overlay.name}
@@ -86,7 +86,7 @@ const SideMapControlOverlays = () => {
                   key={i}
                   id={option}
                   color="dark"
-                  className="w-100 pt-1 pb-1 pl-0 pr-0"
+                  className="w-100 pt-1 pb-1 ps-0 pe-0"
                   active={overlay.options.includes(option)}
                   outline={!overlay.options.includes(option)}
                   onClick={handleOverlayOptionClick}

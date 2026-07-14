@@ -241,7 +241,7 @@ const SideMapControlDateRange = ({ type }) => {
   `;
 
   return (
-    <StyledButtonContainer className="pr-0 picker-outline">
+    <StyledButtonContainer className="pe-0 picker-outline">
       <DateRangePicker
         startDateId={`start_date_${type}`} // PropTypes.string.isRequired,
         endDateId={`end_date_${type}`} // PropTypes.string.isRequired,

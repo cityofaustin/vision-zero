@@ -10,7 +10,7 @@ import "./index.css";
 import App from "./App";
 import StoreProvider from "./utils/store";
 import * as serviceWorker from "./serviceWorker";
-import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 // IE11 SVG Polyfill
 SVGElement.prototype.contains = function contains(node) {

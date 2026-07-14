@@ -136,7 +136,7 @@ export const popoverConfig = {
                       <td>
                         {popEsts["years"][new Date().getFullYear()]
                           ? addCommasToNumber(
-                              popEsts["years"][new Date().getFullYear()]
+                              popEsts["years"][new Date().getFullYear()],
                             )
                           : "No data available"}
                       </td>
@@ -145,7 +145,7 @@ export const popoverConfig = {
                       <th scope="row">{new Date().getFullYear() - 1}</th>
                       <td>
                         {addCommasToNumber(
-                          popEsts["years"][new Date().getFullYear() - 1]
+                          popEsts["years"][new Date().getFullYear() - 1],
                         )}
                       </td>
                     </tr>
@@ -153,7 +153,7 @@ export const popoverConfig = {
                       <th scope="row">{new Date().getFullYear() - 2}</th>
                       <td>
                         {addCommasToNumber(
-                          popEsts["years"][new Date().getFullYear() - 2]
+                          popEsts["years"][new Date().getFullYear() - 2],
                         )}
                       </td>
                     </tr>
@@ -161,7 +161,7 @@ export const popoverConfig = {
                       <th scope="row">{new Date().getFullYear() - 3}</th>
                       <td>
                         {addCommasToNumber(
-                          popEsts["years"][new Date().getFullYear() - 3]
+                          popEsts["years"][new Date().getFullYear() - 3],
                         )}
                       </td>
                     </tr>
@@ -169,7 +169,7 @@ export const popoverConfig = {
                       <th scope="row">{new Date().getFullYear() - 4}</th>
                       <td>
                         {addCommasToNumber(
-                          popEsts["years"][new Date().getFullYear() - 4]
+                          popEsts["years"][new Date().getFullYear() - 4],
                         )}
                       </td>
                     </tr>
@@ -196,7 +196,7 @@ export const popoverConfig = {
       html: (
         <>
           <div>
-            <ul className="pl-3">
+            <ul className="ps-3">
               <li>
                 <strong>Motorist</strong>: Driver or rider of a sedan, coupe,
                 SUV, pickup, semi-trailer, etc.
@@ -307,7 +307,7 @@ export const popoverConfig = {
                 injury is defined as a severe injury that prevents continuation
                 of normal activities, including:
               </div>
-              <ul className="pl-3">
+              <ul className="ps-3">
                 <li>
                   Severe laceration resulting in exposure of underlying
                   tissues/muscle/organs or resulting in significant loss of

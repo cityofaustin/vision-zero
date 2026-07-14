@@ -276,7 +276,7 @@ const CrashesByMode = () => {
                     legendCallback: function (chart) {
                       return (
                         <Row className="pb-2">
-                          <Col className="pr-1 col-sm-4">
+                          <Col className="pe-1 col-sm-4">
                             <StyledDiv>
                               <div>
                                 <p
@@ -354,11 +354,11 @@ const CrashesByMode = () => {
                           </Col>
                           {chart.data.labels.map((year, yearIterator) => {
                             let paddingRight =
-                              yearIterator === 4 ? "null" : "pr-1";
+                              yearIterator === 4 ? "null" : "pe-1";
                             return (
                               <Col
                                 key={yearIterator}
-                                className={`pl-0 ${paddingRight}`}
+                                className={`ps-0 ${paddingRight}`}
                               >
                                 <StyledDiv>
                                   <div className="year-total-div">

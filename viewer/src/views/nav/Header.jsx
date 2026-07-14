@@ -108,12 +108,12 @@ const Header = () => {
             // In Summary view, match padding and margins of Summary content below
             className={`${
               isSummaryView
-                ? "px-xs-0 mx-xs-0 pl-md-2 pr-md-1 px-lg-3 mx-lg-4"
+                ? "px-xs-0 mx-xs-0 ps-md-2 pe-md-1 px-lg-3 mx-lg-4"
                 : "px-0"
             }`}
           >
             <Button
-              className="ml-3 sidedrawer-toggle"
+              className="ms-3 sidedrawer-toggle"
               color="dark"
               onClick={() => setIsOpen(!isOpen)}
             >
@@ -132,7 +132,7 @@ const Header = () => {
               ></img>
             </div>
             <Nav
-              className={`navbar-links ml-auto ${
+              className={`navbar-links ms-auto ${
                 isSummaryView ? "px-lg-3" : "px-3"
               }`}
               navbar
@@ -144,14 +144,14 @@ const Header = () => {
                       <NavLink
                         tag={Link}
                         to={config.url}
-                        className="pr-0 pl-2 mr-0 ml-2 "
+                        className="pe-0 ps-2 me-0 ms-2 "
                         style={{ color: "#fff" }}
                       >
                         <span
                           className={`btn nav-button inactive-nav-button mx-xs-0 mx-lg-2`}
                         >
                           {config.icon}
-                          <span className="pl-2">{config.title}</span>
+                          <span className="ps-2">{config.title}</span>
                         </span>
                       </NavLink>
                     </NavItem>

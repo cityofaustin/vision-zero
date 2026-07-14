@@ -358,7 +358,7 @@ const SideMapControl = ({ type }) => {
                         {parameter.icon && (
                           <FontAwesomeIcon
                             icon={parameter.icon}
-                            className="mr-1 ml-1"
+                            className="me-1 ms-1"
                             color={parameter.iconColor && parameter.iconColor}
                           />
                         )}
@@ -385,18 +385,18 @@ const SideMapControl = ({ type }) => {
                         {parameter.isSelected || isFilterSet(name) ? (
                           <FontAwesomeIcon
                             icon={faCheckSquare}
-                            className="mr-1 active far"
+                            className="me-1 active far"
                           />
                         ) : (
                           <FontAwesomeIcon
                             icon={faSquare}
-                            className="mr-1 inactive far"
+                            className="me-1 inactive far"
                           />
                         )}
                         {parameter.icon && (
                           <FontAwesomeIcon
                             icon={parameter.icon}
-                            className="mr-2 ml-2 fa-fw"
+                            className="me-2 ms-2 fa-fw"
                             color={parameter.iconColor && parameter.iconColor}
                           />
                         )}

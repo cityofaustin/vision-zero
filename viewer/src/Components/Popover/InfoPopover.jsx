@@ -43,7 +43,7 @@ const InfoPopover = ({ config }) => {
         scrollable
         autoFocus
       >
-        <StyledInfoIcon className="text-right mt-2 mr-2">
+        <StyledInfoIcon className="text-right mt-2 me-2">
           <FontAwesomeIcon
             className="modal-button"
             icon={faTimesCircle}

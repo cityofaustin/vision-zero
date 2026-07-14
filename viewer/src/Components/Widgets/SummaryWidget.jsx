@@ -73,7 +73,7 @@ const SummaryWidget = ({
     return (
       <div className="text-left widget-footer-icon d-flex flex-row align-items-center">
         <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
-        <span className="text-muted text-wrap pl-4">
+        <span className="text-muted text-wrap ps-4">
           {`${text} ${numberWithCommas(lastYearTotal)} this time last year`}
         </span>
       </div>
@@ -120,7 +120,7 @@ const SummaryWidget = ({
         <CardFooter className="bg-white d-flex widget-footer">
           {renderFooterBasedOnChange(
             totalsObject[currentYear],
-            totalsObject[prevYear]
+            totalsObject[prevYear],
           )}
         </CardFooter>
       )}
