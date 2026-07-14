@@ -1,0 +1,75 @@
+import { gql } from "graphql-request";
+
+export const GET_INCIDENT = gql`
+  query GetIncident($id: bigint!) {
+    vz_incidents_view(where: { id: { _eq: $id } }) {
+      id
+      in_austin_full_purpose
+      incident_numbers
+      latitude
+      location_ids
+      longitude
+      point_feature
+      record_count
+      record_tables_str
+      record_tables
+      record_timestamp
+      responding_agencies_str
+      responding_agencies
+      cad_incidents {
+        address
+        agency_type_short
+        call_disposition
+        final_problem
+        incident_type
+        initial_problem
+        is_cancelled_call
+        latitude
+        location_id
+        longitude
+        master_incident_number
+        priority_description
+        response_date
+        time_first_unit_arrived
+      }
+      afd__incidents {
+        id
+      }
+      address
+      crashes {
+        address_display
+        crash_timestamp
+        id
+        in_austin_full_purpose
+        location_id
+        record_locator
+        private_dr_fl
+        collsn {
+          id
+          label
+        }
+        agency {
+          id
+          label
+        }
+      }
+      ems__incidents {
+        id
+        incident_number
+        incident_received_datetime
+        incident_location_address
+        travel_mode
+        pcr_transport_destination
+        crash_match_status
+        person_match_status
+        patient_injry_sev {
+          id
+          label
+        }
+        crash {
+          cris_crash_id
+        }
+      }
+    }
+  }
+`;
