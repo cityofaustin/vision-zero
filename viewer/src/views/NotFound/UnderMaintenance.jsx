@@ -24,7 +24,9 @@ const UnderMaintenance = ({ isMeasuresPath }) => {
           >
             <Container fluid className={"px-0"}>
               <div className="vz-logo-wrapper">
-                <h1 className="sr-only">Vision Zero -- Help Austin reach zero traffic deaths</h1>
+                <h1 className="sr-only">
+                  Vision Zero -- Help Austin reach zero traffic deaths
+                </h1>
                 <img
                   className="vz-logo"
                   style={{ height: "40px" }}
@@ -39,9 +41,12 @@ const UnderMaintenance = ({ isMeasuresPath }) => {
 
       <Container style={{ height: "40vh" }}>
         <Row className="my-5 mx-auto">
-          <Alert color="info" className="mb-0">
+          <Alert color="info" className="mb-0" fade={false}>
             <div className="my-2">
-              <FontAwesomeIcon icon={faInfoCircle} style={{ marginRight: "1rem" }} />
+              <FontAwesomeIcon
+                icon={faInfoCircle}
+                style={{ marginRight: "1rem" }}
+              />
               {isMeasuresPath
                 ? "Vision Zero metrics are currently under maintenance. "
                 : "The Vision Zero Viewer is undergoing maintenance and will be unavailable until September 3, 2024"}

@@ -156,6 +156,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
           ref={(ref) => (chartRef.current = ref)}
           data={data}
           height={250}
+          aria-label="TODO"
           onElementsClick={handleBarClick}
           options={{
             indexAxis: "y",

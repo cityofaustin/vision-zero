@@ -38,7 +38,6 @@ const CrashesByMode = () => {
 
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
-  const [chartLegend, setChartLegend] = useState(null);
   const [legendColors, setLegendColors] = useState([...chartColors]);
 
   const chartRef = useRef();
@@ -121,14 +120,6 @@ const CrashesByMode = () => {
       getChartData();
     }
   }, [crashType]);
-
-  // useEffect(() => {
-  //   if (chartRef.current) {
-  //     if (chartData) {
-  //       setChartLegend(chartRef.current.generateLegend());
-  //     }
-  //   }
-  // }, [chartData, legendColors]);
 
   const createChartLabels = () => yearsArray.map((year) => `${year}`);
 
@@ -249,7 +240,114 @@ const CrashesByMode = () => {
       {data.datasets ? (
         <Row className="mt-1">
           <Col>
-            {chartLegend}
+            <Container>
+              <Row className="pb-2">
+                <Col className="pe-1 col-sm-4">
+                  <StyledDiv>
+                    <div>
+                      <p
+                        className="h6 text-center my-1 pt-2"
+                        style={{ height: "27px" }}
+                      ></p>
+                    </div>
+                    {data.datasets.map((dataset, i) => {
+                      const updateLegendColors = () => {
+                        const legendColorsClone = [...legendColors];
+                        if (legendColors[i] !== "dimgray") {
+                          legendColorsClone.splice(i, 1, "dimgray");
+                        } else {
+                          legendColorsClone.splice(i, 1, chartColors[i]);
+                        }
+                        setLegendColors(legendColorsClone);
+                      };
+                      const customLegendClickHandler = (datasetIndex) => {
+                        if (chartRef.current) {
+                          const ci = chartRef.current;
+                          const meta = ci.getDatasetMeta(datasetIndex);
+
+                          // Toggle the hidden state of the dataset
+                          meta.hidden = meta.hidden === null ? true : null;
+
+                          // Update the chart
+                          ci.update();
+
+                          // Update legend colors
+                          const legendColorsClone = [...legendColors];
+                          if (legendColorsClone[datasetIndex] !== "dimgray") {
+                            legendColorsClone[datasetIndex] = "dimgray";
+                          } else {
+                            legendColorsClone[datasetIndex] =
+                              chartColors[datasetIndex];
+                          }
+                          setLegendColors(legendColorsClone);
+                        }
+                      };
+
+                      return (
+                        <div
+                          key={i}
+                          className="mode-label-div"
+                          title={dataset.label}
+                          onClick={() => customLegendClickHandler(i)}
+                        >
+                          <hr className="my-0"></hr>
+                          <p className="h6 text-center my-0 py-1">
+                            <FontAwesomeIcon
+                              aria-hidden="true"
+                              className="block-icon"
+                              icon={dataset.icon}
+                              color={legendColors[i]}
+                            />
+                            <span className="sr-only">{dataset.label}</span>
+                            <span className="mode-label-text">
+                              {" "}
+                              {dataset.label}
+                            </span>
+                          </p>
+                        </div>
+                      );
+                    })}
+                    <div>
+                      <hr className="my-0"></hr>
+                      <p className="h6 text-center my-0 py-1">
+                        <span className="sr-only">Total</span>
+                        <span className="mode-label-text">Total</span>
+                      </p>
+                    </div>
+                  </StyledDiv>
+                </Col>
+                {data.labels.map((year, yearIterator) => {
+                  let paddingRight = yearIterator === 4 ? "null" : "pe-1";
+                  return (
+                    <Col key={yearIterator} className={`ps-0 ${paddingRight}`}>
+                      <StyledDiv>
+                        <div className="year-total-div">
+                          <div>
+                            <p className="h6 text-center my-1 pt-2">
+                              <strong>{year}</strong>
+                            </p>
+                          </div>
+                          {data.datasets.map((mode, modeIterator) => {
+                            return (
+                              <div key={modeIterator}>
+                                <hr className="my-0"></hr>
+                                <p className={`h6 text-center my-1`}>
+                                  {mode.data[yearIterator]}
+                                </p>
+                              </div>
+                            );
+                          })}
+                          <hr className="my-0"></hr>
+                          <p className={`h6 text-center my-1 pb-1`}>
+                            {data.datasets && yearTotalsArray[yearIterator]}
+                          </p>
+                        </div>
+                      </StyledDiv>
+                    </Col>
+                  );
+                })}
+              </Row>
+            </Container>
             {
               <Container>
                 <Bar
@@ -257,6 +355,7 @@ const CrashesByMode = () => {
                   data={data}
                   height={null}
                   width={null}
+                  aria-label="TODO"
                   options={{
                     responsive: true,
                     aspectRatio: 1.37,
@@ -272,127 +371,6 @@ const CrashesByMode = () => {
                     },
                     legend: {
                       display: false,
-                    },
-                    legendCallback: function (chart) {
-                      return (
-                        <Row className="pb-2">
-                          <Col className="pe-1 col-sm-4">
-                            <StyledDiv>
-                              <div>
-                                <p
-                                  className="h6 text-center my-1 pt-2"
-                                  style={{ height: "27px" }}
-                                ></p>
-                              </div>
-                              {chart.data.datasets.map((dataset, i) => {
-                                const updateLegendColors = () => {
-                                  const legendColorsClone = [...legendColors];
-                                  if (legendColors[i] !== "dimgray") {
-                                    legendColorsClone.splice(i, 1, "dimgray");
-                                  } else {
-                                    legendColorsClone.splice(
-                                      i,
-                                      1,
-                                      chartColors[i],
-                                    );
-                                  }
-                                  setLegendColors(legendColorsClone);
-                                };
-
-                                const customLegendClickHandler = () => {
-                                  const legendItem =
-                                    chart.legend.legendItems[i];
-                                  const index = legendItem.datasetIndex;
-                                  const ci = chartRef.current.chart;
-                                  const meta = ci.getDatasetMeta(index);
-
-                                  // See controller.isDatasetVisible comment
-                                  meta.hidden =
-                                    meta.hidden === null
-                                      ? !ci.data.datasets[index].hidden
-                                      : null;
-
-                                  // We hid a dataset ... rerender the chart,
-                                  // then update the legend colors
-                                  updateLegendColors(ci.update());
-                                };
-
-                                return (
-                                  <div
-                                    key={i}
-                                    className="mode-label-div"
-                                    title={dataset.label}
-                                    onClick={customLegendClickHandler}
-                                  >
-                                    <hr className="my-0"></hr>
-                                    <p className="h6 text-center my-0 py-1">
-                                      <FontAwesomeIcon
-                                        aria-hidden="true"
-                                        className="block-icon"
-                                        icon={dataset.icon}
-                                        color={legendColors[i]}
-                                      />
-                                      <span className="sr-only">
-                                        {dataset.label}
-                                      </span>
-                                      <span className="mode-label-text">
-                                        {" "}
-                                        {dataset.label}
-                                      </span>
-                                    </p>
-                                  </div>
-                                );
-                              })}
-                              <div>
-                                <hr className="my-0"></hr>
-                                <p className="h6 text-center my-0 py-1">
-                                  <span className="sr-only">Total</span>
-                                  <span className="mode-label-text">Total</span>
-                                </p>
-                              </div>
-                            </StyledDiv>
-                          </Col>
-                          {chart.data.labels.map((year, yearIterator) => {
-                            let paddingRight =
-                              yearIterator === 4 ? "null" : "pe-1";
-                            return (
-                              <Col
-                                key={yearIterator}
-                                className={`ps-0 ${paddingRight}`}
-                              >
-                                <StyledDiv>
-                                  <div className="year-total-div">
-                                    <div>
-                                      <p className="h6 text-center my-1 pt-2">
-                                        <strong>{year}</strong>
-                                      </p>
-                                    </div>
-                                    {chart.data.datasets.map(
-                                      (mode, modeIterator) => {
-                                        return (
-                                          <div key={modeIterator}>
-                                            <hr className="my-0"></hr>
-                                            <p
-                                              className={`h6 text-center my-1`}
-                                            >
-                                              {mode.data[yearIterator]}
-                                            </p>
-                                          </div>
-                                        );
-                                      },
-                                    )}
-                                    <hr className="my-0"></hr>
-                                    <p className={`h6 text-center my-1 pb-1`}>
-                                      {data.datasets &&
-                                        yearTotalsArray[yearIterator]}
-                                    </p>
-                                  </div>
-                                </StyledDiv>
-                              </Col>
-                            );
-                          })}
-                        </Row>
-                      );
                     },
                   }}
                 />

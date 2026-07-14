@@ -68,6 +68,7 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
       data={chartData}
       height={null}
       width={null}
+      aria-label="TODO"
       options={{
         responsive: true,
         aspectRatio: 0.849,
