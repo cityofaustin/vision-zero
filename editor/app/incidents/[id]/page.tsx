@@ -25,6 +25,14 @@ import { Crash } from "@/types/crashes";
 import { EMSPatientCareRecord } from "@/types/ems";
 import { ALL_EMS_COLUMNS } from "@/configs/emsColumns";
 import { IconType } from "react-icons";
+import { Badge } from "react-bootstrap";
+
+interface RecordTypeBadgeProps {
+  icon: IconType;
+  label: string;
+  colorClass: "primary" | "danger" | "secondary";
+  count?: number;
+}
 
 const RECORD_TYPE_BADGES: Record<string, RecordTypeBadgeProps> = {
   cad_apd: {
@@ -158,22 +166,18 @@ const emsColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
   { ...ALL_EMS_COLUMNS.person_match_status, defaultHidden: true },
 ];
 
-interface RecordTypeBadgeProps {
-  icon: IconType;
-  label: string;
-  colorClass: "primary" | "danger" | "secondary";
-}
-
 function RecordTypeBadge({
   icon: Icon,
   label,
   colorClass,
+  count,
 }: RecordTypeBadgeProps) {
   return (
     <div className="d-flex">
       <span className="rounded-5 bg-light py-2 px-3 flex-shrink-1 d-flex align-items-center border border-secondary-subtle">
         <Icon className={`text-${colorClass} fs-4 me-2`} />
-        {<span className="fw-light fs-6 text-dark">{label}</span>}
+        <span className="fw-light fs-6 text-dark me-2 my-auto">{label}</span>
+        {count && <Badge className="bg-white border border-secondary text-secondary">{count}</Badge>}
       </span>
     </div>
   );
@@ -228,26 +232,50 @@ export default function IncidentDetailsPage({
               (c) => c.agency_type_short === "apd"
             ) && (
               <Col xs="auto" className="px-1">
-                <RecordTypeBadge {...RECORD_TYPE_BADGES.cad_apd} />
+                <RecordTypeBadge
+                  {...RECORD_TYPE_BADGES.cad_apd}
+                  count={
+                    incident.cad_incidents?.filter(
+                      (c) => c.agency_type_short === "apd"
+                    )?.length
+                  }
+                />
               </Col>
             )}
             {incident.cad_incidents?.some(
               (c) => c.agency_type_short === "afd"
             ) && (
               <Col xs="auto" className="px-1">
-                <RecordTypeBadge {...RECORD_TYPE_BADGES.cad_afd} />
+                <RecordTypeBadge
+                  {...RECORD_TYPE_BADGES.cad_afd}
+                  count={
+                    incident.cad_incidents?.filter(
+                      (c) => c.agency_type_short === "afd"
+                    )?.length
+                  }
+                />
               </Col>
             )}
             {incident.cad_incidents?.some(
               (c) => c.agency_type_short === "ems"
             ) && (
               <Col xs="auto" className="px-1">
-                <RecordTypeBadge {...RECORD_TYPE_BADGES.cad_ems} />
+                <RecordTypeBadge
+                  {...RECORD_TYPE_BADGES.cad_ems}
+                  count={
+                    incident.cad_incidents?.filter(
+                      (c) => c.agency_type_short === "ems"
+                    )?.length
+                  }
+                />
               </Col>
             )}
             {incident?.crashes && (
               <Col xs="auto" className="px-1">
-                <RecordTypeBadge {...RECORD_TYPE_BADGES.crashes} />
+                <RecordTypeBadge
+                  {...RECORD_TYPE_BADGES.crashes}
+                  count={incident?.crashes.length}
+                />
               </Col>
             )}
           </Row>
@@ -255,9 +283,7 @@ export default function IncidentDetailsPage({
       </Row>
       <Row>
         <Col sm={12} className="mb-3">
-          {incident && (
-            <IncidentMapCard incident={incident} />
-          )}
+          {incident && <IncidentMapCard incident={incident} />}
         </Col>
       </Row>
       <Row className="mb-3">
