@@ -26,6 +26,7 @@ import { EMSPatientCareRecord } from "@/types/ems";
 import { ALL_EMS_COLUMNS } from "@/configs/emsColumns";
 import { IconType } from "react-icons";
 import { Badge } from "react-bootstrap";
+import AlignedLabel from "@/components/AlignedLabel";
 
 interface RecordTypeBadgeProps {
   icon: IconType;
@@ -38,7 +39,7 @@ const RECORD_TYPE_BADGES: Record<string, RecordTypeBadgeProps> = {
   cad_apd: {
     icon: RiPoliceBadgeLine,
     colorClass: "primary",
-    label: "Police",
+    label: "APD",
   },
   cad_ems: {
     icon: LuAmbulance,
@@ -48,7 +49,7 @@ const RECORD_TYPE_BADGES: Record<string, RecordTypeBadgeProps> = {
   cad_afd: {
     icon: LuFlame,
     colorClass: "danger",
-    label: "Fire",
+    label: "AFD",
   },
   crashes: {
     icon: LuClipboardPen,
@@ -170,15 +171,13 @@ function RecordTypeBadge({
   icon: Icon,
   label,
   colorClass,
-  count,
 }: RecordTypeBadgeProps) {
   return (
     <div className="d-flex">
-      <span className="rounded-5 bg-light py-2 px-3 flex-shrink-1 d-flex align-items-center border border-secondary-subtle">
+      <AlignedLabel>
         <Icon className={`text-${colorClass} fs-4 me-2`} />
         <span className="fw-light fs-6 text-dark me-2 my-auto">{label}</span>
-        {count && <Badge className="bg-white border border-secondary text-secondary">{count}</Badge>}
-      </span>
+      </AlignedLabel>
     </div>
   );
 }
@@ -223,62 +222,6 @@ export default function IncidentDetailsPage({
         <Col className="d-flex fs-3 align-items-center mb-3">
           <FaRoad className="me-2" />
           <span>{incident.address}</span>
-        </Col>
-      </Row>
-      <Row className="mb-3 justify-content-between">
-        <Col xs="auto">
-          <Row>
-            {incident.cad_incidents?.some(
-              (c) => c.agency_type_short === "apd"
-            ) && (
-              <Col xs="auto" className="px-1">
-                <RecordTypeBadge
-                  {...RECORD_TYPE_BADGES.cad_apd}
-                  count={
-                    incident.cad_incidents?.filter(
-                      (c) => c.agency_type_short === "apd"
-                    )?.length
-                  }
-                />
-              </Col>
-            )}
-            {incident.cad_incidents?.some(
-              (c) => c.agency_type_short === "afd"
-            ) && (
-              <Col xs="auto" className="px-1">
-                <RecordTypeBadge
-                  {...RECORD_TYPE_BADGES.cad_afd}
-                  count={
-                    incident.cad_incidents?.filter(
-                      (c) => c.agency_type_short === "afd"
-                    )?.length
-                  }
-                />
-              </Col>
-            )}
-            {incident.cad_incidents?.some(
-              (c) => c.agency_type_short === "ems"
-            ) && (
-              <Col xs="auto" className="px-1">
-                <RecordTypeBadge
-                  {...RECORD_TYPE_BADGES.cad_ems}
-                  count={
-                    incident.cad_incidents?.filter(
-                      (c) => c.agency_type_short === "ems"
-                    )?.length
-                  }
-                />
-              </Col>
-            )}
-            {incident?.crashes && (
-              <Col xs="auto" className="px-1">
-                <RecordTypeBadge
-                  {...RECORD_TYPE_BADGES.crashes}
-                  count={incident?.crashes.length}
-                />
-              </Col>
-            )}
-          </Row>
         </Col>
       </Row>
       <Row>
