@@ -1,6 +1,43 @@
 table:
   name: vz_incidents_view
   schema: public
+array_relationships:
+  - name: afd__incidents
+    using:
+      manual_configuration:
+        column_mapping:
+          id: vz_incident_id
+        insertion_order: null
+        remote_table:
+          name: afd__incidents
+          schema: public
+  - name: cad_incidents
+    using:
+      manual_configuration:
+        column_mapping:
+          id: vz_incident_id
+        insertion_order: null
+        remote_table:
+          name: cad_incidents
+          schema: public
+  - name: crashes
+    using:
+      manual_configuration:
+        column_mapping:
+          id: vz_incident_id
+        insertion_order: null
+        remote_table:
+          name: crashes
+          schema: public
+  - name: ems__incidents
+    using:
+      manual_configuration:
+        column_mapping:
+          id: vz_incident_id
+        insertion_order: null
+        remote_table:
+          name: ems__incidents
+          schema: public
 select_permissions:
   - role: editor
     permission:
