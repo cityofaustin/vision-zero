@@ -1,9 +1,15 @@
 import { Point } from "geojson";
+import { AfdIncident } from "@/types/afd";
 import { CadIncident } from "@/types/cadIncident";
+import { Crash } from "@/types/crashes";
+import { EMSPatientCareRecord } from "@/types/ems";
 
-export type VzIncident = {
+export type VzIncidentListRow = {
+  afd__incidents?: AfdIncident[] | null;
   address?: string[] | null;
   cad_incidents?: CadIncident[] | null;
+  crashes?: Crash[] | null;
+  ems__incidents?: EMSPatientCareRecord[] | null;
   id?: number | null;
   in_austin_full_purpose?: boolean | null;
   incident_numbers?: string[] | null;
