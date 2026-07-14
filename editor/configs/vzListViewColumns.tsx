@@ -5,15 +5,15 @@ import {
   formatIsoDateTime,
 } from "@/utils/formatters";
 import { ColDataCardDef } from "@/types/types";
-import { VzIncident } from "@/types/vzIncident";
+import { VzIncidentListRow } from "@/types/vzIncidentList";
 
-export const vzListViewColumns: ColDataCardDef<VzIncident>[] = [
+export const vzListViewColumns: ColDataCardDef<VzIncidentListRow>[] = [
   {
     path: "id",
     label: "ID",
     sortable: true,
     fetchAlways: true,
-    valueRenderer: (record: VzIncident) => (
+    valueRenderer: (record: VzIncidentListRow) => (
       <Link href={`/incidents/${record.id}`} prefetch={false}>
         {record.id}
       </Link>
