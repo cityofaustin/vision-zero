@@ -76,13 +76,11 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
           mode: "x",
         },
         scales: {
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-              },
+          y: {
+            ticks: {
+              beginAtZero: true,
             },
-          ],
+          },
         },
         legend: {
           onClick: (e) => e.stopPropagation(),

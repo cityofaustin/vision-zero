@@ -50,13 +50,11 @@ const CrashesByYearAverage = ({ avgData, currentYearData }) => {
           mode: "index",
         },
         scales: {
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-              },
+          y: {
+            ticks: {
+              beginAtZero: true,
             },
-          ],
+          },
         },
         legend: {
           onClick: (e) => e.stopPropagation(),

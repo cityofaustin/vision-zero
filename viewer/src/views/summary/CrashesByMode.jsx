@@ -262,16 +262,13 @@ const CrashesByMode = () => {
                     aspectRatio: 1.37,
                     maintainAspectRatio: false,
                     scales: {
-                      xAxes: [
-                        {
-                          stacked: true,
-                        },
-                      ],
-                      yAxes: [
-                        {
-                          stacked: true,
-                        },
-                      ],
+                      x: {
+                        stacked: true,
+                      },
+
+                      y: {
+                        stacked: true,
+                      },
                     },
                     legend: {
                       display: false,

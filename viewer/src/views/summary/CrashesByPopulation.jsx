@@ -158,13 +158,11 @@ const CrashesByPopulation = () => {
                     mode: "index",
                   },
                   scales: {
-                    yAxes: [
-                      {
-                        ticks: {
-                          beginAtZero: true,
-                        },
+                    y: {
+                      ticks: {
+                        beginAtZero: true,
                       },
-                    ],
+                    },
                   },
                   legend: {
                     display: false,
