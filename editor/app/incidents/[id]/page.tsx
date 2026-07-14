@@ -255,8 +255,8 @@ export default function IncidentDetailsPage({
       </Row>
       <Row>
         <Col sm={12} className="mb-3">
-          {incident.cad_incidents && (
-            <IncidentMapCard cadIncidents={incident.cad_incidents} />
+          {incident && (
+            <IncidentMapCard incident={incident} />
           )}
         </Col>
       </Row>
