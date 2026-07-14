@@ -1,7 +1,7 @@
 # Moped Hasura
-MOPED_HASURA_ADMIN_SECRET=<Moped Hasura Admin Key - Staging>
-MOPED_HASURA_ENDPOINT=<Moped Hasura Admin Key - Staging>
+MOPED_HASURA_ADMIN_SECRET=<Moped Hasura Admin> (Admin Secret)
+MOPED_HASURA_ENDPOINT=<Moped Hasura Admin> (Endpoint)
 
 # Vision Zero Hasura
-VZ_HASURA_ADMIN_SECRET=<VZD - Staging - Hasura Admin key>
-VZ_HASURA_ENDPOINT=<VZD - Staging - Hasura Admin key>
+VZ_HASURA_ADMIN_SECRET=<Vision Zero ETLs> (Admin Secret)
+VZ_HASURA_ENDPOINT=<Vision Zero ETLs> (Endpoint)
