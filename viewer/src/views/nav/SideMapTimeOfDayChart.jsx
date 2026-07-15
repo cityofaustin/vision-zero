@@ -6,7 +6,7 @@ import { createMapDataUrl } from "../map/helpers";
 import { crashEndpointUrl } from "../summary/queries/socrataQueries";
 
 import { Container, Button } from "reactstrap";
-import { Bar } from "react-chartjs-2";
+import { Bar, getElementAtEvent } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
 export const SideMapTimeOfDayChart = ({ filters }) => {
@@ -16,7 +16,9 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   const inactiveBarColor = colors.white;
 
   const [chartData, setChartData] = useState(null);
-  const [barColors, setBarColors] = useState(defaultBarColor);
+  const [barColors, setBarColors] = useState(
+    Object.keys(filters).map(() => defaultBarColor),
+  );
 
   const {
     mapTimeWindow: [mapTimeWindow, setMapTimeWindow],
@@ -86,26 +88,33 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
       return parseInt(((timeWindow / timeWindowsTotal) * 100).toFixed(0));
     });
   }, [timeWindowData]);
-  const handleBarClick = (elems) => {
-    // Store bar label, if click is within a bar
-    const timeWindow = elems.length > 0 ? elems[0]._model.label : null;
-    const index = elems.length > 0 ? elems[0]._index : null;
 
-    // If valid click, set mapTimeWindow state
-    if (timeWindow) {
-      const timeWindowArray = filters[timeWindow];
-      const timeWindowStart = timeWindowArray[0];
-      const timeWindowEnd = timeWindowArray[1];
-      const timeWindowFilterString = ` AND date_extract_hh(crash_timestamp_ct) between ${timeWindowStart} and ${timeWindowEnd} AND date_extract_mm(crash_timestamp_ct) between 0 and 59`;
-      setMapTimeWindow(timeWindowFilterString);
-    }
+  const handleBarClick = (event) => {
+    if (chartRef.current) {
+      const elements = getElementAtEvent(chartRef.current, event);
 
-    // Style unselected bars as inactive
-    if (index !== null) {
-      const newBarColors = Object.keys(filters).map((filter, i) =>
-        i === index ? defaultBarColor : inactiveBarColor,
-      );
-      setBarColors(newBarColors);
+      if (elements && elements.length > 0) {
+        const element = elements[0];
+        const index = element.index;
+        const timeLabel = Object.keys(filters)[index];
+        const timeWindow = filters[timeLabel];
+
+        // If valid click, set mapTimeWindow state
+        if (timeWindow) {
+          const timeWindowStart = timeWindow[0];
+          const timeWindowEnd = timeWindow[1];
+          const timeWindowFilterString = ` AND date_extract_hh(crash_timestamp_ct) between ${timeWindowStart} and ${timeWindowEnd} AND date_extract_mm(crash_timestamp_ct) between 0 and 59`;
+          setMapTimeWindow(timeWindowFilterString);
+        }
+
+        // Style unselected bars as inactive
+        if (index !== null) {
+          const newBarColors = Object.keys(filters).map((filter, i) =>
+            i === index ? defaultBarColor : inactiveBarColor,
+          );
+          setBarColors(newBarColors);
+        }
+      }
     }
   };
 
@@ -120,17 +129,16 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   const isMapTimeWindowSet = !!mapTimeWindow;
 
   const handleAllButtonClick = () => {
+    console.log("hey");
     setMapTimeWindow("");
-    setBarColors(defaultBarColor);
+    setBarColors(Object.keys(filters).map(() => defaultBarColor));
   };
 
-  const handleHover = (evt) => {
-    var item = chartRef.current.chartInstance.getElementAtEvent(evt);
-    if (item.length) {
-      // Change cursor if hovering over a data bar
-      evt.target.style.cursor = item[0]._model.datasetLabel && "pointer";
+  const handleHover = (event, elements) => {
+    if (elements && elements.length > 0) {
+      event.native.target.style.cursor = "pointer";
     } else {
-      evt.target.style.cursor = "default";
+      event.native.target.style.cursor = "default";
     }
   };
 
@@ -157,26 +165,31 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
           data={data}
           height={250}
           aria-label="TODO"
-          onElementsClick={handleBarClick}
+          onClick={handleBarClick}
           options={{
             indexAxis: "y",
             onHover: handleHover,
-            legend: {
-              display: false,
-            },
             scales: {
-              xAxes: [
-                {
-                  ticks: {
-                    beginAtZero: true, // Keep small %s viewable in chart
+              x: {
+                ticks: {
+                  beginAtZero: true, // Keep small %s viewable in chart
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const index = context.dataIndex;
+                    return `${timeWindowPercentages[index]}% (${timeWindowData[index]})`;
+                  },
+                  title: function () {
+                    return null; // Render nothing for tooltip title
                   },
                 },
-              ],
-            },
-            tooltips: {
-              callbacks: {
-                label: createTooltipData,
-                title: () => null, // Render nothing for tooltip title
               },
             },
           }}
