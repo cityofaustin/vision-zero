@@ -24,125 +24,8 @@ import { crashesColumns } from "@/configs/crashesColumns";
 import { Crash } from "@/types/crashes";
 import { EMSPatientCareRecord } from "@/types/ems";
 import { ALL_EMS_COLUMNS } from "@/configs/emsColumns";
-import { IconType } from "react-icons";
-import { Badge } from "react-bootstrap";
-import AlignedLabel from "@/components/AlignedLabel";
+import { cadColumns } from "@/configs/cadColumns";
 
-interface RecordTypeBadgeProps {
-  icon: IconType;
-  label: string;
-  colorClass: "primary" | "danger" | "secondary";
-  count?: number;
-}
-
-const RECORD_TYPE_BADGES: Record<string, RecordTypeBadgeProps> = {
-  cad_apd: {
-    icon: RiPoliceBadgeLine,
-    colorClass: "primary",
-    label: "APD",
-  },
-  cad_ems: {
-    icon: LuAmbulance,
-    colorClass: "danger",
-    label: "EMS",
-  },
-  cad_afd: {
-    icon: LuFlame,
-    colorClass: "danger",
-    label: "AFD",
-  },
-  crashes: {
-    icon: LuClipboardPen,
-    colorClass: "secondary",
-    label: "Crash report",
-  },
-};
-
-export const cadColumns: ColDataCardDef<CadIncident>[] = [
-  {
-    path: "agency_type_short",
-    label: "Agency",
-    sortable: true,
-    // style: { textTransform: "uppercase" },
-    valueRenderer: (record: CadIncident) => (
-      <RecordTypeBadge
-        {...RECORD_TYPE_BADGES["cad_" + record.agency_type_short || ""]}
-      />
-    ),
-  },
-  {
-    path: "response_date",
-    label: "Date",
-    sortable: true,
-    style: { minWidth: "8rem" },
-    valueFormatter: formatIsoDateTime,
-    fetchAlways: true,
-  },
-  {
-    path: "address",
-    label: "Address",
-    sortable: true,
-  },
-  {
-    path: "time_first_unit_arrived",
-    label: "On scene",
-    valueFormatter: formatYesNoString,
-  },
-  {
-    path: "initial_problem",
-    label: "Initial problem",
-    sortable: true,
-    defaultHidden: true,
-  },
-  {
-    path: "final_problem",
-    label: "Final problem",
-    sortable: true,
-  },
-  {
-    path: "call_disposition",
-    label: "Call disposition",
-    sortable: true,
-  },
-
-  {
-    path: "incident_type",
-    label: "Type",
-    sortable: true,
-    defaultHidden: true,
-  },
-  {
-    path: "priority_description",
-    label: "Priority",
-    sortable: true,
-    defaultHidden: true,
-  },
-  {
-    path: "master_incident_number",
-    label: "Incident number",
-    sortable: true,
-  },
-  {
-    path: "is_cancelled_call",
-    label: "Canceled call",
-    sortable: true,
-    valueFormatter: formatYesNoString,
-    defaultHidden: true,
-  },
-  {
-    path: "in_austin_full_purpose",
-    label: "In Austin Full Purpose",
-    sortable: true,
-    defaultHidden: true,
-    valueFormatter: formatYesNoString,
-  },
-  {
-    path: "location_id",
-    label: "Location ID",
-    sortable: true,
-    defaultHidden: true,
-  },
-];
 
 const crashColumns: ColDataCardDef<Crash>[] = [
   crashesColumns.record_locator_hyperlinked,
@@ -166,21 +49,6 @@ const emsColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
   ALL_EMS_COLUMNS.crash_match_status,
   { ...ALL_EMS_COLUMNS.person_match_status, defaultHidden: true },
 ];
-
-function RecordTypeBadge({
-  icon: Icon,
-  label,
-  colorClass,
-}: RecordTypeBadgeProps) {
-  return (
-    <div className="d-flex">
-      <AlignedLabel>
-        <Icon className={`text-${colorClass} fs-4 me-2`} />
-        <span className="fw-light fs-6 text-dark me-2 my-auto">{label}</span>
-      </AlignedLabel>
-    </div>
-  );
-}
 
 export default function IncidentDetailsPage({
   params,
