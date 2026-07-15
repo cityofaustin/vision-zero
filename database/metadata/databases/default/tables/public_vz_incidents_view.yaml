@@ -45,13 +45,15 @@ select_permissions:
         - incident_numbers
         - location_ids
         - record_tables
-        - record_tables_str
         - responding_agencies
-        - responding_agencies_str
         - id
         - record_count
         - in_austin_full_purpose
+        - latitude
+        - longitude
         - address
+        - record_tables_str
+        - responding_agencies_str
         - record_timestamp
         - point_feature
       filter: {}
@@ -63,13 +65,15 @@ select_permissions:
         - incident_numbers
         - location_ids
         - record_tables
-        - record_tables_str
         - responding_agencies
-        - responding_agencies_str
         - id
         - record_count
         - in_austin_full_purpose
+        - latitude
+        - longitude
         - address
+        - record_tables_str
+        - responding_agencies_str
         - record_timestamp
         - point_feature
       filter: {}
@@ -81,13 +85,15 @@ select_permissions:
         - incident_numbers
         - location_ids
         - record_tables
-        - record_tables_str
         - responding_agencies
-        - responding_agencies_str
         - id
         - record_count
         - in_austin_full_purpose
+        - latitude
+        - longitude
         - address
+        - record_tables_str
+        - responding_agencies_str
         - record_timestamp
         - point_feature
       filter: {}
