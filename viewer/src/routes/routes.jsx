@@ -21,9 +21,3 @@ export const routeConfig = [
     element: <SummaryView />,
   },
 ];
-
-// export const routes = {
-//   "/": () => <Summary />,
-//   "/map": () => <Map />,
-//   "/measures": () => <SummaryView />,
-// };
