@@ -23,4 +23,14 @@ export type VzIncidentListRow = {
   record_timestamp?: string;
   responding_agencies_str?: string | null;
   responding_agencies?: string[];
+  vz_incident_records_view?: {
+    vz_incident_id: number;
+    geom: Point;
+    record_id: number;
+    record_incident_number: string;
+    record_responding_agency: string | null;
+    record_table_name: string;
+    record_address: string | null;
+    record_timestamp: string | null;
+  }[];
 };
