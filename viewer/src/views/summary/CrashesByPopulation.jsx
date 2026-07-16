@@ -91,7 +91,7 @@ const CrashesByPopulation = () => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left font-weight-bold">
+          <h2 className="fw-bold">
             By Population (Rate Per 100,000){" "}
             <InfoPopover config={popoverConfig.summary.byPopulation} />
           </h2>

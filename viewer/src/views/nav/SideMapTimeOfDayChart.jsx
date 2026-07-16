@@ -129,7 +129,6 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   const isMapTimeWindowSet = !!mapTimeWindow;
 
   const handleAllButtonClick = () => {
-    console.log("hey");
     setMapTimeWindow("");
     setBarColors(Object.keys(filters).map(() => defaultBarColor));
   };

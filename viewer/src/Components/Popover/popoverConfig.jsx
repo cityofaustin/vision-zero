@@ -33,7 +33,7 @@ export const popoverConfig = {
       title: "Demographics Data",
       html: (
         <>
-          <div className="font-weight-bold">Demographics Data</div>
+          <div className="fw-bold">Demographics Data</div>
           <div className="mb-2">
             To compare crash demographics data with historical and estimated
             demographics data for the City of Austin Full Purpose jurisdiction,
@@ -47,13 +47,13 @@ export const popoverConfig = {
             </a>
             .
           </div>
-          <div className="font-weight-bold">Sex</div>
+          <div className="fw-bold">Sex</div>
           <div className="mb-2">
             This visualization relies on the information entered by officers
             into the official crash reports. Officers are encouraged to use the
             sex that appears on the Driver License/ID Card.
           </div>
-          <div className="font-weight-bold">Race/Ethnicity</div>
+          <div className="fw-bold">Race/Ethnicity</div>
           <div className="mb-2">
             This visualization relies on information entered by officers into
             the "Ethnicity" field within official crash reports. To more
@@ -101,7 +101,7 @@ export const popoverConfig = {
       title: "Austin Area Population Histories & Forecasts",
       html: (
         <>
-          <div className="font-weight-bold">
+          <div className="fw-bold">
             Austin Area Population Histories & Forecasts
           </div>
           <div className="mb-2">
@@ -295,7 +295,7 @@ export const popoverConfig = {
             .
           </div>
           <div>
-            <div className="font-weight-bold mb-2">Definitions</div>
+            <div className="fw-bold mb-2">Definitions</div>
             <div className="mb-2">
               <strong>Fatality</strong>: A fatality is defined as a death that
               resulted due to injuries sustained from the crash, at the scene or
@@ -335,7 +335,7 @@ export const popoverConfig = {
       title: "Overlays",
       html: (
         <>
-          <div className="font-weight-bold">ASMP Street Levels</div>
+          <div className="fw-bold">ASMP Street Levels</div>
           <div className="mb-2">
             The Austin Strategic Mobility Plan (ASMP) is Austin’s current
             long-term, citywide transportation plan that was adopted in 2019.
@@ -356,7 +356,7 @@ export const popoverConfig = {
             </a>
             .
           </div>
-          <div className="font-weight-bold">
+          <div className="fw-bold">
             High-Injury Network/High-Injury Roadways
           </div>
           <div className="mb-2">
