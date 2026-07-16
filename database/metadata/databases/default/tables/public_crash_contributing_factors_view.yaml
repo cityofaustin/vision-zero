@@ -1,0 +1,25 @@
+table:
+  name: crash_contributing_factors_view
+  schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - id
+        - contributing_factors
+      filter: {}
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - id
+        - contributing_factors
+      filter: {}
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - id
+        - contributing_factors
+      filter: {}
+    comment: ""
