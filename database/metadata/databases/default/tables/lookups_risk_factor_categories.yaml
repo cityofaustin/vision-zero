@@ -1,5 +1,5 @@
 table:
-  name: contrib_factor_categories
+  name: risk_factor_categories
   schema: lookups
 object_relationships:
   - name: contrib_factr
@@ -10,20 +10,20 @@ select_permissions:
     permission:
       columns:
         - contrib_factor_id
-        - contrib_factor_category
+        - risk_factor_category
       filter: {}
     comment: ""
   - role: readonly
     permission:
       columns:
         - contrib_factor_id
-        - contrib_factor_category
+        - risk_factor_category
       filter: {}
     comment: ""
   - role: vz-admin
     permission:
       columns:
         - contrib_factor_id
-        - contrib_factor_category
+        - risk_factor_category
       filter: {}
     comment: ""

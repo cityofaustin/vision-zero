@@ -1,10 +1,10 @@
--- Mapping of CRIS contrib_factr IDs to Vision Zero crash-level categories.
+-- Mapping of CRIS contrib_factr IDs to Vision Zero crash-level risk factors.
 -- Source: Crash contributing factors business rules: https://docs.google.com/document/d/1YPVyAz72YUMo-kMvN65dMjN7DKba6OEqGJGQWMTwWAc/edit?tab=t.0#heading=h.5wz64nv7k8b0
 -- Note: CRIS id 72 (CELL/MOBILE PHONE USE) was removed in CRIS v30.1; use 75–78.
-CREATE TABLE lookups.contrib_factor_categories (
+CREATE TABLE lookups.risk_factor_categories (
     contrib_factor_id integer NOT NULL REFERENCES lookups.contrib_factr (id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    contrib_factor_category text NOT NULL,
-    PRIMARY KEY (contrib_factor_id, contrib_factor_category)
+    risk_factor_category text NOT NULL,
+    PRIMARY KEY (contrib_factor_id, risk_factor_category)
 );
 
 -- Ensure referenced CRIS lookup rows exist (no-op when already loaded from a dump).
@@ -66,7 +66,7 @@ VALUES
     (80, 'DROVE ON IMPROVED SHOULDER', 'cris')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO lookups.contrib_factor_categories (contrib_factor_id, contrib_factor_category)
+INSERT INTO lookups.risk_factor_categories (contrib_factor_id, risk_factor_category)
 VALUES
     -- Distracted driving
     (19, 'Distracted driving'),
@@ -129,12 +129,12 @@ VALUES
     -- Visual obstruction
     (48, 'Visual obstruction');
 
-CREATE OR REPLACE VIEW crash_contributing_factors_view AS
+CREATE OR REPLACE VIEW crash_risk_factors_view AS
 WITH
     unit_factors AS (
         SELECT
             units.crash_pk AS id,
-            categories.contrib_factor_category
+            categories.risk_factor_category
         FROM
             units
             CROSS JOIN LATERAL (
@@ -145,7 +145,7 @@ WITH
                     (units.contrib_factr_p1_id),
                     (units.contrib_factr_p2_id)
             ) AS factor_ids (contrib_factor_id)
-            INNER JOIN lookups.contrib_factor_categories AS categories
+            INNER JOIN lookups.risk_factor_categories AS categories
                 ON categories.contrib_factor_id = factor_ids.contrib_factor_id
         WHERE
             units.is_deleted = FALSE
@@ -156,7 +156,7 @@ WITH
         -- Impaired driving from people alcohol/drug test results or BAC
         SELECT DISTINCT
             units.crash_pk AS id,
-            'Impaired driving'::text AS contrib_factor_category
+            'Impaired driving'::text AS risk_factor_category
         FROM
             people
             INNER JOIN units ON units.id = people.unit_id
@@ -175,7 +175,7 @@ WITH
         -- Impaired driving from charges
         SELECT DISTINCT
             charges_cris.crash_pk AS id,
-            'Impaired driving'::text AS contrib_factor_category
+            'Impaired driving'::text AS risk_factor_category
         FROM
             charges_cris
         WHERE
@@ -188,7 +188,7 @@ WITH
         -- Speeding from charges
         SELECT DISTINCT
             charges_cris.crash_pk AS id,
-            'Speeding'::text AS contrib_factor_category
+            'Speeding'::text AS risk_factor_category
         FROM
             charges_cris
         WHERE
@@ -197,7 +197,7 @@ WITH
         -- Red light running from collision type + signalized location
         SELECT
             crashes.id,
-            'Red light running'::text AS contrib_factor_category
+            'Red light running'::text AS risk_factor_category
         FROM
             crashes
             INNER JOIN locations
@@ -206,27 +206,35 @@ WITH
             crashes.fhe_collsn_id = 10
             AND locations.signal_type ILIKE 'TRAFFIC'
     ),
+    -- Combine unit and attribute factors and remove duplicates.
+    -- Ex: A crash with two speeding contributing factors would result in 'Speeding' only.
     all_categories AS (
         SELECT
             id,
-            contrib_factor_category
+            risk_factor_category
         FROM
             unit_factors
         UNION
         SELECT
             id,
-            contrib_factor_category
+            risk_factor_category
         FROM
             attribute_factors
     ),
+    -- Produce a list of risk factors for each crash.
+    -- Example:
+    -- id       risk_factors
+    -- 12345    {"Distracted driving","Speeding"}
+    -- 12346    {"Impaired driving"}
+    -- 12347    null
     aggregated AS (
         SELECT
             id,
             ARRAY_AGG(
-                DISTINCT contrib_factor_category
+                DISTINCT risk_factor_category
                 ORDER BY
-                    contrib_factor_category
-            ) AS contributing_factors
+                    risk_factor_category
+            ) AS risk_factors
         FROM
             all_categories
         GROUP BY
@@ -234,7 +242,7 @@ WITH
     )
 SELECT
     crashes.id,
-    NULLIF(aggregated.contributing_factors, '{}'::text[]) AS contributing_factors
+    NULLIF(aggregated.risk_factors, '{}'::text[]) AS risk_factors
 FROM
     crashes
     LEFT JOIN aggregated ON aggregated.id = crashes.id;
