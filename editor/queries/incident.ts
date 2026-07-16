@@ -7,7 +7,6 @@ export const GET_INCIDENT = gql`
       afd__incidents {
         id
       }
-
       cad_incidents {
         address
         agency_type_short
@@ -71,6 +70,16 @@ export const GET_INCIDENT = gql`
       record_timestamp
       responding_agencies_str
       responding_agencies
+      vz_incident_records_view {
+        vz_incident_id
+        geom
+        record_id
+        record_incident_number
+        record_responding_agency
+        record_table_name
+        record_address
+        record_timestamp
+      }
     }
   }
 `;
