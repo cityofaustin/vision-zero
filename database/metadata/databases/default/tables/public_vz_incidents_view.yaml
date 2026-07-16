@@ -38,6 +38,15 @@ array_relationships:
         remote_table:
           name: ems__incidents
           schema: public
+  - name: vz_incident_records_view
+    using:
+      manual_configuration:
+        column_mapping:
+          id: vz_incident_id
+        insertion_order: null
+        remote_table:
+          name: vz_incident_records_view
+          schema: public
 select_permissions:
   - role: editor
     permission:
