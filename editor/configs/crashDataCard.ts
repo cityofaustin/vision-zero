@@ -5,6 +5,7 @@ export const crashDataCards = {
     crashesColumns.case_id,
     crashesColumns.crash_timestamp,
     crashesColumns.collsn,
+    crashesColumns.risk_factors,
     crashesColumns.city,
     crashesColumns.agency,
   ],
@@ -27,6 +28,5 @@ export const crashDataCards = {
     crashesColumns.crash_speed_limit,
     crashesColumns.obj_struck,
     crashesColumns.law_enforcement_ytd_fatality_num,
-    crashesColumns.risk_factors,
   ],
 };
