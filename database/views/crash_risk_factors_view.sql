@@ -1,4 +1,4 @@
--- Most recent migration: database/migrations/default/1784227413000_crash_risk_factors/up.sql
+-- Most recent migration: database/migrations/default/1784264703617_crash_risk_factors/up.sql
 
 CREATE OR REPLACE VIEW crash_risk_factors_view AS
 WITH unit_factors AS (
