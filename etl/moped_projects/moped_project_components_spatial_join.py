@@ -126,7 +126,7 @@ def main():
     # Exporting results
     crashes_near_projects.reset_index(inplace=True)
     crashes_near_projects.rename(
-        columns={"id": "crash_pk", "index_right": "mopd_proj_component_id"},
+        columns={"id": "crash_pk", "project_component_id": "mopd_proj_component_id"},
         inplace=True,
     )
     crashes_near_projects = crashes_near_projects[
