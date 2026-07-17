@@ -4,67 +4,12 @@
 CREATE TABLE lookups.risk_factor_categories (
     contrib_factor_id integer NOT NULL REFERENCES lookups.contrib_factr (id) ON UPDATE CASCADE ON DELETE RESTRICT,
     risk_factor_category text NOT NULL,
+    source text DEFAULT 'vz'::text NOT NULL,
     PRIMARY KEY (contrib_factor_id, risk_factor_category)
 );
 
--- Ensure referenced CRIS lookup rows exist (no-op when already loaded from a dump).
-INSERT INTO lookups.contrib_factr (id, label, source)
-VALUES
-    (3, 'BACKED WITHOUT SAFETY', 'cris'),
-    (4, 'CHANGED LANE WHEN UNSAFE', 'cris'),
-    (15, 'DISREGARD STOP AND GO SIGNAL', 'cris'),
-    (16, 'DISREGARD STOP SIGN OR LIGHT', 'cris'),
-    (17, 'DISREGARD TURN MARKS AT INTERSECTION', 'cris'),
-    (18, 'DISREGARD WARNING SIGN AT CONSTRUCTION', 'cris'),
-    (19, 'DISTRACTION IN VEHICLE', 'cris'),
-    (20, 'DRIVER INATTENTION', 'cris'),
-    (22, 'FAILED TO CONTROL SPEED', 'cris'),
-    (23, 'FAILED TO DRIVE IN SINGLE LANE', 'cris'),
-    (24, 'FAILED TO GIVE HALF OF ROADWAY', 'cris'),
-    (25, 'FAILED TO HEED WARNING SIGN OR TRAFFIC CONTROL DEVICE', 'cris'),
-    (26, 'FAILED TO PASS TO LEFT SAFELY', 'cris'),
-    (27, 'FAILED TO PASS TO RIGHT SAFELY', 'cris'),
-    (28, 'FAILED TO SIGNAL OR GAVE WRONG SIGNAL', 'cris'),
-    (29, 'FAILED TO STOP AT PROPER PLACE', 'cris'),
-    (30, 'FAILED TO STOP FOR SCHOOL BUS', 'cris'),
-    (31, 'FAILED TO STOP FOR TRAIN', 'cris'),
-    (32, 'FAILED TO YIELD RIGHT OF WAY - EMERGENCY VEHICLE', 'cris'),
-    (33, 'FAILED TO YIELD RIGHT OF WAY - OPEN INTERSECTION', 'cris'),
-    (34, 'FAILED TO YIELD RIGHT OF WAY - PRIVATE DRIVE', 'cris'),
-    (35, 'FAILED TO YIELD RIGHT OF WAY - STOP SIGN', 'cris'),
-    (36, 'FAILED TO YIELD RIGHT OF WAY - TO PEDESTRIAN', 'cris'),
-    (37, 'FAILED TO YIELD RIGHT OF WAY - TURNING LEFT', 'cris'),
-    (38, 'FAILED TO YIELD RIGHT OF WAY - TURN ON RED', 'cris'),
-    (39, 'FAILED TO YIELD RIGHT OF WAY - YIELD SIGN', 'cris'),
-    (40, 'FATIGUED OR ASLEEP', 'cris'),
-    (41, 'FAULTY EVASIVE ACTION', 'cris'),
-    (44, 'FOLLOWED TOO CLOSELY', 'cris'),
-    (45, 'HAD BEEN DRINKING', 'cris'),
-    (48, 'IMPAIRED VISIBILITY (EXPLAIN IN NARRATIVE)', 'cris'),
-    (51, 'OPENED DOOR INTO TRAFFIC LANE', 'cris'),
-    (53, 'OVERTAKE AND PASS INSUFFICIENT CLEARANCE', 'cris'),
-    (57, 'PASSED IN NO PASSING LANE', 'cris'),
-    (58, 'PASSED ON SHOULDER', 'cris'),
-    (59, 'PEDESTRIAN FAILED TO YIELD RIGHT OF WAY TO VEHICLE', 'cris'),
-    (60, 'UNSAFE SPEED', 'cris'),
-    (61, 'SPEEDING - (OVERLIMIT)', 'cris'),
-    (62, 'TAKING MEDICATION (EXPLAIN IN NARRATIVE)', 'cris'),
-    (63, 'TURNED IMPROPERLY - CUT CORNER ON LEFT', 'cris'),
-    (64, 'TURNED IMPROPERLY - WIDE RIGHT', 'cris'),
-    (65, 'TURNED IMPROPERLY - WRONG LANE', 'cris'),
-    (66, 'TURNED WHEN UNSAFE', 'cris'),
-    (67, 'INTOXICATED - ALCOHOL', 'cris'),
-    (68, 'INTOXICATED - DRUG', 'cris'),
-    (69, 'WRONG SIDE - APPROACH OR INTERSECTION', 'cris'),
-    (70, 'WRONG SIDE - NOT PASSING', 'cris'),
-    (71, 'WRONG WAY - ONE WAY ROAD', 'cris'),
-    (75, 'CELL/MOBILE DEVICE USE - TALKING', 'cris'),
-    (76, 'CELL/MOBILE DEVICE USE - TEXTING', 'cris'),
-    (77, 'CELL/MOBILE DEVICE USE - OTHER', 'cris'),
-    (78, 'CELL/MOBILE DEVICE USE - UNKNOWN', 'cris'),
-    (79, 'FAILED TO SLOW OR MOVE OVER FOR VEHICLES DISPLAYING EMERGENCY LIGHTS', 'cris'),
-    (80, 'DROVE ON IMPROVED SHOULDER', 'cris')
-ON CONFLICT (id) DO NOTHING;
+COMMENT ON TABLE lookups.risk_factor_categories IS
+'Maps CRIS contributing factor IDs to Vision Zero crash-level risk factor categories.';
 
 INSERT INTO lookups.risk_factor_categories (contrib_factor_id, risk_factor_category)
 VALUES
@@ -167,6 +112,8 @@ WITH
                 people.prsn_alc_rslt_id = 1
                 OR people.prsn_drg_rslt_id = 1
                 OR (
+                    -- BAC is stored as free text; match numeric values at/above 0.08
+                    -- e.g. '0.08', '0.15', '.12'. Skip non-numeric values like '', 'NONE'.
                     people.prsn_bac_test_rslt ~ '^[0-9]*\.?[0-9]+$'
                     AND people.prsn_bac_test_rslt::numeric >= 0.08
                 )
