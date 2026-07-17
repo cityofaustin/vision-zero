@@ -27,5 +27,6 @@ export const crashDataCards = {
     crashesColumns.crash_speed_limit,
     crashesColumns.obj_struck,
     crashesColumns.law_enforcement_ytd_fatality_num,
+    crashesColumns.risk_factors,
   ],
 };

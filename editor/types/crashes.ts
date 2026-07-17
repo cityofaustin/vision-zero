@@ -10,11 +10,13 @@ import { CrashNote } from "./crashNote";
 import { EMSPatientCareRecord } from "@/types/ems";
 import { CrashDiagramOrientation } from "./crashDiagramOrientation";
 import { UnitTypesInvolved } from "@/types/unitTypesInvolved";
+import { CrashRiskFactors } from "@/types/crashRiskFactors";
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
   at_intrsct_fl: boolean | null;
   case_id: string | null;
+  crash_risk_factors_view: CrashRiskFactors | null;
   crash_injury_metrics_view: CrashInjuryMetric | null;
   crash_notes: CrashNote[];
   cr3_stored_fl: boolean | null;
