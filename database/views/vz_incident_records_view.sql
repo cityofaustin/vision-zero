@@ -25,7 +25,7 @@ SELECT
 FROM crashes c
 LEFT JOIN lookups.agency agency ON agency.id = c.investigat_agency_id
 LEFT JOIN crashes_cris cris ON c.id = cris.id
-WHERE c.is_deleted IS false
+WHERE c.is_deleted IS false AND c.crash_timestamp > (now() - '731 days'::interval)
 UNION ALL
 SELECT
     'cad_incidents'::text     AS record_table_name,
@@ -43,6 +43,7 @@ SELECT
     ci.location_id,
     false                     AS is_location_reviewed
 FROM cad_incidents ci
+WHERE ci.response_date > (now() - '731 days'::interval)
 UNION ALL
 SELECT
     'ems__incidents'::text         AS record_table_name,
@@ -60,7 +61,7 @@ SELECT
     ems.location_id,
     false                          AS is_location_reviewed
 FROM ems__incidents ems
-WHERE ems.is_deleted IS false
+WHERE ems.is_deleted IS false AND ems.incident_received_datetime > (now() - '731 days'::interval)
 UNION ALL
 SELECT
     'afd__incidents'::text    AS record_table_name,
@@ -77,4 +78,5 @@ SELECT
     afd.austin_full_purpose   AS in_austin_full_purpose,
     afd.location_id,
     false                     AS is_location_reviewed
-FROM afd__incidents afd;
+FROM afd__incidents afd
+WHERE afd.call_datetime > (now() - '731 days'::interval);

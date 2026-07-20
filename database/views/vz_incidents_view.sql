@@ -2,6 +2,22 @@
 
 CREATE OR REPLACE VIEW vz_incidents_view AS
 SELECT
+    id,
+    record_count,
+    incident_numbers,
+    record_tables,
+    ('$'::text || array_to_string(record_tables, '$,$'::text)) || '$'::text AS record_tables_str,
+    responding_agencies,
+    ('$'::text || array_to_string(responding_agencies, '$,$'::text))
+    || '$'::text                                                            AS responding_agencies_str,
+    address,
+    location_ids,
+    record_timestamp,
+    point_feature,
+    latitude,
+    longitude,
+    in_austin_full_purpose
+FROM (SELECT
     v.vz_incident_id AS id,
     count(
         *
@@ -14,18 +30,10 @@ SELECT
         DISTINCT v.record_table_name
         ORDER BY v.record_table_name
     )                AS record_tables,
-    string_agg(
-        DISTINCT ('$'::text || v.record_table_name) || '$'::text, ','::text
-        ORDER BY (('$'::text || v.record_table_name) || '$'::text)
-    )                AS record_tables_str,
     array_agg(
         DISTINCT v.record_responding_agency
         ORDER BY v.record_responding_agency
     )                AS responding_agencies,
-    string_agg(
-        DISTINCT ('$'::text || v.record_responding_agency) || '$'::text, ','::text
-        ORDER BY (('$'::text || v.record_responding_agency) || '$'::text)
-    )                AS responding_agencies_str,
     (
         array_remove(array_agg(
             v.record_address
@@ -36,7 +44,8 @@ SELECT
         DISTINCT v.location_id
         ORDER BY v.location_id
     )                AS location_ids,
-    min(v.record_timestamp
+    min(
+        v.record_timestamp
     )                AS record_timestamp,
     (
         array_remove(array_agg(
@@ -56,9 +65,10 @@ SELECT
             ORDER BY v.is_location_reviewed DESC, v.record_timestamp ASC, v.record_id ASC
         ), NULL::double precision)
     )[1]             AS longitude,
-    bool_or(v.in_austin_full_purpose
+    bool_or(
+        v.in_austin_full_purpose
     )                AS in_austin_full_purpose
 FROM vz_incident_records_view v
 WHERE v.vz_incident_id IS NOT NULL
-GROUP BY v.vz_incident_id
-ORDER BY (min(record_timestamp)) DESC;
+GROUP BY v.vz_incident_id) sub
+ORDER BY record_timestamp DESC;
