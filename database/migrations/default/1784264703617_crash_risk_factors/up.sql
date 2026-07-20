@@ -11,68 +11,77 @@ CREATE TABLE lookups.risk_factor_categories (
 COMMENT ON TABLE lookups.risk_factor_categories IS
 'Maps CRIS contributing factor IDs to Vision Zero crash-level risk factor categories.';
 
+-- Seed mappings only when the referenced CRIS lookup rows already exist.
+-- CI applies migrations on an empty DB (no lookup dump), so a plain VALUES
+-- insert would fail the FK; staging/prod/local dumps have these rows.
 INSERT INTO lookups.risk_factor_categories (contrib_factor_id, risk_factor_category)
-VALUES
-    -- Distracted driving
-    (19, 'Distracted driving'),
-    (20, 'Distracted driving'),
-    (40, 'Distracted driving'),
-    (75, 'Distracted driving'),
-    (76, 'Distracted driving'),
-    (77, 'Distracted driving'),
-    (78, 'Distracted driving'),
-    -- Failure to yield
-    (3, 'Failure to yield'),
-    (4, 'Failure to yield'),
-    (17, 'Failure to yield'),
-    (18, 'Failure to yield'),
-    (23, 'Failure to yield'),
-    (24, 'Failure to yield'),
-    (25, 'Failure to yield'),
-    (26, 'Failure to yield'),
-    (27, 'Failure to yield'),
-    (28, 'Failure to yield'),
-    (29, 'Failure to yield'),
-    (30, 'Failure to yield'),
-    (31, 'Failure to yield'),
-    (32, 'Failure to yield'),
-    (33, 'Failure to yield'),
-    (34, 'Failure to yield'),
-    (35, 'Failure to yield'),
-    (36, 'Failure to yield'),
-    (37, 'Failure to yield'),
-    (38, 'Failure to yield'),
-    (39, 'Failure to yield'),
-    (41, 'Failure to yield'),
-    (51, 'Failure to yield'),
-    (53, 'Failure to yield'),
-    (57, 'Failure to yield'),
-    (58, 'Failure to yield'),
-    (59, 'Failure to yield'),
-    (63, 'Failure to yield'),
-    (64, 'Failure to yield'),
-    (65, 'Failure to yield'),
-    (66, 'Failure to yield'),
-    (69, 'Failure to yield'),
-    (70, 'Failure to yield'),
-    (71, 'Failure to yield'),
-    (79, 'Failure to yield'),
-    (80, 'Failure to yield'),
-    -- Impaired driving
-    (45, 'Impaired driving'),
-    (62, 'Impaired driving'),
-    (67, 'Impaired driving'),
-    (68, 'Impaired driving'),
-    -- Red light running
-    (15, 'Red light running'),
-    (16, 'Red light running'),
-    -- Speeding
-    (22, 'Speeding'),
-    (44, 'Speeding'),
-    (60, 'Speeding'),
-    (61, 'Speeding'),
-    -- Visual obstruction
-    (48, 'Visual obstruction');
+SELECT
+    v.contrib_factor_id,
+    v.risk_factor_category
+FROM (
+    VALUES
+        -- Distracted driving
+        (19, 'Distracted driving'),
+        (20, 'Distracted driving'),
+        (40, 'Distracted driving'),
+        (75, 'Distracted driving'),
+        (76, 'Distracted driving'),
+        (77, 'Distracted driving'),
+        (78, 'Distracted driving'),
+        -- Failure to yield
+        (3, 'Failure to yield'),
+        (4, 'Failure to yield'),
+        (17, 'Failure to yield'),
+        (18, 'Failure to yield'),
+        (23, 'Failure to yield'),
+        (24, 'Failure to yield'),
+        (25, 'Failure to yield'),
+        (26, 'Failure to yield'),
+        (27, 'Failure to yield'),
+        (28, 'Failure to yield'),
+        (29, 'Failure to yield'),
+        (30, 'Failure to yield'),
+        (31, 'Failure to yield'),
+        (32, 'Failure to yield'),
+        (33, 'Failure to yield'),
+        (34, 'Failure to yield'),
+        (35, 'Failure to yield'),
+        (36, 'Failure to yield'),
+        (37, 'Failure to yield'),
+        (38, 'Failure to yield'),
+        (39, 'Failure to yield'),
+        (41, 'Failure to yield'),
+        (51, 'Failure to yield'),
+        (53, 'Failure to yield'),
+        (57, 'Failure to yield'),
+        (58, 'Failure to yield'),
+        (59, 'Failure to yield'),
+        (63, 'Failure to yield'),
+        (64, 'Failure to yield'),
+        (65, 'Failure to yield'),
+        (66, 'Failure to yield'),
+        (69, 'Failure to yield'),
+        (70, 'Failure to yield'),
+        (71, 'Failure to yield'),
+        (79, 'Failure to yield'),
+        (80, 'Failure to yield'),
+        -- Impaired driving
+        (45, 'Impaired driving'),
+        (62, 'Impaired driving'),
+        (67, 'Impaired driving'),
+        (68, 'Impaired driving'),
+        -- Red light running
+        (15, 'Red light running'),
+        (16, 'Red light running'),
+        -- Speeding
+        (22, 'Speeding'),
+        (44, 'Speeding'),
+        (60, 'Speeding'),
+        (61, 'Speeding'),
+        -- Visual obstruction
+        (48, 'Visual obstruction')
+) AS v(contrib_factor_id, risk_factor_category)
+INNER JOIN lookups.contrib_factr AS cf ON cf.id = v.contrib_factor_id;
 
 CREATE OR REPLACE VIEW crash_risk_factors_view AS
 WITH
