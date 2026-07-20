@@ -1,4 +1,3 @@
-// src/chartjs-setup.js
 import {
   Chart,
   CategoryScale,
