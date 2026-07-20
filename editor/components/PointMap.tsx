@@ -81,8 +81,8 @@ interface PointMapProps {
   /**
    * The lat/lon coordinates that are saved while editing
    */
-  mapLatLon?: LatLon;
-  setMapLatLon?: Dispatch<SetStateAction<LatLon>>;
+  draftLatLon?: LatLon;
+  setDraftLatLon?: Dispatch<SetStateAction<LatLon>>;
   /**
    * Optional custom Marker component to use as the marker.
    */
@@ -107,8 +107,8 @@ export const PointMap = ({
   savedLatitude,
   savedLongitude,
   isEditing,
-  mapLatLon,
-  setMapLatLon,
+  draftLatLon,
+  setDraftLatLon,
   CustomMarker,
   children,
   customLayerToggles,
@@ -130,25 +130,25 @@ export const PointMap = ({
       const longitude = +e.viewState.longitude.toFixed(
         MAP_COORDINATE_PRECISION
       );
-      if (setMapLatLon) {
-        setMapLatLon({
+      if (setDraftLatLon) {
+        setDraftLatLon({
           latitude,
           longitude,
         });
       }
     },
-    [setMapLatLon]
+    [setDraftLatLon]
   );
 
   useEffect(() => {
-    if (!isEditing && setMapLatLon) {
+    if (!isEditing && setDraftLatLon) {
       // initialize edit coordinates and reset them after saving
-      setMapLatLon({
+      setDraftLatLon({
         latitude: savedLatitude || DEFAULT_MAP_PAN_ZOOM.latitude,
         longitude: savedLongitude || DEFAULT_MAP_PAN_ZOOM.longitude,
       });
     }
-  }, [isEditing, setMapLatLon, savedLatitude, savedLongitude]);
+  }, [isEditing, setDraftLatLon, savedLatitude, savedLongitude]);
 
   const Marker = CustomMarker ? CustomMarker : MapboxMarker;
 
@@ -184,10 +184,10 @@ export const PointMap = ({
       <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
       {/* add nearmap raster source and style */}
       {basemapType === "aerial" && <MapAerialSourceAndLayer />}
-      {setMapLatLon && (
+      {setDraftLatLon && (
         <MapGeocoderControl
           position="top-left"
-          onResult={(latLon: LatLon) => setMapLatLon(latLon)}
+          onResult={(latLon: LatLon) => setDraftLatLon(latLon)}
         />
       )}
       <MapBasemapControl
@@ -207,11 +207,11 @@ export const PointMap = ({
           color={COLORS.primary}
         />
       )}
-      {isEditing && mapLatLon && (
+      {isEditing && draftLatLon && (
         <Marker
           key={dynamicMarkerKey}
-          latitude={mapLatLon.latitude}
-          longitude={mapLatLon.longitude}
+          latitude={draftLatLon.latitude}
+          longitude={draftLatLon.longitude}
           color={isEditing ? COLORS.danger : undefined}
         />
       )}
