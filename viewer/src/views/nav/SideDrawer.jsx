@@ -5,7 +5,7 @@ import { useTheme } from "@mui/material/styles";
 
 import CssBaseline from "@mui/material/CssBaseline";
 import Drawer from "@mui/material/Drawer";
-import styled from "styled-components";
+import { styled } from "@mui/material/styles";
 
 import SideDrawerContent from "./SideDrawerContent";
 import { colors } from "../../constants/colors";
@@ -13,28 +13,27 @@ import { responsive } from "../../constants/responsive";
 
 const drawerWidth = responsive.drawerWidth;
 
-// Styles for MUI drawer
-const Root = styled.div`
+const Root = styled("div")`
   display: flex;
 `;
 
-const Nav = styled.nav`
+const Nav = styled("nav")`
   @media (min-width: ${responsive.bootstrapMediumMin}px) {
     width: ${drawerWidth}px;
     flex-shrink: 0;
   }
 `;
 
-const StyledDrawerPaper = styled(Drawer)`
-  .MuiDrawer-paper {
-    width: ${drawerWidth}px;
-    background: ${colors.dark};
-    color: ${colors.light};
-    border: 0;
-  }
-`;
+const DrawerStyled = styled(Drawer)(({ theme }) => ({
+  "& .MuiDrawer-paper": {
+    width: drawerWidth,
+    background: colors.dark,
+    color: colors.light,
+    border: 0,
+  },
+}));
 
-const StyledDrawer = styled.div`
+const StyledDrawer = styled("div")`
   /* Disable side drawer in desktop viewport */
   #summary-side-drawer {
     @media only screen and (min-width: ${responsive.bootstrapMedium}px) {
@@ -72,33 +71,39 @@ const SideDrawer = () => {
   const location = useLocation();
   const currentPath = location.pathname;
   const theme = useTheme();
-  const direction = theme?.direction || "ltr";
+  const direction = theme.direction;
 
   const {
     sidebarToggle: [isOpen, setIsOpen],
   } = React.useContext(StoreContext);
 
+  const anchor = direction === "rtl" ? "right" : "left";
+
   return (
     <StyledDrawer>
       <Root id={currentPath === "/" ? "summary-side-drawer" : ""}>
-        <CssBaseline />
-        <Nav aria-label="mobile side drawer">
-          <StyledDrawerPaper
+        <Nav>
+          <CssBaseline />
+          <DrawerStyled
             id="temporary-drawer"
             variant="temporary"
-            anchor={direction === "rtl" ? "right" : "left"}
+            anchor={anchor}
             open={isOpen}
             onClose={() => setIsOpen(!isOpen)}
-
             ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
+              keepMounted: true,
             }}
           >
             <SideDrawerContent type="temporary" />
-          </StyledDrawerPaper>
-          <StyledDrawerPaper id="permanent-drawer" variant="permanent" open>
+          </DrawerStyled>
+
+          <DrawerStyled
+            id="permanent-drawer"
+            variant="permanent"
+            anchor={anchor}
+          >
             <SideDrawerContent type="permanent" />
-          </StyledDrawerPaper>
+          </DrawerStyled>
         </Nav>
       </Root>
     </StyledDrawer>
