@@ -340,7 +340,7 @@ export const crashesColumns = {
       foreignKey: "wthr_cond_id",
     },
   },
-    surf_cond: {
+  surf_cond: {
     path: "surf_cond.label",
     label: "Surface condition",
     editable: false,
@@ -378,7 +378,7 @@ export const crashesColumns = {
     valueRenderer: (record: Crash) => {
       const factors = record.crash_risk_factors_view?.risk_factors;
       if (!factors?.length) {
-        return null;
+        return "None identified";
       }
       return (
         <>
