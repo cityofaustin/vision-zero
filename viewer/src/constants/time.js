@@ -1,5 +1,4 @@
 import { sub, startOfYear, format, endOfYear, add } from "date-fns";
-import moment from "moment";
 
 // Set the sliding window of data that feeds VZV
 // Number of past years data to fetch
