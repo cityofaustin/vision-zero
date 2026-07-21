@@ -111,7 +111,11 @@ FROM (
         COUNT(*) AS record_count,
         ARRAY_AGG(DISTINCT record_incident_number ORDER BY record_incident_number) as incident_numbers,
         ARRAY_AGG(DISTINCT record_table_name ORDER BY record_table_name) as record_tables,
-        ARRAY_AGG(DISTINCT record_responding_agency ORDER BY record_responding_agency) AS responding_agencies,
+        NULLIF(
+            ARRAY_AGG(DISTINCT record_responding_agency ORDER BY record_responding_agency) 
+            FILTER (WHERE record_responding_agency IS NOT NULL),
+            ARRAY[]::text[]
+        ) AS responding_agencies,
         (ARRAY_REMOVE(
             ARRAY_AGG(v.record_address ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL
         ))[1] AS address,
