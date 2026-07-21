@@ -5,7 +5,6 @@ import aphroditeInterface from "react-with-styles-interface-aphrodite";
 import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
 import styled from "styled-components";
 import { DateRangePicker } from "react-dates";
-import moment from "moment";
 import { format, getYear } from "date-fns";
 import {
   UncontrolledDropdown,
