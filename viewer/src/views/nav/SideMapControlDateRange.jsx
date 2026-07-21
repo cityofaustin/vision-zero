@@ -121,23 +121,24 @@ const SideMapControlDateRange = ({ type }) => {
     setMapDate({ start, end });
   }, [start, end, setMapDate]);
 
-  const handleDateChange = (dates) => {
-    let { startDate, endDate } = dates;
+  const handleStartDateChange = (date) => {
+    if (!date) {
+      setStart(dataStartDate)
+    } else {
+      setStart(date)
+    }
+  };
 
-    startDate =
-      // If startDate is not null and before n year window, set to dataStartDate
-      (!!startDate &&
-        startDate.isBefore(dataStartDate, "day") &&
-        dataStartDate) ||
-      startDate;
+  const handleEndDateChange = (date) => {
+    console.log(date);
 
-    endDate =
-      // If endDate is not null and after n year window, set to dataEndDate
-      (!!endDate && endDate.isAfter(dataEndDate, "day") && dataEndDate) ||
-      endDate;
-
-    setStart(startDate);
-    setEnd(endDate);
+    if (!date) {
+      console.log("wjat")
+      setEnd(dataEndDate);
+    } else {
+      setEnd(date);
+    }
+    console.log(end)
   };
 
   // Check if date is outside n year rolling window
@@ -242,7 +243,25 @@ const SideMapControlDateRange = ({ type }) => {
 
   return (
     <StyledButtonContainer className="pe-0 picker-outline">
-      <DateRangePicker
+      <input
+        type="date"
+        id="map-start-date"
+        name="map-start"
+        value={start ?? mapStartDate}
+        min={mapStartDate}
+        max={mapEndDate}
+        onChange={(e) => setStart(e.target.value)}
+      />
+            <input
+        type="date"
+        id="map-end-date"
+        name="map-end"
+        value={end ?? mapEndDate}
+        min={mapStartDate}
+        max={mapEndDate}
+        onChange={(e) => handleEndDateChange(e.target.value)}
+      />
+      {/* <DateRangePicker
         startDateId={`start_date_${type}`} // PropTypes.string.isRequired,
         endDateId={`end_date_${type}`} // PropTypes.string.isRequired,
         startDate={start} // momentPropTypes.momentObj or null,
@@ -269,7 +288,7 @@ const SideMapControlDateRange = ({ type }) => {
         isOutsideRange={() => false} // Enable past dates
         isDayBlocked={isOutsideDateLimits} // Grey out dates
         numberOfMonths={!canTwoMonthsFit || (isTablet && !isMobile) ? 1 : 2}
-      />
+      /> */}
       {/* Show reset button to restore default date range or show calendar icon if default*/}
       {start !== mapStartDate || end !== mapEndDate ? (
         <StyledRedoButton
@@ -286,7 +305,7 @@ const SideMapControlDateRange = ({ type }) => {
           title="Default date range"
           icon={faCalendar}
           color={colors.dark}
-          onClick={() => null}
+          onClick={() => console.log("date range")}
         />
       )}
     </StyledButtonContainer>
