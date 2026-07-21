@@ -1,6 +1,3 @@
-import Badge from "react-bootstrap/Badge";
-import { LuInfo } from "react-icons/lu";
-
 export default function EMSCardHeader() {
   return (
     <div className="d-flex mb-2">

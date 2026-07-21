@@ -1,13 +1,10 @@
 "use client";
-import Badge from "react-bootstrap/Badge";
-import AlignedLabel from "@/components/AlignedLabel";
 import { emsListViewColumns } from "@/configs/emsColumns";
 import TableWrapper from "@/components/TableWrapper";
 import UserEventsLogger from "@/components/UserEventsLogger";
 import { emsListViewQueryConfig } from "@/configs/emsListViewTable";
 import { useDocumentTitle } from "@/utils/documentTitle";
 import { Filter } from "@/types/queryBuilder";
-import { LuInfo } from "react-icons/lu";
 
 const localStorageKey = "emsListQueryConfig";
 
