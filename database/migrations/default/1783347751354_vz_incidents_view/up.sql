@@ -1,4 +1,4 @@
-DROP VIEW IF EXISTS vz_incidents_view;
+DROP MATERIALIZED VIEW IF EXISTS vz_incidents_view;
 DROP VIEW public.vz_incident_records_view;
 
 --
@@ -109,8 +109,16 @@ FROM (
     SELECT
         v.vz_incident_id as id,
         COUNT(*) AS record_count,
-        ARRAY_AGG(DISTINCT record_incident_number ORDER BY record_incident_number) as incident_numbers,
-        ARRAY_AGG(DISTINCT record_table_name ORDER BY record_table_name) as record_tables,
+        NULLIF(
+            ARRAY_AGG(DISTINCT record_incident_number ORDER BY record_incident_number) 
+            FILTER (WHERE record_incident_number IS NOT NULL),
+            ARRAY[]::text[]
+        ) as incident_numbers,
+        NULLIF(
+            ARRAY_AGG(DISTINCT record_table_name ORDER BY record_table_name) 
+            FILTER (WHERE record_table_name IS NOT NULL),
+            ARRAY[]::text[]
+        ) as record_tables,
         NULLIF(
             ARRAY_AGG(DISTINCT record_responding_agency ORDER BY record_responding_agency) 
             FILTER (WHERE record_responding_agency IS NOT NULL),
@@ -119,7 +127,11 @@ FROM (
         (ARRAY_REMOVE(
             ARRAY_AGG(v.record_address ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL
         ))[1] AS address,
-        ARRAY_AGG(DISTINCT location_id ORDER BY location_id) as location_ids,
+        NULLIF(
+            ARRAY_AGG(DISTINCT location_id ORDER BY location_id) 
+            FILTER (WHERE location_id IS NOT NULL),
+            ARRAY[]::text[]
+        ) as location_ids,
         MIN(v.record_timestamp) as record_timestamp,
         (ARRAY_REMOVE(
             ARRAY_AGG(v.geom ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL
@@ -134,8 +146,7 @@ FROM (
     FROM vz_incident_records_view v
     WHERE vz_incident_id is not null
     GROUP BY v.vz_incident_id
-) sub
-ORDER BY record_timestamp desc;
+) sub;
 
 COMMENT ON VIEW public.vz_incidents_view IS
     'Aggregate view of vz_incidents which aggregates attributes from the member records '
