@@ -30,7 +30,7 @@ CREATE OR REPLACE VIEW public.vz_incident_records_view AS
     FROM crashes c
         LEFT JOIN lookups.agency agency on agency.id = c.investigat_agency_id
         LEFT JOIN crashes_cris cris on c.id = cris.id
-    WHERE c.is_deleted is false and c.crash_timestamp > now() - interval '731 days'
+    WHERE c.is_deleted is false
     UNION ALL
     SELECT
         'cad_incidents'::text       AS record_table_name,
@@ -47,7 +47,7 @@ CREATE OR REPLACE VIEW public.vz_incident_records_view AS
         ci.in_austin_full_purpose   AS in_austin_full_purpose,
         ci.location_id              AS location_id,
         FALSE                       AS is_location_reviewed
-    FROM cad_incidents ci where ci.response_date > now() - interval '731 days'
+    FROM cad_incidents ci
     UNION ALL
     SELECT
         'ems__incidents'::text           AS record_table_name,
@@ -65,7 +65,7 @@ CREATE OR REPLACE VIEW public.vz_incident_records_view AS
         ems.location_id                  AS location_id,
         FALSE                            AS is_location_reviewed
     FROM ems__incidents ems
-    WHERE ems.is_deleted is FALSE and ems.incident_received_datetime > now() - interval '731 days'    UNION ALL
+    WHERE ems.is_deleted is FALSE UNION ALL
     SELECT
         'afd__incidents'::text           AS record_table_name,
         'afd'                            AS record_responding_agency,
@@ -81,7 +81,7 @@ CREATE OR REPLACE VIEW public.vz_incident_records_view AS
         afd.austin_full_purpose          AS in_austin_full_purpose,
         afd.location_id                  AS location_id,
         FALSE                            AS is_location_reviewed
-    FROM afd__incidents afd where afd.call_datetime > now() - interval '731 days';
+    FROM afd__incidents afd;
 
 
 COMMENT ON VIEW public.vz_incident_records_view IS
@@ -89,7 +89,7 @@ COMMENT ON VIEW public.vz_incident_records_view IS
     'exposed under a common schema for cross-type queries and geo-temporal matching.';
 
 
-CREATE OR REPLACE VIEW vz_incidents_view AS
+CREATE MATERIALIZED VIEW vz_incidents_view AS
 SELECT
     id,
     record_count,
@@ -112,7 +112,9 @@ FROM (
         ARRAY_AGG(DISTINCT record_incident_number ORDER BY record_incident_number) as incident_numbers,
         ARRAY_AGG(DISTINCT record_table_name ORDER BY record_table_name) as record_tables,
         ARRAY_AGG(DISTINCT record_responding_agency ORDER BY record_responding_agency) AS responding_agencies,
-        (ARRAY_REMOVE(ARRAY_AGG(v.record_address ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL))[1] AS address,
+        (ARRAY_REMOVE(
+            ARRAY_AGG(v.record_address ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL
+        ))[1] AS address,
         ARRAY_AGG(DISTINCT location_id ORDER BY location_id) as location_ids,
         MIN(v.record_timestamp) as record_timestamp,
         (ARRAY_REMOVE(
