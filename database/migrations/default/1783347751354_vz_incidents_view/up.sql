@@ -91,13 +91,20 @@ COMMENT ON VIEW public.vz_incident_records_view IS
 
 CREATE OR REPLACE VIEW vz_incidents_view AS
 SELECT
-    id, record_count, incident_numbers,
+    id,
+    record_count,
+    incident_numbers,
     record_tables,
     '$' || array_to_string(record_tables, '$,$') || '$' AS record_tables_str,
     responding_agencies,
     '$' || array_to_string(responding_agencies, '$,$') || '$' AS responding_agencies_str,
-    address, location_ids, record_timestamp,
-    point_feature, latitude, longitude, in_austin_full_purpose
+    address,
+    location_ids,
+    record_timestamp,
+    point_feature,
+    latitude,
+    longitude,
+    in_austin_full_purpose
 FROM (
     SELECT
         v.vz_incident_id as id,
@@ -108,9 +115,15 @@ FROM (
         (ARRAY_REMOVE(ARRAY_AGG(v.record_address ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL))[1] AS address,
         ARRAY_AGG(DISTINCT location_id ORDER BY location_id) as location_ids,
         MIN(v.record_timestamp) as record_timestamp,
-        (ARRAY_REMOVE(ARRAY_AGG(v.geom ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL))[1] AS point_feature,
-        (ARRAY_REMOVE(ARRAY_AGG(v.latitude ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL))[1] AS latitude,
-        (ARRAY_REMOVE(ARRAY_AGG(v.longitude ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL))[1] AS longitude,
+        (ARRAY_REMOVE(
+            ARRAY_AGG(v.geom ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL
+        ))[1] AS point_feature,
+        (ARRAY_REMOVE(
+            ARRAY_AGG(v.latitude ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL
+        ))[1] AS latitude,
+        (ARRAY_REMOVE(
+            ARRAY_AGG(v.longitude ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL
+        ))[1] AS longitude,
         BOOL_OR(v.in_austin_full_purpose) AS in_austin_full_purpose
     FROM vz_incident_records_view v
     WHERE vz_incident_id is not null
