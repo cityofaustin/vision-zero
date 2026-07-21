@@ -123,22 +123,18 @@ const SideMapControlDateRange = ({ type }) => {
 
   const handleStartDateChange = (date) => {
     if (!date) {
-      setStart(dataStartDate)
+      setStart(mapStartDate);
     } else {
-      setStart(date)
+      setStart(date);
     }
   };
 
   const handleEndDateChange = (date) => {
-    console.log(date);
-
     if (!date) {
-      console.log("wjat")
-      setEnd(dataEndDate);
+      setEnd(mapEndDate);
     } else {
       setEnd(date);
     }
-    console.log(end)
   };
 
   // Check if date is outside n year rolling window
@@ -252,7 +248,7 @@ const SideMapControlDateRange = ({ type }) => {
         max={mapEndDate}
         onChange={(e) => setStart(e.target.value)}
       />
-            <input
+      <input
         type="date"
         id="map-end-date"
         name="map-end"
