@@ -148,6 +148,6 @@ FROM (
     GROUP BY v.vz_incident_id
 ) sub;
 
-COMMENT ON VIEW public.vz_incidents_view IS
+COMMENT ON MATERIALIZED VIEW public.vz_incidents_view IS
     'Aggregate view of vz_incidents which aggregates attributes from the member records '
     '(crashes, cad_incidents, ems__incidents, afd__incidents) via the vz_incident_records_view';

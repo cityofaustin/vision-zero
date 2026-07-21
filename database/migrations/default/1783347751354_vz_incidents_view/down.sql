@@ -1,6 +1,6 @@
-DROP VIEW IF EXISTS vz_incidents_view;
+DROP MATERIALIZED VIEW IF EXISTS vz_incidents_view;
 
-DROP MATERIALIZED VIEW public.vz_incident_records_view;
+DROP VIEW IF EXISTS public.vz_incident_records_view;
 
 CREATE OR REPLACE VIEW public.vz_incident_records_view AS
     SELECT
