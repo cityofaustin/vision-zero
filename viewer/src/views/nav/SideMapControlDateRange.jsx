@@ -22,7 +22,6 @@ import { colors } from "../../constants/colors";
 import {
   useIsTablet,
   useIsMobile,
-  useCanTwoMonthsFit,
 } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -136,13 +135,8 @@ const SideMapControlDateRange = ({ type }) => {
     }
   };
 
-  // Check if date is outside n year rolling window
-  const isOutsideDateLimits = (date) =>
-    date.isBefore(dataStartDate, "day") || date.isAfter(dataEndDate, "day");
-
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
-  const canTwoMonthsFit = useCanTwoMonthsFit();
 
   // Create year dropdown picker in calendar
   const StyledMonthYearDropdown = styled(UncontrolledDropdown)`
@@ -185,26 +179,6 @@ const SideMapControlDateRange = ({ type }) => {
     );
   };
 
-  // Create and style custom close button (for mobile full screen view)
-  const StyledCalendarInfo = styled.div`
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 1304;
-    background: ${colors.white};
-  `;
-
-  const renderCalendarInfo = () => (
-    <StyledCalendarInfo>
-      <FontAwesomeIcon
-        icon={faTimesCircle}
-        color={colors.dark}
-        size="2x"
-        onClick={() => setFocused(null)}
-      />
-    </StyledCalendarInfo>
-  );
-
   const StyledButtonContainer = styled.div`
     /* Mock a Bootstrap outline button */
     border: 1px solid ${colors.dark};
@@ -238,6 +212,7 @@ const SideMapControlDateRange = ({ type }) => {
 
   return (
     <StyledButtonContainer className="pe-0 picker-outline">
+      {/** address that is closes when clicking */}
       <input
         type="date"
         id="map-start-date"
@@ -284,8 +259,8 @@ const SideMapControlDateRange = ({ type }) => {
         isDayBlocked={isOutsideDateLimits} // Grey out dates
         numberOfMonths={!canTwoMonthsFit || (isTablet && !isMobile) ? 1 : 2}
       /> */}
-      {/* Show reset button to restore default date range or show calendar icon if default*/}
-      {start !== mapStartDate || end !== mapEndDate ? (
+      {/* Show reset button to restore default date range */}
+      {(start !== mapStartDate || end !== mapEndDate) && (
         <StyledRedoButton
           title="Reset to default date range"
           icon={faRedoAlt}
@@ -295,14 +270,7 @@ const SideMapControlDateRange = ({ type }) => {
             setEnd(mapEndDate);
           }}
         />
-      ) : (
-        <StyledCalendarIcon
-          title="Default date range"
-          icon={faCalendar}
-          color={colors.dark}
-          onClick={() => console.log("date range")}
-        />
-      )}
+      ) }
     </StyledButtonContainer>
   );
 };
