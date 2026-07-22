@@ -40,15 +40,15 @@ export const createMapDataUrl = (
 ) => {
   const whereFilterString = generateWhereFilters(filters);
   const filterCount = filters.length;
+  console.log(dateRange)
 
   // SideMapControlDateRange uses null to check if user set dates so
   // need to handle it and avoid unnecessary API calls
-  if (dateRange.start === null || dateRange.end === null) return null;
+  if (dateRange.start === '' || dateRange.end === '') return null;
+
   // convert dates to socrata format
   const startDate = dateRange.start + "T00:00:00";
   const endDate = dateRange.end + "T23:59:59";
-
-  console.log(startDate);
 
   // Return null to prevent populating map with unfiltered data
   return filterCount === 0
