@@ -1,7 +1,9 @@
-DROP VIEW IF EXISTS vz_incidents_view;
+DROP MATERIALIZED VIEW IF EXISTS vz_incidents_view;
 DROP VIEW public.vz_incident_records_view;
 
--- add in_austin_full_purpose, location_id
+--
+-- add additional columns to view in_austin_full_purpose, location_id, is_location_reviewed
+--
 CREATE OR REPLACE VIEW public.vz_incident_records_view AS
     SELECT
         
@@ -63,8 +65,7 @@ CREATE OR REPLACE VIEW public.vz_incident_records_view AS
         ems.location_id                  AS location_id,
         FALSE                            AS is_location_reviewed
     FROM ems__incidents ems
-    WHERE ems.is_deleted is FALSE
-    UNION ALL
+    WHERE ems.is_deleted is FALSE UNION ALL
     SELECT
         'afd__incidents'::text           AS record_table_name,
         'afd'                            AS record_responding_agency,
@@ -82,31 +83,71 @@ CREATE OR REPLACE VIEW public.vz_incident_records_view AS
         FALSE                            AS is_location_reviewed
     FROM afd__incidents afd;
 
+
 COMMENT ON VIEW public.vz_incident_records_view IS
     'Unified view of crash-related records (crashes, cad_incidents, ems__incidents, afd__incidents)'
     'exposed under a common schema for cross-type queries and geo-temporal matching.';
 
-CREATE OR REPLACE VIEW vz_incidents_view as (
+
+CREATE MATERIALIZED VIEW vz_incidents_view AS
 SELECT
-    v.vz_incident_id as id,
-    COUNT(*) AS record_count,
-    ARRAY_AGG(DISTINCT record_incident_number order by record_incident_number) as incident_numbers,
-    ARRAY_AGG(DISTINCT record_table_name ORDER BY record_table_name) as record_tables,
-    STRING_AGG(DISTINCT '$' || record_table_name || '$', ',' ORDER BY '$' || record_table_name || '$') AS record_tables_str,
-    ARRAY_AGG(DISTINCT record_responding_agency ORDER BY record_responding_agency) AS responding_agencies,
-    STRING_AGG(DISTINCT '$' || record_responding_agency || '$', ',' ORDER BY '$' || record_responding_agency || '$') AS responding_agencies_str,
-    (ARRAY_REMOVE(ARRAY_AGG(v.record_address ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL))[1] AS address,
-    ARRAY_AGG(DISTINCT location_id ORDER BY location_id) as location_ids,
-    MIN(v.record_timestamp) as record_timestamp,
-    (ARRAY_REMOVE(ARRAY_AGG(v.geom ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL))[1] AS point_feature,
-    (ARRAY_REMOVE(ARRAY_AGG(v.latitude ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL))[1] AS latitude,
-    (ARRAY_REMOVE(ARRAY_AGG(v.longitude ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL))[1] AS longitude,
-    BOOL_OR(v.in_austin_full_purpose) AS in_austin_full_purpose
-FROM
-    vz_incident_records_view v
-WHERE
-    vz_incident_id is not null
-GROUP BY
-    v.vz_incident_id
-ORDER BY
-    MIN(v.record_timestamp) desc);
+    id,
+    record_count,
+    incident_numbers,
+    record_tables,
+    '$' || array_to_string(record_tables, '$,$') || '$' AS record_tables_str,
+    responding_agencies,
+    '$' || array_to_string(responding_agencies, '$,$') || '$' AS responding_agencies_str,
+    address,
+    location_ids,
+    record_timestamp,
+    point_feature,
+    latitude,
+    longitude,
+    in_austin_full_purpose
+FROM (
+    SELECT
+        v.vz_incident_id as id,
+        COUNT(*) AS record_count,
+        NULLIF(
+            ARRAY_AGG(DISTINCT record_incident_number ORDER BY record_incident_number) 
+            FILTER (WHERE record_incident_number IS NOT NULL),
+            ARRAY[]::text[]
+        ) as incident_numbers,
+        NULLIF(
+            ARRAY_AGG(DISTINCT record_table_name ORDER BY record_table_name) 
+            FILTER (WHERE record_table_name IS NOT NULL),
+            ARRAY[]::text[]
+        ) as record_tables,
+        NULLIF(
+            ARRAY_AGG(DISTINCT record_responding_agency ORDER BY record_responding_agency) 
+            FILTER (WHERE record_responding_agency IS NOT NULL),
+            ARRAY[]::text[]
+        ) AS responding_agencies,
+        (ARRAY_REMOVE(
+            ARRAY_AGG(v.record_address ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL
+        ))[1] AS address,
+        NULLIF(
+            ARRAY_AGG(DISTINCT location_id ORDER BY location_id) 
+            FILTER (WHERE location_id IS NOT NULL),
+            ARRAY[]::text[]
+        ) as location_ids,
+        MIN(v.record_timestamp) as record_timestamp,
+        (ARRAY_REMOVE(
+            ARRAY_AGG(v.geom ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL
+        ))[1] AS point_feature,
+        (ARRAY_REMOVE(
+            ARRAY_AGG(v.latitude ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL
+        ))[1] AS latitude,
+        (ARRAY_REMOVE(
+            ARRAY_AGG(v.longitude ORDER BY is_location_reviewed desc, v.record_timestamp, v.record_id), NULL
+        ))[1] AS longitude,
+        BOOL_OR(v.in_austin_full_purpose) AS in_austin_full_purpose
+    FROM vz_incident_records_view v
+    WHERE vz_incident_id is not null
+    GROUP BY v.vz_incident_id
+) sub;
+
+COMMENT ON MATERIALIZED VIEW public.vz_incidents_view IS
+    'Aggregate view of vz_incidents which aggregates attributes from the member records '
+    '(crashes, cad_incidents, ems__incidents, afd__incidents) via the vz_incident_records_view';

@@ -31,7 +31,6 @@ const Filter = z.object({
     "_neq",
     "_nin",
     "_nlike",
-    "_nlike",
   ]),
   value: FilterValue,
   column: z.string(),
