@@ -18,10 +18,9 @@ export default defineConfig(
     ignores: ["dist", "node_modules", "coverage", "build"],
   },
   {
-    files: ["**/*.{js,jsx,ts,tsx}"],
+    files: ["**/*.{js,jsx}"],
     extends: [
       js.configs.recommended,
-      ...tseslint.configs.recommended,
       // Flag anything that violates the rules of hooks
       reactHooks.configs.flat.recommended,
       // Flag anything that could break Vite's HMR (Hot Module Replacement)
@@ -60,13 +59,70 @@ export default defineConfig(
     rules: {
       // React specific rules (not covered by hooks preset)
       "react-hooks/rules-of-hooks": "error",
-      "react/react-in-jsx-scope": "off",
-      "react/jsx-uses-react": "off",
+      "react/react-in-jsx-scope": "error",
+      "react/jsx-uses-react": "error",
       "react/jsx-uses-vars": "error", // Prevents false "unused variable" errors
       "react/jsx-no-target-blank": "error", // Security: prevents tabnabbing attacks
       "react/display-name": "off",
       "react/prop-types": "off", // Using TypeScript instead of PropTypes
-      "no-unused-vars": "off", // Disable the JavaScript version
+      "no-unused-vars": [
+        "error",
+        {
+          vars: "all",
+          args: "after-used",
+          caughtErrors: "all",
+          ignoreRestSiblings: true,
+        },
+      ],
+
+      // Override hook rule severity if needed
+      "react-hooks/exhaustive-deps": "warn",
+    },
+  },
+
+  // For when we migrate to TS
+  {
+    files: ["**/*.{ts,tsx}"],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+      prettierConfig,
+    ],
+    plugins: {
+      react: reactPlugin,
+    },
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.es2020,
+      },
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+        project: "./tsconfig.json",
+      },
+    },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+    rules: {
+      "react-hooks/rules-of-hooks": "error",
+      "react/react-in-jsx-scope": "off",
+      "react/jsx-uses-react": "off",
+      "react/jsx-uses-vars": "error",
+      "react/jsx-no-target-blank": "error",
+      "react/display-name": "off",
+      "react/prop-types": "off",
+
+      "no-unused-vars": "off", // Must disable the base rule
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -74,12 +130,9 @@ export default defineConfig(
           args: "after-used",
           caughtErrors: "all",
           ignoreRestSiblings: true,
-          ignoreUsingDeclarations: false,
-          reportUsedIgnorePattern: false,
         },
-      ], // TypeScript-aware unused vars (replaces no-unused-vars)
+      ],
 
-      // Override hook rule severity if needed
       "react-hooks/exhaustive-deps": "warn",
     },
   },
