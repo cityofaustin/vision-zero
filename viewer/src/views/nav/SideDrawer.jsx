@@ -94,10 +94,9 @@ const SideDrawer = () => {
           >
             <SideDrawerContent type="temporary" />
           </DrawerStyled>
-
           <DrawerStyled
             id="permanent-drawer"
-            variant="permanent"
+            variant="permanent" // this is always mounted, but when on mobile display is none
             anchor={anchor}
           >
             <SideDrawerContent type="permanent" />

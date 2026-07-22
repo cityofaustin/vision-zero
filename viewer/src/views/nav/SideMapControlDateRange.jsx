@@ -19,10 +19,7 @@ import {
   mapEndDate,
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
-import {
-  useIsTablet,
-  useIsMobile,
-} from "../../constants/responsive";
+import { useIsTablet, useIsMobile } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faRedoAlt,
@@ -138,6 +135,15 @@ const SideMapControlDateRange = ({ type }) => {
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
 
+  // Create styled date input
+  const StyledDateInput = styled.input.attrs({ type: "date" })`
+    font-weight: 200;
+    color: rgb(72, 72, 72);
+    border: 0px;
+    width: 100px
+    font-size: 15px
+  `;
+
   // Create year dropdown picker in calendar
   const StyledMonthYearDropdown = styled(UncontrolledDropdown)`
     .dropdown-header {
@@ -149,46 +155,20 @@ const SideMapControlDateRange = ({ type }) => {
     }
   `;
 
-  const renderMonthElement = ({ month, onYearSelect }) => {
-    let yearArray = [];
-    for (let i = getYear(dataStartDate); i <= getYear(dataEndDate); i++) {
-      yearArray.push(i);
-    }
-
-    return (
-      <StyledMonthYearDropdown>
-        <DropdownToggle caret color="dark">
-          {format(new Date(month), "MMMM yyyy")}
-        </DropdownToggle>
-        <DropdownMenu flip={false}>
-          <DropdownItem header className="dropdown-header">
-            Choose a year
-          </DropdownItem>
-          {yearArray.map((year) => (
-            <DropdownItem
-              key={`${format(new Date(month), "MMMM")}-${year}`}
-              onClick={() => {
-                onYearSelect(month, year);
-              }}
-            >
-              {format(new Date(month), "MMMM")} {year}
-            </DropdownItem>
-          ))}
-        </DropdownMenu>
-      </StyledMonthYearDropdown>
-    );
-  };
-
   const StyledButtonContainer = styled.div`
     /* Mock a Bootstrap outline button */
     border: 1px solid ${colors.dark};
     height: 34px;
     border-radius: 4px;
     padding-left: 2px;
+    display: flex
+    justify-content: space-between
+    align-items: center;
+    color: ${colors.dark};
 
     /* Center start and end date inputs */
-    [id^="start_date_"],
-    [id^="end_date_"] {
+    [id^="map-start-date-"],
+    [id^="map-end-date-"] {
       text-align: center;
     }
   `;
@@ -213,18 +193,19 @@ const SideMapControlDateRange = ({ type }) => {
   return (
     <StyledButtonContainer className="pe-0 picker-outline">
       {/** address that is closes when clicking */}
-      <input
+      <StyledDateInput
         type="date"
-        id="map-start-date"
+        id={`map-start-date-${type}`}
         name="map-start"
         value={start ?? mapStartDate}
         min={mapStartDate}
         max={mapEndDate}
         onChange={(e) => setStart(e.target.value)}
       />
-      <input
+      {"-"}
+      <StyledDateInput
         type="date"
-        id="map-end-date"
+        id={`map-end-date-${type}`}
         name="map-end"
         value={end ?? mapEndDate}
         min={mapStartDate}
@@ -270,7 +251,7 @@ const SideMapControlDateRange = ({ type }) => {
             setEnd(mapEndDate);
           }}
         />
-      ) }
+      )}
     </StyledButtonContainer>
   );
 };
