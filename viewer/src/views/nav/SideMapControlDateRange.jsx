@@ -4,31 +4,12 @@ import ThemedStyleSheet from "react-with-styles/lib/ThemedStyleSheet";
 import aphroditeInterface from "react-with-styles-interface-aphrodite";
 import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
 import styled from "styled-components";
-import { DateRangePicker } from "react-dates";
-import { format, getYear } from "date-fns";
-import {
-  UncontrolledDropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-} from "reactstrap";
-import {
-  dataStartDate,
-  dataEndDate,
-  mapStartDate,
-  mapEndDate,
-} from "../../constants/time";
+import { mapStartDate, mapEndDate } from "../../constants/time";
 import { colors } from "../../constants/colors";
-import { useIsTablet, useIsMobile } from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faRedoAlt,
-  faTimesCircle,
-  faCalendar,
-} from "@fortawesome/free-solid-svg-icons";
+import { faRedoAlt } from "@fortawesome/free-solid-svg-icons";
 
 const SideMapControlDateRange = ({ type }) => {
-  const [focused, setFocused] = useState(null);
   const [start, setStart] = useState(mapStartDate);
   const [end, setEnd] = useState(mapEndDate);
 
@@ -132,9 +113,6 @@ const SideMapControlDateRange = ({ type }) => {
     }
   };
 
-  const isMobile = useIsMobile();
-  const isTablet = useIsTablet();
-
   // Create styled date input
   const StyledDateInput = styled.input.attrs({ type: "date" })`
     font-weight: 200;
@@ -142,17 +120,6 @@ const SideMapControlDateRange = ({ type }) => {
     border: 0px;
     width: 100px
     font-size: 15px
-  `;
-
-  // Create year dropdown picker in calendar
-  const StyledMonthYearDropdown = styled(UncontrolledDropdown)`
-    .dropdown-header {
-      /* Set color and position to hide weekday calendar headers with unchangeable z-index */
-      background: ${colors.dark};
-      color: ${colors.white};
-      position: relative;
-      top: -2px;
-    }
   `;
 
   const StyledButtonContainer = styled.div`
@@ -179,11 +146,6 @@ const SideMapControlDateRange = ({ type }) => {
     width: 16px;
     height: 16px;`;
 
-  const StyledCalendarIcon = styled(FontAwesomeIcon)`
-    ${calendarInputIconStyles}
-    left: 1px;
-  `;
-
   const StyledRedoButton = styled(FontAwesomeIcon)`
     ${calendarInputIconStyles}
     right: 1px;
@@ -200,7 +162,7 @@ const SideMapControlDateRange = ({ type }) => {
         value={start ?? mapStartDate}
         min={mapStartDate}
         max={mapEndDate}
-        onChange={(e) => setStart(e.target.value)}
+        onChange={(e) => handleStartDateChange(e.target.value)}
       />
       {"-"}
       <StyledDateInput
@@ -212,34 +174,6 @@ const SideMapControlDateRange = ({ type }) => {
         max={mapEndDate}
         onChange={(e) => handleEndDateChange(e.target.value)}
       />
-      {/* <DateRangePicker
-        startDateId={`start_date_${type}`} // PropTypes.string.isRequired,
-        endDateId={`end_date_${type}`} // PropTypes.string.isRequired,
-        startDate={start} // momentPropTypes.momentObj or null,
-        endDate={end} // momentPropTypes.momentObj or null,
-        onDatesChange={handleDateChange} // PropTypes.func.isRequired,
-        focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
-        onFocusChange={(focusedInput) => {
-          setFocused(focusedInput);
-          // Do not prompt the keyboard on mobile/tablet
-          if (isTablet) {
-            document.activeElement.blur();
-          }
-        }} // PropTypes.func.isRequired,
-        keepFocusOnInput
-        minDate={moment(dataStartDate)}
-        maxDate={moment(dataEndDate)}
-        renderCalendarInfo={() => (isMobile && renderCalendarInfo()) || true} // Render custom close button on mobile
-        calendarInfoPosition="top" // Position custom close button
-        appendToBody // Allow calendar to pop out over SideDrawer and Map components
-        withFullScreenPortal={isMobile} // Show full screen picker on mobile
-        small
-        renderMonthElement={renderMonthElement} // Render year picker
-        orientation={isMobile ? "vertical" : "horizontal"} // More mobile friendly than horizontal
-        isOutsideRange={() => false} // Enable past dates
-        isDayBlocked={isOutsideDateLimits} // Grey out dates
-        numberOfMonths={!canTwoMonthsFit || (isTablet && !isMobile) ? 1 : 2}
-      /> */}
       {/* Show reset button to restore default date range */}
       {(start !== mapStartDate || end !== mapEndDate) && (
         <StyledRedoButton
