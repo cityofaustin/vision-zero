@@ -5,8 +5,8 @@ import { Crash } from "@/types/crashes";
 import { EMSPatientCareRecord } from "@/types/ems";
 
 export type VzIncidentListRow = {
-  afd__incidents?: AfdIncident[] | null;
   address?: string[] | null;
+  afd__incidents?: AfdIncident[] | null;
   cad_incidents?: CadIncident[] | null;
   crashes?: Crash[] | null;
   ems__incidents?: EMSPatientCareRecord[] | null;
@@ -22,7 +22,7 @@ export type VzIncidentListRow = {
   record_tables?: string[];
   record_timestamp?: string;
   responding_agencies_str?: string | null;
-  responding_agencies?: string[];
+  responding_agencies?: string[] | null;
   vz_incident_records_view?: {
     vz_incident_id: number;
     geom: Point;

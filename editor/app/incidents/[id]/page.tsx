@@ -26,7 +26,6 @@ import { EMSPatientCareRecord } from "@/types/ems";
 import { ALL_EMS_COLUMNS } from "@/configs/emsColumns";
 import { cadColumns } from "@/configs/cadColumns";
 
-
 const crashColumns: ColDataCardDef<Crash>[] = [
   crashesColumns.record_locator_hyperlinked,
   crashesColumns.address_display,
@@ -65,7 +64,6 @@ export default function IncidentDetailsPage({
     typename: "vz_incidents_view",
   });
 
-  console.log(data, error, isValidating);
   const incident = data?.[0];
   /**
    * Set the title of the page inside the HTML head element
