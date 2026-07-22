@@ -108,7 +108,7 @@ const Header = () => {
             // In Summary view, match padding and margins of Summary content below
             className={`${
               isSummaryView
-                ? "px-xs-0 mx-xs-0 ps-md-2 pe-md-1 px-lg-3 mx-lg-4"
+                ? "px-xs-0 mx-xs-0 ps-md-2 pe-md-1 px-lg-3 mx-lg-4 d-flex justify-content-between"
                 : "px-0"
             }`}
           >
