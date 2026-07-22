@@ -4,6 +4,7 @@ COLUMNS = {
             "mvc_form_extrication_time": "mvc_form_extrication_datetime",
             "incident_location_longitude": "longitude",
             "incident_location_latitude": "latitude",
+            "incident_id": "cad_incident_id",
         },
         "cols_to_delete": ["incident_date_received", "incident_time_received"],
         "update_columns": [
@@ -12,7 +13,7 @@ COLUMNS = {
             "flag_patient_deceased",
             "flag_patient_gcs_lte_13",
             "incident_dispositions",
-            "incident_id",
+            "cad_incident_id",
             "incident_location_address",
             "incident_location_city",
             "incident_location_state",
