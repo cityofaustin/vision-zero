@@ -371,4 +371,22 @@ export const crashesColumns = {
     editable: false,
     inputType: "yes_no",
   },
+  risk_factors: {
+    path: "crash_risk_factors_view.risk_factors",
+    label: "Risk factors",
+    editable: false,
+    valueRenderer: (record: Crash) => {
+      const factors = record.crash_risk_factors_view?.risk_factors;
+      if (!factors?.length) {
+        return null;
+      }
+      return (
+        <>
+          {factors.map((factor) => (
+            <div key={factor}>{factor}</div>
+          ))}
+        </>
+      );
+    },
+  },
 } satisfies Record<string, ColDataCardDef<Crash>>;
