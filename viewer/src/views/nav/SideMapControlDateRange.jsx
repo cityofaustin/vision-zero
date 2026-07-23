@@ -105,7 +105,6 @@ const SideMapControlDateRange = ({ type }) => {
   }, [start, end, setMapDate]);
 
   const handleStartDateChange = (date) => {
-    console.log(date);
     if (!date) {
       setStart(dataStartDate);
     } else {
@@ -125,19 +124,19 @@ const SideMapControlDateRange = ({ type }) => {
   const StyledDatePicker = styled(DatePicker)`
     font-weight: 200;
     color: rgb(72, 72, 72);
-    // border: 0px;
-    // width: 120px
+    border: 0px;
+    width: 100px
     font-size: 15px;
   `;
 
   const StyledButtonContainer = styled.div`
     /* Mock a Bootstrap outline button */
     border: 1px solid ${colors.dark};
-    height: 34px;
+    height: 38px;
     border-radius: 4px;
     padding-left: 2px;
-    // display: flex
-    // justify-content: space-between
+    display: flex
+    justify-content: space-between
     align-items: center;
     color: ${colors.dark};
   `;
@@ -163,11 +162,13 @@ const SideMapControlDateRange = ({ type }) => {
         endDate={end}
         onChange={handleStartDateChange}
         dateFormat={"MM/dd/yyyy"}
-        showIcon
+        // showIcon
         selectsStart
         toggleCalendarOnIconClick
         minDate={dataStartDate}
         maxDate={dataEndDate}
+        showMonthDropdown
+        // withPortal // maybe for mobile
       />
       {"-"}
       <StyledDatePicker
@@ -177,11 +178,13 @@ const SideMapControlDateRange = ({ type }) => {
         endDate={end}
         onChange={handleEndDateChange}
         dateFormat={"MM/dd/yyyy"}
-        showIcon
+        // showIcon
         selectsEnd
         toggleCalendarOnIconClick
         minDate={dataStartDate}
         maxDate={dataEndDate}
+        showMonthDropdown
+        // withPortal // maybe for mobile?
       />
       {/* Show reset button to restore default date range */}
       {(start !== dataStartDate || end !== dataEndDate) && (
