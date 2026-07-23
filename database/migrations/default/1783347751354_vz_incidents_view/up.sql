@@ -152,3 +152,9 @@ FROM (
 COMMENT ON MATERIALIZED VIEW public.vz_incidents_view IS
     'Aggregate view of vz_incidents which aggregates attributes from the member records '
     '(crashes, cad_incidents, ems__incidents, afd__incidents) via the vz_incident_records_view';
+
+create index on vz_incidents_view(address);
+create index on vz_incidents_view(in_austin_full_purpose);
+create index on vz_incidents_view(incident_numbers_str);
+create index on vz_incidents_view(record_timestamp);
+create index on vz_incidents_view(responding_agencies_str);
