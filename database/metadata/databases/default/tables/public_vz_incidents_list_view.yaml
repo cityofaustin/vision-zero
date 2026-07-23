@@ -1,5 +1,5 @@
 table:
-  name: vz_incidents_view
+  name: vz_incidents_list_view
   schema: public
 array_relationships:
   - name: afd__incidents

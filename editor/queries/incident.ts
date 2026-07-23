@@ -2,7 +2,7 @@ import { gql } from "graphql-request";
 
 export const GET_INCIDENT = gql`
   query GetIncident($id: bigint!) {
-    vz_incidents_view(where: { id: { _eq: $id } }) {
+    vz_incidents_list_view(where: { id: { _eq: $id } }) {
       address
       afd__incidents {
         id

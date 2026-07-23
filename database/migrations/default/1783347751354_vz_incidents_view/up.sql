@@ -1,4 +1,4 @@
-DROP MATERIALIZED VIEW IF EXISTS vz_incidents_view;
+DROP MATERIALIZED VIEW IF EXISTS vz_incidents_list_view;
 DROP VIEW public.vz_incident_records_view;
 
 --
@@ -89,7 +89,7 @@ COMMENT ON VIEW public.vz_incident_records_view IS
     'exposed under a common schema for cross-type queries and geo-temporal matching.';
 
 
-CREATE MATERIALIZED VIEW vz_incidents_view AS
+CREATE MATERIALIZED VIEW vz_incidents_list_view AS
 SELECT
     id,
     record_count,
@@ -149,12 +149,12 @@ FROM (
     GROUP BY v.vz_incident_id
 ) sub;
 
-COMMENT ON MATERIALIZED VIEW public.vz_incidents_view IS
+COMMENT ON MATERIALIZED VIEW public.vz_incidents_list_view IS
     'Aggregate view of vz_incidents which aggregates attributes from the member records '
     '(crashes, cad_incidents, ems__incidents, afd__incidents) via the vz_incident_records_view';
 
-create index on vz_incidents_view(address);
-create index on vz_incidents_view(in_austin_full_purpose);
-create index on vz_incidents_view(incident_numbers_str);
-create index on vz_incidents_view(record_timestamp);
-create index on vz_incidents_view(responding_agencies_str);
+create index on vz_incidents_list_view(address);
+create index on vz_incidents_list_view(in_austin_full_purpose);
+create index on vz_incidents_list_view(incident_numbers_str);
+create index on vz_incidents_list_view(record_timestamp);
+create index on vz_incidents_list_view(responding_agencies_str);

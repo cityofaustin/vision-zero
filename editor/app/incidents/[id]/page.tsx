@@ -61,7 +61,7 @@ export default function IncidentDetailsPage({
     variables: {
       id,
     },
-    typename: "vz_incidents_view",
+    typename: "vz_incidents_list_view",
   });
 
   const incident = data?.[0];
