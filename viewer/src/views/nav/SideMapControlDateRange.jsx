@@ -127,7 +127,7 @@ const SideMapControlDateRange = ({ type }) => {
     color: rgb(72, 72, 72);
     // border: 0px;
     // width: 120px
-    font-size: 15px
+    font-size: 15px;
   `;
 
   const StyledButtonContainer = styled.div`
@@ -136,8 +136,8 @@ const SideMapControlDateRange = ({ type }) => {
     height: 34px;
     border-radius: 4px;
     padding-left: 2px;
-    display: flex
-    justify-content: space-between
+    // display: flex
+    // justify-content: space-between
     align-items: center;
     color: ${colors.dark};
   `;
@@ -159,9 +159,12 @@ const SideMapControlDateRange = ({ type }) => {
       <StyledDatePicker
         id={`map-start-date-${type}`}
         selected={start}
+        startDate={start}
+        endDate={end}
         onChange={handleStartDateChange}
         dateFormat={"MM/dd/yyyy"}
         showIcon
+        selectsStart
         toggleCalendarOnIconClick
         minDate={dataStartDate}
         maxDate={dataEndDate}
@@ -170,10 +173,13 @@ const SideMapControlDateRange = ({ type }) => {
       <StyledDatePicker
         id={`map-end-date-${type}`}
         selected={end}
+        startDate={start}
+        endDate={end}
         onChange={handleEndDateChange}
-        showIcon
-        toggleCalendarOnIconClick
         dateFormat={"MM/dd/yyyy"}
+        showIcon
+        selectsEnd
+        toggleCalendarOnIconClick
         minDate={dataStartDate}
         maxDate={dataEndDate}
       />
