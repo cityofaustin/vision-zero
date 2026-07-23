@@ -108,6 +108,9 @@ export const GET_CRASH = gql`
       is_temp_record
       in_austin_full_purpose
       diagram_transform
+      crash_risk_factors_view {
+        risk_factors
+      }
       crash_injury_metrics_view {
         vz_fatality_count
         sus_serious_injry_count

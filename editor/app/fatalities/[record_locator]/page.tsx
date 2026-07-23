@@ -141,6 +141,14 @@ export default function FatalCrashDetailsPage({
                   </tr>
                   <tr>
                     <td style={{ textWrap: "nowrap" }} className="fw-bold">
+                      Risk factors
+                    </td>
+                    <td>
+                      {crashesColumns.risk_factors.valueRenderer(crash)}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ textWrap: "nowrap" }} className="fw-bold">
                       Roadway owner
                     </td>
                     <td>
