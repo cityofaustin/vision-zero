@@ -4,14 +4,21 @@ import ThemedStyleSheet from "react-with-styles/lib/ThemedStyleSheet";
 import aphroditeInterface from "react-with-styles-interface-aphrodite";
 import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
 import styled from "styled-components";
-import { mapStartDate, mapEndDate } from "../../constants/time";
+import {
+  mapStartDate,
+  mapEndDate,
+  dataStartDate,
+  dataEndDate,
+} from "../../constants/time";
 import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedoAlt } from "@fortawesome/free-solid-svg-icons";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const SideMapControlDateRange = ({ type }) => {
-  const [start, setStart] = useState(mapStartDate);
-  const [end, setEnd] = useState(mapEndDate);
+  const [start, setStart] = useState(dataStartDate);
+  const [end, setEnd] = useState(dataEndDate);
 
   /**
    * We need to calculate the width differently in windows, by a few pixels.
@@ -98,8 +105,9 @@ const SideMapControlDateRange = ({ type }) => {
   }, [start, end, setMapDate]);
 
   const handleStartDateChange = (date) => {
+    console.log(date);
     if (!date) {
-      setStart(mapStartDate);
+      setStart(dataStartDate);
     } else {
       setStart(date);
     }
@@ -107,18 +115,18 @@ const SideMapControlDateRange = ({ type }) => {
 
   const handleEndDateChange = (date) => {
     if (!date) {
-      setEnd(mapEndDate);
+      setEnd(dataEndDate);
     } else {
       setEnd(date);
     }
   };
 
   // Create styled date input
-  const StyledDateInput = styled.input.attrs({ type: "date" })`
+  const StyledDatePicker = styled(DatePicker)`
     font-weight: 200;
     color: rgb(72, 72, 72);
-    border: 0px;
-    width: 100px
+    // border: 0px;
+    // width: 120px
     font-size: 15px
   `;
 
@@ -132,12 +140,6 @@ const SideMapControlDateRange = ({ type }) => {
     justify-content: space-between
     align-items: center;
     color: ${colors.dark};
-
-    /* Center start and end date inputs */
-    [id^="map-start-date-"],
-    [id^="map-end-date-"] {
-      text-align: center;
-    }
   `;
 
   // Center and size calendar icon or button
@@ -154,28 +156,29 @@ const SideMapControlDateRange = ({ type }) => {
 
   return (
     <StyledButtonContainer className="pe-0 picker-outline">
-      {/** address that is closes when clicking */}
-      <StyledDateInput
-        type="date"
+      <StyledDatePicker
         id={`map-start-date-${type}`}
-        name="map-start"
-        value={start ?? mapStartDate}
-        min={mapStartDate}
-        max={mapEndDate}
-        onChange={(e) => handleStartDateChange(e.target.value)}
+        selected={start}
+        onChange={handleStartDateChange}
+        dateFormat={"MM/dd/yyyy"}
+        showIcon
+        toggleCalendarOnIconClick
+        minDate={dataStartDate}
+        maxDate={dataEndDate}
       />
       {"-"}
-      <StyledDateInput
-        type="date"
+      <StyledDatePicker
         id={`map-end-date-${type}`}
-        name="map-end"
-        value={end ?? mapEndDate}
-        min={mapStartDate}
-        max={mapEndDate}
-        onChange={(e) => handleEndDateChange(e.target.value)}
+        selected={end}
+        onChange={handleEndDateChange}
+        showIcon
+        toggleCalendarOnIconClick
+        dateFormat={"MM/dd/yyyy"}
+        minDate={dataStartDate}
+        maxDate={dataEndDate}
       />
       {/* Show reset button to restore default date range */}
-      {(start !== mapStartDate || end !== mapEndDate) && (
+      {(start !== dataStartDate || end !== dataEndDate) && (
         <StyledRedoButton
           title="Reset to default date range"
           icon={faRedoAlt}
