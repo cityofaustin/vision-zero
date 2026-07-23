@@ -5,6 +5,7 @@ export type VzIncident = {
   id?: number | null;
   in_austin_full_purpose?: boolean | null;
   incident_numbers?: string[] | null;
+  incident_numbers_str?: string | null;
   latitude?: number | null;
   location_ids?: string[] | null;
   longitude?: number | null;

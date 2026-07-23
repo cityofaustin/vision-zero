@@ -42,60 +42,63 @@ select_permissions:
   - role: editor
     permission:
       columns:
-        - incident_numbers
-        - location_ids
-        - record_tables
-        - responding_agencies
-        - id
-        - record_count
-        - in_austin_full_purpose
-        - latitude
-        - longitude
         - address
-        - record_tables_str
-        - responding_agencies_str
-        - record_timestamp
+        - id
+        - in_austin_full_purpose
+        - incident_numbers
+        - incident_numbers_str
+        - latitude
+        - location_ids
+        - longitude
         - point_feature
+        - record_count
+        - record_tables
+        - record_tables_str
+        - record_timestamp
+        - responding_agencies
+        - responding_agencies_str
       filter: {}
       allow_aggregations: true
     comment: ""
   - role: readonly
     permission:
       columns:
-        - incident_numbers
-        - location_ids
-        - record_tables
-        - responding_agencies
-        - id
-        - record_count
-        - in_austin_full_purpose
-        - latitude
-        - longitude
         - address
-        - record_tables_str
-        - responding_agencies_str
-        - record_timestamp
+        - id
+        - in_austin_full_purpose
+        - incident_numbers
+        - incident_numbers_str
+        - latitude
+        - location_ids
+        - longitude
         - point_feature
+        - record_count
+        - record_tables
+        - record_tables_str
+        - record_timestamp
+        - responding_agencies
+        - responding_agencies_str
       filter: {}
       allow_aggregations: true
     comment: ""
   - role: vz-admin
     permission:
       columns:
-        - incident_numbers
-        - location_ids
-        - record_tables
-        - responding_agencies
-        - id
-        - record_count
-        - in_austin_full_purpose
-        - latitude
-        - longitude
         - address
-        - record_tables_str
-        - responding_agencies_str
-        - record_timestamp
+        - id
+        - in_austin_full_purpose
+        - incident_numbers
+        - incident_numbers_str
+        - latitude
+        - location_ids
+        - longitude
         - point_feature
+        - record_count
+        - record_tables
+        - record_tables_str
+        - record_timestamp
+        - responding_agencies
+        - responding_agencies_str
       filter: {}
       allow_aggregations: true
     comment: ""
