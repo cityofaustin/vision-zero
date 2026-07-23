@@ -94,6 +94,7 @@ SELECT
     id,
     record_count,
     incident_numbers,
+    '$' || array_to_string(incident_numbers, '$,$') || '$' AS incident_numbers_str,
     record_tables,
     '$' || array_to_string(record_tables, '$,$') || '$' AS record_tables_str,
     responding_agencies,
