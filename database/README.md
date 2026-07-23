@@ -17,6 +17,7 @@ The design supports an editing environment which enables Vision Zero program sta
       - [Lookup tables](#lookup-tables)
         - [Lookup table structure and custom lookup table values](#lookup-table-structure-and-custom-lookup-table-values)
       - [Charges records](#charges-records)
+      - [Crash risk factors and contributing factors](#crash-risk-factors)
       - [Database IDs, CRIS record IDs, and primary keys](#database-ids-cris-record-ids-and-primary-keys)
       - [User-created crash records, aka "temporary" records](#user-created-crash-records-aka-temporary-records)
       - [Audit fields](#audit-fields)
@@ -250,6 +251,26 @@ Charges records are provided by CRIS and describe a legal charge filed by the re
 2. During the CRIS import, all charge records are **deleted** from the database for any crash ID present in the CRIS extract. After deletion, the CRIS import ETL inserts all charges records present in the extract.
 3. The CRIS import ETL filters out charge records where the `charge` value is `NO CHARGE`—this reduces the number of charge records in the database by many thousands.
 4. Because charges are subject to deletion, they are not editable through the VZE/graphql API and should be considered read-only.
+
+#### Crash risk factors
+
+CRIS stores granular contributing factors chosen by investigating officers on each unit record, referencing the [lookup table `lookups.contrib_factr`](metadata/databases/default/tables/lookups_contrib_factr.yaml):
+
+- `units.contrib_factr_1_id`
+- `units.contrib_factr_2_id`
+- `units.contrib_factr_3_id`
+- `units.contrib_factr_p1_id`
+- `units.contrib_factr_p2_id`
+
+Those ~70 CRIS label options are very granular and repetitive, so we compute crash-level **risk factors**. These are simplified categories such as "Distracted driving", "Speeding", and "Impaired driving".
+
+The simplified [`lookups.risk_factor_categories`](metadata/databases/default/tables/lookups_risk_factor_categories.yaml) maps each CRIS `contrib_factr` ID to a Vision Zero risk factor category.
+
+The [`crash_risk_factors_view`](views/crash_risk_factors_view.sql) returns one row per crash with a `risk_factors` array of text values (or `null` when none apply); exposed on `crashes` via Hasura. It also adds categories from other crash attributes when the business rules require it.
+
+For example, impaired driving from positive alcohol/drug results, speeding from speed-related charges or other charges, red light running from collision type plus location signal type, are included in the risk factors calculation in addition to the contributing factor to risk factor category mapping. The full business rules are documented in [this Google Doc](https://docs.google.com/document/d/1YPVyAz72YUMo-kMvN65dMjN7DKba6OEqGJGQWMTwWAc/edit).
+
+The mapping seeds and view definition live in migration [`1784264703617_crash_risk_factors`](migrations/default/1784264703617_crash_risk_factors/up.sql). See also [PR #2086](https://github.com/cityofaustin/vision-zero/pull/2086).
 
 #### Database IDs, CRIS record IDs, and primary keys
 
