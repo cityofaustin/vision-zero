@@ -7,6 +7,8 @@ SELECT
     id,
     record_count,
     incident_numbers,
+    ('$'::text || array_to_string(incident_numbers, '$,$'::text))
+    || '$'::text                                                            AS incident_numbers_str,
     record_tables,
     ('$'::text || array_to_string(record_tables, '$,$'::text)) || '$'::text AS record_tables_str,
     responding_agencies,
