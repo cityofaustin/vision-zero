@@ -340,7 +340,7 @@ export const crashesColumns = {
       foreignKey: "wthr_cond_id",
     },
   },
-    surf_cond: {
+  surf_cond: {
     path: "surf_cond.label",
     label: "Surface condition",
     editable: false,
@@ -370,5 +370,23 @@ export const crashesColumns = {
     label: "COA roadway",
     editable: false,
     inputType: "yes_no",
+  },
+  risk_factors: {
+    path: "crash_risk_factors_view.risk_factors",
+    label: "Risk factors",
+    editable: false,
+    valueRenderer: (record: Crash) => {
+      const factors = record.crash_risk_factors_view?.risk_factors;
+      if (!factors?.length) {
+        return "None identified";
+      }
+      return (
+        <>
+          {factors.map((factor) => (
+            <div key={factor}>{factor}</div>
+          ))}
+        </>
+      );
+    },
   },
 } satisfies Record<string, ColDataCardDef<Crash>>;

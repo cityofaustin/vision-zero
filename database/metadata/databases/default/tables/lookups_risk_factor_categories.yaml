@@ -1,0 +1,29 @@
+table:
+  name: risk_factor_categories
+  schema: lookups
+object_relationships:
+  - name: contrib_factr
+    using:
+      foreign_key_constraint_on: contrib_factor_id
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - contrib_factor_id
+        - risk_factor_category
+      filter: {}
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - contrib_factor_id
+        - risk_factor_category
+      filter: {}
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - contrib_factor_id
+        - risk_factor_category
+      filter: {}
+    comment: ""
