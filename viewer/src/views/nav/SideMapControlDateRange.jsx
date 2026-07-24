@@ -12,7 +12,7 @@ import {
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRedoAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faRedoAlt } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -125,31 +125,36 @@ const SideMapControlDateRange = ({ type }) => {
     font-weight: 200;
     color: rgb(72, 72, 72);
     border: 0px;
-    width: 100px
+    width: 90px
     font-size: 15px;
   `;
 
   const StyledButtonContainer = styled.div`
     /* Mock a Bootstrap outline button */
     border: 1px solid ${colors.dark};
-    height: 38px;
+    height: 34px;
     border-radius: 4px;
     padding-left: 2px;
-    display: flex
-    justify-content: space-between
+    display: flex;
+    justify-content: space-around;
     align-items: center;
     color: ${colors.dark};
   `;
 
   // Center and size calendar icon or button
   const calendarInputIconStyles = `position: relative;
-    top: 2px;
     width: 16px;
-    height: 16px;`;
+    height: 16px;
+    margin: 2px;
+    right: 1px;
+  `;
+
+  const StyledCalendarIcon = styled(FontAwesomeIcon)`
+    ${calendarInputIconStyles}
+  `;
 
   const StyledRedoButton = styled(FontAwesomeIcon)`
     ${calendarInputIconStyles}
-    right: 1px;
     cursor: pointer;
   `;
 
@@ -167,7 +172,8 @@ const SideMapControlDateRange = ({ type }) => {
         toggleCalendarOnIconClick
         minDate={dataStartDate}
         maxDate={dataEndDate}
-        showMonthDropdown
+        showMonthYearDropdown
+        popperPlacement="bottom-start"
         // withPortal // maybe for mobile
       />
       {"-"}
@@ -183,11 +189,12 @@ const SideMapControlDateRange = ({ type }) => {
         toggleCalendarOnIconClick
         minDate={dataStartDate}
         maxDate={dataEndDate}
-        showMonthDropdown
+        showMonthYearDropdown
+        popperPlacement="bottom-start"
         // withPortal // maybe for mobile?
       />
-      {/* Show reset button to restore default date range */}
-      {(start !== dataStartDate || end !== dataEndDate) && (
+      {/* Show reset button to restore default date range or show calendar icon if default*/}
+      {start !== dataStartDate || end !== dataEndDate ? (
         <StyledRedoButton
           title="Reset to default date range"
           icon={faRedoAlt}
@@ -196,6 +203,13 @@ const SideMapControlDateRange = ({ type }) => {
             setStart(mapStartDate);
             setEnd(mapEndDate);
           }}
+        />
+      ) : (
+        <StyledCalendarIcon
+          title="Default date range"
+          icon={faCalendar}
+          color={colors.dark}
+          onClick={() => null}
         />
       )}
     </StyledButtonContainer>
