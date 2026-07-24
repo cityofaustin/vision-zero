@@ -20,83 +20,6 @@ const SideMapControlDateRange = ({ type }) => {
   const [start, setStart] = useState(dataStartDate);
   const [end, setEnd] = useState(dataEndDate);
 
-  /**
-   * We need to calculate the width differently in windows, by a few pixels.
-   * Windows = 94px, everyone else: 99px
-   */
-  const inputWidth = navigator.appVersion.indexOf("Win") !== -1 ? 92 : 99;
-
-  // Override defaultTheme https://github.com/airbnb/react-dates/blob/master/src/theme/DefaultTheme.js
-  const vzTheme = {
-    reactDates: {
-      ...DefaultTheme.reactDates,
-      zIndex: 1301, // MUI SideDrawer is 1300 so need to exceed to show picker
-      border: {
-        ...DefaultTheme.reactDates.border,
-        input: {
-          ...DefaultTheme.reactDates.border.input,
-          borderBottomFocused: `2px solid ${colors.dark}`,
-        },
-        pickerInput: {
-          ...DefaultTheme.reactDates.border.pickerInput,
-          borderWidth: 0, // Remove any space between picker and StyledButtonContainer
-        },
-      },
-      color: {
-        ...DefaultTheme.reactDates.color,
-        placeholderText: `${colors.dark}`, // Set to same color as .dropdown-header to overcome z-index issue (hide text)
-        border: `transparent`, // Hide DateRangePicker border and show StyledButtonContainer instead
-        selected: {
-          backgroundColor: `${colors.dark}`,
-          backgroundColor_active: `${colors.dark}`,
-          backgroundColor_hover: `${colors.dark}`,
-          borderColor: `${colors.light}`,
-          borderColor_active: `${colors.light}`,
-          borderColor_hover: `${colors.light}`,
-          color: `${colors.light}`,
-          color_active: `${colors.light}`,
-          color_hover: `${colors.light}`,
-        },
-        selectedSpan: {
-          backgroundColor: `${colors.secondary}`,
-          backgroundColor_active: `${colors.secondary}`,
-          backgroundColor_hover: `${colors.dark}`,
-          borderColor: `${colors.light}`,
-          borderColor_active: `${colors.light}`,
-          borderColor_hover: `${colors.light}`,
-          color: `${colors.dark}`,
-          color_active: `${colors.light}`,
-          color_hover: `${colors.light}`,
-        },
-        hoveredSpan: {
-          backgroundColor: `${colors.secondary}`,
-          backgroundColor_active: `${colors.dark}`,
-          backgroundColor_hover: `${colors.dark}`,
-          borderColor: `${colors.light}`,
-          borderColor_active: `${colors.light}`,
-          borderColor_hover: `${colors.light}`,
-          color: `${colors.dark}`,
-          color_active: `${colors.light}`,
-          color_hover: `${colors.light}`,
-        },
-      },
-      sizing: {
-        inputWidth: 90,
-        inputWidth_small: inputWidth,
-        arrowWidth: 10,
-      },
-      spacing: {
-        ...DefaultTheme.reactDates.spacing,
-        displayTextPaddingLeft_small: 4,
-        displayTextPaddingRight_small: 4,
-        displayTextPaddingBottom_small: 4,
-      },
-    },
-  };
-
-  ThemedStyleSheet.registerTheme(vzTheme);
-  ThemedStyleSheet.registerInterface(aphroditeInterface);
-
   const { setMapDateRange: setMapDate } = React.useContext(StoreContext);
 
   // Update map date range in Context when picker dates update
@@ -170,9 +93,7 @@ const SideMapControlDateRange = ({ type }) => {
         endDate={end}
         onChange={handleStartDateChange}
         dateFormat={"MM/dd/yyyy"}
-        // showIcon
         selectsStart
-        toggleCalendarOnIconClick
         minDate={dataStartDate}
         maxDate={dataEndDate}
         showMonthYearDropdown
@@ -187,9 +108,7 @@ const SideMapControlDateRange = ({ type }) => {
         endDate={end}
         onChange={handleEndDateChange}
         dateFormat={"MM/dd/yyyy"}
-        // showIcon
         selectsEnd
-        toggleCalendarOnIconClick
         minDate={dataStartDate}
         maxDate={dataEndDate}
         showMonthYearDropdown
