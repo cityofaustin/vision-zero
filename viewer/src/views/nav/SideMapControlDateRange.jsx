@@ -139,6 +139,9 @@ const SideMapControlDateRange = ({ type }) => {
     justify-content: space-around;
     align-items: center;
     color: ${colors.dark};
+    .end-date-popper {
+      margin-left: -24px
+    }
   `;
 
   // Center and size calendar icon or button
@@ -190,7 +193,8 @@ const SideMapControlDateRange = ({ type }) => {
         minDate={dataStartDate}
         maxDate={dataEndDate}
         showMonthYearDropdown
-        popperPlacement="bottom-start"
+        popperPlacement="bottom"
+        popperClassName="end-date-popper"
         // withPortal // maybe for mobile?
       />
       {/* Show reset button to restore default date range or show calendar icon if default*/}
