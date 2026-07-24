@@ -35,6 +35,12 @@ $ docker compose run import ems --skip-archive
 
 Note that the `--skip-archive` directive prevents the script from moving each processed file to the `/archive` directory. This option is for local development and should not be used in production.
 
+It's also possible to process CSV and XLSX files directly (without fetching them from an email in the S3 bucket) by placing files in the `./data` directory and using the `--local-files` flag. Note that `--skip-archive` has no effect when working with local files.
+
+```
+# docker compose run import ems --local-files
+```
+
 ## Deployment + CI
 
 A github action is configured to build and push this ETL's image to the Docker hub whenever files in this directory are changed.
