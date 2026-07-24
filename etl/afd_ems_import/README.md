@@ -38,7 +38,7 @@ Note that the `--skip-archive` directive prevents the script from moving each pr
 It's also possible to process CSV and XLSX files directly (without fetching them from an email in the S3 bucket) by placing files in the `./data` directory and using the `--local-files` flag. Note that `--skip-archive` has no effect when working with local files.
 
 ```
-# docker compose run import ems --local-files
+docker compose run import ems --local-files
 ```
 
 ## Deployment + CI
