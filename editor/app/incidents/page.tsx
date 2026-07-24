@@ -4,7 +4,6 @@ import { vzListViewColumns } from "@/configs/vzListViewColumns";
 import { vzListViewQueryConfig } from "@/configs/vzListViewTable";
 import TableWrapper from "@/components/TableWrapper";
 import { useDocumentTitle } from "@/utils/documentTitle";
-import AlignedLabel from "@/components/AlignedLabel";
 import { LuInfo } from "react-icons/lu";
 import { Badge } from "react-bootstrap";
 
@@ -22,14 +21,12 @@ export default function Incidents() {
             <Badge bg="info">Beta</Badge>
           </div>
         </div>
-        <div className="fw-light text-secondary mb-2">
-          <AlignedLabel>
-            <LuInfo className="me-2" />
-            <span>
-              Incidents are currently in beta. Data may be inaccurate or change
-              significantly as we continue to refine the system.
-            </span>
-          </AlignedLabel>
+        <div className="fw-light text-secondary d-flex align-items-center mb-2">
+          <LuInfo className="me-2 flex-shrink-0" />
+          <span>
+            Incidents are currently in beta. Data may be inaccurate or change
+            significantly as we continue to refine the system.
+          </span>
         </div>
         <TableWrapper
           columns={vzListViewColumns}

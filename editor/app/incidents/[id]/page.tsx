@@ -3,33 +3,33 @@ import { use, useEffect } from "react";
 import { notFound } from "next/navigation";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import { FaRoad } from "react-icons/fa6";
-import { useQuery } from "@/utils/graphql";
-import UserEventsLogger from "@/components/UserEventsLogger";
-import { GET_INCIDENT } from "@/queries/incident";
-import { VzIncidentListRow } from "@/types/vzIncidentList";
-import IncidentMapCard from "@/components/IncidentMapCard";
 import {
   LuAmbulance,
-  LuFlame,
   LuClipboardPen,
+  LuFlame,
   LuHeadset,
 } from "react-icons/lu";
-import { RiPoliceBadgeLine } from "react-icons/ri";
-import { formatYesNoString, formatIsoDateTime } from "@/utils/formatters";
-import { ColDataCardDef } from "@/types/types";
-import { CadIncident } from "@/types/cadIncident";
-import RelatedRecordTable from "@/components/RelatedRecordTable";
-import { crashesColumns } from "@/configs/crashesColumns";
-import { Crash } from "@/types/crashes";
-import { EMSPatientCareRecord } from "@/types/ems";
+import { afdColumns } from "@/configs/afdColumns";
 import { ALL_EMS_COLUMNS } from "@/configs/emsColumns";
 import { cadColumns } from "@/configs/cadColumns";
+import { CadIncident } from "@/types/cadIncident";
+import { ColDataCardDef } from "@/types/types";
+import { Crash } from "@/types/crashes";
+import { crashesColumns } from "@/configs/crashesColumns";
+import { EMSPatientCareRecord } from "@/types/ems";
+import { FaRoad } from "react-icons/fa6";
+import { GET_INCIDENT } from "@/queries/incident";
+import { useQuery } from "@/utils/graphql";
+import { VzIncidentListRow } from "@/types/vzIncidentList";
+import IncidentMapCard from "@/components/IncidentMapCard";
+import RelatedRecordTable from "@/components/RelatedRecordTable";
+import UserEventsLogger from "@/components/UserEventsLogger";
+import { AfdIncident } from "@/types/afd";
 
 const crashColumns: ColDataCardDef<Crash>[] = [
   crashesColumns.record_locator_hyperlinked,
-  crashesColumns.address_display,
   crashesColumns.crash_timestamp,
+  crashesColumns.address_display,
   crashesColumns.collsn,
   crashesColumns.agency,
   crashesColumns.private_dr_fl,
@@ -56,12 +56,12 @@ export default function IncidentDetailsPage({
 }) {
   const { id } = use(params);
 
-  const { data, error, isValidating, refetch } = useQuery<VzIncidentListRow>({
+  const { data } = useQuery<VzIncidentListRow>({
     query: GET_INCIDENT,
     variables: {
       id,
     },
-    typename: "vz_incidents_view",
+    typename: "vz_incidents_list_view",
   });
 
   const incident = data?.[0];
@@ -153,6 +153,28 @@ export default function IncidentDetailsPage({
               }
               columns={emsColumns}
               records={incident.ems__incidents}
+              mutation=""
+              noRowsMessage="No patient care records"
+              shouldShowColumnVisibilityPicker
+              localStorageKey="vzIncidentsEmsTableColVisibility"
+            />
+          )}
+        </Col>
+      </Row>
+      <Row className="mb-3">
+        <Col>
+          {incident.afd__incidents && (
+            <RelatedRecordTable<AfdIncident>
+              header={
+                <div className="d-flex align-items-center">
+                  <span className="me-2 d-flex align-items-center">
+                    <LuFlame className={`text-secondary fs-4`} />
+                  </span>
+                  <span className="fs-5 fw-bold">AFD Incidents</span>
+                </div>
+              }
+              columns={afdColumns}
+              records={incident.afd__incidents}
               mutation=""
               noRowsMessage="No patient care records"
               shouldShowColumnVisibilityPicker

@@ -143,10 +143,10 @@ const vzListViewfilterCards: FilterGroup[] = [
 ];
 
 export const vzListViewQueryConfig: QueryConfig = {
-  _version: 1,
+  _version: 2,
   exportable: true,
-  exportFilename: "vz_incidents_view",
-  tableName: "vz_incidents_view",
+  exportFilename: "vz_incidents_list_view",
+  tableName: "vz_incidents_list_view",
   limit: 1000,
   offset: 0,
   sortColName: "record_timestamp",
@@ -158,7 +158,10 @@ export const vzListViewQueryConfig: QueryConfig = {
     operator: "_ilike",
     wildcard: true,
   },
-  searchFields: [{ label: "Address", value: "address" }],
+  searchFields: [
+    { label: "Address", value: "address" },
+    { label: "Incident number", value: "incident_numbers_str" },
+  ],
   dateFilter: {
     mode: "1y",
     column: "record_timestamp",

@@ -58,8 +58,9 @@ export const vzListViewColumns: ColDataCardDef<VzIncidentListRow>[] = [
   },
   {
     path: "record_tables",
-    label: "record_tables",
+    label: "Record tables",
     valueFormatter: formatArrayToString,
+    defaultHidden: true,
   },
   {
     path: "point_feature",
