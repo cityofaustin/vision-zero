@@ -3,7 +3,12 @@ import { use, useEffect } from "react";
 import { notFound } from "next/navigation";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import { LuAmbulance, LuClipboardPen, LuFlame, LuHeadset } from "react-icons/lu";
+import {
+  LuAmbulance,
+  LuClipboardPen,
+  LuFlame,
+  LuHeadset,
+} from "react-icons/lu";
 import { afdColumns } from "@/configs/afdColumns";
 import { ALL_EMS_COLUMNS } from "@/configs/emsColumns";
 import { cadColumns } from "@/configs/cadColumns";
@@ -23,8 +28,8 @@ import { AfdIncident } from "@/types/afd";
 
 const crashColumns: ColDataCardDef<Crash>[] = [
   crashesColumns.record_locator_hyperlinked,
-  crashesColumns.address_display,
   crashesColumns.crash_timestamp,
+  crashesColumns.address_display,
   crashesColumns.collsn,
   crashesColumns.agency,
   crashesColumns.private_dr_fl,
