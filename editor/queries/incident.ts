@@ -4,11 +4,15 @@ export const GET_INCIDENT = gql`
   query GetIncident($id: bigint!) {
     vz_incidents_list_view(where: { id: { _eq: $id } }) {
       address
-      afd__incidents {
+      afd__incidents(order_by: { call_datetime: asc }) {
         id
+        incident_number
+        call_datetime
+        address
+        problem
       }
 
-      cad_incidents {
+      cad_incidents(order_by: { response_date: asc }) {
         address
         agency_type_short
         call_disposition
@@ -24,7 +28,7 @@ export const GET_INCIDENT = gql`
         response_date
         time_first_unit_arrived
       }
-      crashes {
+      crashes(order_by: { crash_timestamp: asc }) {
         address_display
         agency {
           id
@@ -41,7 +45,7 @@ export const GET_INCIDENT = gql`
           label
         }
       }
-      ems__incidents {
+      ems__incidents(order_by: { incident_received_datetime: asc }) {
         crash {
           cris_crash_id
         }

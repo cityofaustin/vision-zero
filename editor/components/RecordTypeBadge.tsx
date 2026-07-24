@@ -1,33 +1,30 @@
 "use client";
-import {
-  LuAmbulance,
-  LuFlame,
-  LuClipboardPen,
-} from "react-icons/lu";
+import { LuAmbulance, LuFlame, LuClipboardPen } from "react-icons/lu";
 import { RiPoliceBadgeLine } from "react-icons/ri";
 import { IconType } from "react-icons";
+import { COLORS } from "@/utils/constants";
 
 import AlignedLabel from "@/components/AlignedLabel";
 
 export const RECORD_TYPE_BADGES: Record<string, RecordTypeBadgeProps> = {
   cad_apd: {
     icon: RiPoliceBadgeLine,
-    colorClass: "primary",
+    iconStyle: { color: COLORS.primary },
     label: "APD",
   },
   cad_ems: {
     icon: LuAmbulance,
-    colorClass: "danger",
+    iconStyle: { color: COLORS.danger },
     label: "EMS",
   },
   cad_afd: {
     icon: LuFlame,
-    colorClass: "danger",
+    iconStyle: { color: COLORS.danger },
     label: "AFD",
   },
   crashes: {
     icon: LuClipboardPen,
-    colorClass: "secondary",
+    iconStyle: { color: COLORS.secondary },
     label: "Crash report",
   },
 };
@@ -35,20 +32,19 @@ export const RECORD_TYPE_BADGES: Record<string, RecordTypeBadgeProps> = {
 interface RecordTypeBadgeProps {
   icon: IconType;
   label: string;
-  colorClass: "primary" | "danger" | "secondary";
+  iconStyle?: React.CSSProperties;
   count?: number;
 }
-
 
 export function RecordTypeBadge({
   icon: Icon,
   label,
-  colorClass,
+  iconStyle,
 }: RecordTypeBadgeProps) {
   return (
     <div className="d-flex">
       <AlignedLabel>
-        <Icon className={`text-${colorClass} fs-4 me-2`} />
+        <Icon className={`fs-4 me-2`} style={iconStyle && { ...iconStyle }} />
         <span className="fw-light fs-6 text-dark me-2 my-auto">{label}</span>
       </AlignedLabel>
     </div>
