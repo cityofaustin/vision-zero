@@ -3,6 +3,7 @@ import { AfdIncident } from "@/types/afd";
 import { CadIncident } from "@/types/cadIncident";
 import { Crash } from "@/types/crashes";
 import { EMSPatientCareRecord } from "@/types/ems";
+import { VzIncidentRecord } from "@/types/vzIncidentRecord";
 
 export type VzIncidentListRow = {
   address?: string[] | null;
@@ -23,14 +24,5 @@ export type VzIncidentListRow = {
   record_timestamp?: string;
   responding_agencies_str?: string | null;
   responding_agencies?: string[] | null;
-  vz_incident_records_view?: {
-    vz_incident_id: number;
-    geom: Point;
-    record_id: number;
-    record_incident_number: string;
-    record_responding_agency: string | null;
-    record_table_name: string;
-    record_address: string | null;
-    record_timestamp: string | null;
-  }[];
+  vz_incident_records_view?: VzIncidentRecord[];
 };
