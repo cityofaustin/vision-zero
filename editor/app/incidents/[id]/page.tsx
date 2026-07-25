@@ -25,6 +25,8 @@ import IncidentMapCard from "@/components/IncidentMapCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
 import UserEventsLogger from "@/components/UserEventsLogger";
 import { AfdIncident } from "@/types/afd";
+import { VzIncidentRecord } from "@/types/vzIncidentRecord";
+import { vzIncidentRecordColumns } from "@/configs/vzIncidentRecordColmns";
 
 const crashColumns: ColDataCardDef<Crash>[] = [
   crashesColumns.record_locator_hyperlinked,
@@ -48,6 +50,8 @@ const emsColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
   ALL_EMS_COLUMNS.crash_match_status,
   { ...ALL_EMS_COLUMNS.person_match_status, defaultHidden: true },
 ];
+
+
 
 export default function IncidentDetailsPage({
   params,
@@ -91,8 +95,19 @@ export default function IncidentDetailsPage({
         </Col>
       </Row>
       <Row>
-        <Col sm={12} className="mb-3">
+        <Col sm={12} md={7} className="mb-3">
           {incident && <IncidentMapCard incident={incident} />}
+        </Col>
+        <Col sm={12} md={5} className="mb-3">
+          {incident.vz_incident_records_view && (
+            <RelatedRecordTable<VzIncidentRecord>
+              header={<span className="fs-5 fw-bold">Records</span>}
+              columns={vzIncidentRecordColumns}
+              records={incident.vz_incident_records_view}
+              mutation=""
+              noRowsMessage="No records"
+            />
+          )}
         </Col>
       </Row>
       <Row className="mb-3">
