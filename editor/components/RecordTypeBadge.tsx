@@ -7,17 +7,17 @@ import { COLORS } from "@/utils/constants";
 import AlignedLabel from "@/components/AlignedLabel";
 
 export const RECORD_TYPE_BADGES: Record<string, RecordTypeBadgeProps> = {
-  cad_apd: {
+  apd: {
     icon: RiPoliceBadgeLine,
     iconStyle: { color: COLORS.primary },
     label: "APD",
   },
-  cad_ems: {
+  ems: {
     icon: LuAmbulance,
     iconStyle: { color: COLORS.danger },
     label: "EMS",
   },
-  cad_afd: {
+  afd: {
     icon: LuFlame,
     iconStyle: { color: COLORS.danger },
     label: "AFD",

@@ -11,7 +11,7 @@ export const cadColumns: ColDataCardDef<CadIncident>[] = [
     sortable: true,
     valueRenderer: (record: CadIncident) => (
       <RecordTypeBadge
-        {...RECORD_TYPE_BADGES["cad_" + record.agency_type_short || ""]}
+        {...RECORD_TYPE_BADGES[record.agency_type_short || ""]}
       />
     ),
   },
