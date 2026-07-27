@@ -6,7 +6,7 @@ import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
 import logo from "./COA-Logo-Stacked-Faded-White-RGB.svg";
 
-import pckg from "../../../package.json"
+import pckg from "../../../package.json";
 
 console.log(pckg.version);
 
@@ -39,7 +39,7 @@ const Footer = () => {
       z-index: 2;
       position: relative;
       left: 100px;
-      top: 45px;
+      top: 150px;
     }
 
     .version {
@@ -47,9 +47,14 @@ const Footer = () => {
       font-size: 14px;
     }
 
-    a,
-    a:hover {
+    a {
       color: ${colors.light};
+      text-decoration: none;
+
+      &:hover {
+        color: ${colors.light};
+        text-decoration: underline;
+      }
     }
 
     /* Prevent links from overlapping CoA logo */
@@ -57,7 +62,7 @@ const Footer = () => {
       .coa-logo {
         position: relative;
         left: 40px;
-        top: 45px;
+        top: 150px;
       }
     }
 
@@ -71,14 +76,13 @@ const Footer = () => {
       }
 
       .coa-logo {
-        position: relative;
+        left: auto;
+        top: 80px;
         background: ${colors.dark};
-        top: -20px;
         padding: 8px;
         border: 10px solid ${colors.dark};
         border-radius: 60% 60% 0 0;
-        left: 50%;
-        transform: translate(-50%, 0%);
+        margin: 0 auto;
       }
     }
   `;
@@ -114,7 +118,7 @@ const Footer = () => {
         <Container fluid className="mt-5">
           <img
             alt="City of Austin seal"
-            className="coa-logo float-left"
+            className="coa-logo"
             height="100px"
             src={logo}
           />

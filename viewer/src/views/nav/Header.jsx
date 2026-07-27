@@ -109,7 +109,7 @@ const Header = () => {
             className={`${
               isSummaryView
                 ? "px-xs-0 mx-xs-0 ps-md-2 pe-md-1 px-lg-3 mx-lg-4 d-flex justify-content-between"
-                : "px-0"
+                : "px-0 d-flex justify-content-between"
             }`}
           >
             <Button
