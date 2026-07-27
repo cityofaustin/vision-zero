@@ -7,9 +7,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3002",
-    "build": "next build",
+    "build": "npm run lint && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "format": "prettier --write ."
   },
   "dependencies": {
@@ -30,7 +30,7 @@
     "immer": "^10.2.0",
     "lodash": "^4.18.1",
     "mapbox-gl": "^3.26.0",
-    "next": "^15.5.21",
+    "next": "^16.2.10",
     "papaparse": "^5.5.4",
     "react": "^19.2.7",
     "react-bootstrap": "^2.10.10",
@@ -47,8 +47,8 @@
     "@types/node": "^20.19.43",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "^15.5.20",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.2.10",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.5",
     "sass": "^1.101.0",
