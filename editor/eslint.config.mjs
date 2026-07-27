@@ -14,12 +14,12 @@ const eslintConfig = defineConfig([
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": "error",
       // React Compiler rules newly enabled by eslint-config-next 16.
-      // Keep off until the app is migrated to Compiler-friendly patterns.
-      "react-hooks/set-state-in-effect": "off",
-      "react-hooks/preserve-manual-memoization": "off",
-      "react-hooks/purity": "off",
-      "react-hooks/immutability": "off",
-      "react-hooks/incompatible-library": "off",
+      // Warn for now; fix and promote to error in a follow-up.
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/preserve-manual-memoization": "warn",
+      "react-hooks/purity": "warn",
+      "react-hooks/immutability": "warn",
+      "react-hooks/incompatible-library": "warn",
     },
   },
   // Override default ignores of eslint-config-next.
