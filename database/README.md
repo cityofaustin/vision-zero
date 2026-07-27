@@ -266,9 +266,9 @@ Those ~70 CRIS label options are very granular and repetitive, so we compute cra
 
 The simplified [`lookups.risk_factor_categories`](metadata/databases/default/tables/lookups_risk_factor_categories.yaml) maps each CRIS `contrib_factr` ID to a Vision Zero risk factor category.
 
-The [`crash_risk_factors_view`](views/crash_risk_factors_view.sql) returns one row per crash with a `risk_factors` array of text values (or `null` when none apply); exposed on `crashes` via Hasura. It also adds categories from other crash attributes when the business rules require it.
+The [`crash_risk_factors_view`](views/crash_risk_factors_view.sql) returns one row per crash with a `risk_factors` array of text values (or `null` when none apply); exposed on `crashes` via Hasura. It also adds categories from other crash attributes when the business rules require it. This database view is the source of truth for how crash risk factor are computed.
 
-For example, impaired driving from positive alcohol/drug results, speeding from speed-related charges or other charges, red light running from collision type plus location signal type, are included in the risk factors calculation in addition to the contributing factor to risk factor category mapping. The full business rules are documented in [this Google Doc](https://docs.google.com/document/d/1YPVyAz72YUMo-kMvN65dMjN7DKba6OEqGJGQWMTwWAc/edit).
+For example, impaired driving from positive alcohol/drug results, speeding from speed-related charges or other charges, red light running from collision type plus location signal type, are included in the risk factors calculation in addition to the contributing factor to risk factor category mapping. The Vision Zero team maintains a plain-language list of crash risk factor business rules in their [internal methodology Sharepoint doc](https://cityofaustin.sharepoint.com/:w:/r/sites/VisionZero/_layouts/15/Doc.aspx?sourcedoc=%7BC6A5C38D-42C0-4BA2-89D6-7775CB658389%7D&file=Vision%20Zero%20Methodology.docx&action=default&mobileredirect=true).
 
 The mapping seeds and view definition live in migration [`1784264703617_crash_risk_factors`](migrations/default/1784264703617_crash_risk_factors/up.sql). See also [PR #2086](https://github.com/cityofaustin/vision-zero/pull/2086).
 
