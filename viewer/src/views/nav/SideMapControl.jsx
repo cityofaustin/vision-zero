@@ -309,7 +309,7 @@ const SideMapControl = ({ type }) => {
         Traffic Crashes{" "}
         <InfoPopover config={popoverConfig.map.trafficCrashes} />
       </span>
-      <Card className="p-3 card-body">
+      <Card className="mt-2 p-3 card-body">
         <Label className="section-title">
           <span className="h5" style={{ display: "block" }}>
             Filters
