@@ -39,7 +39,7 @@ const Footer = () => {
       z-index: 2;
       position: relative;
       left: 100px;
-      top: 150px;
+      top: 70px;
     }
 
     .version {
@@ -62,7 +62,7 @@ const Footer = () => {
       .coa-logo {
         position: relative;
         left: 40px;
-        top: 150px;
+        top: 70px;
       }
     }
 
@@ -77,7 +77,7 @@ const Footer = () => {
 
       .coa-logo {
         left: auto;
-        top: 80px;
+        top: -20px;
         background: ${colors.dark};
         padding: 8px;
         border: 10px solid ${colors.dark};
@@ -116,12 +116,6 @@ const Footer = () => {
     <footer>
       <StyledFooter>
         <Container fluid className="mt-5">
-          <img
-            alt="City of Austin seal"
-            className="coa-logo"
-            height="100px"
-            src={logo}
-          />
           <Row className="col-12 link-table">
             <Col xs="12" className="link link-title">
               City of Austin Transportation Public Works
@@ -132,6 +126,12 @@ const Footer = () => {
               </Col>
             ))}
           </Row>
+          <img
+            alt="City of Austin seal"
+            className="coa-logo"
+            height="100px"
+            src={logo}
+          />
         </Container>
       </StyledFooter>
     </footer>
