@@ -369,8 +369,10 @@ const CrashesByMode = () => {
                         stacked: true,
                       },
                     },
-                    legend: {
-                      display: false,
+                    plugins: {
+                      legend: {
+                        display: false,
+                      },
                     },
                   }}
                 />
