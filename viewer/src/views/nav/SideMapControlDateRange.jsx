@@ -96,7 +96,6 @@ const SideMapControlDateRange = ({ type }) => {
         selectsStart
         minDate={dataStartDate}
         maxDate={dataEndDate}
-        showMonthYearDropdown
         popperPlacement="bottom-start"
         // withPortal // maybe for mobile
       />
@@ -111,7 +110,6 @@ const SideMapControlDateRange = ({ type }) => {
         selectsEnd
         minDate={dataStartDate}
         maxDate={dataEndDate}
-        showMonthYearDropdown
         popperPlacement="bottom"
         popperClassName="end-date-popper"
         // withPortal // maybe for mobile?
