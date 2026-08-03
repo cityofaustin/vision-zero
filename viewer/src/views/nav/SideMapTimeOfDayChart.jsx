@@ -163,7 +163,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
           ref={(ref) => (chartRef.current = ref)}
           data={data}
           height={250}
-          aria-label="TODO"
+          aria-label="Horizontal bar chart showing crash distribution by time of day. Click any bar to filter the map to that time range"
           onClick={handleBarClick}
           options={{
             indexAxis: "y",

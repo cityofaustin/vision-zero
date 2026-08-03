@@ -355,7 +355,7 @@ const CrashesByMode = () => {
                   data={data}
                   height={null}
                   width={null}
-                  aria-label="TODO"
+                  aria-label="Stacked bar chart of crash fatalities or injuries by travel mode over time"
                   options={{
                     responsive: true,
                     aspectRatio: 1.37,
