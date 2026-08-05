@@ -131,12 +131,6 @@ export const PointMap = ({
     initialBasemapType || "aerial"
   );
 
-  const geojsonBounds = useCurrentBounds({
-    type: "Point",
-    coordinates:
-      savedLatitude && savedLongitude ? [savedLongitude, savedLatitude] : [],
-  });
-
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
       // truncate values to our preferred precision
@@ -178,7 +172,7 @@ export const PointMap = ({
 
   /**
    * Tracks geometry reported by children via the MapFeatureRegistry
-   * (e.g. Markers, GeoJSON label layers) so the map can be fit to
+   * (e.g. Markers, GeoJSON layers) so the map can be fit to
    * everything currently rendered, not just the saved lat/lon.
    */
   const [registeredFeatures, setRegisteredFeatures] = useState<
@@ -193,32 +187,37 @@ export const PointMap = ({
     []
   );
 
+  const allFeatures = useMemo(() => {
+    const feats: Feature<Geometry>[] = [];
+
+    if (savedLatitude != null && savedLongitude != null) {
+      feats.push(point([savedLongitude, savedLatitude]));
+    }
+
+    registeredFeatures.forEach((geom) => {
+      if (Array.isArray(geom)) {
+        geom.forEach((g) => feats.push(feature(g)));
+      } else {
+        feats.push(feature(geom));
+      }
+    });
+
+    return featureCollection(feats);
+  }, [savedLatitude, savedLongitude, registeredFeatures]);
+
+  const totalBounds = useCurrentBounds(allFeatures);
+
   useEffect(() => {
     if (!autoFitBounds || hasFitRef.current) return;
     const map = mapRef.current;
     if (!map) return;
 
     const fit = () => {
-      const points: Feature<Geometry>[] = [];
+      if (allFeatures.features.length === 0) return;
 
-      if (savedLatitude && savedLongitude) {
-        points.push(point([savedLongitude, savedLatitude]));
-      }
-
-      registeredFeatures.forEach((geom) => {
-        if (Array.isArray(geom)) {
-          geom.forEach((g) => points.push(feature(g)));
-        } else {
-          points.push(feature(geom));
-        }
-      });
-
-      if (points.length === 0) return;
-
-      // Single point: just center on it rather than computing a
-      // degenerate (zero-area) bbox.
-      if (points.length === 1) {
-        const g = points[0].geometry;
+      // Single point: center rather than fitBounds on a zero-area box
+      if (allFeatures.features.length === 1) {
+        const g = allFeatures.features[0].geometry;
         if (g.type === "Point") {
           const [lng, lat] = g.coordinates;
           map.easeTo({ center: [lng, lat], duration: 0 });
@@ -227,25 +226,14 @@ export const PointMap = ({
         return;
       }
 
-      const [minX, minY, maxX, maxY] = bbox(featureCollection(points));
-      map.fitBounds(
-        [
-          [minX, minY],
-          [maxX, maxY],
-        ],
-        { padding: 60, duration: 0 }
-      );
+      if (!totalBounds) return;
+      map.fitBounds(totalBounds, { padding: 60, duration: 0 });
       hasFitRef.current = true;
     };
+
     if (map.isStyleLoaded()) fit();
     else map.once("idle", fit);
-  }, [
-    autoFitBounds,
-    mapRef,
-    savedLatitude,
-    savedLongitude,
-    registeredFeatures,
-  ]);
+  }, [autoFitBounds, mapRef, allFeatures, totalBounds]);
 
   return (
     <MapGL
@@ -266,7 +254,7 @@ export const PointMap = ({
       {basemapType === "aerial" && <MapAerialSourceAndLayer />}
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
-      <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
+      <MapFitBoundsControl mapRef={mapRef} bounds={totalBounds} />
       {setDraftLatLon && (
         <MapGeocoderControl
           position="top-left"
