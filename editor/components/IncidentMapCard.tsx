@@ -5,16 +5,28 @@ import { PointMap } from "@/components/PointMap";
 import { useResizeObserver } from "@/utils/map";
 import { VzIncidentListRow } from "@/types/vzIncidentList";
 import IncidentMapMarker from "@/components/IncidentMapMarker";
+import { RECORD_TYPE_BADGES } from "@/components/RecordTypeBadge";
 
 const useIncidentMarkers = (incident: VzIncidentListRow) => {
   const markers = incident?.vz_incident_records_view
     ?.filter((record) => record.geom)
     .map((record, i) => {
-      const name = ["apd", "ems", "afd"].includes(
-        record.record_responding_agency || ""
-      )
-        ? record.record_responding_agency || ""
-        : "crash_report";
+      /**
+       * Defaut to the "crashes" marker and use the appropriate
+       *  apd/ems/afd badge
+       */
+      let name: keyof typeof RECORD_TYPE_BADGES = "crashes";
+      if (
+        (record.record_responding_agency === "apd" &&
+          record.record_table_name !== "crashes") ||
+        record.record_responding_agency === "ems" ||
+        record.record_responding_agency === "afd"
+      ) {
+        /**
+         * This path covers afd__incidents, ems__incidents, and cad_incidents
+         */
+        name = record.record_responding_agency;
+      }
       return (
         <IncidentMapMarker
           key={i}
