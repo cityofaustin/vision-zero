@@ -7,6 +7,10 @@ import { VzIncidentListRow } from "@/types/vzIncidentList";
 import IncidentMapMarker from "@/components/IncidentMapMarker";
 import { RECORD_TYPE_BADGES } from "@/components/RecordTypeBadge";
 
+/**
+ * Hook which returns a map marker for each record that the incident
+ * is comprised of
+ */
 const useIncidentMarkers = (incident: VzIncidentListRow) => {
   const markers = incident?.vz_incident_records_view
     ?.filter((record) => record.geom)

@@ -8,6 +8,11 @@ type IncidentMapMarkerProps = MarkerProps & {
   name: keyof typeof RECORD_TYPE_BADGES;
 };
 
+/**
+ * A circular map marker that represents an incident member record
+ * and displays the badge/color based on record type and responding
+ * agency
+ */
 export default function IncidentMapMarker({
   id,
   name,
@@ -15,6 +20,7 @@ export default function IncidentMapMarker({
   longitude,
   ...props
 }: IncidentMapMarkerProps) {
+  // register each marker in the map context to enable autoFitBounds
   useRegisterMapFeature(id, { latitude, longitude });
   const { icon: Icon, iconStyle } = RECORD_TYPE_BADGES[name];
 
