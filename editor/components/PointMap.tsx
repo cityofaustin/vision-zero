@@ -191,11 +191,8 @@ export const PointMap = ({
       );
       hasFitRef.current = true;
     };
-
-    // Registered features settle a tick after mount (children's effects
-    // need to run), so defer to the next microtask before collecting.
-    const timeout = setTimeout(fit, 100);
-    return () => clearTimeout(timeout);
+    if (map.isStyleLoaded()) fit();
+    else map.once("idle", fit);
   }, [
     autoFitBounds,
     mapRef,
