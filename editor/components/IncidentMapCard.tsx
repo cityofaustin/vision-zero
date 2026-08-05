@@ -5,12 +5,11 @@ import { PointMap } from "@/components/PointMap";
 import { useResizeObserver } from "@/utils/map";
 import { VzIncidentListRow } from "@/types/vzIncidentList";
 import IncidentMapMarker from "@/components/IncidentMapMarker";
-import { BADGES } from "@/configs/badges";
 
 const useIncidentMarkers = (incident: VzIncidentListRow) => {
   const markers = incident?.vz_incident_records_view
     ?.filter((record) => record.geom)
-    .map((record) => {
+    .map((record, i) => {
       const name = ["apd", "ems", "afd"].includes(
         record.record_responding_agency || ""
       )
@@ -18,9 +17,11 @@ const useIncidentMarkers = (incident: VzIncidentListRow) => {
         : "crash_report";
       return (
         <IncidentMapMarker
+          key={i}
+          id={String(i)}
           name={name}
-          longitude={record.geom.coordinates[0]}
-          latitude={record.geom.coordinates[1]}
+          longitude={record.geom?.coordinates[0] ?? 0}
+          latitude={record.geom?.coordinates[1] ?? 0}
         />
       );
     });
@@ -50,8 +51,9 @@ export default function IncidentMapCard({ incident }: IncidentMapCardProps) {
     <Card className="h-100">
       <Card.Body className="p-1 crash-header-card-body" ref={mapContainerRef}>
         <PointMap
-          savedLatitude={incident?.latitude || 0}
-          savedLongitude={incident?.longitude || 0}
+          autoFitBounds
+          savedLatitude={null}
+          savedLongitude={null}
           mapRef={mapRef}
         >
           {...markers}

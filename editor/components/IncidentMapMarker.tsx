@@ -1,23 +1,42 @@
 import { Marker, MarkerProps } from "react-map-gl";
-import { FaCarBurst } from "react-icons/fa6";
 import { ICON_MAP_MARKER_STYLES } from "@/configs/map";
-import { BADGES } from "@/configs/badges";
+import { useRegisterMapFeature } from "@/contexts/MapFeatureRegistry";
+import { RECORD_TYPE_BADGES } from "@/components/RecordTypeBadge";
 
 type IncidentMapMarkerProps = MarkerProps & {
-  name: keyof typeof BADGES;
+  id: string;
+  name: keyof typeof RECORD_TYPE_BADGES;
 };
 
 export default function IncidentMapMarker({
+  id,
   name,
+  latitude,
+  longitude,
   ...props
 }: IncidentMapMarkerProps) {
-  const { icon: Icon, ...badgeStyles } = BADGES[name];
+  useRegisterMapFeature(id, { latitude, longitude });
+  const { icon: Icon, iconStyle } = RECORD_TYPE_BADGES[name];
+
+  console.log("HEYNOW", RECORD_TYPE_BADGES[name]);
+  // Use badge color as background color
+  const markerStyle = {
+    backgroundColor: iconStyle.color,
+    color: "#fff",
+  };
+
+  console.log("iconStyle", iconStyle);
   return (
-    <Marker {...props} anchor="center">
+    <Marker
+      {...props}
+      latitude={latitude}
+      longitude={longitude}
+      anchor="center"
+    >
       <div
         style={{
           ...ICON_MAP_MARKER_STYLES,
-          ...badgeStyles,
+          ...markerStyle,
           pointerEvents: "none",
         }}
       >

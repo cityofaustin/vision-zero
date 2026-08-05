@@ -18,6 +18,7 @@
     "@mapbox/mapbox-gl-geocoder": "^5.1.2",
     "@turf/bbox": "^7.2.0",
     "@turf/center": "^7.3.5",
+    "@turf/helpers": "^7.3.5",
     "@types/geojson": "^7946.0.16",
     "@types/lodash": "^4.17.24",
     "@types/mapbox__mapbox-gl-geocoder": "^5.1.1",

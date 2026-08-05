@@ -3,6 +3,8 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
+  useState,
   Dispatch,
   SetStateAction,
   ReactNode,
@@ -32,6 +34,10 @@ import { COLORS } from "@/utils/constants";
 import { z, ZodFormattedError } from "zod";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapAerialSourceAndLayer } from "@/components/MapAerialSourceAndLayer";
+import { MapFeatureRegistryProvider } from "@/contexts/MapFeatureRegistry";
+import bbox from "@turf/bbox";
+import { featureCollection, point, feature } from "@turf/helpers";
+import type { Feature, Geometry } from "geojson";
 
 export interface LatLon {
   latitude: number;
@@ -57,50 +63,25 @@ export const LatLonSchema = z.object({
 export type CoordinateValidationError = ZodFormattedError<LatLon>;
 
 interface PointMapProps {
-  /**
-   * Ref object which will hold the mapbox instance
-   */
   mapRef: RefObject<MapRef | null>;
-
-  /**
-   * The default basemap type
-   */
   initialBasemapType?: "aerial" | "streets";
-  /**
-   * The initial latitude - used when not editing
-   */
   savedLatitude: number | null;
-  /**
-   * The initial longitude - used when not editing
-   */
   savedLongitude: number | null;
-  /**
-   * If the map is in edit mode
-   */
   isEditing?: boolean;
-  /**
-   * The lat/lon coordinates that are saved while editing
-   */
   draftLatLon?: LatLon;
   setDraftLatLon?: Dispatch<SetStateAction<LatLon>>;
-  /**
-   * Optional custom Marker component to use as the marker.
-   */
   CustomMarker?: ComponentType<MarkerProps> | null;
-  /**
-   * Additional layers, markers, or any other elements to be
-   * rendered on the map
-   */
   children?: ReactNode;
-  /**
-   * Configs for adding custom layer toggles to the basemap control
-   */
   customLayerToggles?: CustomLayerToggle[];
+  /**
+   * If true, fit the map to every registered feature (saved point +
+   * anything children report via useRegisterMapFeature/useRegisterMapFeatures)
+   * once on mount, instead of relying solely on initialViewState.
+   * Default: false, to preserve existing behavior for callers that don't opt in.
+   */
+  autoFitBounds?: boolean;
 }
 
-/**
- * Map component which renders a point marker, may be editable
- */
 export const PointMap = ({
   mapRef,
   initialBasemapType,
@@ -112,6 +93,7 @@ export const PointMap = ({
   CustomMarker,
   children,
   customLayerToggles,
+  autoFitBounds,
 }: PointMapProps) => {
   const { basemapURL, basemapType, setBasemapType } = useBasemap(
     initialBasemapType || "aerial"
@@ -125,16 +107,12 @@ export const PointMap = ({
 
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
-      // truncate values to our preferred precision
       const latitude = +e.viewState.latitude.toFixed(MAP_COORDINATE_PRECISION);
       const longitude = +e.viewState.longitude.toFixed(
         MAP_COORDINATE_PRECISION
       );
       if (setDraftLatLon) {
-        setDraftLatLon({
-          latitude,
-          longitude,
-        });
+        setDraftLatLon({ latitude, longitude });
       }
     },
     [setDraftLatLon]
@@ -142,7 +120,6 @@ export const PointMap = ({
 
   useEffect(() => {
     if (!isEditing && setDraftLatLon) {
-      // initialize edit coordinates and reset them after saving
       setDraftLatLon({
         latitude: savedLatitude || DEFAULT_MAP_PAN_ZOOM.latitude,
         longitude: savedLongitude || DEFAULT_MAP_PAN_ZOOM.longitude,
@@ -152,15 +129,80 @@ export const PointMap = ({
 
   const Marker = CustomMarker ? CustomMarker : MapboxMarker;
 
-  /**
-   * Update the key of the marker when children changes - this is a bit
-   * of a hack to ensure that the marker is always rendered on top of
-   * other map markers
-   */
   const dynamicMarkerKey = useMemo(() => {
     if (!children) return "no-children";
     return Date.now();
   }, [children]);
+
+  /**
+   *
+   */
+  const [registeredFeatures, setRegisteredFeatures] = useState<
+    Map<string, Geometry | Geometry[]>
+  >(new Map());
+  const hasFitRef = useRef(false);
+
+  const handleFeaturesChange = useCallback(
+    (features: Map<string, Geometry | Geometry[]>) => {
+      setRegisteredFeatures(features);
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!autoFitBounds || hasFitRef.current) return;
+    const map = mapRef.current;
+    if (!map) return;
+
+    const fit = () => {
+      const points: Feature<Geometry>[] = [];
+
+      if (savedLatitude && savedLongitude) {
+        points.push(point([savedLongitude, savedLatitude]));
+      }
+
+      registeredFeatures.forEach((geom) => {
+        if (Array.isArray(geom)) {
+          geom.forEach((g) => points.push(feature(g)));
+        } else {
+          points.push(feature(geom));
+        }
+      });
+
+      if (points.length === 0) return;
+
+      if (points.length === 1) {
+        const g = points[0].geometry;
+        if (g.type === "Point") {
+          const [lng, lat] = g.coordinates;
+          map.easeTo({ center: [lng, lat], duration: 0 });
+        }
+        hasFitRef.current = true;
+        return;
+      }
+
+      const [minX, minY, maxX, maxY] = bbox(featureCollection(points));
+      map.fitBounds(
+        [
+          [minX, minY],
+          [maxX, maxY],
+        ],
+        { padding: 60, duration: 0 }
+      );
+      hasFitRef.current = true;
+    };
+
+    // Registered features settle a tick after mount (children's effects
+    // need to run), so defer to the next microtask before collecting.
+    const timeout = setTimeout(fit, 100);
+    return () => clearTimeout(timeout);
+  }, [
+    autoFitBounds,
+    mapRef,
+    savedLatitude,
+    savedLongitude,
+    registeredFeatures,
+  ]);
 
   return (
     <MapGL
@@ -173,7 +215,6 @@ export const PointMap = ({
       {...DEFAULT_MAP_PARAMS}
       mapStyle={basemapURL}
       cooperativeGestures={true}
-      // Resize the map canvas when parent row expands to fit crash
       onLoad={(e) => e.target.resize()}
       onDrag={isEditing ? onDrag : undefined}
       maxZoom={21}
@@ -182,8 +223,6 @@ export const PointMap = ({
       <FullscreenControl position="bottom-right" />
       <NavigationControl position="top-right" showCompass={false} />
       <MapFitBoundsControl mapRef={mapRef} bounds={geojsonBounds} />
-      {/* add nearmap raster source and style */}
-      {basemapType === "aerial" && <MapAerialSourceAndLayer />}
       {setDraftLatLon && (
         <MapGeocoderControl
           position="top-left"
@@ -196,9 +235,11 @@ export const PointMap = ({
         customLayerToggles={customLayerToggles}
         controlId="pointMap"
       />
-      {/* Custom layers */}
-      {children}
-      {/* editable + not editable point layers */}
+
+      <MapFeatureRegistryProvider onFeaturesChange={handleFeaturesChange}>
+        {children}
+      </MapFeatureRegistryProvider>
+
       {savedLatitude && savedLongitude && !isEditing && (
         <Marker
           key={dynamicMarkerKey}
