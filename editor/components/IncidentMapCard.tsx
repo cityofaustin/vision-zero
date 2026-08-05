@@ -9,7 +9,7 @@ interface IncidentMapCardProps {
   incident: VzIncidentListRow;
 }
 /**
- * Map which displays the EMS incident location as well as nearby crashes and non-cr3s
+ * Map which displays the VZ incident location
  */
 export default function IncidentMapCard({ incident }: IncidentMapCardProps) {
   const mapRef = useRef<MapRef | null>(null);
