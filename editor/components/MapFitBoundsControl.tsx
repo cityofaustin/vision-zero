@@ -26,7 +26,7 @@ export default function MapFitBoundsControl({
         onClick={() => {
           if (bounds) {
             mapRef?.current?.fitBounds(bounds, {
-              padding: 10,
+              padding: 60,
               maxZoom: DEFAULT_MAP_PAN_ZOOM.zoom,
             });
           }

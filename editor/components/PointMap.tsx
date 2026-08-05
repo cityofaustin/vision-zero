@@ -35,7 +35,6 @@ import { z, ZodFormattedError } from "zod";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapAerialSourceAndLayer } from "@/components/MapAerialSourceAndLayer";
 import { MapFeatureRegistryProvider } from "@/contexts/MapFeatureRegistry";
-import bbox from "@turf/bbox";
 import { featureCollection, point, feature } from "@turf/helpers";
 import type { Feature, Geometry } from "geojson";
 
@@ -220,14 +219,22 @@ export const PointMap = ({
         const g = allFeatures.features[0].geometry;
         if (g.type === "Point") {
           const [lng, lat] = g.coordinates;
-          map.easeTo({ center: [lng, lat], duration: 0 });
+          map.easeTo({
+            center: [lng, lat],
+            zoom: DEFAULT_MAP_PAN_ZOOM.zoom,
+            duration: 0,
+          });
         }
         hasFitRef.current = true;
         return;
       }
 
       if (!totalBounds) return;
-      map.fitBounds(totalBounds, { padding: 60, duration: 0 });
+      map.fitBounds(totalBounds, {
+        padding: 60,
+        maxZoom: DEFAULT_MAP_PAN_ZOOM.zoom,
+        duration: 0,
+      });
       hasFitRef.current = true;
     };
 
