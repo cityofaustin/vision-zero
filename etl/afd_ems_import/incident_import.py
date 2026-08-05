@@ -63,6 +63,57 @@ def get_emails_todo(source, subdir="inbox"):
     return [email[0] for email in emails]
 
 
+def get_local_files_todo(source):
+    """Get a list of local file paths to process, sorted oldest to newest by
+    modified time.
+
+    Args:
+        source (str): The data source: `afd` or `ems`
+        directory (str): path to the directory containing local files
+
+    Raises:
+        IOError: If no matching files are found in the directory
+
+    Returns:
+        List: list of local file paths, sorted oldest to newest
+    """
+    source_dir = "data"
+    extensions = (".csv",) if source == "ems" else (".xlsx", ".xls")
+    logging.info(f"Checking for {source} files in: {source_dir}")
+    files = []
+    for filename in os.listdir(source_dir):
+        filepath = os.path.join(source_dir, filename)
+        if os.path.isfile(filepath) and filename.lower().endswith(extensions):
+            files.append((filepath, os.path.getmtime(filepath)))
+    if not len(files):
+        raise IOError(f"No {source} files found in {source_dir}")
+    files.sort(key=lambda x: x[1])
+    return [f[0] for f in files]
+
+
+def get_data_from_local_file(source, filepath):
+    """Parse a local CSV/XLSX file directly (skipping the email/attachment
+    unwrapping) and return rows as a list of dicts.
+
+    Args:
+        source (str): The data source: `afd` or `ems`
+        filepath (str): path to the local file
+
+    Returns:
+        list: list of row dictionaries
+    """
+    logging.info(f"Reading local file: {filepath}")
+    if source == "ems":
+        with open(filepath, encoding="iso-8859-1", newline="") as f:
+            reader = csv.DictReader(f)
+            return [row for row in reader]
+    elif source == "afd":
+        from pandas import read_excel
+
+        data = read_excel(filepath, header=0, dtype={"Inc_Time": str, "Inc_Date": str})
+        return data.to_dict("records")
+
+
 def download_email(email_obj_key):
     """Download an email message from S3"""
     logging.info(f"Downloading: {email_obj_key}")
@@ -258,20 +309,28 @@ def chunks(lst, n):
         yield lst[i : i + n]
 
 
-def main(*, source, skip_archive):
+def main(*, source, skip_archive, local_files=False):
     logging.info(f"Running incident import for source: {source}")
-    emails_todo = get_emails_todo(source)
-    logging.info(f"{len(emails_todo)} files to process")
+
+    if local_files:
+        files_todo = get_local_files_todo(source)
+    else:
+        files_todo = get_emails_todo(source)
+    logging.info(f"{len(files_todo)} files to process")
 
     # construct upsert mutation by patching columns to update on upsert
     upsert_mutation = MUTATIONS[source].replace(
         "$updateColumns", ", ".join(COLUMNS[source]["update_columns"])
     )
 
-    for email_obj_key in emails_todo:
+    for file_key in files_todo:
         logging.info("Processing data...")
-        email_str = download_email(email_obj_key)
-        data = get_data_from_email_str(source, email_str)
+        if local_files:
+            data = get_data_from_local_file(source, file_key)
+        else:
+            email_str = download_email(file_key)
+            data = get_data_from_email_str(source, email_str)
+
         data = lower_case_keys(data)
         set_empty_strings_to_none(data)
         rename_columns(data, COLUMNS[source]["cols_to_rename"])
@@ -286,7 +345,6 @@ def main(*, source, skip_archive):
             make_field_timezone_aware(
                 data, date_field_name="mvc_form_extrication_datetime"
             )
-
         elif source == "afd":
             listify_ems_incident_numbers(data)
             make_field_timezone_aware(data, date_field_name="call_datetime")
@@ -297,10 +355,13 @@ def main(*, source, skip_archive):
         for chunk in chunks(data, BATCH_SIZE):
             logging.info(f"Upserting {len(chunk)} rows...")
             make_hasura_request(query=upsert_mutation, variables={"objects": chunk})
-        if not skip_archive:
-            archive_email(email_obj_key)
+
+        if not skip_archive and not local_files:
+            archive_email(file_key)
 
 
 if __name__ == "__main__":
     args = get_cli_args()
-    main(source=args.source, skip_archive=args.skip_archive)
+    main(
+        source=args.source, skip_archive=args.skip_archive, local_files=args.local_files
+    )
