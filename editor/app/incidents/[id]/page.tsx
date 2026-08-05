@@ -10,12 +10,9 @@ import {
   LuHeadset,
 } from "react-icons/lu";
 import { afdColumns } from "@/configs/afdColumns";
-import { ALL_EMS_COLUMNS } from "@/configs/emsColumns";
 import { cadColumns } from "@/configs/cadColumns";
 import { CadIncident } from "@/types/cadIncident";
-import { ColDataCardDef } from "@/types/types";
 import { Crash } from "@/types/crashes";
-import { crashesColumns } from "@/configs/crashesColumns";
 import { EMSPatientCareRecord } from "@/types/ems";
 import { FaRoad } from "react-icons/fa6";
 import { GET_INCIDENT } from "@/queries/incident";
@@ -25,29 +22,8 @@ import IncidentMapCard from "@/components/IncidentMapCard";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
 import UserEventsLogger from "@/components/UserEventsLogger";
 import { AfdIncident } from "@/types/afd";
-
-const crashColumns: ColDataCardDef<Crash>[] = [
-  crashesColumns.record_locator_hyperlinked,
-  crashesColumns.crash_timestamp,
-  crashesColumns.address_display,
-  crashesColumns.collsn,
-  crashesColumns.agency,
-  crashesColumns.private_dr_fl,
-  crashesColumns.in_austin_full_purpose,
-  crashesColumns.location_id,
-];
-
-const emsColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
-  ALL_EMS_COLUMNS.incident_number,
-  ALL_EMS_COLUMNS.incident_received_datetime_with_timestamp,
-  ALL_EMS_COLUMNS.incident_location_address,
-  ALL_EMS_COLUMNS.travel_mode,
-  ALL_EMS_COLUMNS.patient_injry_sev,
-  ALL_EMS_COLUMNS.pcr_transport_destination,
-  ALL_EMS_COLUMNS.cris_crash_id,
-  ALL_EMS_COLUMNS.crash_match_status,
-  { ...ALL_EMS_COLUMNS.person_match_status, defaultHidden: true },
-];
+import { vzIncidentDetailsEmsColumns } from "@/configs/emsColumns";
+import { vzIncidentDetailscrashColumns } from "@/configs/crashesColumns";
 
 export default function IncidentDetailsPage({
   params,
@@ -127,7 +103,7 @@ export default function IncidentDetailsPage({
                   <span className="fs-5 fw-bold">Crash reports</span>
                 </div>
               }
-              columns={crashColumns}
+              columns={vzIncidentDetailscrashColumns}
               records={incident.crashes}
               mutation=""
               noRowsMessage="No crash reports"
@@ -149,7 +125,7 @@ export default function IncidentDetailsPage({
                   <span className="fs-5 fw-bold">EMS Patient care</span>
                 </div>
               }
-              columns={emsColumns}
+              columns={vzIncidentDetailsEmsColumns}
               records={incident.ems__incidents}
               mutation=""
               noRowsMessage="No patient care records"

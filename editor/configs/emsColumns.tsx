@@ -324,3 +324,15 @@ export const emsListViewColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
   ALL_EMS_COLUMNS.latitude,
   ALL_EMS_COLUMNS.longitude,
 ];
+
+export const vzIncidentDetailsEmsColumns: ColDataCardDef<EMSPatientCareRecord>[] = [
+  ALL_EMS_COLUMNS.incident_number,
+  ALL_EMS_COLUMNS.incident_received_datetime_with_timestamp,
+  ALL_EMS_COLUMNS.incident_location_address,
+  ALL_EMS_COLUMNS.travel_mode,
+  ALL_EMS_COLUMNS.patient_injry_sev,
+  ALL_EMS_COLUMNS.pcr_transport_destination,
+  ALL_EMS_COLUMNS.cris_crash_id,
+  ALL_EMS_COLUMNS.crash_match_status,
+  { ...ALL_EMS_COLUMNS.person_match_status, defaultHidden: true },
+];
