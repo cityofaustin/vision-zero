@@ -381,3 +381,14 @@ export const crashesColumns = {
     inputType: "yes_no",
   },
 } satisfies Record<string, ColDataCardDef<Crash>>;
+
+export const vzIncidentDetailscrashColumns: ColDataCardDef<Crash>[] = [
+  crashesColumns.record_locator_hyperlinked,
+  crashesColumns.crash_timestamp,
+  crashesColumns.address_display,
+  crashesColumns.collsn,
+  crashesColumns.agency,
+  crashesColumns.private_dr_fl,
+  crashesColumns.in_austin_full_purpose,
+  crashesColumns.location_id,
+];

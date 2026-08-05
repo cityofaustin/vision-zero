@@ -143,7 +143,7 @@ const vzListViewfilterCards: FilterGroup[] = [
 ];
 
 export const vzListViewQueryConfig: QueryConfig = {
-  _version: 2,
+  _version: 1,
   exportable: true,
   exportFilename: "vz_incidents_list_view",
   tableName: "vz_incidents_list_view",

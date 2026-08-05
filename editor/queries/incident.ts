@@ -74,7 +74,7 @@ export const GET_INCIDENT = gql`
       record_timestamp
       responding_agencies_str
       responding_agencies
-      vz_incident_records_view {
+      vz_incident_records_view(order_by: { record_timestamp: asc })  {
         vz_incident_id
         geom
         record_id
