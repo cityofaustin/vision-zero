@@ -18,14 +18,12 @@ export default function IncidentMapMarker({
   useRegisterMapFeature(id, { latitude, longitude });
   const { icon: Icon, iconStyle } = RECORD_TYPE_BADGES[name];
 
-  console.log("HEYNOW", RECORD_TYPE_BADGES[name]);
   // Use badge color as background color
   const markerStyle = {
     backgroundColor: iconStyle.color,
     color: "#fff",
   };
 
-  console.log("iconStyle", iconStyle);
   return (
     <Marker
       {...props}
