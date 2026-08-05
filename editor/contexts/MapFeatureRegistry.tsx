@@ -56,6 +56,20 @@ const MapFeatureContext = createContext<MapFeatureContextValue | null>(null);
  * provider itself never re-renders on registration changes — only the
  * `onFeaturesChange` callback fires, letting the parent decide how to
  * respond (e.g. store it in its own state to trigger a bounds refit).
+ *
+ * `onFeaturesChange` shold be a function with a stable reference that
+ *  would typically set state in the parent component to expose the
+ * registered features.
+ *
+ * @example
+ * ```tsx
+ * const onFeaturesChange = useCallback(
+ *   (features: Map<string, Geometry | Geometry[]>) => {
+ *     setRegisteredFeatures(features);
+ *   },
+ *   []
+ * );
+ * ```
  */
 export function MapFeatureRegistryProvider({
   children,
@@ -64,11 +78,21 @@ export function MapFeatureRegistryProvider({
   children: ReactNode;
   onFeaturesChange: (features: Map<string, RegisteredGeometry>) => void;
 }) {
+  // Source of truth for registrations. A ref (not state) so that
+  // register/unregister don't cause this provider to re-render on every
+  // child registration — the parent is notified via onFeaturesChange
+  // instead, and decides for itself whether/how to re-render.
   const featuresRef = useRef<Map<string, RegisteredGeometry>>(new Map());
 
   const register = useCallback(
     (id: string, geometry: RegisteredGeometry) => {
+      // Keyed by id, so re-registering the same id (e.g. on re-render,
+      // or when a child's geometry changes) overwrites in place rather
+      // than accumulating duplicates.
       featuresRef.current.set(id, geometry);
+      // Snapshot into a new Map so the parent gets a distinct reference
+      // it can diff against / store in state. Mutating and passing
+      // featuresRef.current directly would break that.
       onFeaturesChange(new Map(featuresRef.current));
     },
     [onFeaturesChange]
@@ -77,11 +101,15 @@ export function MapFeatureRegistryProvider({
   const unregister = useCallback(
     (id: string) => {
       featuresRef.current.delete(id);
+      // Same snapshot rationale as above.
       onFeaturesChange(new Map(featuresRef.current));
     },
     [onFeaturesChange]
   );
 
+  // Memoized so consumers of the context don't see a new value (and
+  // re-run effects keyed on it) unless register/unregister themselves
+  // change identity, which only happens if onFeaturesChange changes.
   const value = useMemo(
     () => ({ register, unregister }),
     [register, unregister]
@@ -119,7 +147,7 @@ export function useRegisterMapFeature(
 /**
  * Register a set of GeoJSON features. Pass a stable id uniqe to this
  * feature set and an array of Features.
- * 
+ *
  * Re-registers whenever the array reference changes, so it
  * stays in sync with filtered/updated data.
  */
@@ -133,6 +161,5 @@ export function useRegisterMapFeatures(id: string, features: Feature[] | null) {
       features.map((f) => f.geometry)
     );
     return () => ctx.unregister(id);
-
   }, [ctx, id, features]);
 }

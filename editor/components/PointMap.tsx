@@ -179,13 +179,16 @@ export const PointMap = ({
   >(new Map());
   const hasFitRef = useRef(false);
 
-  const handleFeaturesChange = useCallback(
+  const onFeaturesChange = useCallback(
     (features: Map<string, Geometry | Geometry[]>) => {
       setRegisteredFeatures(features);
     },
     []
   );
 
+  /**
+   * Construct a FeatureCollection from the feature registry
+   */
   const allFeatures = useMemo(() => {
     const feats: Feature<Geometry>[] = [];
 
@@ -206,6 +209,10 @@ export const PointMap = ({
 
   const totalBounds = useCurrentBounds(allFeatures);
 
+  /**
+   * Hook which manages auto-fitting the map bounds based on all
+   * registered features plus the saved lat/lon 
+   */
   useEffect(() => {
     if (!autoFitBounds || hasFitRef.current) return;
     const map = mapRef.current;
@@ -276,7 +283,7 @@ export const PointMap = ({
       />
 
       {/* Custom layers */}
-      <MapFeatureRegistryProvider onFeaturesChange={handleFeaturesChange}>
+      <MapFeatureRegistryProvider onFeaturesChange={onFeaturesChange}>
         {children}
       </MapFeatureRegistryProvider>
 
