@@ -63,15 +63,44 @@ export const LatLonSchema = z.object({
 export type CoordinateValidationError = ZodFormattedError<LatLon>;
 
 interface PointMapProps {
+  /**
+   * Ref object which will hold the mapbox instance
+   */
   mapRef: RefObject<MapRef | null>;
+
+  /**
+   * The default basemap type
+   */
   initialBasemapType?: "aerial" | "streets";
+  /**
+   * The initial latitude - used when not editing
+   */
   savedLatitude: number | null;
+  /**
+   * The initial longitude - used when not editing
+   */
   savedLongitude: number | null;
+  /**
+   * If the map is in edit mode
+   */
   isEditing?: boolean;
+  /**
+   * The lat/lon coordinates that are saved while editing
+   */
   draftLatLon?: LatLon;
   setDraftLatLon?: Dispatch<SetStateAction<LatLon>>;
+  /**
+   * Optional custom Marker component to use as the marker.
+   */
   CustomMarker?: ComponentType<MarkerProps> | null;
+  /**
+   * Additional layers, markers, or any other elements to be
+   * rendered on the map
+   */
   children?: ReactNode;
+  /**
+   * Configs for adding custom layer toggles to the basemap control
+   */
   customLayerToggles?: CustomLayerToggle[];
   /**
    * If true, fit the map to every registered feature (saved point +
@@ -82,6 +111,9 @@ interface PointMapProps {
   autoFitBounds?: boolean;
 }
 
+/**
+ * Map component which renders a point marker, may be editable
+ */
 export const PointMap = ({
   mapRef,
   initialBasemapType,
@@ -107,12 +139,16 @@ export const PointMap = ({
 
   const onDrag = useCallback(
     (e: ViewStateChangeEvent) => {
+      // truncate values to our preferred precision
       const latitude = +e.viewState.latitude.toFixed(MAP_COORDINATE_PRECISION);
       const longitude = +e.viewState.longitude.toFixed(
         MAP_COORDINATE_PRECISION
       );
       if (setDraftLatLon) {
-        setDraftLatLon({ latitude, longitude });
+        setDraftLatLon({
+          latitude,
+          longitude,
+        });
       }
     },
     [setDraftLatLon]
@@ -120,6 +156,7 @@ export const PointMap = ({
 
   useEffect(() => {
     if (!isEditing && setDraftLatLon) {
+      // initialize edit coordinates and reset them after saving
       setDraftLatLon({
         latitude: savedLatitude || DEFAULT_MAP_PAN_ZOOM.latitude,
         longitude: savedLongitude || DEFAULT_MAP_PAN_ZOOM.longitude,
@@ -129,15 +166,22 @@ export const PointMap = ({
 
   const Marker = CustomMarker ? CustomMarker : MapboxMarker;
 
+  /**
+   * Update the key of the marker when children changes - this is a bit
+   * of a hack to ensure that the marker is always rendered on top of
+   * other map markers
+   */
   const dynamicMarkerKey = useMemo(() => {
     if (!children) return "no-children";
     return Date.now();
   }, [children]);
 
   /**
-   *
+   * Tracks geometry reported by children via the MapFeatureRegistry
+   * (e.g. Markers, GeoJSON label layers) so the map can be fit to
+   * everything currently rendered, not just the saved lat/lon.
    */
-  const [registeredFeatures, setRegisteredFeatures] = useState<
+  const [registeredFeatures, setRegisteredFeatures] = useState
     Map<string, Geometry | Geometry[]>
   >(new Map());
   const hasFitRef = useRef(false);
@@ -171,6 +215,8 @@ export const PointMap = ({
 
       if (points.length === 0) return;
 
+      // Single point: just center on it rather than computing a
+      // degenerate (zero-area) bbox.
       if (points.length === 1) {
         const g = points[0].geometry;
         if (g.type === "Point") {
@@ -212,6 +258,7 @@ export const PointMap = ({
       {...DEFAULT_MAP_PARAMS}
       mapStyle={basemapURL}
       cooperativeGestures={true}
+      // Resize the map canvas when parent row expands to fit crash
       onLoad={(e) => e.target.resize()}
       onDrag={isEditing ? onDrag : undefined}
       maxZoom={21}
@@ -233,10 +280,12 @@ export const PointMap = ({
         controlId="pointMap"
       />
 
+      {/* Custom layers */}
       <MapFeatureRegistryProvider onFeaturesChange={handleFeaturesChange}>
         {children}
       </MapFeatureRegistryProvider>
 
+      {/* editable + not editable point layers */}
       {savedLatitude && savedLongitude && !isEditing && (
         <Marker
           key={dynamicMarkerKey}
