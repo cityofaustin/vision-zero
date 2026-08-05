@@ -30,7 +30,7 @@ CREATE OR REPLACE VIEW public.vz_incident_records_view AS
     FROM crashes c
         LEFT JOIN lookups.agency agency on agency.id = c.investigat_agency_id
         LEFT JOIN crashes_cris cris on c.id = cris.id
-    WHERE c.is_deleted is false and c.crash_timestamp > now() - interval '731 days'
+    WHERE c.is_deleted is false
     UNION ALL
     SELECT
         'cad_incidents'::text       AS record_table_name,
@@ -47,7 +47,7 @@ CREATE OR REPLACE VIEW public.vz_incident_records_view AS
         ci.in_austin_full_purpose   AS in_austin_full_purpose,
         ci.location_id              AS location_id,
         FALSE                       AS is_location_reviewed
-    FROM cad_incidents ci where ci.response_date > now() - interval '731 days'
+    FROM cad_incidents ci
     UNION ALL
     SELECT
         'ems__incidents'::text           AS record_table_name,
@@ -81,8 +81,7 @@ CREATE OR REPLACE VIEW public.vz_incident_records_view AS
         afd.austin_full_purpose          AS in_austin_full_purpose,
         afd.location_id                  AS location_id,
         FALSE                            AS is_location_reviewed
-    FROM afd__incidents afd where afd.call_datetime > now() - interval '731 days';
-
+    FROM afd__incidents afd;
 
 
 COMMENT ON VIEW public.vz_incident_records_view IS
