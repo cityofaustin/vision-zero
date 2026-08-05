@@ -9,8 +9,35 @@ import {
 } from "react";
 import type { Feature, Geometry } from "geojson";
 
+/**
+ * A lightweight registry that lets arbitrary map children (Markers,
+ * GeoJSON layers, etc.) report their geometry up to a parent map
+ * component, without that parent needing to know what its children are.
+ *
+ * The parent renders a `MapFeatureRegistryProvider` around `children` and
+ * passes an `onFeaturesChange` callback to receive the live set of
+ * registered geometries (keyed by id) whenever anything registers,
+ * unregisters, or updates. Children call `useRegisterMapFeature` (single
+ * point) or `useRegisterMapFeatures` (multiple features) to participate.
+ *
+ * Typical use: a map component wants to compute a bounding box that fits
+ * everything currently rendered on the map, but the set of rendered
+ * things is determined by whatever children happen to be passed in.
+ */
+
+/**
+ * The geometry shape a single feature can contribute: either one
+ * Geometry (e.g. a Point for a Marker) or an array of Geometries (e.g.
+ * one per feature in a GeoJSON layer).
+ */
 type RegisteredGeometry = Geometry | Geometry[];
 
+/**
+ * Shape of the context value exposed to registrant hooks. `register` and
+ * `unregister` are keyed by a caller-supplied stable id so that repeated
+ * calls (e.g. on re-render, or on data change) correctly replace rather
+ * than duplicate a given registrant's entry.
+ */
 interface MapFeatureContextValue {
   register: (id: string, geometry: RegisteredGeometry) => void;
   unregister: (id: string) => void;
@@ -18,6 +45,18 @@ interface MapFeatureContextValue {
 
 const MapFeatureContext = createContext<MapFeatureContextValue | null>(null);
 
+/**
+ * Provider that backs the feature registry. Wrap it around map children
+ * that may call `useRegisterMapFeature`/`useRegisterMapFeatures`; every
+ * time a child registers, unregisters, or changes its geometry,
+ * `onFeaturesChange` fires with a fresh snapshot `Map` of everything
+ * currently registered (id -> geometry).
+ *
+ * Registrations are tracked in a ref (not state) internally, so the
+ * provider itself never re-renders on registration changes — only the
+ * `onFeaturesChange` callback fires, letting the parent decide how to
+ * respond (e.g. store it in its own state to trigger a bounds refit).
+ */
 export function MapFeatureRegistryProvider({
   children,
   onFeaturesChange,
@@ -56,8 +95,8 @@ export function MapFeatureRegistryProvider({
 }
 
 /**
- * Register a single point (e.g. a Marker). Pass a stable id and
- * either a {latitude, longitude} pair or null (e.g. while unresolved).
+ * Register a single point (e.g. a Marker). Pass a stable id unique to
+ * all registrants and either a {latitude, longitude} pair or null.
  */
 export function useRegisterMapFeature(
   id: string,
@@ -78,8 +117,10 @@ export function useRegisterMapFeature(
 }
 
 /**
- * Register a set of GeoJSON features. Pass a stable id and an array of
- * Features; re-registers whenever the array reference changes, so it
+ * Register a set of GeoJSON features. Pass a stable id uniqe to this
+ * feature set and an array of Features.
+ * 
+ * Re-registers whenever the array reference changes, so it
  * stays in sync with filtered/updated data.
  */
 export function useRegisterMapFeatures(id: string, features: Feature[] | null) {
@@ -92,6 +133,6 @@ export function useRegisterMapFeatures(id: string, features: Feature[] | null) {
       features.map((f) => f.geometry)
     );
     return () => ctx.unregister(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [ctx, id, features]);
 }
