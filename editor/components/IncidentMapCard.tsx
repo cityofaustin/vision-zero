@@ -66,12 +66,7 @@ export default function IncidentMapCard({ incident }: IncidentMapCardProps) {
   return (
     <Card className="h-100">
       <Card.Body className="p-1 crash-header-card-body" ref={mapContainerRef}>
-        <PointMap
-          autoFitBounds
-          savedLatitude={null}
-          savedLongitude={null}
-          mapRef={mapRef}
-        >
+        <PointMap savedLatitude={null} savedLongitude={null} mapRef={mapRef}>
           {...markers}
         </PointMap>
       </Card.Body>
