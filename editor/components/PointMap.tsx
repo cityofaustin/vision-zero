@@ -125,7 +125,7 @@ export const PointMap = ({
   CustomMarker,
   children,
   customLayerToggles,
-  autoFitBounds,
+  autoFitBounds = true,
 }: PointMapProps) => {
   const { basemapURL, basemapType, setBasemapType } = useBasemap(
     initialBasemapType || "aerial"
@@ -181,7 +181,7 @@ export const PointMap = ({
    * (e.g. Markers, GeoJSON label layers) so the map can be fit to
    * everything currently rendered, not just the saved lat/lon.
    */
-  const [registeredFeatures, setRegisteredFeatures] = useState
+  const [registeredFeatures, setRegisteredFeatures] = useState<
     Map<string, Geometry | Geometry[]>
   >(new Map());
   const hasFitRef = useRef(false);
