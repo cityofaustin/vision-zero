@@ -65,12 +65,10 @@ export default function IncidentDetailsPage({
   });
 
   const incident = data?.[0];
-  /**
-   * Set the title of the page inside the HTML head element
-   */
+
   useEffect(() => {
     if (incident) {
-      document.title = `VZ ${incident.id} - ${incident.address}`;
+      document.title = `Incident ${incident.id} - ${incident.address}`;
     }
   }, [incident]);
 
