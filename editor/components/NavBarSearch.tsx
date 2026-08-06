@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Spinner from "react-bootstrap/Spinner";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -87,16 +87,31 @@ const getValidSearchField = (key: string | null): AnySearchField => {
   return foundSearchField || SEARCH_FIELDS[0];
 };
 
+const subscribeToNavSearchStorage = (onStoreChange: () => void) => {
+  window.addEventListener("storage", onStoreChange);
+  return () => window.removeEventListener("storage", onStoreChange);
+};
+
+const getNavSearchStorageSnapshot = () =>
+  localStorage.getItem(navSearchLocalStorageKey);
+
 /**
  * Allows users to search for and route to various record types
  * by typing in an ID
  */
 export default function NavBarSearch() {
-  const [searchField, setSearchField] = useState<AnySearchField>(
-    getValidSearchField(null)
+  const storedSearchKey = useSyncExternalStore(
+    subscribeToNavSearchStorage,
+    getNavSearchStorageSnapshot,
+    () => null
   );
+  const [searchFieldOverride, setSearchFieldOverride] =
+    useState<AnySearchField | null>(null);
+  const searchField =
+    searchFieldOverride ?? getValidSearchField(storedSearchKey);
   const [searchValue, setSearchValue] = useState("");
   const [searchClicked, setSearchClicked] = useState(false);
+  const [pendingRoute, setPendingRoute] = useState<string | null>(null);
   const logUserEvent = useLogUserEvent();
 
   const router = useRouter();
@@ -108,29 +123,19 @@ export default function NavBarSearch() {
     options: { keepPreviousData: false },
   });
 
-  useEffect(() => {
-    if (searchClicked && data?.length === 1) {
-      // we are casting our matchedRecord to bypass TS headaches. we have to
-      // trust that our queries are returning the objects we think they are
-      const matchedRecord = data[0] as Crash & Location & EMSPatientCareRecord;
-      const route = searchField.getUrl(matchedRecord);
-      router.push(route);
-      setSearchValue("");
-      setSearchClicked(false);
-    }
-  }, [searchClicked, data, router, searchField]);
+  // When a unique match arrives, prepare navigation during render (React-recommended)
+  if (searchClicked && data?.length === 1 && !pendingRoute) {
+    const matchedRecord = data[0] as Crash & Location & EMSPatientCareRecord;
+    setPendingRoute(searchField.getUrl(matchedRecord));
+    setSearchValue("");
+    setSearchClicked(false);
+  }
 
-  /**
-   * On init, check local storage for search key and use it
-   */
+  // Navigate as an effect — router is an external system
   useEffect(() => {
-    const searchKeyFromLocalStorage = localStorage.getItem(
-      navSearchLocalStorageKey
-    );
-    if (searchKeyFromLocalStorage) {
-      setSearchField(getValidSearchField(searchKeyFromLocalStorage));
-    }
-  }, []);
+    if (!pendingRoute) return;
+    router.push(pendingRoute);
+  }, [pendingRoute, router]);
 
   /**
    * Keep the selected search field key in sync w/ local storage
@@ -141,12 +146,13 @@ export default function NavBarSearch() {
 
   const onSearch = (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setPendingRoute(null);
     setSearchClicked(true);
     logUserEvent(`${userEventName}_${searchField.key}`);
   };
 
   const onSelectSearchField = (field: AnySearchField) => {
-    setSearchField(field);
+    setSearchFieldOverride(field);
     setSearchClicked(false);
   };
 
@@ -190,6 +196,7 @@ export default function NavBarSearch() {
             placeholder="Search..."
             onChange={(e) => {
               setSearchClicked(false);
+              setPendingRoute(null);
               setSearchValue(e.target.value.trim());
             }}
             type="search"

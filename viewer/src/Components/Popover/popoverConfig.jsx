@@ -136,7 +136,7 @@ export const popoverConfig = {
                       <td>
                         {popEsts["years"][new Date().getFullYear()]
                           ? addCommasToNumber(
-                              popEsts["years"][new Date().getFullYear()]
+                              popEsts["years"][new Date().getFullYear()],
                             )
                           : "No data available"}
                       </td>
@@ -145,7 +145,7 @@ export const popoverConfig = {
                       <th scope="row">{new Date().getFullYear() - 1}</th>
                       <td>
                         {addCommasToNumber(
-                          popEsts["years"][new Date().getFullYear() - 1]
+                          popEsts["years"][new Date().getFullYear() - 1],
                         )}
                       </td>
                     </tr>
@@ -153,7 +153,7 @@ export const popoverConfig = {
                       <th scope="row">{new Date().getFullYear() - 2}</th>
                       <td>
                         {addCommasToNumber(
-                          popEsts["years"][new Date().getFullYear() - 2]
+                          popEsts["years"][new Date().getFullYear() - 2],
                         )}
                       </td>
                     </tr>
@@ -161,7 +161,7 @@ export const popoverConfig = {
                       <th scope="row">{new Date().getFullYear() - 3}</th>
                       <td>
                         {addCommasToNumber(
-                          popEsts["years"][new Date().getFullYear() - 3]
+                          popEsts["years"][new Date().getFullYear() - 3],
                         )}
                       </td>
                     </tr>
@@ -169,7 +169,7 @@ export const popoverConfig = {
                       <th scope="row">{new Date().getFullYear() - 4}</th>
                       <td>
                         {addCommasToNumber(
-                          popEsts["years"][new Date().getFullYear() - 4]
+                          popEsts["years"][new Date().getFullYear() - 4],
                         )}
                       </td>
                     </tr>
@@ -360,7 +360,14 @@ export const popoverConfig = {
             High-Injury Network/High-Injury Roadways
           </div>
           <div className="mb-2">
-            This is an online version of the Combined High-Injury Network Map
+            This is an online version of the{" "}
+            <a
+              href="https://austin.maps.arcgis.com/apps/instant/sidebar/index.html?appid=0af9834f3e1443d88ab784e2d9146442"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Combined High-Injury Network Map
+            </a>{" "}
             included in the adopted Austin Strategic Mobility Plan policy
             document. A detailed crash analysis of crashes from 2017-2021 was
             used to identify the Combined High-Injury Network, which includes

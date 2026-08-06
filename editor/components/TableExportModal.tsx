@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -87,7 +87,6 @@ export default function TableExportModal<T extends Record<string, unknown>>({
    * TODO: exclude aggregations from export
    * https://github.com/cityofaustin/atd-data-tech/issues/20481
    */
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const logUserEvent = useLogUserEvent();
   const hasLoggedEvent = useRef(false);
 
@@ -113,25 +112,21 @@ export default function TableExportModal<T extends Record<string, unknown>>({
     }
   }, [show, eventName, logUserEvent]);
 
-  /**
-   * Hook which creates the CSV download blob when data becomes available
-   */
-  useEffect(() => {
-    if (!isLoading && data) {
-      const csvContent = unparse(formatTableData(data, columns), {
-        quotes: true,
-        header: true,
-      });
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      setDownloadUrl(url);
-      return () => {
-        // cleanup on unmount
-        URL.revokeObjectURL(url);
-        setDownloadUrl(null);
-      };
-    }
-  }, [isLoading, data, columns]);
+  const handleDownload = () => {
+    if (!data) return;
+    const csvContent = unparse(formatTableData(data, columns), {
+      quotes: true,
+      header: true,
+    });
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = formatFileName(exportFilename);
+    anchor.click();
+    URL.revokeObjectURL(url);
+    onClose();
+  };
 
   if (error) {
     console.error(error);
@@ -165,13 +160,8 @@ export default function TableExportModal<T extends Record<string, unknown>>({
             </AlignedLabel>
           </Button>
         )}
-        {downloadUrl && (
-          <Button
-            href={downloadUrl || "#"}
-            download={formatFileName(exportFilename)}
-            as="a"
-            onClick={onClose}
-          >
+        {!isLoading && data && (
+          <Button onClick={handleDownload}>
             <AlignedLabel>
               <LuDownload className="me-2" />
               Download
