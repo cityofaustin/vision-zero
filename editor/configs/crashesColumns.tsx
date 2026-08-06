@@ -6,6 +6,7 @@ import {
 } from "@/utils/formatters";
 import { commonValidations } from "@/utils/formHelpers";
 import Link from "next/link";
+import { makeReadOnly } from "@/utils/columns";
 
 export const crashesColumns = {
   active_school_zone_fl: {
@@ -382,7 +383,7 @@ export const crashesColumns = {
   },
 } satisfies Record<string, ColDataCardDef<Crash>>;
 
-export const vzIncidentDetailscrashColumns: ColDataCardDef<Crash>[] = [
+export const vzIncidentDetailscrashColumns: ColDataCardDef<Crash>[] = makeReadOnly([
   crashesColumns.record_locator_hyperlinked,
   crashesColumns.crash_timestamp,
   crashesColumns.address_display,
@@ -391,4 +392,4 @@ export const vzIncidentDetailscrashColumns: ColDataCardDef<Crash>[] = [
   crashesColumns.private_dr_fl,
   crashesColumns.in_austin_full_purpose,
   crashesColumns.location_id,
-];
+]);
