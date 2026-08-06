@@ -38,7 +38,7 @@ export function useLogUserEvent() {
         );
       });
     },
-    [insertUserEvent, isAuthenticated, user?.email]
+    [insertUserEvent, isAuthenticated, user]
   );
 
   return logUserEvent;

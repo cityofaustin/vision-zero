@@ -10,7 +10,7 @@ import {
   TransformComponent,
   ReactZoomPanPinchRef,
 } from "react-zoom-pan-pinch";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, useWatch, SubmitHandler } from "react-hook-form";
 import { Crash } from "@/types/crashes";
 import { CrashDiagramOrientation } from "@/types/crashDiagramOrientation";
 import { UPDATE_CRASH } from "@/queries/crash";
@@ -103,7 +103,7 @@ export default function CrashDiagramCard({
     handleSubmit,
     formState: { isDirty },
     setValue,
-    watch,
+    control,
     reset,
   } = useForm({
     defaultValues,
@@ -124,7 +124,7 @@ export default function CrashDiagramCard({
     setIsSaved(true);
   };
 
-  const rotation = watch("rotation");
+  const rotation = useWatch({ control, name: "rotation" });
 
   // zoom image to scale "undefined" effectively zooming to fit entire image in frame
   const resetZoomToImage = () => {
