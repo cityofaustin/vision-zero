@@ -1,11 +1,19 @@
 import { Point } from "geojson";
+import { AfdIncident } from "@/types/afd";
+import { CadIncident } from "@/types/cadIncident";
+import { Crash } from "@/types/crashes";
+import { EMSPatientCareRecord } from "@/types/ems";
+import { VzIncidentRecord } from "@/types/vzIncidentRecord";
 
-export type VzIncident = {
+export type VzIncidentListRow = {
   address?: string[] | null;
+  afd__incidents?: AfdIncident[] | null;
+  cad_incidents?: CadIncident[] | null;
+  crashes?: Crash[] | null;
+  ems__incidents?: EMSPatientCareRecord[] | null;
   id?: number | null;
   in_austin_full_purpose?: boolean | null;
   incident_numbers?: string[] | null;
-  incident_numbers_str?: string | null;
   latitude?: number | null;
   location_ids?: string[] | null;
   longitude?: number | null;
@@ -16,4 +24,5 @@ export type VzIncident = {
   record_timestamp?: string;
   responding_agencies_str?: string | null;
   responding_agencies?: string[] | null;
+  vz_incident_records_view?: VzIncidentRecord[];
 };

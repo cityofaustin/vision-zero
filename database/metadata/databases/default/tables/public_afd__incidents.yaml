@@ -1,3 +1,91 @@
 table:
   name: afd__incidents
   schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - ems_incident_numbers
+        - austin_full_purpose
+        - latitude
+        - longitude
+        - calendar_year
+        - crash_id
+        - ems_incident_number_1
+        - ems_incident_number_2
+        - flagged_incs
+        - id
+        - incident_number
+        - address
+        - jurisdiction
+        - location_id
+        - problem
+        - unparsed_ems_incident_number
+        - call_datetime
+        - created_at
+        - updated_at
+        - geometry
+        - vz_incident_matched_ids
+        - vz_incident_match_status
+        - vz_incident_id
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - ems_incident_numbers
+        - austin_full_purpose
+        - latitude
+        - longitude
+        - calendar_year
+        - crash_id
+        - ems_incident_number_1
+        - ems_incident_number_2
+        - flagged_incs
+        - id
+        - incident_number
+        - address
+        - jurisdiction
+        - location_id
+        - problem
+        - unparsed_ems_incident_number
+        - call_datetime
+        - created_at
+        - updated_at
+        - geometry
+        - vz_incident_matched_ids
+        - vz_incident_match_status
+        - vz_incident_id
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - ems_incident_numbers
+        - austin_full_purpose
+        - latitude
+        - longitude
+        - calendar_year
+        - crash_id
+        - ems_incident_number_1
+        - ems_incident_number_2
+        - flagged_incs
+        - id
+        - incident_number
+        - address
+        - jurisdiction
+        - location_id
+        - problem
+        - unparsed_ems_incident_number
+        - call_datetime
+        - created_at
+        - updated_at
+        - geometry
+        - vz_incident_matched_ids
+        - vz_incident_match_status
+        - vz_incident_id
+      filter: {}
+      allow_aggregations: true
+    comment: ""
