@@ -18,6 +18,7 @@ import MapBasemapControl from "@/components/MapBasemapControl";
 import { useBasemap } from "@/utils/map";
 import { MapAerialSourceAndLayer } from "@/components/MapAerialSourceAndLayer";
 import MapGeocoderControl from "./MapGeocoderControl";
+import { center } from "@turf/center";
 
 export interface LatLon {
   latitude: number;
@@ -96,6 +97,10 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
 
   const PopupComponent = getPopupComponent(mapConfig.popupComponentName);
 
+  const centerFeature = selectedFeatures?.length
+    ? center(selectedFeatures[0])
+    : null;
+
   return (
     <MapGL
       /**
@@ -138,10 +143,10 @@ export const TableMap = ({ mapRef, geojson, mapConfig }: TableMapProps) => {
         setBasemapType={setBasemapType}
         controlId="tableMap"
       />
-      {selectedFeatures && selectedFeatures.length > 0 && (
+      {selectedFeatures && centerFeature && (
         <PopupWrapper
-          longitude={selectedFeatures[0]?.properties?.longitude}
-          latitude={selectedFeatures[0]?.properties?.latitude}
+          longitude={Number(centerFeature.geometry.coordinates[0])}
+          latitude={Number(centerFeature.geometry.coordinates[1])}
           selectedFeatures={selectedFeatures}
           PopupContent={PopupComponent}
           onClose={() => setSelectedFeatures(null)}

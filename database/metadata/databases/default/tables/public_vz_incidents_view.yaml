@@ -1,0 +1,67 @@
+table:
+  name: vz_incidents_view
+  schema: public
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - address
+        - id
+        - in_austin_full_purpose
+        - incident_numbers
+        - incident_numbers_str
+        - latitude
+        - location_ids
+        - longitude
+        - point_feature
+        - record_count
+        - record_tables
+        - record_tables_str
+        - record_timestamp
+        - responding_agencies
+        - responding_agencies_str
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: readonly
+    permission:
+      columns:
+        - address
+        - id
+        - in_austin_full_purpose
+        - incident_numbers
+        - incident_numbers_str
+        - latitude
+        - location_ids
+        - longitude
+        - point_feature
+        - record_count
+        - record_tables
+        - record_tables_str
+        - record_timestamp
+        - responding_agencies
+        - responding_agencies_str
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+  - role: vz-admin
+    permission:
+      columns:
+        - address
+        - id
+        - in_austin_full_purpose
+        - incident_numbers
+        - incident_numbers_str
+        - latitude
+        - location_ids
+        - longitude
+        - point_feature
+        - record_count
+        - record_tables
+        - record_tables_str
+        - record_timestamp
+        - responding_agencies
+        - responding_agencies_str
+      filter: {}
+      allow_aggregations: true
+    comment: ""
