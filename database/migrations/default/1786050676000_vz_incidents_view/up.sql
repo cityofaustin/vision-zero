@@ -88,7 +88,6 @@ COMMENT ON VIEW public.vz_incident_records_view IS
     'Unified view of crash-related records (crashes, cad_incidents, ems__incidents, afd__incidents)'
     'exposed under a common schema for cross-type queries and geo-temporal matching.';
 
-
 CREATE MATERIALIZED VIEW vz_incidents_list_view AS
 SELECT
     id,
