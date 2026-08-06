@@ -6,6 +6,13 @@ import { COLORS } from "@/utils/constants";
 
 import AlignedLabel from "@/components/AlignedLabel";
 
+interface RecordTypeBadgeProps {
+  icon: IconType;
+  label: string;
+  iconStyle: React.CSSProperties;
+  count?: number;
+}
+
 export const RECORD_TYPE_BADGES: Record<string, RecordTypeBadgeProps> = {
   apd: {
     icon: RiPoliceBadgeLine,
@@ -19,7 +26,7 @@ export const RECORD_TYPE_BADGES: Record<string, RecordTypeBadgeProps> = {
   },
   afd: {
     icon: LuFlame,
-    iconStyle: { color: COLORS.danger },
+    iconStyle: { color: COLORS.afd_orange },
     label: "AFD",
   },
   crashes: {
@@ -28,13 +35,6 @@ export const RECORD_TYPE_BADGES: Record<string, RecordTypeBadgeProps> = {
     label: "Crash report",
   },
 };
-
-interface RecordTypeBadgeProps {
-  icon: IconType;
-  label: string;
-  iconStyle?: React.CSSProperties;
-  count?: number;
-}
 
 export function RecordTypeBadge({
   icon: Icon,
