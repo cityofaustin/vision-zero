@@ -103,9 +103,7 @@ interface PointMapProps {
   customLayerToggles?: CustomLayerToggle[];
   /**
    * If true, fit the map to every registered feature (saved point +
-   * anything children report via useRegisterMapFeature/useRegisterMapFeatures)
-   * once on mount, instead of relying solely on initialViewState.
-   * Default: false, to preserve existing behavior for callers that don't opt in.
+   * anything children report via useRegisterMapFeature). Default: true
    */
   autoFitBounds?: boolean;
 }
@@ -251,7 +249,7 @@ export const PointMap = ({
     };
 
     if (map.isStyleLoaded()) fit();
-    else map.once("idle", fit);
+    else map.once("data", fit);
   }, [autoFitBounds, mapRef, allFeatures, totalBounds]);
 
   return (
