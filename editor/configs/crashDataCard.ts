@@ -5,6 +5,7 @@ export const crashDataCards = {
     crashesColumns.case_id,
     crashesColumns.crash_timestamp,
     crashesColumns.collsn,
+    crashesColumns.risk_factors,
     crashesColumns.city,
     crashesColumns.agency,
   ],

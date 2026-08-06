@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { produce } from "immer";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -19,7 +19,10 @@ export interface SearchSettings {
 }
 
 /**
- * Record search component that plugs into the query builder
+ * Record search component that plugs into the query builder.
+ *
+ * The input value is kept in local state so keystrokes do not re-render
+ * TableWrapper (and the full results table) on every change.
  */
 export default function TableSearch({
   queryConfig,
@@ -27,6 +30,19 @@ export default function TableSearch({
   searchSettings,
   setSearchSettings,
 }: TableSearchProps) {
+  const [localSearchString, setLocalSearchString] = useState(
+    searchSettings.searchString
+  );
+  const [prevExternalSearchString, setPrevExternalSearchString] = useState(
+    searchSettings.searchString
+  );
+
+  // Sync from parent when filters are reset (or search is cleared elsewhere)
+  if (searchSettings.searchString !== prevExternalSearchString) {
+    setPrevExternalSearchString(searchSettings.searchString);
+    setLocalSearchString(searchSettings.searchString);
+  }
+
   return (
     <form onSubmit={(e) => e.preventDefault()} className="flex-grow-1">
       <InputGroup className="d-flex flex-nowrap align-self-start">
@@ -38,47 +54,52 @@ export default function TableSearch({
           aria-label="Crash search"
           aria-describedby="search-icon"
           onChange={(e) => {
-            if (e.target.value === "") {
+            const value = e.target.value;
+            setLocalSearchString(value);
+            if (value === "") {
               /**
                * trigger a new query to be built when the search input is cleared
                * otherwise user would need to click "submit" again
                */
-              const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
-                newQueryConfig.searchFilter.value = "";
-                newQueryConfig.searchFilter.column =
-                  searchSettings.searchColumn;
-                // reset offset / pagination
-                newQueryConfig.offset = 0;
-                return newQueryConfig;
+              const newQueryConfig = produce(queryConfig, (draft) => {
+                draft.searchFilter.value = "";
+                draft.searchFilter.column = searchSettings.searchColumn;
+                draft.offset = 0;
+                return draft;
               });
               setQueryConfig(newQueryConfig);
+              setSearchSettings({
+                ...searchSettings,
+                searchString: "",
+              });
             }
-            searchSettings.searchString = e.target.value;
-            setSearchSettings({ ...searchSettings });
           }}
-          value={searchSettings.searchString}
+          value={localSearchString}
           type="search"
         />
         <Button
           disabled={
-            (queryConfig.searchFilter.value === searchSettings.searchString &&
+            (queryConfig.searchFilter.value === localSearchString &&
               queryConfig.searchFilter.column ===
                 searchSettings.searchColumn) ||
             // this second case keeps the search button disabled when switching search columns
             // when the input is empty
-            (queryConfig.searchFilter.value === searchSettings.searchString &&
-              searchSettings.searchString === "")
+            (queryConfig.searchFilter.value === localSearchString &&
+              localSearchString === "")
           }
           onClick={() => {
-            const newSearchString = searchSettings.searchString.trim();
-            const newQueryConfig = produce(queryConfig, (newQueryConfig) => {
-              newQueryConfig.searchFilter.value = newSearchString;
-              newQueryConfig.searchFilter.column = searchSettings.searchColumn;
-              // reset offset / pagination
-              newQueryConfig.offset = 0;
-              return newQueryConfig;
+            const newSearchString = localSearchString.trim();
+            setLocalSearchString(newSearchString);
+            setSearchSettings({
+              ...searchSettings,
+              searchString: newSearchString,
             });
-            // save new filter state
+            const newQueryConfig = produce(queryConfig, (draft) => {
+              draft.searchFilter.value = newSearchString;
+              draft.searchFilter.column = searchSettings.searchColumn;
+              draft.offset = 0;
+              return draft;
+            });
             setQueryConfig(newQueryConfig);
           }}
           type="submit"
