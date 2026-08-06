@@ -13,11 +13,12 @@ const eslintConfig = defineConfig([
       "react-hooks/exhaustive-deps": "error",
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": "error",
-      // React Compiler rules from eslint-config-next 16
+      // Rules of React (useful with or without the React Compiler)
       "react-hooks/set-state-in-effect": "error",
-      "react-hooks/preserve-manual-memoization": "error",
       "react-hooks/purity": "error",
       "react-hooks/immutability": "error",
+      // Compiler-oriented: most valuable if/when we enable `reactCompiler: true` in next.config
+      "react-hooks/preserve-manual-memoization": "error",
       "react-hooks/incompatible-library": "error",
     },
   },
