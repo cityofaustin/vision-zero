@@ -8,8 +8,8 @@ import {
   Spinner,
   CloseButton,
 } from "react-bootstrap";
-import { Dispatch, SetStateAction, useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Dispatch, SetStateAction, useState, useEffect, useMemo } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { useGetToken } from "@/utils/auth";
 import AlignedLabel from "@/components/AlignedLabel";
 import { LuTrash } from "react-icons/lu";
@@ -47,7 +47,6 @@ export default function ImageUploadModal({
   recordId,
 }: ImageUploadModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -58,7 +57,7 @@ export default function ImageUploadModal({
     handleSubmit,
     reset,
     formState: { errors },
-    watch,
+    control,
   } = useForm<FormData>({
     mode: "onChange",
     defaultValues: {
@@ -67,25 +66,32 @@ export default function ImageUploadModal({
     },
   });
 
-  const file = watch("file");
+  const file = useWatch({ control, name: "file" });
 
   const url = `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/${imageType}/${recordId}`;
 
-  // Keeps track of file updates and errors to update preview URL
-  useEffect(() => {
-    setError(null);
+  // Create a preview object URL when a valid file is selected; revoke on change
+  const previewUrl = useMemo(() => {
     if (file && file.length > 0 && !errors.file) {
-      const url = URL.createObjectURL(file[0]);
-      setPreviewUrl(url);
-
-      // Return cleanup function that revokes this specific URL
-      return () => {
-        URL.revokeObjectURL(url);
-      };
-    } else {
-      setPreviewUrl(null);
+      return URL.createObjectURL(file[0]);
     }
+    return null;
   }, [file, errors.file]);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  // Clear upload errors when the selected file changes
+  const [prevFile, setPrevFile] = useState(file);
+  if (file !== prevFile) {
+    setPrevFile(file);
+    setError(null);
+  }
 
   /**  Uploads the image to the API */
   const onSubmit = async (data: FormData) => {
@@ -171,7 +177,6 @@ export default function ImageUploadModal({
       size="lg"
       onHide={handleClose}
       onExited={() => {
-        setPreviewUrl(null);
         reset();
       }}
     >

@@ -162,10 +162,17 @@ export const PointMap = ({
    * of a hack to ensure that the marker is always rendered on top of
    * other map markers
    */
-  const dynamicMarkerKey = useMemo(() => {
-    if (!children) return "no-children";
-    return Date.now();
-  }, [children]);
+  const [markerGeneration, setMarkerGeneration] = useState(0);
+  const [prevChildren, setPrevChildren] = useState(children);
+  if (children !== prevChildren) {
+    setPrevChildren(children);
+    if (children) {
+      setMarkerGeneration((generation) => generation + 1);
+    }
+  }
+  const dynamicMarkerKey = children
+    ? `marker-${markerGeneration}`
+    : "no-children";
 
   /**
    * Tracks geometry reported by children via the MapFeatureRegistry

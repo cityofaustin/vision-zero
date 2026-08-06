@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" style={{ fontSize: "14px" }}>
+    <html lang="en" data-scroll-behavior="smooth" style={{ fontSize: "14px" }}>
       <AuthProvider>
         <AppThemeProvider>
           <body>

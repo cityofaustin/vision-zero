@@ -381,6 +381,24 @@ export const crashesColumns = {
     editable: false,
     inputType: "yes_no",
   },
+  risk_factors: {
+    path: "crash_risk_factors_view.risk_factors",
+    label: "Risk factors",
+    editable: false,
+    valueRenderer: (record: Crash) => {
+      const factors = record.crash_risk_factors_view?.risk_factors;
+      if (!factors?.length) {
+        return "None identified";
+      }
+      return (
+        <>
+          {factors.map((factor) => (
+            <div key={factor}>{factor}</div>
+          ))}
+        </>
+      );
+    },
+  },
 } satisfies Record<string, ColDataCardDef<Crash>>;
 
 export const vzIncidentDetailscrashColumns: ColDataCardDef<Crash>[] = makeReadOnly([

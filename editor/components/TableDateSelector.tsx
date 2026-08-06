@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
@@ -40,19 +40,19 @@ export default function TableDateSelector({
   queryConfig,
   setQueryConfig,
 }: TableSearchProps) {
-  const [customDateRange, setCustomDateRange] = useState<DateRange>({
-    start: null,
-    end: null,
-  });
-  const [isDatePickerDirty, setIsDatePickerDirty] = useState(false);
-
   const currentFilter = queryConfig.dateFilter;
+  const [customDateRange, setCustomDateRange] = useState<DateRange>(() =>
+    getDateRangeFromDateFilter(queryConfig)
+  );
+  const [isDatePickerDirty, setIsDatePickerDirty] = useState(false);
+  const [prevFilter, setPrevFilter] = useState(currentFilter);
 
-  useEffect(() => {
-    // keep custom range form in sync with queryConfig
+  // Keep the custom range form in sync when the active date filter changes
+  if (currentFilter !== prevFilter) {
+    setPrevFilter(currentFilter);
     setCustomDateRange(getDateRangeFromDateFilter(queryConfig));
     setIsDatePickerDirty(false);
-  }, [currentFilter, queryConfig]);
+  }
 
   if (!currentFilter) return;
 

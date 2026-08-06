@@ -45,7 +45,7 @@ export function RecordTypeBadge({
     <div className="d-flex">
       <AlignedLabel>
         <Icon className={`fs-4 me-2`} style={iconStyle && { ...iconStyle }} />
-        <span className="fw-light fs-6 text-dark me-2 my-auto">{label}</span>
+        <span className="fw-light fs-6 me-2 my-auto">{label}</span>
       </AlignedLabel>
     </div>
   );
