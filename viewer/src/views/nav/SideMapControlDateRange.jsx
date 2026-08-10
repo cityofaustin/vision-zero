@@ -5,10 +5,7 @@ import aphroditeInterface from "react-with-styles-interface-aphrodite";
 import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
 import styled from "styled-components";
 import {
-  mapStartDate,
-  mapEndDate,
   dataStartDate,
-  dataEndDate,
   today,
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
@@ -16,6 +13,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faRedoAlt } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
+const minDate = new Date("2014-01-01");
 
 const SideMapControlDateRange = ({ type }) => {
   const [start, setStart] = useState(dataStartDate);
@@ -38,7 +37,7 @@ const SideMapControlDateRange = ({ type }) => {
 
   const handleEndDateChange = (date) => {
     if (!date) {
-      setEnd(dataEndDate);
+      setEnd(today);
     } else {
       setEnd(date);
     }
@@ -92,7 +91,7 @@ const SideMapControlDateRange = ({ type }) => {
         selected={start}
         onChange={handleStartDateChange}
         dateFormat={"MM/dd/yyyy"}
-        minDate={dataStartDate}
+        minDate={minDate}
         maxDate={today}
         popperPlacement="bottom-start"
       />
@@ -102,20 +101,20 @@ const SideMapControlDateRange = ({ type }) => {
         selected={end}
         onChange={handleEndDateChange}
         dateFormat={"MM/dd/yyyy"}
-        minDate={dataStartDate}
+        minDate={minDate}
         maxDate={today}
         popperPlacement="bottom"
         popperClassName="end-date-popper"
       />
       {/* Show reset button to restore default date range or show calendar icon if default*/}
-      {start !== dataStartDate || end !== dataEndDate ? (
+      {start !== dataStartDate || end !== today ? (
         <StyledRedoButton
           title="Reset to default date range"
           icon={faRedoAlt}
           color={colors.dark}
           onClick={() => {
-            setStart(mapStartDate);
-            setEnd(mapEndDate);
+            setStart(dataStartDate);
+            setEnd(today);
           }}
         />
       ) : (

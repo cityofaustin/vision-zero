@@ -44,12 +44,6 @@ export const summaryLastYearEndDate = format(sub(dataEndDate, { years: 1 }), "yy
 export const currentYearString = summaryCurrentYearStartDate.slice(0, 4);
 export const prevYearString = summaryLastYearStartDate.slice(0, 4);
 
-// Map time data
-// export const mapStartDate = format(dataStartDate, "yyyy-MM-dd")
-// export const mapEndDate = format(dataEndDate, "yyyy-MM-dd");
-export const mapStartDate = dataStartDate;
-export const mapEndDate = dataEndDate;
-
 // Five year average
 export const fiveYearAvgStartDate = format(
   sub(startOfYear(dataEndDate), { years: 5 }),
