@@ -63,7 +63,7 @@ const SideMapControlDateRange = ({ type }) => {
     align-items: center;
     color: ${colors.dark};
     .end-date-popper {
-      margin-left: -24px
+      margin-left: -24px;
     }
   `;
 
@@ -93,11 +93,9 @@ const SideMapControlDateRange = ({ type }) => {
         endDate={end}
         onChange={handleStartDateChange}
         dateFormat={"MM/dd/yyyy"}
-        selectsStart
         minDate={dataStartDate}
         maxDate={dataEndDate}
         popperPlacement="bottom-start"
-        // withPortal // maybe for mobile
       />
       {"-"}
       <StyledDatePicker
@@ -107,12 +105,10 @@ const SideMapControlDateRange = ({ type }) => {
         endDate={end}
         onChange={handleEndDateChange}
         dateFormat={"MM/dd/yyyy"}
-        selectsEnd
         minDate={dataStartDate}
         maxDate={dataEndDate}
         popperPlacement="bottom"
         popperClassName="end-date-popper"
-        // withPortal // maybe for mobile?
       />
       {/* Show reset button to restore default date range or show calendar icon if default*/}
       {start !== dataStartDate || end !== dataEndDate ? (
