@@ -118,11 +118,6 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     }
   };
 
-  const createTooltipData = (tooltipItem) => {
-    const index = tooltipItem.index;
-    return `${timeWindowPercentages[index]}% (${timeWindowData[index]})`;
-  };
-
   const createChartTimeLabels = () =>
     Object.keys(filters).map((label) => label);
 

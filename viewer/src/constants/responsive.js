@@ -23,5 +23,3 @@ export const useIsTablet = () =>
 export const useIsMobile = () =>
   useWindowSize().width <= responsive.bootstrapExtraSmall;
 
-export const useCanTwoMonthsFit = () =>
-  useWindowSize().height >= responsive.datePickerTwoMonthsHeight;
