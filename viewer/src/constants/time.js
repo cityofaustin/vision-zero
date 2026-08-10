@@ -9,6 +9,8 @@ export const MONTHS_AGO = 2;
 // Last date of records that should be referenced in VZV
 export const dataEndDate = sub(new Date(), { days: 14 });
 
+export const today = new Date();
+
 // Create array of ints of last n years
 const getYearsArray = () => {
   let years = [];

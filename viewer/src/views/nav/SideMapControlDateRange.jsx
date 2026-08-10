@@ -9,6 +9,7 @@ import {
   mapEndDate,
   dataStartDate,
   dataEndDate,
+  today,
 } from "../../constants/time";
 import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,7 +19,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 const SideMapControlDateRange = ({ type }) => {
   const [start, setStart] = useState(dataStartDate);
-  const [end, setEnd] = useState(dataEndDate);
+  const [end, setEnd] = useState(today);
 
   const { setMapDateRange: setMapDate } = React.useContext(StoreContext);
 
@@ -89,24 +90,20 @@ const SideMapControlDateRange = ({ type }) => {
       <StyledDatePicker
         id={`map-start-date-${type}`}
         selected={start}
-        startDate={start}
-        endDate={end}
         onChange={handleStartDateChange}
         dateFormat={"MM/dd/yyyy"}
         minDate={dataStartDate}
-        maxDate={dataEndDate}
+        maxDate={today}
         popperPlacement="bottom-start"
       />
       {"-"}
       <StyledDatePicker
         id={`map-end-date-${type}`}
         selected={end}
-        startDate={start}
-        endDate={end}
         onChange={handleEndDateChange}
         dateFormat={"MM/dd/yyyy"}
         minDate={dataStartDate}
-        maxDate={dataEndDate}
+        maxDate={today}
         popperPlacement="bottom"
         popperClassName="end-date-popper"
       />
