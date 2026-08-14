@@ -1,5 +1,4 @@
 import React from "react";
-import { RenderStates } from "react-map-gl-draw";
 import { Source, Layer } from "react-map-gl";
 import { colors } from "../../constants/colors";
 
@@ -11,11 +10,7 @@ export const baseSourceAndLayer = (
       type="geojson"
       data={{ type: "FeatureCollection", features: [] }}
     >
-      <Layer
-        beforeId="road-label-sm"
-        id="base-layer"
-        {...{ type: "symbol", source: "base-source" }}
-      />
+      <Layer id="base-layer" {...{ type: "symbol", source: "base-source" }} />
     </Source>
   </>
 );
@@ -109,8 +104,7 @@ export const buildAsmpLayers = (config, overlay) =>
     // Set config for each ASMP level layer based on ArcGIS VectorTileServer styles
     // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/resources/styles/root.json?f=pjson
     const asmpLayerConfig = {
-      id: level,
-      beforeId: "base-layer",
+      id: "asmplayer",
       type: "line",
       source: {
         type: "vector",
@@ -146,8 +140,7 @@ export const buildHighInjuryLayer = (overlay) => {
   const overlayId = "highInjury";
 
   const highInjuryNetworkLayerConfig = {
-    id: overlayId + "Network",
-    beforeId: "base-layer",
+    id: " highInjuryNetwork",
     type: "line",
     source: {
       type: "vector",
@@ -168,8 +161,7 @@ export const buildHighInjuryLayer = (overlay) => {
   };
 
   const highInjuryRoadwaysLayerConfig = {
-    id: overlayId + "Roadways",
-    beforeId: "base-layer",
+    id: "highInjuryRoadways",
     type: "line",
     source: {
       type: "vector",
@@ -237,58 +229,6 @@ export const cityCouncilDataLayer = {
     ],
   },
 };
-
-// Styles for MapPolygonFilter
-export function getEditHandleStyle({ state }) {
-  switch (state) {
-    case RenderStates.UNCOMMITTED:
-      return {
-        fill: colors.viridis6Of6Lowest,
-        fillOpacity: 1,
-        stroke: colors.white,
-        strokeWidth: 2,
-        r: 7,
-      };
-
-    default:
-      return {
-        fill: colors.viridis6Of6Lowest,
-        fillOpacity: 1,
-        stroke: colors.white,
-        strokeWidth: 2,
-        r: 5,
-      };
-  }
-}
-
-export function getFeatureStyle({ state }) {
-  switch (state) {
-    case RenderStates.CLOSING:
-      return {
-        stroke: colors.viridis4Of6,
-        strokeWidth: 2,
-        fill: colors.viridis4Of6,
-        fillOpacity: 0.3,
-        strokeDasharray: "4,2",
-      };
-    case RenderStates.UNCOMMITTED:
-      return {
-        stroke: colors.viridis6Of6Lowest,
-        strokeWidth: 2,
-        fill: colors.viridis6Of6Lowest,
-        fillOpacity: 0.3,
-        strokeDasharray: "4,2",
-      };
-
-    default:
-      return {
-        stroke: colors.info,
-        strokeWidth: 2,
-        fill: colors.info,
-        fillOpacity: 0.1,
-      };
-  }
-}
 
 export const travisCountyDataLayer = {
   id: "travisCounty",
