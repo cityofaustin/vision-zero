@@ -1,10 +1,8 @@
-import { useMemo, MutableRefObject } from "react";
+import { useMemo, RefObject } from "react";
 import MapGL, {
   FullscreenControl,
   NavigationControl,
   MapRef,
-  Source,
-  Layer,
 } from "react-map-gl";
 import { center } from "@turf/center";
 import { DEFAULT_MAP_PAN_ZOOM, DEFAULT_MAP_PARAMS } from "@/configs/map";
@@ -12,57 +10,33 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { MapAerialSourceAndLayer } from "./MapAerialSourceAndLayer";
 import MapBasemapControl from "@/components/MapBasemapControl";
 import { useBasemap } from "@/utils/map";
-import { MultiPolygon } from "@/types/geojson";
-import { LineLayerSpecification } from "mapbox-gl";
+import { Location } from "@/types/locations";
+import LocationPolygonLayer from "@/components/LocationPolygonLayer";
 
 interface LocationMapProps {
   /**
    * Ref object which will hold the mapbox instance
    */
-  mapRef: MutableRefObject<MapRef | null>;
-  polygon: MultiPolygon;
-  locationId: string;
+  mapRef: RefObject<MapRef | null>;
+  location: Location;
 }
-
-const polygonLayer: LineLayerSpecification = {
-  id: "location-polygon",
-  source: "location-polygon",
-  type: "line",
-  paint: {
-    "line-color": "orange",
-    "line-width": 4,
-  },
-};
-
-const usePolygonFeature = (polygon: MultiPolygon, locationId: string) =>
-  useMemo(
-    () => [
-      {
-        type: "Feature",
-        properties: {
-          id: locationId,
-        },
-        geometry: polygon,
-      },
-      center(polygon),
-    ],
-    [polygon, locationId]
-  );
 
 /**
  * Map component which renders an editable point marker
  */
-export const LocationMap = ({
-  mapRef,
-  polygon,
-  locationId,
-}: LocationMapProps) => {
-  const [polygonFeature, centerFeature] = usePolygonFeature(
-    polygon,
-    locationId
-  );
+export const LocationMap = ({ mapRef, location }: LocationMapProps) => {
+  const centerFeature = useMemo(() => {
+    if (!location.geometry) {
+      return;
+    }
+    return center(location.geometry);
+  }, [location]);
 
   const { basemapURL, basemapType, setBasemapType } = useBasemap("aerial");
+
+  if (!centerFeature) {
+    return null;
+  }
 
   return (
     <MapGL
@@ -87,9 +61,7 @@ export const LocationMap = ({
         controlId="locationMap"
       />
       {basemapType === "aerial" && <MapAerialSourceAndLayer />}
-      <Source type="geojson" data={polygonFeature} id="location-polygon">
-        <Layer {...polygonLayer} />
-      </Source>
+      <LocationPolygonLayer location={location} />
     </MapGL>
   );
 };

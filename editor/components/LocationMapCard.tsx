@@ -26,8 +26,7 @@ export default function LocationMapCard({ location }: { location: Location }) {
       <Card.Body className="p-1 crash-header-card-body" ref={mapContainerRef}>
         {location.geometry && (
           <LocationMap
-            polygon={location.geometry}
-            locationId={location.location_id}
+            location={location}
             mapRef={mapRef}
           />
         )}
