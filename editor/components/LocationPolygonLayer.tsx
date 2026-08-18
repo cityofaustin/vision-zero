@@ -5,6 +5,7 @@ import { useRegisterMapFeatures } from "@/contexts/MapFeatureRegistry";
 import { FillLayerSpecification, LineLayerSpecification } from "mapbox-gl";
 import { Feature, GeoJsonProperties, MultiPolygon } from "geojson";
 import { feature } from "@turf/helpers";
+import { COLORS } from "@/utils/constants";
 
 interface LocationPolygonLayerProps {
   location: Location;
@@ -15,7 +16,7 @@ const polygonLayerLine: LineLayerSpecification = {
   source: "location-polygon",
   type: "line",
   paint: {
-    "line-color": "orange",
+    "line-color": COLORS.locationPolygonOrange,
     "line-width": 3,
   },
 };
@@ -25,7 +26,7 @@ const polygonLayerOutline: LineLayerSpecification = {
   source: "location-polygon",
   type: "line",
   paint: {
-    "line-color": "black",
+    "line-color": "#000",
     "line-width": 4,
   },
 };
@@ -35,11 +36,14 @@ const polygonLayerFill: FillLayerSpecification = {
   source: "location-polygon",
   type: "fill",
   paint: {
-    "fill-color": "orange",
+    "fill-color": COLORS.locationPolygonOrange,
     "fill-opacity": 0.1,
   },
 };
 
+/**
+ * Converts a `Location` record into a `MultiPolygon` feature
+ */
 export const useLocationFeature = (
   location: Location | null
 ): Feature<MultiPolygon, GeoJsonProperties> | null =>
