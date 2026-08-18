@@ -10,8 +10,8 @@ interface LocationPolygonLayerProps {
   location: Location;
 }
 
-const polygonLayer3: LineLayerSpecification = {
-  id: "location-polygon",
+const polygonLayerLine: LineLayerSpecification = {
+  id: "location-polygon-line",
   source: "location-polygon",
   type: "line",
   paint: {
@@ -20,8 +20,8 @@ const polygonLayer3: LineLayerSpecification = {
   },
 };
 
-const polygonLayer2: LineLayerSpecification = {
-  id: "location-polygon-2",
+const polygonLayerOutline: LineLayerSpecification = {
+  id: "location-polygon-outline",
   source: "location-polygon",
   type: "line",
   paint: {
@@ -30,7 +30,7 @@ const polygonLayer2: LineLayerSpecification = {
   },
 };
 
-const polygonLayer: FillLayerSpecification = {
+const polygonLayerFill: FillLayerSpecification = {
   id: "location-polygon-fill",
   source: "location-polygon",
   type: "fill",
@@ -69,9 +69,9 @@ export default function LocationPolygonLayer({
   }
   return (
     <Source type="geojson" data={polygonFeature} id="location-polygon">
-      <Layer {...polygonLayer} />
-      <Layer {...polygonLayer2} />
-      <Layer {...polygonLayer3} />
+      <Layer {...polygonLayerFill} />
+      <Layer {...polygonLayerOutline} />
+      <Layer {...polygonLayerLine} />
     </Source>
   );
 }
