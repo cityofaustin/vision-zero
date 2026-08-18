@@ -57,7 +57,7 @@ const MapFeatureContext = createContext<MapFeatureContextValue | null>(null);
  * `onFeaturesChange` callback fires, letting the parent decide how to
  * respond (e.g. store it in its own state to trigger a bounds refit).
  *
- * `onFeaturesChange` shold be a function with a stable reference that
+ * `onFeaturesChange` should be a function with a stable reference that
  *  would typically set state in the parent component to expose the
  * registered features.
  *
@@ -145,7 +145,7 @@ export function useRegisterMapFeature(
 }
 
 /**
- * Register a set of GeoJSON features. Pass a stable id uniqe to this
+ * Register a set of GeoJSON features. Pass a stable id unique to this
  * feature set and an array of Features.
  *
  * Re-registers whenever the array reference changes, so it
