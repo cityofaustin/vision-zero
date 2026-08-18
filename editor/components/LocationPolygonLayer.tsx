@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Layer, Source } from "react-map-gl";
 import { Location } from "@/types/locations";
 import { useRegisterMapFeatures } from "@/contexts/MapFeatureRegistry";
-import { LineLayerSpecification } from "mapbox-gl";
+import { FillLayerSpecification, LineLayerSpecification } from "mapbox-gl";
 import { Feature, GeoJsonProperties, MultiPolygon } from "geojson";
 import { feature } from "@turf/helpers";
 
@@ -10,13 +10,33 @@ interface LocationPolygonLayerProps {
   location: Location;
 }
 
-const polygonLayer: LineLayerSpecification = {
+const polygonLayer3: LineLayerSpecification = {
   id: "location-polygon",
   source: "location-polygon",
   type: "line",
   paint: {
     "line-color": "orange",
+    "line-width": 3,
+  },
+};
+
+const polygonLayer2: LineLayerSpecification = {
+  id: "location-polygon-2",
+  source: "location-polygon",
+  type: "line",
+  paint: {
+    "line-color": "black",
     "line-width": 4,
+  },
+};
+
+const polygonLayer: FillLayerSpecification = {
+  id: "location-polygon-fill",
+  source: "location-polygon",
+  type: "fill",
+  paint: {
+    "fill-color": "orange",
+    "fill-opacity": 0.1,
   },
 };
 
@@ -50,6 +70,8 @@ export default function LocationPolygonLayer({
   return (
     <Source type="geojson" data={polygonFeature} id="location-polygon">
       <Layer {...polygonLayer} />
+      <Layer {...polygonLayer2} />
+      <Layer {...polygonLayer3} />
     </Source>
   );
 }
