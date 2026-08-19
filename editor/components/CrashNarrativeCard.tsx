@@ -7,7 +7,7 @@ import { hasRole, useGetToken } from "@/utils/auth";
 import { useAuth0 } from "@auth0/auth0-react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-const allowedCrashReportDownloadRoles = ["editor", "admin"];
+export const allowedCrashReportDownloadRoles = ["editor", "admin"];
 
 // Downloads pdf from the crash report API and opens it in a new tab
 export const onDownloadCrashReport = async ({
