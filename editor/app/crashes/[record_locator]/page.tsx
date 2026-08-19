@@ -23,7 +23,7 @@ import { crashDataCards } from "@/configs/crashDataCard";
 import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
 import { emsRelatedRecordCols } from "@/configs/emsRelatedRecordTable";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
-import { getCrashDetailsQuery, UPDATE_CRASH } from "@/queries/crash";
+import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/crashNotes";
 import { UPDATE_PERSON } from "@/queries/person";
 import { UPDATE_UNIT } from "@/queries/unit";
@@ -71,8 +71,8 @@ export default function CrashDetailsPage({
   useKeyboardShortcut(activeShortcutKeyLookup, scrollToElementOnKeyPress);
 
   const { data, error, refetch, isValidating } = useQuery<Crash>({
-    query: recordLocator ? getCrashDetailsQuery(includeEms) : null,
-    variables: { recordLocator },
+    query: recordLocator ? GET_CRASH : null,
+    variables: { recordLocator, includeEms },
     typename,
   });
 
