@@ -74,11 +74,11 @@ interface PointMapProps {
   /**
    * The initial latitude - used when not editing
    */
-  savedLatitude: number | null;
+  savedLatitude?: number | null;
   /**
    * The initial longitude - used when not editing
    */
-  savedLongitude: number | null;
+  savedLongitude?: number | null;
   /**
    * If the map is in edit mode
    */
@@ -231,17 +231,17 @@ export const PointMap = ({
     const fit = () => {
       if (allFeatures.features.length === 0) return;
 
-      // Single point: center rather than fitBounds on a zero-area box
-      if (allFeatures.features.length === 1) {
-        const g = allFeatures.features[0].geometry;
-        if (g.type === "Point") {
-          const [lng, lat] = g.coordinates;
-          map.easeTo({
-            center: [lng, lat],
-            zoom: DEFAULT_MAP_PAN_ZOOM.zoom,
-            duration: 0,
-          });
-        }
+      if (
+        allFeatures.features.length === 1 &&
+        allFeatures.features[0].geometry.type === "Point"
+      ) {
+        // Single point: center rather than fitBounds on a zero-area box
+        const [lng, lat] = allFeatures.features[0].geometry.coordinates;
+        map.easeTo({
+          center: [lng, lat],
+          zoom: DEFAULT_MAP_PAN_ZOOM.zoom,
+          duration: 0,
+        });
         hasFitRef.current = true;
         return;
       }
