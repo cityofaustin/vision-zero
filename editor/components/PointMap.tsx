@@ -180,7 +180,7 @@ export const PointMap = ({
    * everything currently rendered, not just the saved lat/lon.
    */
   const [registeredFeatures, setRegisteredFeatures] = useState<
-    Map<string, Geometry | Geometry[]>
+    Map<string, Feature | Feature[]>
   >(new Map());
 
   /**
@@ -188,7 +188,7 @@ export const PointMap = ({
    * a new feature is registered in map registry context
    */
   const onFeaturesChange = useCallback(
-    (features: Map<string, Geometry | Geometry[]>) => {
+    (features: Map<string, Feature | Feature[]>) => {
       setRegisteredFeatures(features);
     },
     []
@@ -206,11 +206,11 @@ export const PointMap = ({
       feats.push(point([savedLongitude, savedLatitude]));
     }
 
-    registeredFeatures.forEach((geom) => {
-      if (Array.isArray(geom)) {
-        geom.forEach((g) => feats.push(feature(g)));
+    registeredFeatures.forEach((feature) => {
+      if (Array.isArray(feature)) {
+        feature.forEach((f) => feats.push(f));
       } else {
-        feats.push(feature(geom));
+        feats.push(feature);
       }
     });
 
