@@ -30,7 +30,6 @@ const clampToMinDate = (raw) => {
 
 const SideMapControlDateRange = ({ type }) => {
   const [start, setStart] = useState(dataStartDate);
-  const [realStart, setRealStart] = useState();
   const [end, setEnd] = useState(today);
 
   const { setMapDateRange: setMapDate } = React.useContext(StoreContext);
