@@ -35,7 +35,7 @@ import { z, ZodFormattedError } from "zod";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapAerialSourceAndLayer } from "@/components/MapAerialSourceAndLayer";
 import { MapFeatureRegistryProvider } from "@/contexts/MapFeatureRegistry";
-import { featureCollection, point, feature } from "@turf/helpers";
+import { featureCollection, point } from "@turf/helpers";
 import type { Feature, Geometry } from "geojson";
 
 export interface LatLon {
