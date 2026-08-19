@@ -40,6 +40,15 @@ export const getHasuraRoleName = (roles?: string[]): string => {
 export const hasRole = (roles: string[], user: CustomUser) =>
   roles.includes(getHasuraRoleName(getRolesArray(user)));
 
+/** Roles that may view EMS patient care records */
+export const EMS_VIEW_ROLES = ["editor", "vz-admin"];
+
+/**
+ * True if the user may see EMS content (nav, crash details card, GraphQL fields)
+ */
+export const canViewEms = (user: CustomUser | undefined) =>
+  Boolean(user && hasRole(EMS_VIEW_ROLES, user));
+
 /**
  * Make the hasura role name human-friendly
  */
