@@ -1,43 +1,13 @@
 import { gql } from "graphql-request";
 
 /**
- * Optional EMS fields for crash details. This makes the GET_CRASH query dynamic and
- * allows readonly users to load the page even if select permission is revoked
- * on ems__incidents.
+ * Crash details. EMS is gated with @include(if: $includeEms) so we can test
+ * whether Hasura still validates ems__incidents against the role schema when
+ * includeEms is false (expected: validation-failed for readonly after select
+ * is revoked). If that holds, omit the field from the document instead.
  */
-const EMS_INCIDENTS_SELECTION = `
-      ems__incidents(
-        where: { is_deleted: { _eq: false } }
-        order_by: { id: asc }
-      ) {
-        id
-        apd_incident_numbers
-        crash_match_status
-        incident_location_address
-        incident_number
-        incident_problem
-        incident_received_datetime
-        patient_injry_sev {
-          id
-          label
-        }
-        mvc_form_position_in_vehicle
-        patient_injry_sev_id
-        person {
-          prsn_nbr
-          unit_nbr
-        }
-        pcr_patient_age
-        pcr_patient_gender
-        pcr_patient_race
-        person_id
-        travel_mode
-        unparsed_apd_incident_numbers
-      }
-`;
-
-const crashDetailsQuery = (includeEms: boolean) => gql`
-  query ${includeEms ? "CrashDetailsWithEms" : "CrashDetails"}($recordLocator: String!) {
+export const GET_CRASH = gql`
+  query CrashDetails($recordLocator: String!, $includeEms: Boolean!) {
     crashes(
       where: {
         _and: {
@@ -342,19 +312,37 @@ const crashDetailsQuery = (includeEms: boolean) => gql`
         text
         crash_pk
       }
-      ${includeEms ? EMS_INCIDENTS_SELECTION : ""}
+      ems__incidents(
+        where: { is_deleted: { _eq: false } }
+        order_by: { id: asc }
+      ) @include(if: $includeEms) {
+        id
+        apd_incident_numbers
+        crash_match_status
+        incident_location_address
+        incident_number
+        incident_problem
+        incident_received_datetime
+        patient_injry_sev {
+          id
+          label
+        }
+        mvc_form_position_in_vehicle
+        patient_injry_sev_id
+        person {
+          prsn_nbr
+          unit_nbr
+        }
+        pcr_patient_age
+        pcr_patient_gender
+        pcr_patient_race
+        person_id
+        travel_mode
+        unparsed_apd_incident_numbers
+      }
     }
   }
 `;
-
-/** Crash details without EMS — safe for the readonly Hasura role */
-export const GET_CRASH = crashDetailsQuery(false);
-
-/** Crash details including EMS patient care records — editor and admin only */
-export const GET_CRASH_WITH_EMS = crashDetailsQuery(true);
-
-export const getCrashDetailsQuery = (includeEms: boolean) =>
-  includeEms ? GET_CRASH_WITH_EMS : GET_CRASH;
 
 /**
  * Record locator search used by the navbar search component

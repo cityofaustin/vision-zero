@@ -8,7 +8,7 @@ import { MapRef } from "react-map-gl";
 import { PointMap } from "@/components/PointMap";
 import FatalityUnitsCards from "@/components/FatalityUnitsCards";
 import CrashNarrativeEditableCard from "@/components/CrashNarrativeEditableCard";
-import { getCrashDetailsQuery, UPDATE_CRASH } from "@/queries/crash";
+import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
 import { canViewEms } from "@/utils/auth";
 import { useDocumentTitle } from "@/utils/documentTitle";
@@ -47,8 +47,8 @@ export default function FatalCrashDetailsPage({
   const typename = "crashes";
 
   const { data, error, refetch } = useQuery<Crash>({
-    query: recordLocator ? getCrashDetailsQuery(canViewEms(user)) : null,
-    variables: { recordLocator },
+    query: recordLocator ? GET_CRASH : null,
+    variables: { recordLocator, includeEms: canViewEms(user) },
     typename,
   });
 
