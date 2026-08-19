@@ -5,7 +5,7 @@ import Card from "react-bootstrap/Card";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { FaFilePdf } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
-import { onDownloadCR3 } from "@/components/CrashNarrativeCard";
+import { onDownloadCrashReport } from "@/components/CrashNarrativeCard";
 import { UPDATE_CRASH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
 import { hasRole, useGetToken } from "@/utils/auth";
@@ -83,7 +83,7 @@ export default function CrashNarrativeEditableCard({
           </Nav>
           <Button
             size="sm"
-            onClick={() => onDownloadCR3({ crash, getToken })}
+            onClick={() => onDownloadCrashReport({ crash, getToken })}
             disabled={!isCr3Stored}
           >
             <AlignedLabel>
