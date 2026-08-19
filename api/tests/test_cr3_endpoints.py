@@ -24,7 +24,7 @@ class TestCR3Download:
         res = requests.get(f"{api_base_url}/cr3/download/{test_crash_record_locator}")
         assert res.status_code == 401
 
-    def test_download_with_auth(
+    def test_download_with_editor_auth(
         self, api_base_url, editor_user_headers, test_crash_record_locator
     ):
         """Test downloading a CR3 PDF with valid auth"""
@@ -45,6 +45,27 @@ class TestCR3Download:
         s3_res = requests.get(presigned_url)
         assert s3_res.status_code == 200
         assert s3_res.headers.get("Content-Type") == "application/pdf"
+
+    def test_download_with_admin_auth(
+        self, api_base_url, admin_user_headers, test_crash_record_locator
+    ):
+        """Test downloading a CR3 PDF as an admin user"""
+        res = requests.get(
+            f"{api_base_url}/cr3/download/{test_crash_record_locator}",
+            headers=admin_user_headers,
+        )
+        assert res.status_code == 200
+        assert "message" in res.json()
+
+    def test_download_forbidden_for_read_only(
+        self, api_base_url, read_only_user_headers, test_crash_record_locator
+    ):
+        """Test that read-only users cannot download a CR3 PDF"""
+        res = requests.get(
+            f"{api_base_url}/cr3/download/{test_crash_record_locator}",
+            headers=read_only_user_headers,
+        )
+        assert res.status_code == 403
 
     def test_download_nonexistent_crash_id(self, api_base_url, editor_user_headers):
         """Test downloading with negative crash ID"""
