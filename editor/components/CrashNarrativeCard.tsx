@@ -9,8 +9,8 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 const allowedCrashReportDownloadRoles = ["editor", "admin"];
 
-// Downloads pdf from the CR3 API and opens it in a new tab
-export const onDownloadCR3 = async ({
+// Downloads pdf from the crash report API and opens it in a new tab
+export const onDownloadCrashReport = async ({
   crash,
   getToken,
 }: {
@@ -30,7 +30,7 @@ export const onDownloadCR3 = async ({
     if (!response.ok) {
       const responseText = await response.text();
       console.error(responseText);
-      window.alert(`Failed to download CR3: ${String(responseText)}`);
+      window.alert(`Failed to download Crash report: ${String(responseText)}`);
     } else {
       const responseJson = await response.json();
       const win = window.open(responseJson.message, "_blank");
@@ -49,11 +49,11 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
   const getToken = useGetToken();
 
   const { user } = useAuth0();
-  const canDownloadCr3 = user
+  const canDownloadCrashReport = user
     ? hasRole(allowedCrashReportDownloadRoles, user)
     : false;
 
-  const isCr3Stored = crash.cr3_stored_fl;
+  const isCrashReportStored = crash.cr3_stored_fl;
 
   return (
     <Card className="h-100">
@@ -62,7 +62,7 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
         <OverlayTrigger
           placement="top"
           overlay={
-            <Tooltip id="copy-address-tooltip" hidden={canDownloadCr3}>
+            <Tooltip id="copy-address-tooltip" hidden={canDownloadCrashReport}>
               Vision Zero team members can access crash reports - contact them for assistance
             </Tooltip>
           }
@@ -71,8 +71,8 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
           <span>
             <Button
               size="sm"
-              onClick={() => onDownloadCR3({ crash, getToken })}
-              disabled={!isCr3Stored || !canDownloadCr3}
+              onClick={() => onDownloadCrashReport({ crash, getToken })}
+              disabled={!isCrashReportStored || !canDownloadCrashReport}
             >
               <AlignedLabel>
                 <FaFilePdf className="me-2" />
