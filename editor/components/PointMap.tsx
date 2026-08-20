@@ -35,7 +35,7 @@ import { z, ZodFormattedError } from "zod";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapAerialSourceAndLayer } from "@/components/MapAerialSourceAndLayer";
 import { MapFeatureRegistryProvider } from "@/contexts/MapFeatureRegistry";
-import { featureCollection, point, feature } from "@turf/helpers";
+import { featureCollection, point } from "@turf/helpers";
 import type { Feature, Geometry } from "geojson";
 
 export interface LatLon {
@@ -74,11 +74,11 @@ interface PointMapProps {
   /**
    * The initial latitude - used when not editing
    */
-  savedLatitude: number | null;
+  savedLatitude?: number | null;
   /**
    * The initial longitude - used when not editing
    */
-  savedLongitude: number | null;
+  savedLongitude?: number | null;
   /**
    * If the map is in edit mode
    */
@@ -180,7 +180,7 @@ export const PointMap = ({
    * everything currently rendered, not just the saved lat/lon.
    */
   const [registeredFeatures, setRegisteredFeatures] = useState<
-    Map<string, Geometry | Geometry[]>
+    Map<string, Feature | Feature[]>
   >(new Map());
 
   /**
@@ -188,7 +188,7 @@ export const PointMap = ({
    * a new feature is registered in map registry context
    */
   const onFeaturesChange = useCallback(
-    (features: Map<string, Geometry | Geometry[]>) => {
+    (features: Map<string, Feature | Feature[]>) => {
       setRegisteredFeatures(features);
     },
     []
@@ -206,11 +206,11 @@ export const PointMap = ({
       feats.push(point([savedLongitude, savedLatitude]));
     }
 
-    registeredFeatures.forEach((geom) => {
-      if (Array.isArray(geom)) {
-        geom.forEach((g) => feats.push(feature(g)));
+    registeredFeatures.forEach((feature) => {
+      if (Array.isArray(feature)) {
+        feature.forEach((f) => feats.push(f));
       } else {
-        feats.push(feature(geom));
+        feats.push(feature);
       }
     });
 
@@ -231,17 +231,17 @@ export const PointMap = ({
     const fit = () => {
       if (allFeatures.features.length === 0) return;
 
-      // Single point: center rather than fitBounds on a zero-area box
-      if (allFeatures.features.length === 1) {
-        const g = allFeatures.features[0].geometry;
-        if (g.type === "Point") {
-          const [lng, lat] = g.coordinates;
-          map.easeTo({
-            center: [lng, lat],
-            zoom: DEFAULT_MAP_PAN_ZOOM.zoom,
-            duration: 0,
-          });
-        }
+      if (
+        allFeatures.features.length === 1 &&
+        allFeatures.features[0].geometry.type === "Point"
+      ) {
+        // Single point: center rather than fitBounds on a zero-area box
+        const [lng, lat] = allFeatures.features[0].geometry.coordinates;
+        map.easeTo({
+          center: [lng, lat],
+          zoom: DEFAULT_MAP_PAN_ZOOM.zoom,
+          duration: 0,
+        });
         hasFitRef.current = true;
         return;
       }

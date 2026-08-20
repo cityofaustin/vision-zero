@@ -7,18 +7,18 @@ import {
   useRef,
   ReactNode,
 } from "react";
-import type { Feature, Geometry } from "geojson";
+import type { Feature } from "geojson";
 
 /**
  * A lightweight registry that lets arbitrary map children (Markers,
- * GeoJSON layers, etc.) report their geometry up to a parent map
+ * GeoJSON layers, etc.) report their feature up to a parent map
  * component, without that parent needing to know what its children are.
  *
  * The parent renders a `MapFeatureRegistryProvider` around `children` and
  * passes an `onFeaturesChange` callback to receive the live set of
- * registered geometries (keyed by id) whenever anything registers,
+ * registered features (keyed by id) whenever anything registers,
  * unregisters, or updates. Children call `useRegisterMapFeature` (single
- * point) or `useRegisterMapFeatures` (multiple features) to participate.
+ * feature) or `useRegisterMapFeatures` (multiple features) to participate.
  *
  * Typical use: a map component wants to compute a bounding box that fits
  * everything currently rendered on the map, but the set of rendered
@@ -26,11 +26,10 @@ import type { Feature, Geometry } from "geojson";
  */
 
 /**
- * The geometry shape a single feature can contribute: either one
- * Geometry (e.g. a Point for a Marker) or an array of Geometries (e.g.
- * one per feature in a GeoJSON layer).
+ * The shape a single RegisteredFeature can take: either one
+ * Feature or an array of them (e.g. one per feature in a GeoJSON layer).
  */
-type RegisteredGeometry = Geometry | Geometry[];
+type RegisteredFeature = Feature | Feature[];
 
 /**
  * Shape of the context value exposed to registrant hooks. `register` and
@@ -39,7 +38,7 @@ type RegisteredGeometry = Geometry | Geometry[];
  * than duplicate a given registrant's entry.
  */
 interface MapFeatureContextValue {
-  register: (id: string, geometry: RegisteredGeometry) => void;
+  register: (id: string, geometry: RegisteredFeature) => void;
   unregister: (id: string) => void;
 }
 
@@ -76,16 +75,16 @@ export function MapFeatureRegistryProvider({
   onFeaturesChange,
 }: {
   children: ReactNode;
-  onFeaturesChange: (features: Map<string, RegisteredGeometry>) => void;
+  onFeaturesChange: (features: Map<string, RegisteredFeature>) => void;
 }) {
   // Source of truth for registrations. A ref (not state) so that
   // register/unregister don't cause this provider to re-render on every
   // child registration — the parent is notified via onFeaturesChange
   // instead, and decides for itself whether/how to re-render.
-  const featuresRef = useRef<Map<string, RegisteredGeometry>>(new Map());
+  const featuresRef = useRef<Map<string, RegisteredFeature>>(new Map());
 
   const register = useCallback(
-    (id: string, geometry: RegisteredGeometry) => {
+    (id: string, geometry: RegisteredFeature) => {
       // Keyed by id, so re-registering the same id (e.g. on re-render,
       // or when a child's geometry changes) overwrites in place rather
       // than accumulating duplicates.
@@ -123,25 +122,18 @@ export function MapFeatureRegistryProvider({
 }
 
 /**
- * Register a single point (e.g. a Marker). Pass a stable id unique to
- * all registrants and either a {latitude, longitude} pair or null.
+ * Register a single feature geojson Feature. Pass a stable id unique to
+ * all registrants and a Feature or null.
  */
-export function useRegisterMapFeature(
-  id: string,
-  latLon: { latitude: number; longitude: number } | null
-) {
+export function useRegisterMapFeature(id: string, feature: Feature | null) {
   const ctx = useContext(MapFeatureContext);
 
   useEffect(() => {
-    if (!ctx || !latLon) return;
+    if (!ctx || !feature) return;
 
-    ctx.register(id, {
-      type: "Point",
-      coordinates: [latLon.longitude, latLon.latitude],
-    });
+    ctx.register(id, feature);
     return () => ctx.unregister(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ctx, id, latLon?.latitude, latLon?.longitude]);
+  }, [ctx, id, feature]);
 }
 
 /**
@@ -157,10 +149,7 @@ export function useRegisterMapFeatures(id: string, features: Feature[] | null) {
   useEffect(() => {
     if (!ctx || !features || features.length === 0) return;
 
-    ctx.register(
-      id,
-      features.map((f) => f.geometry)
-    );
+    ctx.register(id, features);
     return () => ctx.unregister(id);
   }, [ctx, id, features]);
 }

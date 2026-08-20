@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Layer, Source } from "react-map-gl";
 import { Location } from "@/types/locations";
-import { useRegisterMapFeatures } from "@/contexts/MapFeatureRegistry";
+import { useRegisterMapFeature } from "@/contexts/MapFeatureRegistry";
 import { FillLayerSpecification, LineLayerSpecification } from "mapbox-gl";
 import { Feature, GeoJsonProperties, MultiPolygon } from "geojson";
 import { feature } from "@turf/helpers";
@@ -63,10 +63,7 @@ export default function LocationPolygonLayer({
 }: LocationPolygonLayerProps) {
   const polygonFeature = useLocationFeature(location);
 
-  useRegisterMapFeatures(
-    "locationPolygon",
-    polygonFeature ? [polygonFeature] : null
-  );
+  useRegisterMapFeature("locationPolygon", polygonFeature);
 
   if (!polygonFeature) {
     return null;
