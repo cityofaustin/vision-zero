@@ -99,6 +99,9 @@ The below features should be tested with each role. Features with role-based acc
 - Crash map: use the address search to find a location within Austin metro area
 - Crash map: use the fit bounds control (top right corner of map, above +/- buttons) to recenter the map
 - Crash map: verify **Location ID** updates when crash is moved to another intersection
+- Crash map: verify orange **Location** polygon is entirely visible within the map extent on page load (will only be visibile if the map if the crash has an associated **Location ID**)
+- Crash map: verify orange **Location** polygon is visible on the map if the crash has an associated **Location ID**
+- Crash map: verify **Location** polygon updates on the map when the crash **Location ID** changes
 - Crash map: validation restricts keying in lat/lon with alpha characters
 - Crash map: validation restricts keying in empty/blank lat/lon
 - Crash map: validation restricts keying in lat/lon outside of Austin metro area
@@ -179,7 +182,7 @@ The below features should be tested with each role. Features with role-based acc
 ### Location details `/locations/[location_id]`
 
 - Verify page `<title>` element is formatted as `<location-ID> - <location-name>` (check how the title is rendered in your browser tab)
-- Location polygon map
+- Crash map: verify orange **Location** polygon is entirely visible within the map extent on page load
 - Location data card displays the location ID, crash counts and comp costs
 - combined cr3 and noncr3 crashes list
   - this will not load locally until you manually refresh the view:
