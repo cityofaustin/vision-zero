@@ -8,12 +8,13 @@ import { MapRef } from "react-map-gl";
 import { PointMap } from "@/components/PointMap";
 import FatalityUnitsCards from "@/components/FatalityUnitsCards";
 import CrashNarrativeEditableCard from "@/components/CrashNarrativeEditableCard";
-import { GET_CRASH } from "@/queries/crash";
+import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
+import { canViewEms } from "@/utils/auth";
 import { useDocumentTitle } from "@/utils/documentTitle";
 import { formatIsoDateTimeWithDay, formatYear } from "@/utils/formatters";
 import { useQuery } from "@/utils/graphql";
-import { UPDATE_CRASH } from "@/queries/crash";
+import { useAuth0 } from "@auth0/auth0-react";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import DataCard from "@/components/DataCard";
 import { crashesColumns } from "@/configs/crashesColumns";
@@ -41,12 +42,13 @@ export default function FatalCrashDetailsPage({
   const mapRef = useRef<MapRef | null>(null);
 
   const { record_locator: recordLocator } = use(params);
+  const { user } = useAuth0();
 
   const typename = "crashes";
 
   const { data, error, refetch } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
-    variables: { recordLocator },
+    variables: { recordLocator, includeEms: canViewEms(user) },
     typename,
   });
 

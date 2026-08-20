@@ -2,6 +2,7 @@ import { FaRegHeart, FaCarBurst } from "react-icons/fa6";
 import { RiDashboard3Line } from "react-icons/ri";
 import { LuMapPin, LuAmbulance, LuCloudUpload, LuUsers } from "react-icons/lu";
 import { IconType } from "react-icons";
+import { EMS_VIEW_ROLES } from "@/utils/auth";
 
 interface Route {
   path: string;
@@ -35,6 +36,7 @@ export const routes: Route[] = [
     path: "ems",
     label: "EMS",
     icon: LuAmbulance,
+    allowedRoles: EMS_VIEW_ROLES,
   },
   {
     path: "upload-non-cr3",

@@ -11,10 +11,12 @@ import { EMSPatientCareRecord } from "@/types/ems";
 import { CrashDiagramOrientation } from "./crashDiagramOrientation";
 import { UnitTypesInvolved } from "@/types/unitTypesInvolved";
 import { CrashRiskFactors } from "@/types/crashRiskFactors";
+import { Location } from "@/types/locations";
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
   at_intrsct_fl: boolean | null;
+  atd_txdot_location?: Location | null;
   case_id: string | null;
   crash_risk_factors_view: CrashRiskFactors | null;
   crash_injury_metrics_view: CrashInjuryMetric | null;
@@ -25,7 +27,7 @@ export type Crash = {
   cris_crash_id: number | null;
   collsn: LookupTableOption | null;
   diagram_transform: CrashDiagramOrientation | null;
-  ems__incidents: EMSPatientCareRecord[] | null;
+  ems__incidents?: EMSPatientCareRecord[] | null;
   fhe_collsn_id: number | null;
   investigat_agency_id: number | null;
   agency: LookupTableOption | null;

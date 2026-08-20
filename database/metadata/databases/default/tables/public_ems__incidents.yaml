@@ -61,46 +61,6 @@ select_permissions:
       filter: {}
       allow_aggregations: true
     comment: ""
-  - role: readonly
-    permission:
-      columns:
-        - apd_incident_numbers
-        - atd_apd_blueform_case_id
-        - austin_full_purpose
-        - crash_match_status
-        - crash_pk
-        - created_at
-        - created_by
-        - id
-        - incident_location_address
-        - incident_number
-        - incident_problem
-        - incident_received_datetime
-        - is_deleted
-        - latitude
-        - longitude
-        - matched_crash_pks
-        - matched_non_cr3_case_ids
-        - matched_person_ids
-        - mvc_form_position_in_vehicle
-        - non_cr3_match_status
-        - patient_injry_sev_id
-        - patient_injry_sev_reason
-        - pcr_patient_age
-        - pcr_patient_gender
-        - pcr_patient_race
-        - pcr_transport_destination
-        - person_id
-        - person_match_attributes
-        - person_match_score
-        - person_match_status
-        - travel_mode
-        - unparsed_apd_incident_numbers
-        - updated_at
-        - updated_by
-      filter: {}
-      allow_aggregations: true
-    comment: ""
   - role: vz-admin
     permission:
       columns:

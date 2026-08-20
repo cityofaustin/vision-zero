@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { Form, Nav, Tab } from "react-bootstrap";
+import { Form, Nav, OverlayTrigger, Tab, Tooltip } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { FaFilePdf } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
-import { onDownloadCR3 } from "@/components/CrashNarrativeCard";
+import {
+  allowedCrashReportDownloadRoles,
+  onDownloadCrashReport,
+} from "@/components/CrashNarrativeCard";
 import { UPDATE_CRASH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
 import { hasRole, useGetToken } from "@/utils/auth";
@@ -40,6 +43,9 @@ export default function CrashNarrativeEditableCard({
   const { user } = useAuth0();
 
   const isReadOnlyUser = user && hasRole(["readonly"], user);
+  const canDownloadCrashReport = user
+    ? hasRole(allowedCrashReportDownloadRoles, user)
+    : false;
 
   const { mutate, loading: isSubmitting } = useMutation(UPDATE_CRASH);
 
@@ -81,16 +87,35 @@ export default function CrashNarrativeEditableCard({
               </Nav.Item>
             )}
           </Nav>
-          <Button
-            size="sm"
-            onClick={() => onDownloadCR3({ crash, getToken })}
-            disabled={!isCr3Stored}
+          <OverlayTrigger
+            placement="top"
+            popperConfig={{
+              strategy: "fixed",
+            }}
+            overlay={
+              <Tooltip
+                id="copy-address-tooltip"
+                hidden={canDownloadCrashReport}
+              >
+                Only Vision Zero team members can access crash reports - contact
+                them for assistance
+              </Tooltip>
+            }
           >
-            <AlignedLabel>
-              <FaFilePdf className="me-2" />
-              <span>Download CR3</span>
-            </AlignedLabel>
-          </Button>
+            {/* load-bearing span that enables tooltips to render over the `disabled` button */}
+            <span className="display-inline-block">
+              <Button
+                size="sm"
+                onClick={() => onDownloadCrashReport({ crash, getToken })}
+                disabled={!isCr3Stored || !canDownloadCrashReport}
+              >
+                <AlignedLabel>
+                  <FaFilePdf className="me-2" />
+                  <span>Open crash report</span>
+                </AlignedLabel>
+              </Button>
+            </span>
+          </OverlayTrigger>
         </Card.Header>
         <Card.Body>
           <Tab.Content>
