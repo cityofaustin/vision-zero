@@ -3,6 +3,7 @@ import TableMapPopupContent from "@/components/TableMapPopupContent";
 import LocationTableMapPopupContent from "@/components/LocationsTableMapPopupContent";
 import FatalitiesMapPopupContent from "@/components/FatalitiesMapPopupContent";
 import EMSMapPopupContent from "@/components/EMSMapPopupContent";
+import VzMapPopupContent from "@/components/VzMapPopupContent";
 
 // importing MapProps does not work: https://github.com/visgl/react-map-gl/issues/2140
 type MapGLComponentProps = React.ComponentProps<typeof MapGL>;
@@ -16,6 +17,7 @@ export const getPopupComponent = (
     | "locationTableMap"
     | "fatalitiesTableMap"
     | "emsTableMap"
+    | "vzTableMap"
     | undefined
 ) => {
   switch (popupName) {
@@ -25,6 +27,8 @@ export const getPopupComponent = (
       return FatalitiesMapPopupContent;
     case "emsTableMap":
       return EMSMapPopupContent;
+    case "vzTableMap":
+      return VzMapPopupContent;
     default:
       return TableMapPopupContent;
   }
@@ -42,7 +46,7 @@ export interface TableMapConfig {
   /**
    * Name of the geojson transformer function to use when converting the input table to geojson
    */
-  geojsonTransformerName: "latLon";
+  geojsonTransformerName: "latLon" | "pointFeature";
   /**
    * Settings to be passed to the geojson layer
    */
@@ -64,7 +68,8 @@ export interface TableMapConfig {
   popupComponentName?:
     | "locationTableMap"
     | "fatalitiesTableMap"
-    | "emsTableMap";
+    | "emsTableMap"
+    | "vzTableMap";
   /**
    *
    */
