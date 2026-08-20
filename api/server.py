@@ -397,6 +397,7 @@ def healthcheck():
 @app.route("/cr3/download/<record_locator>")
 @cross_origin(headers=CORS_HEADERS)
 @requires_auth
+@requires_roles(ADMIN_ROLE_NAME, EDITOR_ROLE_NAME)
 def download_crash_report(record_locator):
     """A valid access token is required to access this route"""
     # We only care for an integer string, anything else is not safe:

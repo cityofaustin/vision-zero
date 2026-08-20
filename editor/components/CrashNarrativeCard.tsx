@@ -3,10 +3,14 @@ import Button from "react-bootstrap/Button";
 import { FaFilePdf } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
 import { Crash } from "@/types/crashes";
-import { useGetToken } from "@/utils/auth";
+import { hasRole, useGetToken } from "@/utils/auth";
+import { useAuth0 } from "@auth0/auth0-react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-// Downloads pdf from the CR3 API and opens it in a new tab
-export const onDownloadCR3 = async ({
+export const allowedCrashReportDownloadRoles = ["editor", "vz-admin"];
+
+// Downloads pdf from the crash report API and opens it in a new tab
+export const onDownloadCrashReport = async ({
   crash,
   getToken,
 }: {
@@ -26,7 +30,7 @@ export const onDownloadCR3 = async ({
     if (!response.ok) {
       const responseText = await response.text();
       console.error(responseText);
-      window.alert(`Failed to download CR3: ${String(responseText)}`);
+      window.alert(`Failed to download Crash report: ${String(responseText)}`);
     } else {
       const responseJson = await response.json();
       const win = window.open(responseJson.message, "_blank");
@@ -44,22 +48,40 @@ export const onDownloadCR3 = async ({
 export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
   const getToken = useGetToken();
 
-  const isCr3Stored = crash.cr3_stored_fl;
+  const { user } = useAuth0();
+  const canDownloadCrashReport = user
+    ? hasRole(allowedCrashReportDownloadRoles, user)
+    : false;
+
+  const isCrashReportStored = crash.cr3_stored_fl;
 
   return (
     <Card className="h-100">
       <Card.Header className="d-flex justify-content-between">
         <Card.Title>Narrative</Card.Title>
-        <Button
-          size="sm"
-          onClick={() => onDownloadCR3({ crash, getToken })}
-          disabled={!isCr3Stored}
+        <OverlayTrigger
+          placement="top"
+          overlay={
+            <Tooltip id="copy-address-tooltip" hidden={canDownloadCrashReport}>
+              Only Vision Zero team members can access crash reports - contact
+              them for assistance
+            </Tooltip>
+          }
         >
-          <AlignedLabel>
-            <FaFilePdf className="me-2" />
-            <span>Open crash report</span>
-          </AlignedLabel>
-        </Button>
+          {/* load-bearing span that enables tooltips to render over the `disabled` button */}
+          <span className="d-inline-block">
+            <Button
+              size="sm"
+              onClick={() => onDownloadCrashReport({ crash, getToken })}
+              disabled={!isCrashReportStored || !canDownloadCrashReport}
+            >
+              <AlignedLabel>
+                <FaFilePdf className="me-2" />
+                <span>Open crash report</span>
+              </AlignedLabel>
+            </Button>
+          </span>
+        </OverlayTrigger>
       </Card.Header>
       <Card.Body>
         <Card.Text>{crash.investigator_narrative || ""}</Card.Text>
