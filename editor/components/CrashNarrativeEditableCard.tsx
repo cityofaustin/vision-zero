@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Form, Nav, OverlayTrigger, Tab, Tooltip } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -56,6 +56,8 @@ export default function CrashNarrativeEditableCard({
 
   const isCr3Stored = crash.cr3_stored_fl;
 
+  const cardRef = useRef<HTMLDivElement>(null);
+
   /**
    * Submits mutation to database on save button click
    */
@@ -71,7 +73,7 @@ export default function CrashNarrativeEditableCard({
   };
 
   return (
-    <Card className="h-100">
+    <Card className="h-100" ref={cardRef}>
       <Tab.Container
         activeKey={activeTab}
         onSelect={(tab) => tab && setActiveTab(tab)}
@@ -89,6 +91,7 @@ export default function CrashNarrativeEditableCard({
           </Nav>
           <OverlayTrigger
             placement="top"
+            container={cardRef}
             overlay={
               <Tooltip id="copy-address-tooltip" hidden={canDownloadCrashReport}>
                 Vision Zero team members can access crash reports - contact them for assistance
@@ -104,7 +107,7 @@ export default function CrashNarrativeEditableCard({
               >
                 <AlignedLabel>
                   <FaFilePdf className="me-2" />
-                  <span>Download CR3</span>
+                  <span>Open crash report</span>
                 </AlignedLabel>
               </Button>
             </span>
