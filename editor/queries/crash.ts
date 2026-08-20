@@ -334,6 +334,11 @@ export const GET_CRASH = gql`
         travel_mode
         unparsed_apd_incident_numbers
       }
+      atd_txdot_location {
+        location_id
+        location_group
+        geometry
+      }
     }
   }
 `;

@@ -17,6 +17,8 @@ import { DEFAULT_MAP_PAN_ZOOM } from "@/configs/map";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import AlignedLabel from "@/components/AlignedLabel";
 import { LuSquarePen } from "react-icons/lu";
+import { Location } from "@/types/locations";
+import LocationPolygonLayer from "@/components/LocationPolygonLayer";
 
 const allowedMapEditRoles = ["vz-admin", "editor"];
 
@@ -28,6 +30,7 @@ interface CrashMapCardProps {
   mutation: string;
   locationId: string | null;
   isManualGeocode: boolean | null;
+  location?: Location | null;
 }
 
 /**
@@ -41,6 +44,7 @@ export default function CrashMapCard({
   mutation,
   locationId,
   isManualGeocode,
+  location,
 }: CrashMapCardProps) {
   const mapRef = useRef<MapRef | null>(null);
   /**
@@ -52,7 +56,7 @@ export default function CrashMapCard({
   });
 
   const [isEditing, setIsEditing] = useState(false);
-  const [mapLatLon, setMapLatLon] = useState<LatLon>({
+  const [draftLatLon, setDraftLatLon] = useState<LatLon>({
     latitude: DEFAULT_MAP_PAN_ZOOM.latitude,
     longitude: DEFAULT_MAP_PAN_ZOOM.longitude,
   });
@@ -96,10 +100,12 @@ export default function CrashMapCard({
           savedLatitude={savedLatitude}
           savedLongitude={savedLongitude}
           isEditing={isEditing}
-          mapLatLon={mapLatLon}
-          setMapLatLon={setMapLatLon}
+          draftLatLon={draftLatLon}
+          setDraftLatLon={setDraftLatLon}
           mapRef={mapRef}
-        />
+        >
+          {location && <LocationPolygonLayer location={location} />}
+        </PointMap>
       </Card.Body>
       <Card.Footer>
         <PermissionsRequired allowedRoles={allowedMapEditRoles}>
@@ -109,7 +115,7 @@ export default function CrashMapCard({
             {isEditing && (
               <div className="flex-grow-1">
                 <CrashMapCoordinateForm
-                  mapLatLon={mapLatLon}
+                  draftLatLon={draftLatLon}
                   formLatLon={formLatLon}
                   setFormLatLon={setFormLatLon}
                   validationError={validationError}
@@ -127,10 +133,10 @@ export default function CrashMapCard({
                     setIsEditing(true);
                   } else {
                     // check if form coords match edit coords from map
-                    let coordinatesToSave = { ...mapLatLon };
+                    let coordinatesToSave = { ...draftLatLon };
                     if (
-                      String(mapLatLon.latitude) !== formLatLon.latitude ||
-                      String(mapLatLon.longitude) !== formLatLon.longitude
+                      String(draftLatLon.latitude) !== formLatLon.latitude ||
+                      String(draftLatLon.longitude) !== formLatLon.longitude
                     ) {
                       // validate string coords
                       // convert coordinates to numbers and validate them

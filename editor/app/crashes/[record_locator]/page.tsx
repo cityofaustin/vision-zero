@@ -115,6 +115,7 @@ export default function CrashDetailsPage({
             onSaveCallback={onSaveCallback}
             mutation={UPDATE_CRASH}
             locationId={crash.location_id}
+            location={crash.atd_txdot_location}
             isManualGeocode={crash.crashes_list_view.is_manual_geocode}
           />
         </Col>
