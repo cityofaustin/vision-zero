@@ -17,7 +17,7 @@ export default function PermissionsRequired({
   allowedRoles,
 }: PermissionsRequiredProps) {
   const { user } = useAuth0();
-  if (!allowedRoles || (user && hasRole(allowedRoles, user))) {
+  if (!allowedRoles || hasRole(allowedRoles, user)) {
     return children;
   }
   return null;

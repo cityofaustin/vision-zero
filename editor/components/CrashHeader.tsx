@@ -7,6 +7,7 @@ import { LuSquarePen } from "react-icons/lu";
 import EditCrashAddressModal from "@/components/EditCrashAddressModal";
 import { hasRole } from "@/utils/auth";
 import CopyValueButton from "@/components/CopyValueButton";
+import { ADMIN_EDIT_ROLES } from "@/utils/permissions";
 
 interface CrashHeaderProps {
   crash: Crash;
@@ -26,12 +27,12 @@ export default function CrashHeader({ crash, refetch }: CrashHeaderProps) {
 
   const { user } = useAuth0();
 
-  const isReadOnlyUser = user && hasRole(["readonly"], user);
+  const hasEditPermissions = hasRole(ADMIN_EDIT_ROLES, user);
 
   return (
     <Row className="d-flex justify-content-between align-items-center mb-3">
       <Col className="d-flex align-items-center">
-        {isReadOnlyUser ? (
+        {!hasEditPermissions ? (
           <span className="fs-3 fw-bold text-uppercase me-2">
             {crash.address_display}
           </span>

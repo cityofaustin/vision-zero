@@ -9,6 +9,7 @@ import ContributingFactorsModal from "@/components/ContributingFactorsModal";
 import ChargesModal from "@/components/ChargesModal";
 import { useAuth0 } from "@auth0/auth0-react";
 import { hasRole } from "@/utils/auth";
+import { ADMIN_EDIT_ROLES } from "@/utils/permissions";
 
 interface FatalityUnitCardFooterProps {
   crashPk: number;
@@ -42,7 +43,7 @@ export default function FatalityUnitCardFooter({
 
   const { user } = useAuth0();
 
-  const isReadOnlyUser = user && hasRole(["readonly"], user);
+  const hasEditPermissions = hasRole(ADMIN_EDIT_ROLES, user);
 
   return (
     <Card.Footer
@@ -66,7 +67,7 @@ export default function FatalityUnitCardFooter({
       {hasContribFactors && (
         <div className="pb-2">
           <span className="fw-bold">Contributing factors</span>
-          {isTempRecord && !isReadOnlyUser && (
+          {isTempRecord && hasEditPermissions && (
             <span className="ms-1 d-inline-flex align-items-center">
               <Button
                 className="border-0"
@@ -100,7 +101,7 @@ export default function FatalityUnitCardFooter({
           <div className="fw-bold">Contributing factors</div>
           <div className="d-flex justify-content-start align-items-center">
             <span className="ms-2 text-secondary">None</span>
-            {!isReadOnlyUser && (
+            {hasEditPermissions && (
               <span className="ms-1 d-inline-flex align-items-center">
                 <Button
                   className="border-0"
@@ -120,7 +121,7 @@ export default function FatalityUnitCardFooter({
       {hasCharges && !!unitCharges?.[0].charge && (
         <div>
           <span className="fw-bold">Charges</span>
-          {isTempRecord && !isReadOnlyUser && (
+          {isTempRecord && hasEditPermissions && (
             <span className="ms-1 d-inline-flex align-items-center">
               <Button
                 className="border-0"
@@ -149,7 +150,7 @@ export default function FatalityUnitCardFooter({
         <div>
           <div className="fw-bold">Charges</div>
           <span className="ms-2 text-secondary">None</span>
-          {!isReadOnlyUser && (
+          {hasEditPermissions && (
             <span className="ms-1 d-inline-flex align-items-center">
               <Button
                 className="border-0"

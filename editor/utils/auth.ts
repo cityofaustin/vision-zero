@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
  * Add our claims to the Auth0 ID token—these are
  * added via Auth0 action
  */
-interface CustomUser extends User {
+export interface CustomUser extends User {
   "https://hasura.io/jwt/claims"?: {
     "x-hasura-allowed-roles"?: string[];
   };
@@ -37,20 +37,8 @@ export const getHasuraRoleName = (roles?: string[]): string => {
  * @param user - the user object
  * @returns True if the user has any of the provided roles
  */
-export const hasRole = (roles: string[], user: CustomUser) =>
-  roles.includes(getHasuraRoleName(getRolesArray(user)));
-
-/** Roles that have editor or administrator permisisons */
-export const ADMIN_EDIT_ROLES = ["editor", "vz-admin"];
-
-/** Roles that may view EMS patient care records */
-export const EMS_VIEW_ROLES = [...ADMIN_EDIT_ROLES];
-
-/**
- * True if the user may see EMS content (nav, crash details card, GraphQL fields)
- */
-export const canViewEms = (user: CustomUser | undefined) =>
-  Boolean(user && hasRole(EMS_VIEW_ROLES, user));
+export const hasRole = (roles: string[], user?: CustomUser): boolean =>
+  Boolean(user) && roles.includes(getHasuraRoleName(getRolesArray(user)));
 
 /**
  * Make the hasura role name human-friendly
@@ -123,7 +111,7 @@ export const useRequiredPageRole = (
 ): boolean => {
   const { user } = useAuth0();
   const router = useRouter();
-  const isAuthorized = !!user && hasRole(allowedRoles, user);
+  const isAuthorized = hasRole(allowedRoles, user);
 
   useEffect(() => {
     if (user && !isAuthorized) {

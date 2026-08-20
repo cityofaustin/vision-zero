@@ -29,7 +29,6 @@ import { UPDATE_PERSON } from "@/queries/person";
 import { UPDATE_UNIT } from "@/queries/unit";
 import { Crash } from "@/types/crashes";
 import { ShortcutKeyLookup } from "@/types/keyboardShortcuts";
-import { canViewEms, EMS_VIEW_ROLES } from "@/utils/auth";
 import { useQuery } from "@/utils/graphql";
 import {
   scrollToElementOnKeyPress,
@@ -37,6 +36,8 @@ import {
 } from "@/utils/shortcuts";
 import EMSCardHeader from "@/components/EMSCardHeader";
 import { useDocumentTitle } from "@/utils/documentTitle";
+import { hasRole } from "@/utils/auth";
+import { EMS_VIEW_ROLES } from "@/utils/permissions";
 
 const typename = "crashes";
 
@@ -57,7 +58,7 @@ export default function CrashDetailsPage({
 }) {
   const { record_locator: recordLocator } = use(params);
   const { user } = useAuth0();
-  const includeEms = canViewEms(user);
+  const includeEms = hasRole(EMS_VIEW_ROLES);
 
   const activeShortcutKeyLookup = useMemo(
     () =>
