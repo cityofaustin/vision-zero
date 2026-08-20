@@ -1,6 +1,6 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useAuth0, User } from "@auth0/auth0-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 /**
  * Add our claims to the Auth0 ID token—these are
@@ -40,8 +40,11 @@ export const getHasuraRoleName = (roles?: string[]): string => {
 export const hasRole = (roles: string[], user: CustomUser) =>
   roles.includes(getHasuraRoleName(getRolesArray(user)));
 
+/** Roles that have editor or administrator permisisons */
+export const ADMIN_EDIT_ROLES = ["editor", "vz-admin"];
+
 /** Roles that may view EMS patient care records */
-export const EMS_VIEW_ROLES = ["editor", "vz-admin"];
+export const EMS_VIEW_ROLES = [...ADMIN_EDIT_ROLES];
 
 /**
  * True if the user may see EMS content (nav, crash details card, GraphQL fields)
@@ -103,4 +106,30 @@ export const useGetToken = (): (() => Promise<string | undefined>) => {
     // has us covered.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, pathname]);
+};
+
+/**
+ * Hook that redirects the user away from a page if they don't have one of
+ * the allowed roles.
+ *
+ * @example
+ * const allowedEmsRoles = ["editor", "vz-admin"];
+ * const isAuthorized = useRequiredPageRole(allowedEmsRoles);
+ * if (!isAuthorized) return null;
+ */
+export const useRequiredPageRole = (
+  allowedRoles: string[],
+  redirectTo: string = "/unauthorized"
+): boolean => {
+  const { user } = useAuth0();
+  const router = useRouter();
+  const isAuthorized = !!user && hasRole(allowedRoles, user);
+
+  useEffect(() => {
+    if (user && !isAuthorized) {
+      router.replace(redirectTo);
+    }
+  }, [user, isAuthorized, redirectTo, router]);
+
+  return isAuthorized;
 };
