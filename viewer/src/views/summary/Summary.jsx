@@ -59,10 +59,12 @@ const Summary = () => {
               <Row className="summary-child">
                 <Alert className="col-12 mb-0 banner">
                   <div className="mb-2">
-                    Austin is consistently ranked as one of America's best places to live, but too
-                    many of our fellow Austinites are killed or seriously injured in traffic crashes
-                    each year. To learn more about the City's transportation safety initiatives,
-                    visit Austin Transportation's Vision Zero Program{" "}
+                    Austin is consistently ranked as one of America's best
+                    places to live, but too many of our fellow Austinites are
+                    killed or seriously injured in traffic crashes each year. To
+                    learn more about the City's transportation safety
+                    initiatives, visit Austin Transportation's Vision Zero
+                    Program{" "}
                     <a
                       href="https://www.austintexas.gov/transportation-public-works/programs/vision-zero"
                       target="_blank"
@@ -82,9 +84,12 @@ const Summary = () => {
                   </div>
                   <div>
                     Data through {lastUpdated}. <strong>Crash data</strong>{" "}
-                    <InfoPopover config={popoverConfig.map.trafficCrashes} /> includes crashes that
-                    occurred within the current City of Austin Full Purpose jurisdiction, inclusive
-                    of all public safety jurisdictions.
+                    <InfoPopover config={popoverConfig.map.trafficCrashes} />{" "}
+                    includes crashes that occurred within the current City of
+                    Austin Full Purpose jurisdiction, inclusive of all public
+                    safety jurisdictions. Fatalities are recorded by crash date,
+                    not date of death, which may differ if a victim died after
+                    the date of the crash.
                   </div>
                 </Alert>
               </Row>
