@@ -7,7 +7,7 @@ import { hasRole, useGetToken } from "@/utils/auth";
 import { useAuth0 } from "@auth0/auth0-react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-export const allowedCrashReportDownloadRoles = ["editor", "admin"];
+export const allowedCrashReportDownloadRoles = ["editor", "vz-admin"];
 
 // Downloads pdf from the crash report API and opens it in a new tab
 export const onDownloadCrashReport = async ({
@@ -63,12 +63,13 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
           placement="top"
           overlay={
             <Tooltip id="copy-address-tooltip" hidden={canDownloadCrashReport}>
-              Vision Zero team members can access crash reports - contact them for assistance
+              Only Vision Zero team members can access crash reports - contact
+              them for assistance
             </Tooltip>
           }
         >
-            {/* load-bearing span that enables tooltips to render over the `disabled` button */}
-          <span>
+          {/* load-bearing span that enables tooltips to render over the `disabled` button */}
+          <span className="d-inline-block">
             <Button
               size="sm"
               onClick={() => onDownloadCrashReport({ crash, getToken })}
