@@ -112,7 +112,8 @@ The below features should be tested with each role. Features with role-based acc
 - Crash diagram: [role: admin, editor] Change diagram x, y, z, and rotate. Confirm that **Save** button enables when any of these properties are adjusted
 - Crash diagram: [role: admin, editor] Use **Save** button to save current x/y/z/rotate. Refresh the page and confirm the diagram initializes at the expected transform state. On load, confirm that **Save** button is disabled and says **Saved** with a checkmark icon.
 - Crash narrative: loads normally and is scrollable for long narratives
-- Crash narrative: download CR3 pdf
+- [role: admin, editor] Crash narrative: use **Open crash report** button to view crash report pdf
+- [role: readonly] Crash narrative: **Open crash report** button is disabled. Hover over button to see tooltip advising to contact the Vision Zero team for assistance
 - Crash data card: **Flags** card. Edit set **Private drive** to **No** and verify that warning banner appears with notification that the crash is not included in VZ statistical reporting
 - Crash data card: edit various field types:
   - Yes/No - e.g., **At intersection**
@@ -138,10 +139,11 @@ The below features should be tested with each role. Features with role-based acc
   - Edit person **Name** and person **Type**
   - Edit person **Zipcode** and verify only pattern xxxxx or xxxxx-xxxx is valid
   - Edit person **Injury severity** and verify the crash injury widget (top of page to the right of crash address) updates accordingly
-- Related records - **EMS Patient Care**
+- [role: editor, admin] Related records - **EMS Patient Care**
   - Use gear icon in top left of card header to toggle column visibility on/off. Refresh page and verify that settings are persisted
   - Verify records are populated (use EMS list view to find a crash with EMS records)
   - Verify records which were "automatically matched" are unmatched (disappear from table) when crash is moved +1200 meters
+  - [role: readonly] verify EMS related records card is not visible on crash details page
 - Record history: changes to crash, units, people are being tracked.
 - Record history: Details modal opens on row collect.
 - Record history: Card is collapseable and collapsed state is persisted when refreshing the page
@@ -154,7 +156,7 @@ The below features should be tested with each role. Features with role-based acc
 - Keyboard shortcuts to scroll instantly to various cards:
   - `shift` + `u`: Units
   - `shift` + `p`: People
-  - `shift` + `3`: EMS patient care
+  - `shift` + `3`: EMS patient care role: [editor, admin]
   - `shift` + `c`: Charges
   - `shift` + `n`: Notes
   - `shift` + `f`: Fatality Review Board recommendations
@@ -192,6 +194,7 @@ refresh materialized view location_crashes_view;
 
 ### EMS list - `/ems`
 
+- the navigation item is only visible to editor and admin roles
 - filter using various search input fields and filter card switches
 - filters are preserved (in local storage) when refreshing the page or navigating back to it
 - for records with a matching crash, the **Crash ID** column is populated with working URL to the crash details page
@@ -199,6 +202,7 @@ refresh materialized view location_crashes_view;
 
 ### EMS incident details - `/ems/[incident-number]`
 
+- This page will not load for readonly users
 - Page breadcrumb and title—which is the EMS record address—look normal
 - Incident map (top right of page)
   - Use the EMS list page to filter/find an incident that has been matched automatically to a crash, person, and non-cr3 record
@@ -273,6 +277,8 @@ refresh materialized view location_crashes_view;
   - Switch to the **Narrative** tab and confirm it looks normal
   - Switch back to the **Sumamary** tab, use the **Edit summary** button to clear the summary you created and then **Save summary**
   - Confirm that the **Summary** tab has disappeard and only the **Narrative** tab is shown
+  - [role: admin, editor] Use **Open crash report** button to view crash report pdf
+  - [role: readonly] The **Open crash report** button is disabled. Hover over button to see tooltip advising to contact the Vision Zero team for assistance
 - Observe that the **Details** card (second row, rightmost card) looks normal
   - [role: editor, admin] confirm that the LE YTD Fatal Crash, light condition, speed limit, and Object struct fields are editable
 - Observe that the FRB recommendations and notes cards are visible in the third row of card. If you haven't tested these on the crash details page, test them here (role: editor, admin).
