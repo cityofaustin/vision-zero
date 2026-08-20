@@ -19,6 +19,7 @@ import {
   fatalitiesOutlineDataLayer,
   seriousInjuriesDataLayer,
   seriousInjuriesOutlineDataLayer,
+  asmpSourceConfig,
   buildAsmpLayers,
   asmpConfig,
   buildHighInjuryLayer,
@@ -196,6 +197,7 @@ const MapComponent = () => {
     }
   }, [filters, dateRange, mapTimeWindow, mapPolygon]);
 
+  // why do we do it like this
   // Fetch City Council Districts geojson
   useEffect(() => {
     if (!isMounted.current) return;
@@ -220,7 +222,7 @@ const MapComponent = () => {
     };
   }, []);
 
-  // Restrict map navigation to Travis County
+  // Restrict map navigation to bounding box around Travis County
   const restrictNavAndZoom = useCallback((viewState) => {
     const restricted = { ...viewState };
 
@@ -453,27 +455,6 @@ const MapComponent = () => {
       });
     }
 
-    console.log("Checking layer IDs:");
-    console.log("fatalitiesDataLayer.id:", typeof fatalitiesDataLayer.id);
-    console.log(
-      "fatalitiesOutlineDataLayer.id:",
-      typeof fatalitiesOutlineDataLayer.id,
-    );
-    console.log(
-      "seriousInjuriesDataLayer.id:",
-      typeof seriousInjuriesDataLayer.id,
-    );
-    console.log(
-      "seriousInjuriesOutlineDataLayer.id:",
-      typeof seriousInjuriesOutlineDataLayer.id,
-    );
-    console.log("cityCouncilDataLayer.id:", typeof cityCouncilDataLayer.id);
-    console.log("travisCountyDataLayer.id:", typeof travisCountyDataLayer.id);
-    console.log(
-      "typeof fatalitiesDataLayer.id:",
-      typeof fatalitiesDataLayer.id,
-    );
-
     // Add a visually hidden label to the attribution toggle button
     const toggleBtn = container.querySelector(".mapboxgl-ctrl-attrib-button");
     if (toggleBtn) {
@@ -516,10 +497,12 @@ const MapComponent = () => {
       preserveDrawingBuffer={false}
     >
       {baseSourceAndLayer}
+      <Source {...asmpSourceConfig}>
+        {buildAsmpLayers(asmpConfig, overlay)}
+      </Source>
       {!!mapData && renderCrashDataLayers()}
       {selectedFeature && renderSelectedLayer()}
-      {buildAsmpLayers(asmpConfig, overlay)}
-      {buildHighInjuryLayer(overlay)}
+      {/* {buildHighInjuryLayer(overlay)} */}
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
           <Layer {...cityCouncilDataLayer} />
