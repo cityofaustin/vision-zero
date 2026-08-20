@@ -110,10 +110,7 @@ export const useGetToken = (): (() => Promise<string | undefined>) => {
 
 /**
  * Hook that redirects the user away from a page if they don't have one of
- * the allowed roles. Returns whether the user is authorized so the calling
- * page can bail out of rendering (`if (!isAuthorized) return null;`) before
- * its real content — and, for pages with their own data-fetching hooks,
- * before those queries fire.
+ * the allowed roles.
  *
  * @example
  * const allowedEmsRoles = ["editor", "vz-admin"];
