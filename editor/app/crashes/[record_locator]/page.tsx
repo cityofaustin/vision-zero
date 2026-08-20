@@ -1,6 +1,7 @@
 "use client";
 import { notFound } from "next/navigation";
-import { use, useCallback } from "react";
+import { use, useCallback, useMemo } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import ChangeLog from "@/components/ChangeLog";
@@ -13,6 +14,7 @@ import CrashNarrativeCard from "@/components/CrashNarrativeCard";
 import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 import DataCard from "@/components/DataCard";
 import NotesCard from "@/components/NotesCard";
+import PermissionsRequired from "@/components/PermissionsRequired";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
 import ShortcutHelperText from "@/components/ShortcutHelperText";
 import UserEventsLogger from "@/components/UserEventsLogger";
@@ -27,6 +29,7 @@ import { UPDATE_PERSON } from "@/queries/person";
 import { UPDATE_UNIT } from "@/queries/unit";
 import { Crash } from "@/types/crashes";
 import { ShortcutKeyLookup } from "@/types/keyboardShortcuts";
+import { canViewEms, EMS_VIEW_ROLES } from "@/utils/auth";
 import { useQuery } from "@/utils/graphql";
 import {
   scrollToElementOnKeyPress,
@@ -53,13 +56,23 @@ export default function CrashDetailsPage({
   params: Promise<{ record_locator: string }>;
 }) {
   const { record_locator: recordLocator } = use(params);
+  const { user } = useAuth0();
+  const includeEms = canViewEms(user);
+
+  const activeShortcutKeyLookup = useMemo(
+    () =>
+      includeEms
+        ? shortcutKeyLookup
+        : shortcutKeyLookup.filter((shortcut) => shortcut.key !== "E"),
+    [includeEms]
+  );
 
   // Call hook to watch out for the use of keyboard shortcuts
-  useKeyboardShortcut(shortcutKeyLookup, scrollToElementOnKeyPress);
+  useKeyboardShortcut(activeShortcutKeyLookup, scrollToElementOnKeyPress);
 
   const { data, error, refetch, isValidating } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
-    variables: { recordLocator },
+    variables: { recordLocator, includeEms },
     typename,
   });
 
@@ -196,22 +209,24 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <Row id="ems" className="offset-header-scroll-top">
-        <ShortcutHelperText shortcutKey="E" />
-        <Col sm={12} className="mb-1">
-          <RelatedRecordTable
-            records={crash.ems__incidents || []}
-            isValidating={isValidating}
-            header={<EMSCardHeader />}
-            noRowsMessage="No EMS records found"
-            columns={emsRelatedRecordCols}
-            mutation=""
-            onSaveCallback={onSaveCallback}
-            shouldShowColumnVisibilityPicker={true}
-            localStorageKey="crashPageEmsPatientCare"
-          />
-        </Col>
-      </Row>
+      <PermissionsRequired allowedRoles={EMS_VIEW_ROLES}>
+        <Row id="ems" className="offset-header-scroll-top">
+          <ShortcutHelperText shortcutKey="E" />
+          <Col sm={12} className="mb-1">
+            <RelatedRecordTable
+              records={crash.ems__incidents || []}
+              isValidating={isValidating}
+              header={<EMSCardHeader />}
+              noRowsMessage="No EMS records found"
+              columns={emsRelatedRecordCols}
+              mutation=""
+              onSaveCallback={onSaveCallback}
+              shouldShowColumnVisibilityPicker={true}
+              localStorageKey="crashPageEmsPatientCare"
+            />
+          </Col>
+        </Row>
+      </PermissionsRequired>
       <Row id="charges" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="C" />
         <Col sm={12} className="mb-1">

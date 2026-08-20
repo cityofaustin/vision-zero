@@ -27,7 +27,7 @@ export type Crash = {
   cris_crash_id: number | null;
   collsn: LookupTableOption | null;
   diagram_transform: CrashDiagramOrientation | null;
-  ems__incidents: EMSPatientCareRecord[] | null;
+  ems__incidents?: EMSPatientCareRecord[] | null;
   fhe_collsn_id: number | null;
   investigat_agency_id: number | null;
   agency: LookupTableOption | null;

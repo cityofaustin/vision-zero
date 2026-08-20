@@ -1,7 +1,13 @@
 import { gql } from "graphql-request";
 
+/**
+ * Crash details. EMS is gated with @include(if: $includeEms) so we can test
+ * whether Hasura still validates ems__incidents against the role schema when
+ * includeEms is false (expected: validation-failed for readonly after select
+ * is revoked). If that holds, omit the field from the document instead.
+ */
 export const GET_CRASH = gql`
-  query CrashDetails($recordLocator: String!) {
+  query CrashDetails($recordLocator: String!, $includeEms: Boolean!) {
     crashes(
       where: {
         _and: {
@@ -309,7 +315,7 @@ export const GET_CRASH = gql`
       ems__incidents(
         where: { is_deleted: { _eq: false } }
         order_by: { id: asc }
-      ) {
+      ) @include(if: $includeEms) {
         id
         apd_incident_numbers
         crash_match_status
