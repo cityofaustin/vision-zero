@@ -33,6 +33,7 @@ import { Crash } from "@/types/crashes";
 import EMSMapCard from "@/components/EMSMapCard";
 import { NonCR3Record } from "@/types/nonCr3";
 import { useAuth0 } from "@auth0/auth0-react";
+import { EMS_VIEW_ROLES, useRequiredPageRole } from "@/utils/auth";
 import UserEventsLogger from "@/components/UserEventsLogger";
 
 export default function EMSDetailsPage({
@@ -42,6 +43,8 @@ export default function EMSDetailsPage({
 }) {
   const [selectedEmsPcr, setSelectedEmsPcr] =
     useState<EMSPatientCareRecord | null>(null);
+
+  const isAuthorized = useRequiredPageRole(EMS_VIEW_ROLES);
 
   const { incident_number } = use(params);
 
@@ -54,7 +57,7 @@ export default function EMSDetailsPage({
     isValidating,
     refetch: refetchEMS,
   } = useQuery<EMSPatientCareRecord>({
-    query: incident_number ? GET_EMS_RECORDS : null,
+    query: incident_number && isAuthorized ? GET_EMS_RECORDS : null,
     variables: {
       incident_number: incident_number,
     },
@@ -122,7 +125,10 @@ export default function EMSDetailsPage({
    * if any of the ems pcrs are unmatched
    */
   const { data: unmatchedCrashes } = useQuery<Crash>({
-    query: unmatchedTimeInterval[0] ? GET_UNMATCHED_EMS_CRASHES : null,
+    query:
+      isAuthorized && unmatchedTimeInterval[0]
+        ? GET_UNMATCHED_EMS_CRASHES
+        : null,
     variables: {
       time4HoursBefore: unmatchedTimeInterval[0],
       time4HoursAfter: unmatchedTimeInterval[1],
@@ -146,7 +152,7 @@ export default function EMSDetailsPage({
    */
   const { data: matchingPeople, refetch: refetchPeople } =
     useQuery<PeopleListRow>({
-      query: allCrashPks[0] ? GET_MATCHING_PEOPLE : null,
+      query: isAuthorized && allCrashPks[0] ? GET_MATCHING_PEOPLE : null,
       variables: {
         crash_pks: unmatchedTimeInterval[0] ? allCrashPks : matchedCrashPks,
       },
@@ -173,7 +179,9 @@ export default function EMSDetailsPage({
    */
   const { data: nonCR3Crashes } = useQuery<NonCR3Record>({
     query:
-      matchedNonCr3CaseId || possibleNonCR3Matches ? GET_NON_CR3_CRASHES : null,
+      isAuthorized && (matchedNonCr3CaseId || possibleNonCR3Matches)
+        ? GET_NON_CR3_CRASHES
+        : null,
     variables: {
       // If there is already a single case ID that has been matched then query that,
       // otherwise query the list of possible Non-CR3 matches
@@ -236,7 +244,7 @@ export default function EMSDetailsPage({
     }
   }, [incident]);
 
-  if (!ems_pcrs) {
+  if (!ems_pcrs || !isAuthorized) {
     return;
   }
 
