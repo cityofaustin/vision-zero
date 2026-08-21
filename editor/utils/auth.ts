@@ -20,18 +20,25 @@ interface CustomUser extends User {
 const EDITOR_ROLE: HasuraUserRoleName = "editor";
 export const ADMIN_ROLE: HasuraUserRoleName = "vz-admin";
 
-export const ADMIN_EDIT_ROLES: HasuraUserRoleName[] = [
-  EDITOR_ROLE,
-  ADMIN_ROLE,
-];
+export const ADMIN_EDIT_ROLES: HasuraUserRoleName[] = [EDITOR_ROLE, ADMIN_ROLE];
 
 /**
  * Get the allowed roles array from a user object
  * */
-export const getRolesArray = (user: Partial<CustomUser>): HasuraUserRoleName[] =>
-  user?.["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"] || [
-    "readonly",
-  ];
+export const getRolesArray = (
+  user: Partial<CustomUser>
+): HasuraUserRoleName[] => {
+  const role =
+    user?.["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"];
+
+  if (!role) {
+    console.warn(
+      "User has malformed/missing Hasura JWT claims. No allowed role found."
+    );
+    return ["readonly"];
+  }
+  return role;
+};
 
 /**
  * Get a user's hasura role name from their allowed roles
