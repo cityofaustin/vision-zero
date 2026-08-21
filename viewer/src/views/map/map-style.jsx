@@ -75,7 +75,7 @@ export const asmpConfig = {
   asmp_2: {
     filter: 1,
     //color: colors.mapAsmp2,
-    color: "#1491ff"
+    color: "#1491ff",
   },
   asmp_3: {
     filter: 2,
@@ -107,7 +107,6 @@ export const asmpSourceConfig = {
 export const buildAsmpLayers = (config, overlay) =>
   Object.entries(config).map(([level, parameters], i) => {
     const asmpLevel = level.split("").pop();
-    console.log(parameters, overlay.options, asmpLevel);
     // Set config for each ASMP level layer based on ArcGIS VectorTileServer styles
     // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/resources/styles/root.json?f=pjson
     const asmpLayerConfig = {
@@ -144,12 +143,7 @@ export const buildHighInjuryLayer = (overlay) => {
   const highInjuryNetworkLayerConfig = {
     id: " highInjuryNetwork",
     type: "line",
-    source: {
-      type: "vector",
-      tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_HIR_2022/VectorTileServer/tile/{z}/{y}/{x}.pbf",
-      ],
-    },
+    source: "high-injury",
     "source-layer": "Combined_HIN_HIR",
     filter: ["==", "_symbol", 1], // Select line within layer by ID
     layout: {
@@ -165,12 +159,7 @@ export const buildHighInjuryLayer = (overlay) => {
   const highInjuryRoadwaysLayerConfig = {
     id: "highInjuryRoadways",
     type: "line",
-    source: {
-      type: "vector",
-      tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_HIR_2022/VectorTileServer/tile/{z}/{y}/{x}.pbf",
-      ],
-    },
+    source: "high-injury",
     "source-layer": "Combined_HIN_HIR",
     filter: ["==", "_symbol", 0],
     layout: {
@@ -184,7 +173,13 @@ export const buildHighInjuryLayer = (overlay) => {
   };
 
   return (
-    <>
+    <Source
+      id={"high-injury"}
+      type={"vector"}
+      tiles={[
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_HIR_2022/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+      ]}
+    >
       <Layer
         key={highInjuryNetworkLayerConfig.id}
         {...highInjuryNetworkLayerConfig}
@@ -193,7 +188,7 @@ export const buildHighInjuryLayer = (overlay) => {
         key={highInjuryRoadwaysLayerConfig.id}
         {...highInjuryRoadwaysLayerConfig}
       />
-    </>
+    </Source>
   );
 };
 

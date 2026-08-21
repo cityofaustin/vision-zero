@@ -502,7 +502,7 @@ const MapComponent = () => {
       </Source>
       {!!mapData && renderCrashDataLayers()}
       {selectedFeature && renderSelectedLayer()}
-      {/* {buildHighInjuryLayer(overlay)} */}
+      {buildHighInjuryLayer(overlay)}
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
           <Layer {...cityCouncilDataLayer} />
