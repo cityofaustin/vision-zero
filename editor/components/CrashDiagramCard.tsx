@@ -21,10 +21,9 @@ import {
 } from "@/components/CrashDiagramControls";
 import AlignedLabel from "@/components/AlignedLabel";
 import { useImage } from "@/utils/images";
-import { hasRole } from "@/utils/auth";
+import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
 import ImageUploadModal from "@/components/ImageUploadModal";
 import { useAuth0 } from "@auth0/auth0-react";
-import { ADMIN_EDIT_ROLES } from "@/utils/permissions";
 
 interface DiagramAlertProps {
   variant: "info" | "danger" | "success" | "warning";

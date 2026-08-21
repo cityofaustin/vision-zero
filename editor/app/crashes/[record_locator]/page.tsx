@@ -1,7 +1,6 @@
 "use client";
 import { notFound } from "next/navigation";
 import { use, useCallback, useMemo } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import ChangeLog from "@/components/ChangeLog";
@@ -36,8 +35,8 @@ import {
 } from "@/utils/shortcuts";
 import EMSCardHeader from "@/components/EMSCardHeader";
 import { useDocumentTitle } from "@/utils/documentTitle";
-import { hasRole } from "@/utils/auth";
-import { EMS_VIEW_ROLES } from "@/utils/permissions";
+import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const typename = "crashes";
 
@@ -58,7 +57,7 @@ export default function CrashDetailsPage({
 }) {
   const { record_locator: recordLocator } = use(params);
   const { user } = useAuth0();
-  const includeEms = hasRole(EMS_VIEW_ROLES);
+  const includeEms = hasRole(ADMIN_EDIT_ROLES, user);
 
   const activeShortcutKeyLookup = useMemo(
     () =>
@@ -210,7 +209,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <PermissionsRequired allowedRoles={EMS_VIEW_ROLES}>
+      <PermissionsRequired allowedRoles={ADMIN_EDIT_ROLES}>
         <Row id="ems" className="offset-header-scroll-top">
           <ShortcutHelperText shortcutKey="E" />
           <Col sm={12} className="mb-1">

@@ -10,7 +10,7 @@ import PermissionsRequired from "@/components/PermissionsRequired";
 import TableWrapper from "@/components/TableWrapper";
 import { useDocumentTitle } from "@/utils/documentTitle";
 import { LuCirclePlus } from "react-icons/lu";
-import { ADMIN_EDIT_ROLES } from "@/utils/permissions";
+import { ADMIN_EDIT_ROLES } from "@/utils/auth";
 
 const localStorageKey = "crashesListViewQueryConfig";
 

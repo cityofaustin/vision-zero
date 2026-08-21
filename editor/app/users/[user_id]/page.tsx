@@ -11,12 +11,12 @@ import { FaUserEdit, FaUserAltSlash } from "react-icons/fa";
 import AlignedLabel from "@/components/AlignedLabel";
 import UserModal from "@/components/UserModal";
 import PermissionsRequired from "@/components/PermissionsRequired";
-import { formatRoleName, useGetToken } from "@/utils/auth";
+import { ADMIN_ROLE, formatRoleName, useGetToken } from "@/utils/auth";
 import { useUser } from "@/utils/users";
 import { User } from "@/types/users";
 import { formatIsoDateTime } from "@/utils/formatters";
 
-const allowedUserEditRoles = ["vz-admin"];
+const allowedUserEditRoles = [ADMIN_ROLE]
 
 type UserColumn = {
   name: keyof User;

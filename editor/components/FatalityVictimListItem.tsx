@@ -5,10 +5,9 @@ import { PeopleListRow } from "@/types/peopleList";
 import { getInjuryColorClass } from "@/utils/people";
 import { useState } from "react";
 import { Unit } from "@/types/unit";
-import { hasRole } from "@/utils/auth";
+import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
 import { useImage } from "@/utils/images";
 import { useAuth0 } from "@auth0/auth0-react";
-import { ADMIN_EDIT_ROLES } from "@/utils/permissions";
 
 interface FatalityVictimListItemProps {
   victim: PeopleListRow;

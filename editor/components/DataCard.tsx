@@ -13,11 +13,10 @@ import {
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
 import { useAuth0 } from "@auth0/auth0-react";
-import { hasRole } from "@/utils/auth";
+import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
 import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
 import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
 import ColumnVisibilityAlert from "@/components/ColumnVisibilityAlert";
-import { ADMIN_EDIT_ROLES } from "@/utils/permissions";
 
 export interface HeaderActionComponentProps<T extends Record<string, unknown>> {
   record: T;
@@ -173,7 +172,9 @@ export default function DataCard<T extends Record<string, unknown>>({
                     key={String(col.path)}
                     style={{
                       cursor:
-                        col.editable && !isEditingThisColumn && hasEditPermissions
+                        col.editable &&
+                        !isEditingThisColumn &&
+                        hasEditPermissions
                           ? "pointer"
                           : "auto",
                     }}

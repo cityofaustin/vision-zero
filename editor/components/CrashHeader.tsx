@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
-import { useAuth0 } from "@auth0/auth0-react";
 import { Crash } from "@/types/crashes";
 import CrashInjuryIndicators from "@/components/CrashInjuryIndicators";
 import { LuSquarePen } from "react-icons/lu";
 import EditCrashAddressModal from "@/components/EditCrashAddressModal";
-import { hasRole } from "@/utils/auth";
+import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
 import CopyValueButton from "@/components/CopyValueButton";
-import { ADMIN_EDIT_ROLES } from "@/utils/permissions";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface CrashHeaderProps {
   crash: Crash;

@@ -114,14 +114,14 @@ export const useQuery = <T extends Record<string, unknown>>({
     RequestDocument,
     Variables,
   ]): Promise<HasuraGraphQLResponse<T, typeof typename>> => {
-    const hasuraRoleName = getHasuraRoleName(getRolesArray(user));
+    const hasuraRoleName = getHasuraRoleName(getRolesArray(user || {}));
     const token = await getToken();
     return fetcher([query, variables, token || "", hasuraRoleName]);
   };
 
   const { data, error, isLoading, mutate, isValidating } = useSWR<
     HasuraGraphQLResponse<T, typeof typename>
-  >(query ? [query, variables] : null, fetchWithAuth, {
+  >(query && user ? [query, variables] : null, fetchWithAuth, {
     ...DEFAULT_SWR_OPTIONS,
     ...(options || {}),
   });
@@ -165,7 +165,7 @@ export const useMutation = (mutation: RequestDocument) => {
         variables.updates.updated_by = user.email;
       }
       try {
-        const hasuraRole = getHasuraRoleName(getRolesArray(user));
+        const hasuraRole = getHasuraRoleName(getRolesArray(user || {}));
         const token = await getToken();
         const client = new GraphQLClient(ENDPOINT, {
           headers: {

@@ -3,10 +3,9 @@ import Button from "react-bootstrap/Button";
 import { FaFilePdf } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
 import { Crash } from "@/types/crashes";
-import { hasRole, useGetToken } from "@/utils/auth";
-import { useAuth0 } from "@auth0/auth0-react";
+import { hasRole, useGetToken, ADMIN_EDIT_ROLES } from "@/utils/auth";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { ADMIN_EDIT_ROLES } from "@/utils/permissions";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export const allowedCrashReportDownloadRoles = ADMIN_EDIT_ROLES;
 

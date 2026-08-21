@@ -12,8 +12,7 @@ import {
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
 import { RowActionComponentProps } from "@/components/RelatedRecordTable";
-import { hasRole } from "@/utils/auth";
-import { ADMIN_EDIT_ROLES } from "@/utils/permissions";
+import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
 
 interface RelatedRecordTableRowProps<
   T extends Record<string, unknown>,

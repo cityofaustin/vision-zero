@@ -8,8 +8,7 @@ import AlignedLabel from "@/components/AlignedLabel";
 import ContributingFactorsModal from "@/components/ContributingFactorsModal";
 import ChargesModal from "@/components/ChargesModal";
 import { useAuth0 } from "@auth0/auth0-react";
-import { hasRole } from "@/utils/auth";
-import { ADMIN_EDIT_ROLES } from "@/utils/permissions";
+import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
 
 interface FatalityUnitCardFooterProps {
   crashPk: number;
