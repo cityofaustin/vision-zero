@@ -12,7 +12,7 @@ import {
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
 import { RowActionComponentProps } from "@/components/RelatedRecordTable";
-import { hasRole } from "@/utils/auth";
+import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
 
 interface RelatedRecordTableRowProps<
   T extends Record<string, unknown>,
@@ -94,7 +94,7 @@ export default function RelatedRecordTableRow<
 
   const { user } = useAuth0();
 
-  const isReadOnlyUser = user && hasRole(["readonly"], user);
+  const hasEditPermissions = hasRole(ADMIN_EDIT_ROLES, user);
 
   const {
     data: selectOptions,
@@ -147,13 +147,13 @@ export default function RelatedRecordTableRow<
               key={String(col.path)}
               style={{
                 cursor:
-                  isEditable && !isEditingThisColumn && !isReadOnlyUser
+                  isEditable && !isEditingThisColumn && hasEditPermissions
                     ? "pointer"
                     : "auto",
                 ...(col.style || {}),
               }}
               onClick={() => {
-                if (!isEditable || isReadOnlyUser) {
+                if (!isEditable || !hasEditPermissions) {
                   return;
                 }
                 if (!isEditingThisColumn) {

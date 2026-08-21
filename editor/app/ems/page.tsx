@@ -5,7 +5,7 @@ import { emsListViewColumns } from "@/configs/emsColumns";
 import TableWrapper from "@/components/TableWrapper";
 import UserEventsLogger from "@/components/UserEventsLogger";
 import { emsListViewQueryConfig } from "@/configs/emsListViewTable";
-import { EMS_VIEW_ROLES, useRequiredPageRole } from "@/utils/auth";
+import { ADMIN_EDIT_ROLES, useRequiredPageRole } from "@/utils/auth";
 import { useDocumentTitle } from "@/utils/documentTitle";
 import { Filter } from "@/types/queryBuilder";
 import { LuInfo } from "react-icons/lu";
@@ -23,7 +23,7 @@ const isDeletedFilter: Filter[] = [
 
 export default function EMS() {
   useDocumentTitle("EMS");
-  const isAuthorized = useRequiredPageRole(EMS_VIEW_ROLES);
+  const isAuthorized = useRequiredPageRole(ADMIN_EDIT_ROLES);
   if (!isAuthorized) {
     return null;
   }

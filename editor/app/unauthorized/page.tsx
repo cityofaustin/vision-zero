@@ -1,5 +1,4 @@
 "use client";
-import AlignedLabel from "@/components/AlignedLabel";
 import { useRouter } from "next/navigation";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
