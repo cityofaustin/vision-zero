@@ -74,8 +74,7 @@ export const asmpConfig = {
   },
   asmp_2: {
     filter: 1,
-    //color: colors.mapAsmp2,
-    color: "#1491ff",
+    color: colors.mapAsmp2,
   },
   asmp_3: {
     filter: 2,
