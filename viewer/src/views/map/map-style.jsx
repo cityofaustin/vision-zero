@@ -4,15 +4,13 @@ import { colors } from "../../constants/colors";
 
 // Empty source and layer placeholder to place other layers beneath road labels
 export const baseSourceAndLayer = (
-  <>
-    <Source
-      id="base-source"
-      type="geojson"
-      data={{ type: "FeatureCollection", features: [] }}
-    >
-      <Layer id="base-layer" {...{ type: "symbol", source: "base-source" }} />
-    </Source>
-  </>
+  <Source
+    id="base-source"
+    type="geojson"
+    data={{ type: "FeatureCollection", features: [] }}
+  >
+    <Layer id="base-layer" {...{ type: "symbol", source: "base-source" }} />
+  </Source>
 );
 
 // For more information on data-driven styles, see https://www.mapbox.com/help/gl-dds-ref/
@@ -92,6 +90,14 @@ export const asmpConfig = {
   },
 };
 
+export const asmpSourceConfig = {
+  id: "asmp-network",
+  type: "vector",
+  tiles: [
+    "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+  ],
+};
+
 // Map Overlay configuration
 // Hide/show based on overlay state, add layers only once and let state determine visibility
 // Using state in any other config parameters will cause layer to add again and break map layer
@@ -100,18 +106,12 @@ export const asmpConfig = {
 export const buildAsmpLayers = (config, overlay) =>
   Object.entries(config).map(([level, parameters], i) => {
     const asmpLevel = level.split("").pop();
-
     // Set config for each ASMP level layer based on ArcGIS VectorTileServer styles
     // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/resources/styles/root.json?f=pjson
     const asmpLayerConfig = {
-      id: "asmplayer",
+      id: `asmplayer${asmpLevel}`,
       type: "line",
-      source: {
-        type: "vector",
-        tiles: [
-          "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf",
-        ],
-      },
+      source: "asmp-network",
       "source-layer": "asmp_street_network",
       filter: ["==", "_symbol", parameters.filter],
       layout: {
@@ -142,12 +142,7 @@ export const buildHighInjuryLayer = (overlay) => {
   const highInjuryNetworkLayerConfig = {
     id: " highInjuryNetwork",
     type: "line",
-    source: {
-      type: "vector",
-      tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_HIR_2022/VectorTileServer/tile/{z}/{y}/{x}.pbf",
-      ],
-    },
+    source: "high-injury",
     "source-layer": "Combined_HIN_HIR",
     filter: ["==", "_symbol", 1], // Select line within layer by ID
     layout: {
@@ -163,12 +158,7 @@ export const buildHighInjuryLayer = (overlay) => {
   const highInjuryRoadwaysLayerConfig = {
     id: "highInjuryRoadways",
     type: "line",
-    source: {
-      type: "vector",
-      tiles: [
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_HIR_2022/VectorTileServer/tile/{z}/{y}/{x}.pbf",
-      ],
-    },
+    source: "high-injury",
     "source-layer": "Combined_HIN_HIR",
     filter: ["==", "_symbol", 0],
     layout: {
@@ -182,7 +172,13 @@ export const buildHighInjuryLayer = (overlay) => {
   };
 
   return (
-    <>
+    <Source
+      id={"high-injury"}
+      type={"vector"}
+      tiles={[
+        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_HIR_2022/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+      ]}
+    >
       <Layer
         key={highInjuryNetworkLayerConfig.id}
         {...highInjuryNetworkLayerConfig}
@@ -191,7 +187,7 @@ export const buildHighInjuryLayer = (overlay) => {
         key={highInjuryRoadwaysLayerConfig.id}
         {...highInjuryRoadwaysLayerConfig}
       />
-    </>
+    </Source>
   );
 };
 
