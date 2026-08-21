@@ -42,7 +42,7 @@ export const routes: Route[] = [
     path: "upload-non-cr3",
     label: "Upload Non-CR3",
     icon: LuCloudUpload,
-    allowedRoles: ["editor", "vz-admin"],
+    allowedRoles: ADMIN_EDIT_ROLES,
   },
   {
     path: "users",
