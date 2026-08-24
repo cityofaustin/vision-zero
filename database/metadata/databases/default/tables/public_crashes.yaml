@@ -14,15 +14,6 @@ object_relationships:
   - name: collsn
     using:
       foreign_key_constraint_on: fhe_collsn_id
-  - name: crash_risk_factors_view
-    using:
-      manual_configuration:
-        column_mapping:
-          id: id
-        insertion_order: null
-        remote_table:
-          name: crash_risk_factors_view
-          schema: public
   - name: crash_injury_metrics_view
     using:
       manual_configuration:
@@ -31,6 +22,15 @@ object_relationships:
         insertion_order: null
         remote_table:
           name: crash_injury_metrics_view
+          schema: public
+  - name: crash_risk_factors_view
+    using:
+      manual_configuration:
+        column_mapping:
+          id: id
+        insertion_order: null
+        remote_table:
+          name: crash_risk_factors_view
           schema: public
   - name: crashes_cri
     using:
@@ -44,6 +44,15 @@ object_relationships:
         remote_table:
           name: crashes_list_view
           schema: public
+  - name: geolocation_provider
+    using:
+      manual_configuration:
+        column_mapping:
+          geolocation_provider_id: id
+        insertion_order: null
+        remote_table:
+          name: geolocation_provider
+          schema: lookups
   - name: light_cond
     using:
       foreign_key_constraint_on: light_cond_id
@@ -156,6 +165,7 @@ select_permissions:
         - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
+        - geolocation_provider_id
         - id
         - in_austin_full_purpose
         - intrsct_relat_id
@@ -232,6 +242,7 @@ select_permissions:
         - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
+        - geolocation_provider_id
         - id
         - in_austin_full_purpose
         - intrsct_relat_id
@@ -308,6 +319,7 @@ select_permissions:
         - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
+        - geolocation_provider_id
         - id
         - in_austin_full_purpose
         - intrsct_relat_id
@@ -380,6 +392,7 @@ update_permissions:
         - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
+        - geolocation_provider_id
         - intrsct_relat_id
         - investigat_agency_id
         - investigator_narrative
@@ -445,6 +458,7 @@ update_permissions:
         - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
+        - geolocation_provider_id
         - intrsct_relat_id
         - investigat_agency_id
         - investigator_narrative
