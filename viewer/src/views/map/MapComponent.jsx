@@ -197,7 +197,6 @@ const MapComponent = () => {
     }
   }, [filters, dateRange, mapTimeWindow, mapPolygon]);
 
-  // why do we do it like this
   // Fetch City Council Districts geojson
   useEffect(() => {
     if (!isMounted.current) return;
