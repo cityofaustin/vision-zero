@@ -22,6 +22,12 @@ import LocationPolygonLayer from "@/components/LocationPolygonLayer";
 
 const allowedMapEditRoles = ["vz-admin", "editor"];
 
+const formattedGeoProvider = {
+  cris: "TxDOT CRIS",
+  apd_cad: "APD CAD",
+  manual_qa: "Manual Q/A",
+};
+
 interface CrashMapCardProps {
   savedLatitude: number | null;
   savedLongitude: number | null;
@@ -29,7 +35,7 @@ interface CrashMapCardProps {
   onSaveCallback: () => Promise<void>;
   mutation: string;
   locationId: string | null;
-  geolocationProvider: string | null;
+  geolocationProvider: string;
   location?: Location | null;
 }
 
@@ -86,8 +92,9 @@ export default function CrashMapCard({
         <div>
           <span className="fw-bold me-2">Provider </span>
           <span>
-            {" "}
-            {hasCoordinates ? geolocationProvider : "No Primary Coordinates"}
+            {hasCoordinates
+              ? formattedGeoProvider[geolocationProvider]
+              : "No Primary Coordinates"}
           </span>
         </div>
       </Card.Header>
