@@ -505,7 +505,7 @@ const MapComponent = () => {
       {buildHighInjuryLayer(overlay)}
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
-          <Layer {...cityCouncilDataLayer} />
+          <Layer beforeId="road-street" {...cityCouncilDataLayer} />
         </Source>
       )}
       <Source type="geojson" data={travisCountyBboxGeoJSON}>
