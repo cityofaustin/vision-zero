@@ -29,7 +29,7 @@ interface CrashMapCardProps {
   onSaveCallback: () => Promise<void>;
   mutation: string;
   locationId: string | null;
-  isManualGeocode: boolean | null;
+  geolocationProvider: string | null;
   location?: Location | null;
 }
 
@@ -43,7 +43,7 @@ export default function CrashMapCard({
   onSaveCallback,
   mutation,
   locationId,
-  isManualGeocode,
+  geolocationProvider,
   location,
 }: CrashMapCardProps) {
   const mapRef = useRef<MapRef | null>(null);
@@ -87,11 +87,7 @@ export default function CrashMapCard({
           <span className="fw-bold me-2">Provider </span>
           <span>
             {" "}
-            {hasCoordinates
-              ? isManualGeocode
-                ? "Manual Q/A"
-                : "TxDOT CRIS"
-              : "No Primary Coordinates"}
+            {hasCoordinates ? geolocationProvider : "No Primary Coordinates"}
           </span>
         </div>
       </Card.Header>

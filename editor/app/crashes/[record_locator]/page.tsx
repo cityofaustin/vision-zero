@@ -129,7 +129,7 @@ export default function CrashDetailsPage({
             mutation={UPDATE_CRASH}
             locationId={crash.location_id}
             location={crash.atd_txdot_location}
-            isManualGeocode={crash.crashes_list_view.is_manual_geocode}
+            geolocationProvider={crash?.geolocation_provider?.label}
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">

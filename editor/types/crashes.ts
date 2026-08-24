@@ -25,6 +25,7 @@ export type Crash = {
   crash_speed_limit: number | null;
   crash_timestamp: string | null;
   cris_crash_id: number | null;
+  geolocation_provider: LookupTableOption | null;
   collsn: LookupTableOption | null;
   diagram_transform: CrashDiagramOrientation | null;
   ems__incidents?: EMSPatientCareRecord[] | null;
