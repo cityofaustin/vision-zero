@@ -21,7 +21,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
 
     .mapboxgl-ctrl-top-right {
       position: absolute;
-      top: 107px;
+      top: 116px;
     }
   `;
 

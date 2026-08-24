@@ -9,6 +9,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
+import { colors } from "../../../constants/colors";
 
 const StyledTableRow = styled.tr`
   .align {
@@ -32,7 +33,7 @@ const InfoCard = ({ content }) => {
               {item.title === "Crash ID" ? (
                 <td className="align" ref={ref}>
                   <Button
-                    id="PopoverFocus"
+                    id="copyCrashIDButton"
                     style={{
                       boxShadow: "none",
                       width: "30px",
@@ -42,6 +43,8 @@ const InfoCard = ({ content }) => {
                       textAlign: "center",
                       fontSize: "12px",
                       lineHeight: 1.42857,
+                      backgroundColor: colors.info,
+                      border: 0,
                     }}
                     color="info"
                     outline={false}
@@ -49,7 +52,7 @@ const InfoCard = ({ content }) => {
                       navigator.clipboard.writeText(item.content);
                     }}
                   >
-                    <FontAwesomeIcon icon={faClipboard} />
+                    <FontAwesomeIcon icon={faClipboard} color={colors.white} />
                   </Button>
                 </td>
               ) : null}
@@ -57,7 +60,7 @@ const InfoCard = ({ content }) => {
           ))}
         </tbody>
       </Table>
-      <UncontrolledPopover trigger="focus" placement="top" target={ref}>
+      <UncontrolledPopover trigger="click" placement="top" target={ref}>
         <PopoverBody>Copied</PopoverBody>
       </UncontrolledPopover>
     </Card>
