@@ -35,7 +35,7 @@ interface CrashMapCardProps {
   onSaveCallback: () => Promise<void>;
   mutation: string;
   locationId: string | null;
-  geolocationProvider: string;
+  geolocationProvider: string | null;
   location?: Location | null;
 }
 
@@ -92,8 +92,10 @@ export default function CrashMapCard({
         <div>
           <span className="fw-bold me-2">Provider </span>
           <span>
-            {hasCoordinates
-              ? formattedGeoProvider[geolocationProvider]
+            {hasCoordinates && geolocationProvider
+              ? formattedGeoProvider[
+                  geolocationProvider as keyof typeof formattedGeoProvider
+                ]
               : "No Primary Coordinates"}
           </span>
         </div>
