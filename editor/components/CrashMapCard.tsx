@@ -35,7 +35,7 @@ interface CrashMapCardProps {
   onSaveCallback: () => Promise<void>;
   mutation: string;
   locationId: string | null;
-  geolocationProvider: string | null;
+  geolocationProvider: string | undefined;
   location?: Location | null;
 }
 
@@ -161,7 +161,10 @@ export default function CrashMapCard({
                     setValidationError(undefined);
                     await mutate({
                       id: crashId,
-                      updates: coordinatesToSave,
+                      updates: {
+                        ...coordinatesToSave,
+                        geolocation_provider_id: 3, // Manual Q/A
+                      },
                     });
                     await onSaveCallback();
                     setIsEditing(false);
