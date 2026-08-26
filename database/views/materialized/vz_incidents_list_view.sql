@@ -1,4 +1,4 @@
--- Most recent migration: database/migrations/default/1783347751354_vz_incidents_view/up.sql
+-- Most recent migration: database/migrations/default/1786050676000_vz_incidents_view/up.sql
 
 DROP MATERIALIZED VIEW IF EXISTS vz_incidents_list_view;
 
