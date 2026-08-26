@@ -1,6 +1,9 @@
 import { ColDataCardDef } from "@/types/types";
 import { Crash } from "@/types/crashes";
-import { formatIsoDateTimeWithDay } from "@/utils/formatters";
+import {
+  formatIsoDateTimeWithDay,
+  formatYesNoString,
+} from "@/utils/formatters";
 import { commonValidations } from "@/utils/formHelpers";
 import Link from "next/link";
 
@@ -70,6 +73,7 @@ export const crashesColumns = {
   in_austin_full_purpose: {
     path: "in_austin_full_purpose",
     label: "In Austin Full Purpose Jurisdiction",
+    valueFormatter: formatYesNoString,
   },
   latitude: {
     path: "latitude",
@@ -95,6 +99,11 @@ export const crashesColumns = {
       labelColumnName: "label",
       foreignKey: "light_cond_id",
     },
+  },
+  location_id: {
+    path: "location_id",
+    label: "Location ID",
+    defaultHidden: true,
   },
   longitude: {
     path: "longitude",
