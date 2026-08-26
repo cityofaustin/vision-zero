@@ -7,6 +7,7 @@ export const COLORS = {
   primary: "#1276d1",
   secondary: "#6b7676",
   warning: "#ffd22f",
+  afd_orange: "#fdae61",
 };
 
 export const ALLOWED_QUERY_PAGE_SIZES = [10, 50, 250, 1000] as const;
