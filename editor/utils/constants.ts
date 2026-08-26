@@ -3,9 +3,11 @@ export const MAX_RECORD_EXPORT_LIMIT = 1_000_000;
 export type ExportPageSize = typeof MAX_RECORD_EXPORT_LIMIT;
 
 export const COLORS = {
-  primary: "#1276d1",
   danger: "#dd0426",
+  primary: "#1276d1",
+  secondary: "#6b7676",
   warning: "#ffd22f",
+  afd_orange: "#fdae61",
 };
 
 export const ALLOWED_QUERY_PAGE_SIZES = [10, 50, 250, 1000] as const;

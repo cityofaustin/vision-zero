@@ -2,10 +2,31 @@ table:
   name: vz_incidents
   schema: public
 array_relationships:
+  - name: afd__incidents
+    using:
+      foreign_key_constraint_on:
+        column: vz_incident_id
+        table:
+          name: afd__incidents
+          schema: public
   - name: cad_incidents
     using:
       foreign_key_constraint_on:
         column: vz_incident_id
         table:
           name: cad_incidents
+          schema: public
+  - name: crashes
+    using:
+      foreign_key_constraint_on:
+        column: vz_incident_id
+        table:
+          name: crashes
+          schema: public
+  - name: ems__incidents
+    using:
+      foreign_key_constraint_on:
+        column: vz_incident_id
+        table:
+          name: ems__incidents
           schema: public

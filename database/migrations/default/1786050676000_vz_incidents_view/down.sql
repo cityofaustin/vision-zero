@@ -1,4 +1,4 @@
-DROP MATERIALIZED VIEW IF EXISTS vz_incidents_view;
+DROP MATERIALIZED VIEW IF EXISTS vz_incidents_list_view;
 
 DROP VIEW IF EXISTS public.vz_incident_records_view;
 

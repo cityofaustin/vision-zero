@@ -1,8 +1,8 @@
 -- Most recent migration: database/migrations/default/1783347751354_vz_incidents_view/up.sql
 
-DROP MATERIALIZED VIEW IF EXISTS vz_incidents_view;
+DROP MATERIALIZED VIEW IF EXISTS vz_incidents_list_view;
 
-CREATE MATERIALIZED VIEW vz_incidents_view AS
+CREATE MATERIALIZED VIEW vz_incidents_list_view AS
 SELECT
     id,
     record_count,

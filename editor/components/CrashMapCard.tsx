@@ -52,7 +52,7 @@ export default function CrashMapCard({
   });
 
   const [isEditing, setIsEditing] = useState(false);
-  const [mapLatLon, setMapLatLon] = useState<LatLon>({
+  const [draftLatLon, setDraftLatLon] = useState<LatLon>({
     latitude: DEFAULT_MAP_PAN_ZOOM.latitude,
     longitude: DEFAULT_MAP_PAN_ZOOM.longitude,
   });
@@ -96,8 +96,8 @@ export default function CrashMapCard({
           savedLatitude={savedLatitude}
           savedLongitude={savedLongitude}
           isEditing={isEditing}
-          mapLatLon={mapLatLon}
-          setMapLatLon={setMapLatLon}
+          draftLatLon={draftLatLon}
+          setDraftLatLon={setDraftLatLon}
           mapRef={mapRef}
         />
       </Card.Body>
@@ -109,7 +109,7 @@ export default function CrashMapCard({
             {isEditing && (
               <div className="flex-grow-1">
                 <CrashMapCoordinateForm
-                  mapLatLon={mapLatLon}
+                  draftLatLon={draftLatLon}
                   formLatLon={formLatLon}
                   setFormLatLon={setFormLatLon}
                   validationError={validationError}
@@ -127,10 +127,10 @@ export default function CrashMapCard({
                     setIsEditing(true);
                   } else {
                     // check if form coords match edit coords from map
-                    let coordinatesToSave = { ...mapLatLon };
+                    let coordinatesToSave = { ...draftLatLon };
                     if (
-                      String(mapLatLon.latitude) !== formLatLon.latitude ||
-                      String(mapLatLon.longitude) !== formLatLon.longitude
+                      String(draftLatLon.latitude) !== formLatLon.latitude ||
+                      String(draftLatLon.longitude) !== formLatLon.longitude
                     ) {
                       // validate string coords
                       // convert coordinates to numbers and validate them
