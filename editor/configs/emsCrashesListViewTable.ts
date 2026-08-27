@@ -236,6 +236,31 @@ const emsCrashesListViewFilterCards: FilterGroup[] = [
           },
         ],
       },
+      {
+        id: "exclude_recent_ems_records",
+        label: "EMS records > 14 days old",
+        // "exclude EMS records that are recent" is `NOT (is_ems AND recent)`,
+        // which by De Morgan's is `(not is_ems) OR (older than 14 days)` -
+        // this leaves non-EMS (crash report) records untouched regardless
+        // of their age
+        groupOperator: "_or",
+        enabled: false,
+        filters: [
+          {
+            id: "exclude_recent_ems_records_not_ems",
+            column: "record_table_name",
+            operator: "_neq",
+            value: "ems__incidents",
+          },
+          {
+            id: "exclude_recent_ems_records_older_than_cutoff",
+            column: "record_timestamp",
+            operator: "_lt",
+            value: "",
+            relativeDays: 14,
+          },
+        ],
+      },
     ],
   },
 ];
