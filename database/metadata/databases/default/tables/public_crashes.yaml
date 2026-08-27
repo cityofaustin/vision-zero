@@ -14,15 +14,6 @@ object_relationships:
   - name: collsn
     using:
       foreign_key_constraint_on: fhe_collsn_id
-  - name: crash_risk_factors_view
-    using:
-      manual_configuration:
-        column_mapping:
-          id: id
-        insertion_order: null
-        remote_table:
-          name: crash_risk_factors_view
-          schema: public
   - name: crash_injury_metrics_view
     using:
       manual_configuration:
@@ -31,6 +22,15 @@ object_relationships:
         insertion_order: null
         remote_table:
           name: crash_injury_metrics_view
+          schema: public
+  - name: crash_risk_factors_view
+    using:
+      manual_configuration:
+        column_mapping:
+          id: id
+        insertion_order: null
+        remote_table:
+          name: crash_risk_factors_view
           schema: public
   - name: crashes_cri
     using:
