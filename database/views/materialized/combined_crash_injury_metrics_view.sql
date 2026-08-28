@@ -8,13 +8,19 @@ SELECT
     crashes.cris_crash_id,
     CASE
         WHEN
-            count(*) FILTER (WHERE cpimv.record_source = 'crash_report_plus_ems'::text) > 0
-            THEN 'crash_report_plus_ems'::text
+            count(*) FILTER (WHERE cpimv.record_source = 'crash_report_and_ems'::text) > 0
+            THEN 'crash_report_and_ems'::text
         WHEN
             count(*) FILTER (WHERE cpimv.record_source = 'ems'::text) > 0
-            THEN 'crash_report_plus_ems'::text
+            THEN 'crash_report_and_ems'::text
         ELSE 'crash_report'::text
     END                                                 AS record_source,
+    coalesce(
+        sum(cpimv.upgrade_to_sus_serious_injry), 0::bigint
+    )                                                   AS upgrade_to_sus_serious_injry_count,
+    coalesce(
+        sum(cpimv.downgrade_from_sus_serious_injry), 0::bigint
+    )                                                   AS downgrade_from_sus_serious_injry,
     coalesce(
         sum(cpimv.unkn_injry), 0::bigint
     )                                                   AS unkn_injry_count,
@@ -100,7 +106,7 @@ SELECT
         sum(cpimv.est_comp_cost_crash_based), 20000::bigint::numeric
     )                                                   AS est_total_person_comp_cost,
     count(*) FILTER (
-        WHERE cpimv.record_source = 'crash_report_plus_ems'::text
+        WHERE cpimv.record_source = 'crash_report_and_ems'::text
     )                                                   AS matched_person_count,
     count(*) FILTER (
         WHERE cpimv.record_source = 'crash_report'::text

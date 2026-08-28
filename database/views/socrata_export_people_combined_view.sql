@@ -26,7 +26,7 @@ WITH people_ems_resolved AS (
         units.vz_mode_category_id AS mode_id,
         mode_categories.label     AS mode_desc,
         CASE
-            WHEN ems.id IS NOT NULL THEN 'crash_report_plus_ems'::text
+            WHEN ems.id IS NOT NULL THEN 'crash_report_and_ems'::text
             ELSE 'crash_report'::text
         END                       AS record_source,
         crashes.crash_timestamp,

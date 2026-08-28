@@ -1,7 +1,7 @@
 -- Most recent migration: 
 
 CREATE OR REPLACE VIEW combined_person_injury_metrics_view AS
-WITH person_severity_resolved AS (
+WITH people_with_ems_overrides AS (
     SELECT
         people.id,
         units.id                      AS unit_id,
@@ -10,16 +10,18 @@ WITH person_severity_resolved AS (
         units.vz_mode_category_id,
         people.years_of_life_lost,
         people.est_comp_cost_crash_based,
+        people.prsn_injry_sev_id,
+        ems.patient_injry_sev_id,
         CASE
             WHEN people.prsn_injry_sev_id = 4 THEN 4
             WHEN people.prsn_injry_sev_id = 99 THEN 99
             WHEN ems.patient_injry_sev_id IS NOT NULL THEN ems.patient_injry_sev_id
             ELSE people.prsn_injry_sev_id
-        END                           AS inj_sev_id,
+        END                           AS combined_inj_sev_id,
         crashes.law_enforcement_ytd_fatality_num,
         people_cris.prsn_injry_sev_id AS cris_prsn_injry_sev_id,
         CASE
-            WHEN ems.id IS NOT NULL THEN 'crash_report_plus_ems'::text
+            WHEN ems.id IS NOT NULL THEN 'crash_report_and_ems'::text
             ELSE 'crash_report'::text
         END                           AS record_source
     FROM people people
@@ -32,147 +34,162 @@ WITH person_severity_resolved AS (
     WHERE people.is_deleted = FALSE
 ),
 
-person_injury_metrics_resolved AS (
+people_injury_metrics_with_overrides AS (
     SELECT
-        person_severity_resolved.id,
-        person_severity_resolved.unit_id,
-        person_severity_resolved.crash_pk,
-        person_severity_resolved.cris_crash_id,
-        person_severity_resolved.record_source,
-        person_severity_resolved.years_of_life_lost,
-        person_severity_resolved.est_comp_cost_crash_based,
+        people_with_ems_overrides.id,
+        people_with_ems_overrides.unit_id,
+        people_with_ems_overrides.crash_pk,
+        people_with_ems_overrides.cris_crash_id,
+        people_with_ems_overrides.record_source,
+        people_with_ems_overrides.years_of_life_lost,
+        people_with_ems_overrides.est_comp_cost_crash_based,
         CASE
-            WHEN person_severity_resolved.inj_sev_id = 0 THEN 1
+            WHEN
+                people_with_ems_overrides.combined_inj_sev_id = 1
+                AND people_with_ems_overrides.prsn_injry_sev_id <> 1
+                THEN 1
+            ELSE 0
+        END AS upgrade_to_sus_serious_injry,
+        CASE
+            WHEN
+                people_with_ems_overrides.prsn_injry_sev_id = 1
+                AND (people_with_ems_overrides.combined_inj_sev_id = ANY(ARRAY[2, 3, 5]))
+                THEN 1
+            ELSE 0
+        END AS downgrade_from_sus_serious_injry,
+        CASE
+            WHEN people_with_ems_overrides.combined_inj_sev_id = 0 THEN 1
             ELSE 0
         END AS unkn_injry,
         CASE
-            WHEN person_severity_resolved.inj_sev_id = 1 THEN 1
+            WHEN people_with_ems_overrides.combined_inj_sev_id = 1 THEN 1
             ELSE 0
         END AS sus_serious_injry,
         CASE
-            WHEN person_severity_resolved.inj_sev_id = 2 THEN 1
+            WHEN people_with_ems_overrides.combined_inj_sev_id = 2 THEN 1
             ELSE 0
         END AS nonincap_injry,
         CASE
-            WHEN person_severity_resolved.inj_sev_id = 3 THEN 1
+            WHEN people_with_ems_overrides.combined_inj_sev_id = 3 THEN 1
             ELSE 0
         END AS poss_injry,
         CASE
             WHEN
-                person_severity_resolved.inj_sev_id = 4 OR person_severity_resolved.inj_sev_id = 99
+                people_with_ems_overrides.combined_inj_sev_id = 4
+                OR people_with_ems_overrides.combined_inj_sev_id = 99
                 THEN 1
             ELSE 0
         END AS fatal_injury,
         CASE
-            WHEN person_severity_resolved.inj_sev_id = 4 THEN 1
+            WHEN people_with_ems_overrides.combined_inj_sev_id = 4 THEN 1
             ELSE 0
         END AS vz_fatal_injury,
         CASE
             WHEN
                 (
-                    person_severity_resolved.inj_sev_id = 4
-                    OR person_severity_resolved.inj_sev_id = 99
+                    people_with_ems_overrides.combined_inj_sev_id = 4
+                    OR people_with_ems_overrides.combined_inj_sev_id = 99
                 )
-                AND person_severity_resolved.law_enforcement_ytd_fatality_num IS NOT NULL
+                AND people_with_ems_overrides.law_enforcement_ytd_fatality_num IS NOT NULL
                 THEN 1
             ELSE 0
         END AS law_enf_fatal_injury,
         CASE
-            WHEN person_severity_resolved.cris_prsn_injry_sev_id = 4 THEN 1
+            WHEN people_with_ems_overrides.cris_prsn_injry_sev_id = 4 THEN 1
             ELSE 0
         END AS cris_fatal_injury,
         CASE
-            WHEN person_severity_resolved.inj_sev_id = 5 THEN 1
+            WHEN people_with_ems_overrides.combined_inj_sev_id = 5 THEN 1
             ELSE 0
         END AS non_injry,
         CASE
             WHEN
-                person_severity_resolved.inj_sev_id = 4
-                AND (person_severity_resolved.vz_mode_category_id = ANY(ARRAY[1, 2, 4]))
+                people_with_ems_overrides.combined_inj_sev_id = 4
+                AND (people_with_ems_overrides.vz_mode_category_id = ANY(ARRAY[1, 2, 4]))
                 THEN 1
             ELSE 0
         END AS motor_vehicle_fatal_injry,
         CASE
             WHEN
-                person_severity_resolved.inj_sev_id = 1
-                AND (person_severity_resolved.vz_mode_category_id = ANY(ARRAY[1, 2, 4]))
+                people_with_ems_overrides.combined_inj_sev_id = 1
+                AND (people_with_ems_overrides.vz_mode_category_id = ANY(ARRAY[1, 2, 4]))
                 THEN 1
             ELSE 0
         END AS motor_vehicle_sus_serious_injry,
         CASE
             WHEN
-                person_severity_resolved.inj_sev_id = 4
-                AND person_severity_resolved.vz_mode_category_id = 3
+                people_with_ems_overrides.combined_inj_sev_id = 4
+                AND people_with_ems_overrides.vz_mode_category_id = 3
                 THEN 1
             ELSE 0
         END AS motorcycle_fatal_injry,
         CASE
             WHEN
-                person_severity_resolved.inj_sev_id = 1
-                AND person_severity_resolved.vz_mode_category_id = 3
+                people_with_ems_overrides.combined_inj_sev_id = 1
+                AND people_with_ems_overrides.vz_mode_category_id = 3
                 THEN 1
             ELSE 0
         END AS motorycle_sus_serious_injry,
         CASE
             WHEN
-                person_severity_resolved.inj_sev_id = 4
-                AND person_severity_resolved.vz_mode_category_id = 5
+                people_with_ems_overrides.combined_inj_sev_id = 4
+                AND people_with_ems_overrides.vz_mode_category_id = 5
                 THEN 1
             ELSE 0
         END AS bicycle_fatal_injry,
         CASE
             WHEN
-                person_severity_resolved.inj_sev_id = 1
-                AND person_severity_resolved.vz_mode_category_id = 5
+                people_with_ems_overrides.combined_inj_sev_id = 1
+                AND people_with_ems_overrides.vz_mode_category_id = 5
                 THEN 1
             ELSE 0
         END AS bicycle_sus_serious_injry,
         CASE
             WHEN
-                person_severity_resolved.inj_sev_id = 4
-                AND person_severity_resolved.vz_mode_category_id = 7
+                people_with_ems_overrides.combined_inj_sev_id = 4
+                AND people_with_ems_overrides.vz_mode_category_id = 7
                 THEN 1
             ELSE 0
         END AS pedestrian_fatal_injry,
         CASE
             WHEN
-                person_severity_resolved.inj_sev_id = 1
-                AND person_severity_resolved.vz_mode_category_id = 7
+                people_with_ems_overrides.combined_inj_sev_id = 1
+                AND people_with_ems_overrides.vz_mode_category_id = 7
                 THEN 1
             ELSE 0
         END AS pedestrian_sus_serious_injry,
         CASE
             WHEN
-                person_severity_resolved.inj_sev_id = 4
-                AND person_severity_resolved.vz_mode_category_id = 11
+                people_with_ems_overrides.combined_inj_sev_id = 4
+                AND people_with_ems_overrides.vz_mode_category_id = 11
                 THEN 1
             ELSE 0
         END AS micromobility_fatal_injry,
         CASE
             WHEN
-                person_severity_resolved.inj_sev_id = 1
-                AND person_severity_resolved.vz_mode_category_id = 11
+                people_with_ems_overrides.combined_inj_sev_id = 1
+                AND people_with_ems_overrides.vz_mode_category_id = 11
                 THEN 1
             ELSE 0
         END AS micromobility_sus_serious_injry,
         CASE
             WHEN
-                person_severity_resolved.inj_sev_id = 4
-                AND (person_severity_resolved.vz_mode_category_id = ANY(ARRAY[6, 8, 9]))
+                people_with_ems_overrides.combined_inj_sev_id = 4
+                AND (people_with_ems_overrides.vz_mode_category_id = ANY(ARRAY[6, 8, 9]))
                 THEN 1
             ELSE 0
         END AS other_fatal_injry,
         CASE
             WHEN
-                person_severity_resolved.inj_sev_id = 1
-                AND (person_severity_resolved.vz_mode_category_id = ANY(ARRAY[6, 8, 9]))
+                people_with_ems_overrides.combined_inj_sev_id = 1
+                AND (people_with_ems_overrides.vz_mode_category_id = ANY(ARRAY[6, 8, 9]))
                 THEN 1
             ELSE 0
         END AS other_sus_serious_injry
-    FROM person_severity_resolved
+    FROM people_with_ems_overrides
 ),
 
-ems_unmatched_persons AS (
+ems_unmatched_patients AS (
     SELECT
         e.id::bigint AS id,
         NULL::bigint AS unit_id,
@@ -292,63 +309,67 @@ ems_unmatched_persons AS (
 )
 
 SELECT
-    person_injury_metrics_resolved.id,
-    person_injury_metrics_resolved.unit_id,
-    person_injury_metrics_resolved.crash_pk,
-    person_injury_metrics_resolved.cris_crash_id,
-    person_injury_metrics_resolved.record_source,
-    person_injury_metrics_resolved.years_of_life_lost,
-    person_injury_metrics_resolved.est_comp_cost_crash_based,
-    person_injury_metrics_resolved.unkn_injry,
-    person_injury_metrics_resolved.sus_serious_injry,
-    person_injury_metrics_resolved.nonincap_injry,
-    person_injury_metrics_resolved.poss_injry,
-    person_injury_metrics_resolved.fatal_injury,
-    person_injury_metrics_resolved.vz_fatal_injury,
-    person_injury_metrics_resolved.law_enf_fatal_injury,
-    person_injury_metrics_resolved.cris_fatal_injury,
-    person_injury_metrics_resolved.non_injry,
-    person_injury_metrics_resolved.motor_vehicle_fatal_injry,
-    person_injury_metrics_resolved.motor_vehicle_sus_serious_injry,
-    person_injury_metrics_resolved.motorcycle_fatal_injry,
-    person_injury_metrics_resolved.motorycle_sus_serious_injry,
-    person_injury_metrics_resolved.bicycle_fatal_injry,
-    person_injury_metrics_resolved.bicycle_sus_serious_injry,
-    person_injury_metrics_resolved.pedestrian_fatal_injry,
-    person_injury_metrics_resolved.pedestrian_sus_serious_injry,
-    person_injury_metrics_resolved.micromobility_fatal_injry,
-    person_injury_metrics_resolved.micromobility_sus_serious_injry,
-    person_injury_metrics_resolved.other_fatal_injry,
-    person_injury_metrics_resolved.other_sus_serious_injry
-FROM person_injury_metrics_resolved
+    people_injury_metrics_with_overrides.id,
+    people_injury_metrics_with_overrides.unit_id,
+    people_injury_metrics_with_overrides.crash_pk,
+    people_injury_metrics_with_overrides.cris_crash_id,
+    people_injury_metrics_with_overrides.record_source,
+    people_injury_metrics_with_overrides.years_of_life_lost,
+    people_injury_metrics_with_overrides.est_comp_cost_crash_based,
+    people_injury_metrics_with_overrides.upgrade_to_sus_serious_injry,
+    people_injury_metrics_with_overrides.downgrade_from_sus_serious_injry,
+    people_injury_metrics_with_overrides.unkn_injry,
+    people_injury_metrics_with_overrides.sus_serious_injry,
+    people_injury_metrics_with_overrides.nonincap_injry,
+    people_injury_metrics_with_overrides.poss_injry,
+    people_injury_metrics_with_overrides.fatal_injury,
+    people_injury_metrics_with_overrides.vz_fatal_injury,
+    people_injury_metrics_with_overrides.law_enf_fatal_injury,
+    people_injury_metrics_with_overrides.cris_fatal_injury,
+    people_injury_metrics_with_overrides.non_injry,
+    people_injury_metrics_with_overrides.motor_vehicle_fatal_injry,
+    people_injury_metrics_with_overrides.motor_vehicle_sus_serious_injry,
+    people_injury_metrics_with_overrides.motorcycle_fatal_injry,
+    people_injury_metrics_with_overrides.motorycle_sus_serious_injry,
+    people_injury_metrics_with_overrides.bicycle_fatal_injry,
+    people_injury_metrics_with_overrides.bicycle_sus_serious_injry,
+    people_injury_metrics_with_overrides.pedestrian_fatal_injry,
+    people_injury_metrics_with_overrides.pedestrian_sus_serious_injry,
+    people_injury_metrics_with_overrides.micromobility_fatal_injry,
+    people_injury_metrics_with_overrides.micromobility_sus_serious_injry,
+    people_injury_metrics_with_overrides.other_fatal_injry,
+    people_injury_metrics_with_overrides.other_sus_serious_injry
+FROM people_injury_metrics_with_overrides
 UNION ALL
 SELECT
-    ems_unmatched_persons.id,
-    ems_unmatched_persons.unit_id,
-    ems_unmatched_persons.crash_pk,
-    ems_unmatched_persons.cris_crash_id,
-    ems_unmatched_persons.record_source,
-    ems_unmatched_persons.years_of_life_lost,
-    ems_unmatched_persons.est_comp_cost_crash_based,
-    ems_unmatched_persons.unkn_injry,
-    ems_unmatched_persons.sus_serious_injry,
-    ems_unmatched_persons.nonincap_injry,
-    ems_unmatched_persons.poss_injry,
-    ems_unmatched_persons.fatal_injury,
-    ems_unmatched_persons.vz_fatal_injury,
-    ems_unmatched_persons.law_enf_fatal_injury,
-    ems_unmatched_persons.cris_fatal_injury,
-    ems_unmatched_persons.non_injry,
-    ems_unmatched_persons.motor_vehicle_fatal_injry,
-    ems_unmatched_persons.motor_vehicle_sus_serious_injry,
-    ems_unmatched_persons.motorcycle_fatal_injry,
-    ems_unmatched_persons.motorycle_sus_serious_injry,
-    ems_unmatched_persons.bicycle_fatal_injry,
-    ems_unmatched_persons.bicycle_sus_serious_injry,
-    ems_unmatched_persons.pedestrian_fatal_injry,
-    ems_unmatched_persons.pedestrian_sus_serious_injry,
-    ems_unmatched_persons.micromobility_fatal_injry,
-    ems_unmatched_persons.micromobility_sus_serious_injry,
-    ems_unmatched_persons.other_fatal_injry,
-    ems_unmatched_persons.other_sus_serious_injry
-FROM ems_unmatched_persons;
+    ems_unmatched_patients.id,
+    ems_unmatched_patients.unit_id,
+    ems_unmatched_patients.crash_pk,
+    ems_unmatched_patients.cris_crash_id,
+    ems_unmatched_patients.record_source,
+    ems_unmatched_patients.years_of_life_lost,
+    ems_unmatched_patients.est_comp_cost_crash_based,
+    0 AS upgrade_to_sus_serious_injry,
+    0 AS downgrade_from_sus_serious_injry,
+    ems_unmatched_patients.unkn_injry,
+    ems_unmatched_patients.sus_serious_injry,
+    ems_unmatched_patients.nonincap_injry,
+    ems_unmatched_patients.poss_injry,
+    ems_unmatched_patients.fatal_injury,
+    ems_unmatched_patients.vz_fatal_injury,
+    ems_unmatched_patients.law_enf_fatal_injury,
+    ems_unmatched_patients.cris_fatal_injury,
+    ems_unmatched_patients.non_injry,
+    ems_unmatched_patients.motor_vehicle_fatal_injry,
+    ems_unmatched_patients.motor_vehicle_sus_serious_injry,
+    ems_unmatched_patients.motorcycle_fatal_injry,
+    ems_unmatched_patients.motorycle_sus_serious_injry,
+    ems_unmatched_patients.bicycle_fatal_injry,
+    ems_unmatched_patients.bicycle_sus_serious_injry,
+    ems_unmatched_patients.pedestrian_fatal_injry,
+    ems_unmatched_patients.pedestrian_sus_serious_injry,
+    ems_unmatched_patients.micromobility_fatal_injry,
+    ems_unmatched_patients.micromobility_sus_serious_injry,
+    ems_unmatched_patients.other_fatal_injry,
+    ems_unmatched_patients.other_sus_serious_injry
+FROM ems_unmatched_patients;

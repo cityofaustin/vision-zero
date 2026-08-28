@@ -75,6 +75,8 @@ LEFT JOIN LATERAL (SELECT
     combined_crash_injury_metrics_view.id,
     combined_crash_injury_metrics_view.cris_crash_id,
     combined_crash_injury_metrics_view.record_source,
+    combined_crash_injury_metrics_view.upgrade_to_sus_serious_injry_count,
+    combined_crash_injury_metrics_view.downgrade_from_sus_serious_injry,
     combined_crash_injury_metrics_view.unkn_injry_count,
     combined_crash_injury_metrics_view.nonincap_injry_count,
     combined_crash_injury_metrics_view.poss_injry_count,

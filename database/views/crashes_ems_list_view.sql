@@ -28,6 +28,7 @@ SELECT
     crashes.longitude,
     crashes.location_id,
     crashes.in_austin_full_purpose,
+    crashes.private_dr_fl,
     unit_aggregates.units_involved,
     CASE
         WHEN cimv.matched_person_count > 0 THEN true
@@ -43,6 +44,8 @@ SELECT
             THEN 'unmatched'::text
         ELSE 'mixed'::text
     END                       AS injured_people_match_status,
+    cimv.upgrade_to_sus_serious_injry_count,
+    cimv.downgrade_from_sus_serious_injry,
     cimv.unkn_injry_count,
     cimv.nonincap_injry_count,
     cimv.poss_injry_count,
@@ -101,9 +104,12 @@ SELECT
     ei.longitude,
     ei.location_id,
     ei.austin_full_purpose        AS in_austin_full_purpose,
+    null::boolean                 AS private_dr_fl,
     ei.units_involved,
     false                         AS has_ems_override,
     'unmatched'::text             AS injured_people_match_status,
+    0                             AS upgrade_to_sus_serious_injry_count,
+    0                             AS downgrade_from_sus_serious_injry,
     ei.unkn_injry_count,
     ei.nonincap_injry_count,
     ei.poss_injry_count,
