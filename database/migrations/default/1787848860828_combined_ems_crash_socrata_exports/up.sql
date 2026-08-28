@@ -151,7 +151,7 @@ WHERE ei.austin_full_purpose = TRUE
 CREATE OR REPLACE VIEW socrata_export_people_combined_view AS
 WITH
     people_ems_resolved AS (
-        -- crash_report and crash_report_plus_ems: people rows, optionally enriched by EMS
+        -- crash_report and crash_report_and_ems: people rows, optionally enriched by EMS
         SELECT
             people.id,
             people.unit_id,
@@ -176,7 +176,7 @@ WITH
             units.vz_mode_category_id AS mode_id,
             mode_categories.label AS mode_desc,
             CASE
-                WHEN ems.id IS NOT NULL THEN 'crash_report_plus_ems'
+                WHEN ems.id IS NOT NULL THEN 'crash_report_and_ems'
                 ELSE 'crash_report'
             END AS record_source,
             crashes.crash_timestamp,
