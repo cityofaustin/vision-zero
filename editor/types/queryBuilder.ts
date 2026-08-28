@@ -49,6 +49,14 @@ export interface Filter {
    * --should only be used with string types
    */
   wildcard?: boolean;
+  /**
+   * When set, `value` is ignored and the filter's value is instead computed
+   * at query-build time as the ISO timestamp for N days before now. This
+   * keeps date-relative filters from going stale when the containing
+   * FilterGroup's `enabled` state is cached in localStorage — the cutoff
+   * itself is never persisted, only recalculated fresh on each query build.
+   */
+  relativeDays?: number;
 }
 
 interface FilterGroupBase {

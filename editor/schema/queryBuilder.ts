@@ -34,6 +34,7 @@ const Filter = z.object({
   column: z.string(),
   relationshipName: z.string().optional(),
   wildcard: z.boolean().optional(),
+  relativeDays: z.number().optional(),
 });
 
 const SearchFilterField = z.object({
