@@ -1,3 +1,5 @@
+-- Function that checks if a new crash doesnt have lat/long, if so will try finding a matching CAD incident
+-- to fill the lat/long with
 CREATE OR REPLACE FUNCTION crashes_fill_cad_coordinates()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -23,7 +25,7 @@ BEGIN
         IF v_lat IS NOT NULL AND v_lon IS NOT NULL THEN
             NEW.latitude := v_lat;
             NEW.longitude := v_lon;
-            NEW.geolocation_provider_id := 3;
+            NEW.geolocation_provider_id := 2; --"apd_cad"
         END IF;
     END IF;
     
