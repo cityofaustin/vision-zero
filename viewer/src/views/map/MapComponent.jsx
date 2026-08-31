@@ -487,7 +487,7 @@ const MapComponent = () => {
       {...viewState}
       onMove={onMove}
       mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-      mapStyle="mapbox://styles/mapbox/light-v9"
+      mapStyle="mapbox://styles/mapbox/light-v11"
       cursor="default"
       interactiveLayerIds={interactiveLayerIds}
       onClick={onClick}
