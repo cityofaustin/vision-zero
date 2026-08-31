@@ -43,7 +43,7 @@ export default function FatalCrashDetailsPage({
 
   const { record_locator: recordLocator } = use(params);
   const { user } = useAuth0();
-  const includeEms = hasRole(ADMIN_EDIT_ROLES, user)
+  const includeEms = hasRole(ADMIN_EDIT_ROLES, user);
 
   const typename = "crashes";
 
@@ -102,10 +102,7 @@ export default function FatalCrashDetailsPage({
       {
         // show alert if crash is a temp record, hide delete button on fatalities pages
         crash.is_temp_record && (
-          <CrashIsTemporaryBanner
-            crash={crash}
-            dismissible
-          />
+          <CrashIsTemporaryBanner crash={crash} dismissible />
         )
       }
       <Row className="fatality-details-row">
@@ -146,9 +143,7 @@ export default function FatalCrashDetailsPage({
                     <td style={{ textWrap: "nowrap" }} className="fw-bold">
                       Risk factors
                     </td>
-                    <td>
-                      {crashesColumns.risk_factors.valueRenderer(crash)}
-                    </td>
+                    <td>{crashesColumns.risk_factors.valueRenderer(crash)}</td>
                   </tr>
                   <tr>
                     <td style={{ textWrap: "nowrap" }} className="fw-bold">

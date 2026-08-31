@@ -46,9 +46,7 @@ export const getRolesArray = (
 export const getHasuraRoleName = (
   roles: HasuraUserRoleName[]
 ): HasuraUserRoleName => {
-  {
-    return roles[0];
-  }
+  return roles[0];
 };
 
 /**

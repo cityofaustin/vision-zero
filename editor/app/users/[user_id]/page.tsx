@@ -16,7 +16,7 @@ import { useUser } from "@/utils/users";
 import { User } from "@/types/users";
 import { formatIsoDateTime } from "@/utils/formatters";
 
-const allowedUserEditRoles = [ADMIN_ROLE]
+const allowedUserEditRoles = [ADMIN_ROLE];
 
 type UserColumn = {
   name: keyof User;
@@ -29,7 +29,8 @@ const COLUMNS: UserColumn[] = [
   {
     name: "app_metadata",
     label: "Role",
-    renderer: (user) => formatRoleName(user.app_metadata?.roles?.[0] || "") || "",
+    renderer: (user) =>
+      formatRoleName(user.app_metadata?.roles?.[0] || "") || "",
   },
   { name: "name", label: "Name" },
   { name: "email", label: "Email" },
