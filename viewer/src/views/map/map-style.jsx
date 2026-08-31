@@ -140,7 +140,7 @@ export const buildHighInjuryLayer = (overlay) => {
   const overlayId = "highInjury";
 
   const highInjuryNetworkLayerConfig = {
-    id: " highInjuryNetwork",
+    id: "highInjuryNetwork",
     type: "line",
     source: "high-injury",
     "source-layer": "Combined_HIN_HIR",
