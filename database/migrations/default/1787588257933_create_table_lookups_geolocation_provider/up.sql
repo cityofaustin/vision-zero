@@ -8,3 +8,9 @@ INSERT INTO "lookups"."geolocation_provider"("id", "label", "source") VALUES (3,
 
 alter table "public"."crashes" add column "geolocation_provider_id" integer
  not null default '1';
+
+alter table "public"."crashes"
+  add constraint "crashes_geolocation_provider_id_fkey"
+  foreign key ("geolocation_provider_id")
+  references "lookups"."geolocation_provider"
+  ("id") on update cascade on delete restrict;
