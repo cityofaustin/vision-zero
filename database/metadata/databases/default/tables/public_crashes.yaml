@@ -46,13 +46,7 @@ object_relationships:
           schema: public
   - name: geolocation_provider
     using:
-      manual_configuration:
-        column_mapping:
-          geolocation_provider_id: id
-        insertion_order: null
-        remote_table:
-          name: geolocation_provider
-          schema: lookups
+      foreign_key_constraint_on: geolocation_provider_id
   - name: light_cond
     using:
       foreign_key_constraint_on: light_cond_id
