@@ -33,8 +33,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- This trigger must fire before crashes_set_spatial_attributes_on_insert trigger, so it must come first alphabetically
-CREATE TRIGGER crashes_fill_cad_coordinates_before_insert
+COMMENT ON FUNCTION crashes_fill_cad_coordinates IS 'This function checks if a new crash doesnt have a lat or long, 
+if not it will try to find a matching CAD incident to fill the lat/long with';
+
+-- This trigger must fire before any other trigger on the crashes table, so it must come first alphabetically
+CREATE TRIGGER 00_crashes_fill_cad_coordinates_before_insert
 BEFORE INSERT ON crashes
 FOR EACH ROW
 EXECUTE FUNCTION crashes_fill_cad_coordinates();
