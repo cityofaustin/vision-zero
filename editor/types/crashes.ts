@@ -12,6 +12,7 @@ import { CrashDiagramOrientation } from "./crashDiagramOrientation";
 import { UnitTypesInvolved } from "@/types/unitTypesInvolved";
 import { CrashRiskFactors } from "@/types/crashRiskFactors";
 import { Location } from "@/types/locations";
+import { GeolocationProvider } from "@/components/CrashMapCard";
 
 export type Crash = {
   active_school_zone_fl: boolean | null;
@@ -25,7 +26,7 @@ export type Crash = {
   crash_speed_limit: number | null;
   crash_timestamp: string | null;
   cris_crash_id: number | null;
-  geolocation_provider: LookupTableOption | null;
+  geolocation_provider: GeolocationProvider;
   collsn: LookupTableOption | null;
   diagram_transform: CrashDiagramOrientation | null;
   ems__incidents?: EMSPatientCareRecord[] | null;
