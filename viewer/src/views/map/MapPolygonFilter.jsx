@@ -234,7 +234,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
           <div className="mapboxgl-ctrl-group mapboxgl-ctrl">
             <button
               className={`mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon ${
-                isDisabled && "disabled"
+                isDisabled ? "disabled" : ""
               }`}
               disabled={isDisabled}
               title="Draw a polygon to filter data"
