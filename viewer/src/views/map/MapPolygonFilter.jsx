@@ -120,12 +120,9 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
         if (!isMounted.current || !drawRef.current) return;
 
         try {
-          const newFeatures = draw.getAll().features;
-          setFeatures(newFeatures);
-
           const editType = event.type;
-          if (editType === "draw.create" && newFeatures.length > 0) {
-            const feature = newFeatures[0];
+          if (editType === "draw.create" && event.features.length > 0) {
+            const feature = event.features[0];
             if (
               feature &&
               feature.geometry &&
@@ -143,6 +140,9 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
                 console.error("Failed to stringify polygon:", error);
               }
             }
+          }
+          else {
+            console.log(editType, draw)
           }
         } catch (error) {
           console.debug("Draw update error:", error);
