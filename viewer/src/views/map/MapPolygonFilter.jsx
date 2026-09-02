@@ -94,8 +94,10 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
                 const wkt = stringifyGeoJSON(feature);
                 if (isMounted.current) {
                   setMapPolygon(wkt);
-                  // Switch back to simple_select mode after drawing
-                  draw.changeMode("simple_select");
+                  if (editType === "draw.create") {
+                    // Switch back to simple_select mode after drawing
+                    draw.changeMode("simple_select");
+                  }
                 }
               } catch (error) {
                 console.error("Failed to stringify polygon:", error);
@@ -148,6 +150,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
         { event: "draw.create", handler: handleUpdate },
         { event: "draw.update", handler: handleUpdate },
         { event: "draw.delete", handler: handleDelete },
+        { event: "draw.modechange", handler: handleModeChange },
       ];
 
       // Cleanup
