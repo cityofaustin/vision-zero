@@ -23,7 +23,9 @@ One-off script which set the `ContentType` header of all CR3 PDFs in our S3 buck
 
 ### VZ incidents ETL - `vz_incidents`
 
-These ETLs were was deveopled to create and link crash-related records together under a `vz_incidents` record type. We decided to pivot away from this concept. See https://github.com/cityofaustin/atd-data-tech/issues/29126.
+These ETLs were was deveopled to create and link crash-related records together under a `vz_incidents` record type. We decided to pivot away from this concept. 
+
+See https://github.com/cityofaustin/vision-zero/pull/2074.
 
 ## Deeper Archive
 
