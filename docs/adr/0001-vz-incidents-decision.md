@@ -74,13 +74,5 @@ Reporting has a forced function and a deadline-shaped consumer — the public da
 
 ## Disposition of work already shipped
 
-Nothing here is "we were wrong, undo it" — it splits into keep and cut.
-
-**Keep, repurposed:**
-- `vz_incident_records_view` — becomes the base for the CAD-as-context join and any future read-time "everything near this crash" query.
-- Incident-number matching (crash↔CAD, EMS/AFD↔CAD via case ID) in `incident_linker.py` — deterministic and cheap; exactly the CAD-context mechanism we want.
-- Editor incident page (`editor/app/incidents/[id]/page.tsx`) — currently stubbed, so pausing it breaks no in-progress workflow. Left dormant; could become a read-only surface later if a use case emerges.
-
-**Cut:**
-- The geo-temporal flood-fill clustering in `incident_linker.py` — the fuzzy matching causing sprawling, contaminated groupings.
-- The persisted `vz_incidents`/`vz_incident_id` grouping table itself, plus its already-scoped teardown (DB tables/columns, docs, matching ETL, Airflow DAG).
+- https://github.com/cityofaustin/atd-data-tech/issues/30060
+- https://github.com/cityofaustin/vision-zero/pull/2128
