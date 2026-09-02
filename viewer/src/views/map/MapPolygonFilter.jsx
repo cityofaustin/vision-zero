@@ -118,7 +118,9 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
           console.log(allFeatures);
           if (allFeatures.length === 0 && isMounted.current) {
             setMapPolygon(null);
-            polygonBtn.classList.toggle("disabled", false);
+            if (polygonBtn) {
+              polygonBtn.classList.toggle("disabled", false);
+            }
           }
         } catch (error) {
           console.debug("Draw delete error:", error);
@@ -126,7 +128,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
       };
 
       const handleModeChange = (event) => {
-        // after drawing a polygon, when mode is simple select, if polygon exists prevent drawing
+        // when mode is simple select, if polygon exists prevent drawing
         if (event.mode === "simple_select") {
           const data = draw.getAll();
           const hasPolygon = data.features.some(
