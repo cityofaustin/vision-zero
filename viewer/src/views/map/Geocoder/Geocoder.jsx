@@ -1,16 +1,14 @@
 import React, { useCallback } from "react";
-import Geocoder from "react-map-gl-geocoder";
-import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import { useControl } from "react-map-gl";
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import { geocoderBbox } from "../mapData";
 
 /**
- * Geocoder component for the map with forwarded map ref
- * Important: all prop objects or function must be memoized for the geocoder
- * dropdown to close after selecting a result.
- * @see https://github.com/SamSamskies/react-map-gl-geocoder/issues/96
- * @param {Function} handleViewportChange - Callback function to update the map viewport
+ * Geocoder component using react-map-gl's useControl hook
+ * This is the recommended approach for v7
  */
-const MapGeocoder = React.forwardRef(({ handleViewportChange }, ref) => {
+const MapGeocoder = ({ handleViewportChange }) => {
   const handleGeocoderViewportChange = useCallback(
     (viewport) => {
       // Speed up the flyTo transition
@@ -26,17 +24,47 @@ const MapGeocoder = React.forwardRef(({ handleViewportChange }, ref) => {
     [handleViewportChange],
   );
 
-  return (
-    <Geocoder
-      mapRef={ref}
-      onViewportChange={handleGeocoderViewportChange}
-      mapboxApiAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-      position="top-left"
-      marker={false}
-      // Bounding box for auto-populated results in the search bar
-      bbox={geocoderBbox}
-    />
+  useControl(
+    () => {
+      return new MapboxGeocoder({
+        accessToken: import.meta.env.VITE_MAPBOX_TOKEN,
+        marker: false,
+        bbox: geocoderBbox,
+        placeholder: "Search for an address or place",
+      });
+    },
+    ({ map }) => {
+      const onResult = (event) => {
+        const { result } = event;
+        if (result && result.center) {
+          // Using map's flyTo for smoother animation
+          map.flyTo({
+            center: [result.center[0], result.center[1]],
+            zoom: 14,
+            duration: 1500,
+          });
+
+          // Also update your React state
+          handleGeocoderViewportChange({
+            longitude: result.center[0],
+            latitude: result.center[1],
+            zoom: 14,
+          });
+        }
+      };
+
+      map.on("result", onResult);
+
+      return () => {
+        map.off("result", onResult);
+      };
+    },
+    {
+      position: "top-left",
+    },
   );
-});
+
+  return null;
+};
 
 export default MapGeocoder;
