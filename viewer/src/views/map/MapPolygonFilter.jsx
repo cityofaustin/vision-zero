@@ -3,7 +3,7 @@ import { useMap } from "react-map-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import { stringify as stringifyGeoJSON } from "wellknown";
-import styled from "styled-components";
+import { mapboxDrawStyles } from "./helpers";
 
 const MapPolygonFilter = ({ setMapPolygon }) => {
   const { current: map } = useMap();
@@ -67,92 +67,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
           trash: true,
         },
         defaultMode: "simple_select",
-        styles: [
-          {
-            id: "gl-draw-polygon-fill",
-            type: "fill",
-            filter: ["all", ["==", "$type", "Polygon"]],
-            paint: {
-              "fill-color": "#3bb2d0",
-              "fill-opacity": 0.1,
-            },
-          },
-          {
-            id: "gl-draw-polygon-stroke",
-            type: "line",
-            filter: ["all", ["==", "$type", "Polygon"]],
-            paint: {
-              "line-color": "#3bb2d0",
-              "line-width": 2,
-            },
-          },
-          {
-            id: "gl-draw-lines",
-            type: "line",
-            filter: [
-              "any",
-              ["==", "$type", "LineString"],
-              ["==", "$type", "Polygon"],
-            ],
-            layout: {
-              "line-cap": "round",
-              "line-join": "round",
-            },
-            paint: {
-              "line-color": [
-                "case",
-                ["==", ["get", "active"], "true"],
-                "#fbb03b",
-                "#3bb2d0",
-              ],
-              "line-dasharray": [
-                "case",
-                ["==", ["get", "active"], "true"],
-                [0.2, 2],
-                [2, 0],
-              ],
-              "line-width": 2,
-            },
-          },
-          {
-            id: "gl-draw-vertex-outer",
-            type: "circle",
-            filter: [
-              "all",
-              ["==", "$type", "Point"],
-              ["==", "meta", "vertex"],
-              ["!=", "mode", "simple_select"],
-            ],
-            paint: {
-              "circle-radius": [
-                "case",
-                ["==", ["get", "active"], "true"],
-                7,
-                5,
-              ],
-              "circle-color": "#fff",
-            },
-          },
-          {
-            id: "gl-draw-vertex-inner",
-            type: "circle",
-            filter: [
-              "all",
-              ["==", "$type", "Point"],
-              ["==", "meta", "vertex"],
-              ["!=", "mode", "simple_select"],
-            ],
-            paint: {
-              "circle-radius": [
-                "case",
-                ["==", ["get", "active"], "true"],
-                5,
-                3,
-              ],
-              "circle-color": "#3bb2d0",
-            },
-          },
-        ],
+        styles: mapboxDrawStyles,
       });
 
       // Add draw control to map
@@ -198,7 +113,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
         try {
           const polygonBtn = document.querySelector(".mapbox-gl-draw_polygon");
           const allFeatures = draw.getAll().features;
-          console.log(allFeatures)
+          console.log(allFeatures);
           if (allFeatures.length === 0 && isMounted.current) {
             setMapPolygon(null);
             polygonBtn.classList.toggle("disabled", false);
@@ -209,6 +124,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
       };
 
       const handleModeChange = (event) => {
+        // after drawing a polygon, when mode is simple select, if polygon exists prevent drawing
         if (event.mode === "simple_select") {
           const data = draw.getAll();
           const hasPolygon = data.features.some(
