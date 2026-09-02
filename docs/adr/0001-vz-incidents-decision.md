@@ -1,7 +1,7 @@
 
 ---
 
-# ADR: Scope down `vz_incidents` to a read-time view
+# ADR: Retire the `vz_incidents` entity - resolve records at the source, unify on-demand
 
 **Status:** Decided
 **Author:** John Clary
