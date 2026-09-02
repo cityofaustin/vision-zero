@@ -99,12 +99,40 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
             },
           },
           {
+            id: "gl-draw-lines",
+            type: "line",
+            filter: [
+              "any",
+              ["==", "$type", "LineString"],
+              ["==", "$type", "Polygon"],
+            ],
+            layout: {
+              "line-cap": "round",
+              "line-join": "round",
+            },
+            paint: {
+              "line-color": [
+                "case",
+                ["==", ["get", "active"], "true"],
+                "#fbb03b",
+                "#3bb2d0",
+              ],
+              "line-dasharray": [
+                "case",
+                ["==", ["get", "active"], "true"],
+                [0.2, 2],
+                [2, 0],
+              ],
+              "line-width": 2,
+            },
+          },
+          {
             id: "gl-draw-polygon-midpoint",
             type: "circle",
             filter: ["all", ["==", "$type", "Point"]],
             paint: {
               "circle-radius": 4,
-              "circle-color": "#fbb03b",
+              "circle-color": "#3bb2d0",
             },
           },
         ],
@@ -123,8 +151,12 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
           if (editType === "draw.create" && event.features.length > 0) {
             const feature = event.features[0];
             // remove any other existing polygons so only this one remains
-            const others = draw.getAll().features.filter(existingFeatures => existingFeatures.id !== feature.id);
-            others.forEach(other => draw.delete(other.id));
+            const others = draw
+              .getAll()
+              .features.filter(
+                (existingFeatures) => existingFeatures.id !== feature.id,
+              );
+            others.forEach((other) => draw.delete(other.id));
             if (
               feature &&
               feature.geometry &&
@@ -134,7 +166,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
                 const wkt = stringifyGeoJSON(feature);
                 if (isMounted.current) {
                   setMapPolygon(wkt);
-                  console.count("setmappolygon")
+                  console.count("setmappolygon");
                   // Switch back to simple_select mode after drawing
                   draw.changeMode("simple_select");
                 }
@@ -142,10 +174,9 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
                 console.error("Failed to stringify polygon:", error);
               }
             }
-          }
-          else {
+          } else {
             // TODO: handle draw.update editType
-            console.log(editType, draw)
+            console.log(editType, draw);
           }
         } catch (error) {
           console.debug("Draw update error:", error);
@@ -153,7 +184,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
       };
 
       const handleDelete = (event) => {
-        console.log("handledelete")
+        console.log("handledelete");
         if (!isMounted.current || !drawRef.current) return;
 
         try {
@@ -226,10 +257,8 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
   //   }
   // }, []);
 
-
   // TODO: handle position of draw tools
   // TODO: disabled when one already exists?
-
 
   // const _renderDrawTools = () => {
   //   const isDisabled = features.length > 0;
