@@ -127,7 +127,7 @@ const Footer = () => {
             ))}
           </Row>
           <img
-            alt="City of Austin seal"
+            alt="City of Austin logo"
             className="coa-logo"
             height="100px"
             src={logo}
