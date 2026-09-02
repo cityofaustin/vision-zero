@@ -1,6 +1,6 @@
-# Toolbox
+# Toolbox archive
 
-This is a collection of scripts which have been written to serve a one-time or infrequent purpose. They are not intended to be run in an automated fashion and commonly would be used from the command line when needed. They will each have different parameters and possible environment variables which need to be set for the script to function as intended.
+This is a collection of scripts which have been written to serve a one-time or historical purpose.
 
 ## Contents
 
@@ -12,13 +12,6 @@ Helper script to disable or enable all VZ users through the Auth0 API.
 
 Various scripts used as part of launching the new data model for VZ v2.0. We want to keep these around for the few months after launch (August 2024) but they can be archived in the near future.
 
-### ArcGIS Online Layer Helper - `load_agol_layer`
-
-Nodejs tool load ArcGIS Online (AGOL) layers into the Vision Zero database.
-
-### Lookup table helper - `get_lookup_table_changes`
-
-Script which compares lookup tables between a CRIS extract and the VZ database and generates database migrations. We should run this script after CRIS software releases.
 
 ### Crash Narrative Flagging
 
@@ -26,10 +19,13 @@ This script runs a Large Language Model (LLM) locally to flag input text as pote
 
 ### Backkfill Content type - `backfill_content_type`
 
-This script sets the `ContentType` header of all CR3 PDFs in our S3 bucket.
+One-off script which set the `ContentType` header of all CR3 PDFs in our S3 bucket.
 
+### VZ incidents ETL - `vz_incidents`
 
-## Archive
+These ETLs were was deveopled to create and link crash-related records together under a `vz_incidents` record type. We decided to pivot away from this concept. See https://github.com/cityofaustin/atd-data-tech/issues/29126.
+
+## Deeper Archive
 
 These toolbox scripts were deleted from the repository. Most of them are incompatible with v2.0 of our database. These deletions were committed at hash `569511cc0d598120be4146920623f55c1a8501a3`.
 
