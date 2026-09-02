@@ -3,7 +3,6 @@
 
 # ADR: Retire the `vz_incidents` entity - resolve records at the source, unify on-demand
 
-**Status:** Decided
 **Author:** John Clary
 **Date:** 2026-08-11
 
