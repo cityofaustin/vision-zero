@@ -12,13 +12,6 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
   const isMounted = useRef(true);
   const eventHandlersRef = useRef([]);
 
-  const StyledDrawTools = styled.div`
-    .disabled {
-      filter: opacity(0.3) drop-shadow(0 0 0 #fff);
-      cursor: default;
-    }
-  `;
-
   // Cleanup draw control
   const cleanupDraw = useCallback(() => {
     if (drawRef.current && map && !map._removed) {
@@ -122,11 +115,40 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
             },
           },
           {
-            id: "gl-draw-polygon-midpoint",
+            id: "gl-draw-vertex-outer",
             type: "circle",
-            filter: ["all", ["==", "$type", "Point"]],
+            filter: [
+              "all",
+              ["==", "$type", "Point"],
+              ["==", "meta", "vertex"],
+              ["!=", "mode", "simple_select"],
+            ],
             paint: {
-              "circle-radius": 4,
+              "circle-radius": [
+                "case",
+                ["==", ["get", "active"], "true"],
+                7,
+                5,
+              ],
+              "circle-color": "#fff",
+            },
+          },
+          {
+            id: "gl-draw-vertex-inner",
+            type: "circle",
+            filter: [
+              "all",
+              ["==", "$type", "Point"],
+              ["==", "meta", "vertex"],
+              ["!=", "mode", "simple_select"],
+            ],
+            paint: {
+              "circle-radius": [
+                "case",
+                ["==", ["get", "active"], "true"],
+                5,
+                3,
+              ],
               "circle-color": "#3bb2d0",
             },
           },
@@ -143,15 +165,11 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
 
         try {
           const editType = event.type;
-          if (editType === "draw.create" && event.features.length > 0) {
+          if (
+            (editType === "draw.create" || editType === "draw.update") &&
+            event.features.length > 0
+          ) {
             const feature = event.features[0];
-            // remove any other existing polygons so only this one remains
-            const others = draw
-              .getAll()
-              .features.filter(
-                (existingFeatures) => existingFeatures.id !== feature.id,
-              );
-            others.forEach((other) => draw.delete(other.id));
             if (
               feature &&
               feature.geometry &&
@@ -161,7 +179,6 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
                 const wkt = stringifyGeoJSON(feature);
                 if (isMounted.current) {
                   setMapPolygon(wkt);
-                  console.count("setmappolygon");
                   // Switch back to simple_select mode after drawing
                   draw.changeMode("simple_select");
                 }
@@ -169,9 +186,6 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
                 console.error("Failed to stringify polygon:", error);
               }
             }
-          } else {
-            // TODO: handle draw.update editType
-            console.log(editType, draw);
           }
         } catch (error) {
           console.debug("Draw update error:", error);
@@ -182,12 +196,28 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
         if (!isMounted.current || !drawRef.current) return;
 
         try {
+          const polygonBtn = document.querySelector(".mapbox-gl-draw_polygon");
           const allFeatures = draw.getAll().features;
+          console.log(allFeatures)
           if (allFeatures.length === 0 && isMounted.current) {
             setMapPolygon(null);
+            polygonBtn.classList.toggle("disabled", false);
           }
         } catch (error) {
           console.debug("Draw delete error:", error);
+        }
+      };
+
+      const handleModeChange = (event) => {
+        if (event.mode === "simple_select") {
+          const data = draw.getAll();
+          const hasPolygon = data.features.some(
+            (f) => f.geometry.type === "Polygon",
+          );
+          const polygonBtn = document.querySelector(".mapbox-gl-draw_polygon");
+          if (polygonBtn) {
+            polygonBtn.classList.toggle("disabled", hasPolygon);
+          }
         }
       };
 
@@ -195,6 +225,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
       map.on("draw.create", handleUpdate);
       map.on("draw.update", handleUpdate);
       map.on("draw.delete", handleDelete);
+      map.on("draw.modechange", handleModeChange);
 
       // Store handlers for cleanup
       eventHandlersRef.current = [
