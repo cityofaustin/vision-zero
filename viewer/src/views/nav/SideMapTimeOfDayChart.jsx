@@ -118,11 +118,6 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
     }
   };
 
-  const createTooltipData = (tooltipItem) => {
-    const index = tooltipItem.index;
-    return `${timeWindowPercentages[index]}% (${timeWindowData[index]})`;
-  };
-
   const createChartTimeLabels = () =>
     Object.keys(filters).map((label) => label);
 
@@ -163,7 +158,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
           ref={(ref) => (chartRef.current = ref)}
           data={data}
           height={250}
-          aria-label="TODO"
+          aria-label="Horizontal bar chart showing crash distribution by time of day"
           onClick={handleBarClick}
           options={{
             indexAxis: "y",

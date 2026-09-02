@@ -328,7 +328,7 @@ const PeopleByDemographics = () => {
                 data={chartData}
                 height={null}
                 width={null}
-                aria-label="TODO"
+                aria-label="Crash victim demographics by year with race, age, and sex filters"
                 options={{
                   indexAxis: "y",
                   responsive: true,

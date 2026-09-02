@@ -3,7 +3,6 @@ import { StoreContext } from "src/constants/context";
 import { useLocation } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 
-import CssBaseline from "@mui/material/CssBaseline";
 import Drawer from "@mui/material/Drawer";
 import { styled } from "@mui/material/styles";
 
@@ -83,7 +82,6 @@ const SideDrawer = () => {
     <StyledDrawer>
       <Root id={currentPath === "/" ? "summary-side-drawer" : ""}>
         <Nav>
-          <CssBaseline />
           <DrawerStyled
             id="temporary-drawer"
             variant="temporary"
@@ -96,10 +94,9 @@ const SideDrawer = () => {
           >
             <SideDrawerContent type="temporary" />
           </DrawerStyled>
-
           <DrawerStyled
             id="permanent-drawer"
-            variant="permanent"
+            variant="permanent" // this is always mounted, but when on mobile display is none
             anchor={anchor}
           >
             <SideDrawerContent type="permanent" />

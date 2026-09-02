@@ -150,7 +150,7 @@ const CrashesByPopulation = () => {
                 data={chartData}
                 width={null}
                 height={null}
-                aria-label="TODO"
+                aria-label="Bar chart showing crash rate per 100,000 residents by year"
                 options={{
                   responsive: true,
                   aspectRatio: 0.849,

@@ -1,9 +1,6 @@
 import { useEffect } from "react";
 import { mapRequestFields } from "../summary/queries/socrataQueries";
-import { format } from "date-fns";
-
-const convertDateToSocrataFormat = (date, suffix) =>
-  format(new Date(date), "yyyy-MM-dd") + suffix;
+import { format, isValid } from "date-fns";
 
 const generateWhereFilters = (filters) => {
   // Store filter group query strings
@@ -47,8 +44,13 @@ export const createMapDataUrl = (
   // SideMapControlDateRange uses null to check if user set dates so
   // need to handle it and avoid unnecessary API calls
   if (dateRange.start === null || dateRange.end === null) return null;
-  const startDate = convertDateToSocrataFormat(dateRange.start, "T00:00:00");
-  const endDate = convertDateToSocrataFormat(dateRange.end, "T23:59:59");
+
+  // if the dates are not valid, return null to avoid API call
+  if (!isValid(dateRange.start) || !isValid(dateRange.end)) return null;
+
+  // convert dates to socrata format
+  const startDate = format(dateRange.start, "yyyy-MM-dd") + "T00:00:00";
+  const endDate = format(dateRange.end, "yyyy-MM-dd") + "T23:59:59";
 
   // Return null to prevent populating map with unfiltered data
   return filterCount === 0
