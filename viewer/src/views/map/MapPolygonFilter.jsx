@@ -90,13 +90,14 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
               feature.geometry &&
               feature.geometry.type === "Polygon"
             ) {
+              console.log(feature)
               try {
                 const wkt = stringifyGeoJSON(feature);
                 if (isMounted.current) {
                   setMapPolygon(wkt);
                   if (editType === "draw.create") {
                     // Switch back to simple_select mode after drawing
-                    draw.changeMode("simple_select");
+                    draw.changeMode("simple_select", { featureIds: [feature.id] });
                   }
                 }
               } catch (error) {
