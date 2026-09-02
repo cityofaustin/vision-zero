@@ -19,9 +19,9 @@ This redirects near-term effort toward crash report / EMS-matching UI, ETL, and 
 
 ## Context
 
-A single real-world crash can generate records in our database from four data sources (`crashes`, `ems__incidents`, future `afd__incidents`, `cad_incidents`).
+A single real-world crash can generate records in our database from four data sources (`crashes`, `ems__incidents`, `afd__incidents`, `cad_incidents`).
 
- In order to enable the Vision Zero team needs to be cleanly identify, analyze, and report out on individual crash events, we conceived of a composite new record type that would organize the [various data sources]([#data-sources](https://github.com/cityofaustin/vision-zero/blob/08ebb40bd2aa06f14010f696b28a7bb46ce0c760/database/README.md#data-sources)) under a single containing object.
+ In order to enable the Vision Zero team needs to cleanly identify, analyze, and report out on individual crash events, we conceived of a composite new record type that would organize the [various data sources]([#data-sources](https://github.com/cityofaustin/vision-zero/blob/08ebb40bd2aa06f14010f696b28a7bb46ce0c760/database/README.md#data-sources)) under a single containing object.
 
 This record type, `vz_incidents`, would be constructed via a geo-temporal matching ETL and persisted in the database. This [slide deck](https://docs.google.com/presentation/d/19VPgBQTFj_Ygj5V0aQFQ8GFnfTemieUddglz6qWURVM/edit?slide=id.p#slide=id.p) outlines the concept.
 
@@ -49,7 +49,7 @@ It's *possible* that we could develop a more sophisticated incident matching aut
 
 We are re-focusing on discrete goals around getting impactful data to our crash data consumers: the Vision Zero team, transportation engineers, and the public (via the Open Data Portal and Vision Zero Viewer). The persitsted incidents concept has proven not to advance that need. 
 
-VZE UI enhancements targeting unified views of "incidents" need further refinement, and we have not yet named functionality that calls for a permalinked, cross-source event ID. should can proceed with getting the record-level injury math right first - with the existing data we have - to ensure we have defensible metrics.
+VZE UI enhancements targeting unified views of "incidents" need further refinement, and we have not yet named functionality that calls for a permalinked, cross-source event ID. We should proceed with getting the record-level injury math right first - with the existing data we have - and follow along with athoritative views which clear, reliable metrics.
 
 ## Goals & outcomes
 
