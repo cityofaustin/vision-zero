@@ -24,6 +24,7 @@ import { useImage } from "@/utils/images";
 import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
 import ImageUploadModal from "@/components/ImageUploadModal";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useServiceRequestUrl } from "@/utils/serviceRequest";
 
 interface DiagramAlertProps {
   variant: "info" | "danger" | "success" | "warning";
@@ -80,6 +81,7 @@ export default function CrashDiagramCard({
   const [isTouched, setIsTouched] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
+  const serviceRequestUrl = useServiceRequestUrl();
 
   const defaultValues = useMemo(() => {
     return crash.diagram_transform
@@ -265,8 +267,8 @@ export default function CrashDiagramCard({
             variant="danger"
             message={<p>The crash diagram is not available.</p>}
             link={{
-              href: "https://atd.knack.com/dts#new-service-request/?view_249_vars=%7B%22field_398%22%3A%22Bug%20Report%20%E2%80%94%20Something%20is%20not%20working%22%2C%22field_399%22%3A%22Vision%20Zero%20Editor%22%7D",
-              text: "report a bug",
+              href: serviceRequestUrl,
+              text: "contact support",
             }}
           />
         )}
