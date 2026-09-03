@@ -3,54 +3,71 @@ import { useAuth0, User } from "@auth0/auth0-react";
 import { usePathname, useRouter } from "next/navigation";
 
 /**
+ * The allowed role names we've defined in Hasura
+ */
+export type HasuraUserRoleName = "vz-admin" | "editor" | "readonly";
+
+/**
  * Add our claims to the Auth0 ID token—these are
  * added via Auth0 action
  */
 interface CustomUser extends User {
   "https://hasura.io/jwt/claims"?: {
-    "x-hasura-allowed-roles"?: string[];
+    "x-hasura-allowed-roles"?: HasuraUserRoleName[];
   };
 }
+
+const EDITOR_ROLE: HasuraUserRoleName = "editor";
+export const ADMIN_ROLE: HasuraUserRoleName = "vz-admin";
+
+export const ADMIN_EDIT_ROLES: HasuraUserRoleName[] = [EDITOR_ROLE, ADMIN_ROLE];
 
 /**
  * Get the allowed roles array from a user object
  * */
-export const getRolesArray = (user: CustomUser | undefined) =>
-  user?.["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"];
+export const getRolesArray = (
+  user: Partial<CustomUser>
+): HasuraUserRoleName[] => {
+  const role =
+    user?.["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"];
+
+  if (!role) {
+    console.warn(
+      "User has malformed/missing Hasura JWT claims. No allowed role found."
+    );
+    return ["readonly"];
+  }
+  return role;
+};
 
 /**
  * Get a user's hasura role name from their allowed roles
  */
-export const getHasuraRoleName = (roles?: string[]): string => {
-  if (!roles) {
-    // this would be the result of a malformed/corrupted user account -
-    // check this user's raw JSON in the Auth0 user database
-    return "";
-  } else {
-    return roles[0] || "";
-  }
+export const getHasuraRoleName = (
+  roles: HasuraUserRoleName[]
+): HasuraUserRoleName => {
+  return roles[0];
 };
 
 /**
  * Check if a user has any of the provided role names
- * @param roles - an array of roles to check for
+ * @param roles - a role string or an array of roles to check for
  * @param user - the user object
  * @returns True if the user has any of the provided roles
  */
-export const hasRole = (roles: string[], user: CustomUser) =>
-  roles.includes(getHasuraRoleName(getRolesArray(user)));
+export const hasRole = (
+  roles: HasuraUserRoleName[] | HasuraUserRoleName,
+  user?: CustomUser
+): boolean => {
+  if (!user) return false;
+  const userRole = getHasuraRoleName(getRolesArray(user));
 
-/** Roles that have editor or administrator permisisons */
-export const ADMIN_EDIT_ROLES = ["editor", "vz-admin"];
-
-/** Roles that may view EMS patient care records */
-export const EMS_VIEW_ROLES = [...ADMIN_EDIT_ROLES];
-
-/**
- * True if the user may see EMS content (nav, crash details card, GraphQL fields)
- */
-export const canViewEms = (user: CustomUser | undefined) =>
-  Boolean(user && hasRole(EMS_VIEW_ROLES, user));
+  if (typeof roles === "string") {
+    return userRole === roles;
+  } else {
+    return roles.includes(userRole);
+  }
+};
 
 /**
  * Make the hasura role name human-friendly
@@ -118,12 +135,12 @@ export const useGetToken = (): (() => Promise<string | undefined>) => {
  * if (!isAuthorized) return null;
  */
 export const useRequiredPageRole = (
-  allowedRoles: string[],
+  allowedRoles: HasuraUserRoleName[],
   redirectTo: string = "/unauthorized"
 ): boolean => {
   const { user } = useAuth0();
   const router = useRouter();
-  const isAuthorized = !!user && hasRole(allowedRoles, user);
+  const isAuthorized = hasRole(allowedRoles, user);
 
   useEffect(() => {
     if (user && !isAuthorized) {

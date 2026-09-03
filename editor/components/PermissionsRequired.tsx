@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { hasRole } from "@/utils/auth";
+import { hasRole, HasuraUserRoleName } from "@/utils/auth";
 
 interface PermissionsRequiredProps {
   children: ReactNode;
-  allowedRoles?: string[];
+  allowedRoles?: HasuraUserRoleName[];
 }
 
 /**
@@ -17,7 +17,7 @@ export default function PermissionsRequired({
   allowedRoles,
 }: PermissionsRequiredProps) {
   const { user } = useAuth0();
-  if (!allowedRoles || (user && hasRole(allowedRoles, user))) {
+  if (!allowedRoles || hasRole(allowedRoles, user)) {
     return children;
   }
   return null;

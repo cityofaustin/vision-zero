@@ -32,9 +32,9 @@ import { parseISO, subHours, addHours } from "date-fns";
 import { Crash } from "@/types/crashes";
 import EMSMapCard from "@/components/EMSMapCard";
 import { NonCR3Record } from "@/types/nonCr3";
-import { useAuth0 } from "@auth0/auth0-react";
-import { EMS_VIEW_ROLES, useRequiredPageRole } from "@/utils/auth";
+import { ADMIN_EDIT_ROLES, useRequiredPageRole } from "@/utils/auth";
 import UserEventsLogger from "@/components/UserEventsLogger";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function EMSDetailsPage({
   params,
@@ -44,7 +44,7 @@ export default function EMSDetailsPage({
   const [selectedEmsPcr, setSelectedEmsPcr] =
     useState<EMSPatientCareRecord | null>(null);
 
-  const isAuthorized = useRequiredPageRole(EMS_VIEW_ROLES);
+  const isAuthorized = useRequiredPageRole(ADMIN_EDIT_ROLES);
 
   const { incident_number } = use(params);
 

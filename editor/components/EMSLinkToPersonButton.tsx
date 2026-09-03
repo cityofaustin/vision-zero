@@ -5,8 +5,7 @@ import { PeopleListRow } from "@/types/peopleList";
 import { FaLink } from "react-icons/fa6";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import AlignedLabel from "@/components/AlignedLabel";
-
-const allowedLinkRecordRoles = ["vz-admin", "editor"];
+import { ADMIN_EDIT_ROLES } from "@/utils/auth";
 
 export interface EMSLinkToPersonButtonProps extends Record<string, unknown> {
   onClick: (emsId: number, personId: number) => void;
@@ -25,7 +24,7 @@ const EMSLinkToPersonButton: React.FC<
   }
 
   return (
-    <PermissionsRequired allowedRoles={allowedLinkRecordRoles}>
+    <PermissionsRequired allowedRoles={ADMIN_EDIT_ROLES}>
       <Button
         size="sm"
         variant="primary"

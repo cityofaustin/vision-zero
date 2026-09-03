@@ -19,8 +19,7 @@ import AlignedLabel from "@/components/AlignedLabel";
 import { LuSquarePen } from "react-icons/lu";
 import { Location } from "@/types/locations";
 import LocationPolygonLayer from "@/components/LocationPolygonLayer";
-
-const allowedMapEditRoles = ["vz-admin", "editor"];
+import { ADMIN_EDIT_ROLES } from "@/utils/auth";
 
 interface CrashMapCardProps {
   savedLatitude: number | null;
@@ -108,7 +107,7 @@ export default function CrashMapCard({
         </PointMap>
       </Card.Body>
       <Card.Footer>
-        <PermissionsRequired allowedRoles={allowedMapEditRoles}>
+        <PermissionsRequired allowedRoles={ADMIN_EDIT_ROLES}>
           <div
             className={`d-flex align-items-center ${isEditing ? "justify-content-between" : "justify-content-end"}`}
           >
