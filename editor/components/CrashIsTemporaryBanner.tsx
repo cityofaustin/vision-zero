@@ -6,8 +6,7 @@ import AlignedLabel from "./AlignedLabel";
 import DeleteTemporaryCrashModal from "./DeleteTemporaryCrashModal";
 import PermissionsRequired from "@/components/PermissionsRequired";
 import { Crash } from "@/types/crashes";
-
-const allowedDeleteCrashRecordEditRoles = ["vz-admin", "editor"];
+import { ADMIN_EDIT_ROLES } from "@/utils/auth";
 
 interface CrashIsTemporaryBannerProps {
   crash: Crash;
@@ -43,7 +42,7 @@ export default function CrashIsTemporaryBanner({
           </span>
         </span>
         {allowDelete && (
-          <PermissionsRequired allowedRoles={allowedDeleteCrashRecordEditRoles}>
+          <PermissionsRequired allowedRoles={ADMIN_EDIT_ROLES}>
             <span>
               <Button variant="danger" onClick={() => setShowDeleteModal(true)}>
                 <AlignedLabel>

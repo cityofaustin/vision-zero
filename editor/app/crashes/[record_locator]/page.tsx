@@ -1,7 +1,6 @@
 "use client";
 import { notFound } from "next/navigation";
 import { use, useCallback, useMemo } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import ChangeLog from "@/components/ChangeLog";
@@ -29,7 +28,6 @@ import { UPDATE_PERSON } from "@/queries/person";
 import { UPDATE_UNIT } from "@/queries/unit";
 import { Crash } from "@/types/crashes";
 import { ShortcutKeyLookup } from "@/types/keyboardShortcuts";
-import { canViewEms, EMS_VIEW_ROLES } from "@/utils/auth";
 import { useQuery } from "@/utils/graphql";
 import {
   scrollToElementOnKeyPress,
@@ -37,6 +35,8 @@ import {
 } from "@/utils/shortcuts";
 import EMSCardHeader from "@/components/EMSCardHeader";
 import { useDocumentTitle } from "@/utils/documentTitle";
+import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const typename = "crashes";
 
@@ -57,7 +57,7 @@ export default function CrashDetailsPage({
 }) {
   const { record_locator: recordLocator } = use(params);
   const { user } = useAuth0();
-  const includeEms = canViewEms(user);
+  const includeEms = hasRole(ADMIN_EDIT_ROLES, user);
 
   const activeShortcutKeyLookup = useMemo(
     () =>
@@ -129,7 +129,7 @@ export default function CrashDetailsPage({
             mutation={UPDATE_CRASH}
             locationId={crash.location_id}
             location={crash.atd_txdot_location}
-            isManualGeocode={crash.crashes_list_view.is_manual_geocode}
+            geolocationProvider={crash.geolocation_provider?.label}
           />
         </Col>
         <Col sm={12} md={6} lg={4} className="mb-3">
@@ -209,7 +209,7 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <PermissionsRequired allowedRoles={EMS_VIEW_ROLES}>
+      <PermissionsRequired allowedRoles={ADMIN_EDIT_ROLES}>
         <Row id="ems" className="offset-header-scroll-top">
           <ShortcutHelperText shortcutKey="E" />
           <Col sm={12} className="mb-1">
