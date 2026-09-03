@@ -22,6 +22,19 @@ import LocationPolygonLayer from "@/components/LocationPolygonLayer";
 
 const allowedMapEditRoles = ["vz-admin", "editor"];
 
+type GeolocationProviderCode = "cris" | "apd_cad" | "manual_qa";
+
+const formattedGeoProvider = {
+  cris: "TxDOT CRIS",
+  apd_cad: "APD CAD",
+  manual_qa: "Manual Q/A",
+} satisfies Record<GeolocationProviderCode, string>;
+
+export type GeolocationProvider = {
+  id: number;
+  label: GeolocationProviderCode;
+};
+
 interface CrashMapCardProps {
   savedLatitude: number | null;
   savedLongitude: number | null;
@@ -29,7 +42,8 @@ interface CrashMapCardProps {
   onSaveCallback: () => Promise<void>;
   mutation: string;
   locationId: string | null;
-  isManualGeocode: boolean | null;
+  geolocationProvider: GeolocationProviderCode;
+
   location?: Location | null;
 }
 
@@ -43,7 +57,7 @@ export default function CrashMapCard({
   onSaveCallback,
   mutation,
   locationId,
-  isManualGeocode,
+  geolocationProvider,
   location,
 }: CrashMapCardProps) {
   const mapRef = useRef<MapRef | null>(null);
@@ -86,11 +100,8 @@ export default function CrashMapCard({
         <div>
           <span className="fw-bold me-2">Provider </span>
           <span>
-            {" "}
-            {hasCoordinates
-              ? isManualGeocode
-                ? "Manual Q/A"
-                : "TxDOT CRIS"
+            {hasCoordinates && geolocationProvider
+              ? formattedGeoProvider[geolocationProvider]
               : "No Primary Coordinates"}
           </span>
         </div>
@@ -156,7 +167,10 @@ export default function CrashMapCard({
                     setValidationError(undefined);
                     await mutate({
                       id: crashId,
-                      updates: coordinatesToSave,
+                      updates: {
+                        ...coordinatesToSave,
+                        geolocation_provider_id: 3, // Manual Q/A
+                      },
                     });
                     await onSaveCallback();
                     setIsEditing(false);

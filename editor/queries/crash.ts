@@ -25,6 +25,10 @@ export const GET_CRASH = gql`
       crash_timestamp
       fhe_collsn_id
       is_coa_roadway
+      geolocation_provider {
+        id
+        label
+      }
       collsn {
         id
         label
