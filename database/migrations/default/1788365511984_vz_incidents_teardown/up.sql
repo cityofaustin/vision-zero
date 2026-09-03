@@ -1,7 +1,7 @@
 drop view if exists vz_incident_records_view;
 
 alter table crashes
-drop columnifvz_incident_id,
+drop column vz_incident_id,
 drop column vz_incident_match_status,
 drop column vz_incident_matched_ids;
 
