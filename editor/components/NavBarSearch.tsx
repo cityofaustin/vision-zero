@@ -1,5 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import Spinner from "react-bootstrap/Spinner";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -16,6 +17,7 @@ import { EMSPatientCareRecord } from "@/types/ems";
 import { Location } from "@/types/locations";
 import { useQuery } from "@/utils/graphql";
 import { useLogUserEvent } from "@/utils/userEvents";
+import { ADMIN_EDIT_ROLES, hasRole, HasuraUserRoleName } from "@/utils/auth";
 
 const navSearchLocalStorageKey = "navBarSearchField";
 
@@ -34,6 +36,7 @@ type SearchField<T extends SearchableTypes = SearchableTypes> = {
   label: string;
   query: string;
   getUrl: (record: T) => string;
+  allowedRoles?: HasuraUserRoleName[];
 };
 
 /**
@@ -62,6 +65,7 @@ const SEARCH_FIELDS = [
     label: "EMS Incident #",
     query: EMS_INCIDENT_NAV_SEARCH,
     getUrl: (record: EMSPatientCareRecord) => `/ems/${record.incident_number}`,
+    allowedRoles: ADMIN_EDIT_ROLES,
   },
   {
     key: "location_id",
@@ -74,17 +78,21 @@ const SEARCH_FIELDS = [
 /**
  * Find a search field config from an input key - it's a safe way to handle an
  * arbitrary key string from local storage
- * @param val
+ * @param key
+ * @param fields - the permission-filtered fields to search/fall back within
  * @returns
  */
-const getValidSearchField = (key: string | null): AnySearchField => {
+const getValidSearchField = (
+  key: string | null,
+  fields: AnySearchField[]
+): AnySearchField => {
   if (!key) {
-    return SEARCH_FIELDS[0];
+    return fields[0];
   }
-  const foundSearchField = SEARCH_FIELDS.find(
+  const foundSearchField = fields.find(
     (searchField) => searchField.key === key
   );
-  return foundSearchField || SEARCH_FIELDS[0];
+  return foundSearchField || fields[0];
 };
 
 const subscribeToNavSearchStorage = (onStoreChange: () => void) => {
@@ -105,10 +113,15 @@ export default function NavBarSearch() {
     getNavSearchStorageSnapshot,
     () => null
   );
+  const { user } = useAuth0();
+  const visibleSearchFields = SEARCH_FIELDS.filter(
+    (field) => !field.allowedRoles || hasRole(field.allowedRoles, user)
+  );
   const [searchFieldOverride, setSearchFieldOverride] =
     useState<AnySearchField | null>(null);
   const searchField =
-    searchFieldOverride ?? getValidSearchField(storedSearchKey);
+    searchFieldOverride ??
+    getValidSearchField(storedSearchKey, visibleSearchFields);
   const [searchValue, setSearchValue] = useState("");
   const [searchClicked, setSearchClicked] = useState(false);
   const [pendingRoute, setPendingRoute] = useState<string | null>(null);
@@ -175,7 +188,7 @@ export default function NavBarSearch() {
               </AlignedLabel>
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              {SEARCH_FIELDS.map((searchFieldOption) => (
+              {visibleSearchFields.map((searchFieldOption) => (
                 <Dropdown.Item
                   key={searchFieldOption.key}
                   active={searchFieldOption.key === searchField.key}

@@ -2,13 +2,13 @@ import { FaRegHeart, FaCarBurst } from "react-icons/fa6";
 import { RiDashboard3Line } from "react-icons/ri";
 import { LuMapPin, LuAmbulance, LuCloudUpload, LuUsers } from "react-icons/lu";
 import { IconType } from "react-icons";
-import { EMS_VIEW_ROLES } from "@/utils/auth";
+import { ADMIN_EDIT_ROLES, HasuraUserRoleName } from "@/utils/auth";
 
 interface Route {
   path: string;
   label: string;
   icon: IconType;
-  allowedRoles?: string[];
+  allowedRoles?: HasuraUserRoleName[];
 }
 
 export const routes: Route[] = [
@@ -36,13 +36,13 @@ export const routes: Route[] = [
     path: "ems",
     label: "EMS",
     icon: LuAmbulance,
-    allowedRoles: EMS_VIEW_ROLES,
+    allowedRoles: ADMIN_EDIT_ROLES,
   },
   {
     path: "upload-non-cr3",
     label: "Upload Non-CR3",
     icon: LuCloudUpload,
-    allowedRoles: ["editor", "vz-admin"],
+    allowedRoles: ADMIN_EDIT_ROLES,
   },
   {
     path: "users",
