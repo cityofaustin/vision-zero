@@ -24,6 +24,7 @@ import { useImage } from "@/utils/images";
 import { hasRole } from "@/utils/auth";
 import ImageUploadModal from "@/components/ImageUploadModal";
 import { useAuth0 } from "@auth0/auth0-react";
+import { SERVICE_REQUEST_URL } from "@/utils/serviceRequest";
 
 interface DiagramAlertProps {
   variant: "info" | "danger" | "success" | "warning";
@@ -265,8 +266,8 @@ export default function CrashDiagramCard({
             variant="danger"
             message={<p>The crash diagram is not available.</p>}
             link={{
-              href: "https://atd.knack.com/dts#new-service-request/?view_249_vars=%7B%22field_398%22%3A%22Bug%20Report%20%E2%80%94%20Something%20is%20not%20working%22%2C%22field_399%22%3A%22Vision%20Zero%20Editor%22%7D",
-              text: "report a bug",
+              href: SERVICE_REQUEST_URL,
+              text: "contact support",
             }}
           />
         )}

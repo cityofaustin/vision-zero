@@ -7,7 +7,6 @@ import Col from "react-bootstrap/Col";
 import Navbar from "react-bootstrap/Navbar";
 import {
   FaBug,
-  FaLightbulb,
   FaRightFromBracket,
   FaSquareArrowUpRight,
   FaToolbox,
@@ -18,6 +17,7 @@ import NavBarSearch from "@/components/NavBarSearch";
 import AlignedLabel from "@/components/AlignedLabel";
 import DropdownAnchorToggle from "@/components/DropdownAnchorToggle";
 import DarkModeToggle from "@/components/DarkModeToggle";
+import { SERVICE_REQUEST_URL } from "@/utils/serviceRequest";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -33,9 +33,7 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
   const userId = user?.["https://hasura.io/jwt/claims"]?.["x-hasura-user-id"];
 
   return (
-    <Navbar
-      className="app-navbar border-bottom pe-3 w-100"
-    >
+    <Navbar className="app-navbar border-bottom pe-3 w-100">
       <Container fluid>
         <Col className="d-flex justify-content-start">
           <Navbar.Brand href="/crashes" as={Link}>
@@ -75,22 +73,11 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
               <Dropdown.Item
                 target="_blank"
                 rel="noreferrer"
-                href="https://atd.knack.com/dts#new-service-request/?view_249_vars=%7B%22field_398%22%3A%22Bug%20Report%20%E2%80%94%20Something%20is%20not%20working%22%2C%22field_399%22%3A%22Vision%20Zero%20Editor%22%7D"
+                href={SERVICE_REQUEST_URL}
               >
                 <AlignedLabel>
                   <FaBug className="me-3" />
-                  Report a bug
-                  <FaSquareArrowUpRight className="ms-3 text-muted" />
-                </AlignedLabel>
-              </Dropdown.Item>
-              <Dropdown.Item
-                target="_blank"
-                rel="noreferrer"
-                href="https://atd.knack.com/dts#new-service-request/?view_249_vars=%7B%22field_398%22%3A%22Feature%20or%20Enhancement%20%E2%80%94%20An%20application%20I%20use%20could%20be%20improved%22%2C%22field_399%22%3A%22Vision%20Zero%20Editor%22%7D"
-              >
-                <AlignedLabel>
-                  <FaLightbulb className="me-3" />
-                  Request an enhancement
+                  Contact support
                   <FaSquareArrowUpRight className="ms-3 text-muted" />
                 </AlignedLabel>
               </Dropdown.Item>
