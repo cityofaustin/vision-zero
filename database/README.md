@@ -17,11 +17,13 @@ The design supports an editing environment which enables Vision Zero program sta
       - [Lookup tables](#lookup-tables)
         - [Lookup table structure and custom lookup table values](#lookup-table-structure-and-custom-lookup-table-values)
       - [Charges records](#charges-records)
-      - [Crash risk factors and contributing factors](#crash-risk-factors)
+      - [Crash risk factors](#crash-risk-factors)
       - [Database IDs, CRIS record IDs, and primary keys](#database-ids-cris-record-ids-and-primary-keys)
       - [User-created crash records, aka "temporary" records](#user-created-crash-records-aka-temporary-records)
       - [Audit fields](#audit-fields)
       - [Change logs](#change-logs)
+      - [Crash geolocation provider (`geolocation_provider_id`)](#crash-geolocation-provider-geolocation_provider_id)
+      - [How the provider is assigned](#how-the-provider-is-assigned)
     - [Austin Police Department non-CR3 or "blueform" crashes](#austin-police-department-non-cr3-or-blueform-crashes)
       - [De-duplicating non-CR3 records](#de-duplicating-non-cr3-records)
     - [Austin-Travis County Emergency Medical Services (EMS)](#austin-travis-county-emergency-medical-services-ems)
@@ -320,6 +322,24 @@ Each change log table follows the same structure:
 | `created_by`     | `text`                     | The user who triggered this change - default `system`                              |
 
 The view `crashes_change_log_view` provides a unioned view of the unified table change logs—this view powers the change log UI in the VZE.
+
+#### Crash geolocation provider (`geolocation_provider_id`)
+
+The `crashes.geolocation_provider_id` column tracks the source of a crash record's lat/lon coordinates. It references the `lookups.geolocation_provider` table:
+
+| id  | label       | description                                                   |
+| --- | ----------- | ------------------------------------------------------------- |
+| 1   | `cris`      | Default. Coordinates were provided by CRIS.                   |
+| 2   | `apd_cad`   | Coordinates were backfilled from a matching APD CAD incident. |
+| 3   | `manual_qa` | Coordinates were set or edited by a Vision Zero staff member. |
+
+#### How the provider is assigned
+
+1. **`cris` (default)**: All crash records default to this provider, reflecting that coordinates are provided by CRIS via the standard import process.
+2. **`apd_cad`**: If an APD-investigated crash (`investigat_agency_id = 74`) is inserted into `crashes` with no lat/lon, the `crashes_fill_cad_coordinates_before_insert` trigger searches `cad_incidents` for a record matching the crash's `case_id`, within a ±2-day window of the `crash_timestamp`. If a match is found, the CAD record's coordinates are copied to the crash and the provider is set to `apd_cad`. This trigger must fire _before_ `crashes_set_spatial_attributes_on_insert` and `update_crash_ems_match`, which is why it's named to sort first alphabetically among `BEFORE INSERT` triggers.
+3. **`manual_qa`**: If a Vision Zero staff member edits a crash's lat/lon through the VZE, the provider is set to `manual_qa`.
+
+**Note:** once a crash's provider is set to `manual_qa`, there is currently no mechanism to revert it back to `cris` or `apd_cad`—the change is one-directional.
 
 ### Austin Police Department non-CR3 or "blueform" crashes
 
