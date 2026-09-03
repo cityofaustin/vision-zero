@@ -303,8 +303,8 @@ const MapComponent = () => {
         ...selectedFeature,
         properties: {
           ...selectedFeature.properties,
-          latitude: event.lngLat[1],
-          longitude: event.lngLat[0],
+          latitude: event.lngLat.lat,
+          longitude: event.lngLat.lng,
         },
       };
     }
