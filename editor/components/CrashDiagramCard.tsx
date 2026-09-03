@@ -21,7 +21,7 @@ import {
 } from "@/components/CrashDiagramControls";
 import AlignedLabel from "@/components/AlignedLabel";
 import { useImage } from "@/utils/images";
-import { hasRole } from "@/utils/auth";
+import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
 import ImageUploadModal from "@/components/ImageUploadModal";
 import { useAuth0 } from "@auth0/auth0-react";
 import { SERVICE_REQUEST_URL } from "@/utils/serviceRequest";
@@ -151,11 +151,11 @@ export default function CrashDiagramCard({
 
   const { user } = useAuth0();
 
-  const isReadOnlyUser = user && hasRole(["readonly"], user);
+  const hasEditPermssions = hasRole(ADMIN_EDIT_ROLES, user);
 
   return (
     <Card className="h-100">
-      {!isReadOnlyUser && (
+      {hasEditPermssions && (
         <ImageUploadModal
           showModal={showModal}
           setShowModal={setShowModal}
@@ -170,7 +170,7 @@ export default function CrashDiagramCard({
       <Card.Header>
         <Card.Title className="d-flex justify-content-between mb-0">
           Diagram
-          {!isReadOnlyUser && crash.is_temp_record && imageUrl && (
+          {hasEditPermssions && crash.is_temp_record && imageUrl && (
             <Button
               size="sm"
               variant="outline-primary"
@@ -252,7 +252,7 @@ export default function CrashDiagramCard({
               </>
             }
             button={
-              !isReadOnlyUser ? (
+              hasEditPermssions ? (
                 <Button onClick={() => setShowModal(true)}>
                   Upload crash diagram
                 </Button>

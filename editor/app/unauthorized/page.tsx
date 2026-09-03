@@ -1,10 +1,10 @@
 "use client";
-import { SERVICE_REQUEST_URL } from "@/utils/serviceRequest";
 import { useRouter } from "next/navigation";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { LuShieldAlert } from "react-icons/lu";
+import { SERVICE_REQUEST_URL } from "@/utils/serviceRequest";
 
 export default function Unauthorized() {
   const router = useRouter();

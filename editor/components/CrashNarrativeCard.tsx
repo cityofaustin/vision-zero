@@ -3,11 +3,11 @@ import Button from "react-bootstrap/Button";
 import { FaFilePdf } from "react-icons/fa6";
 import AlignedLabel from "@/components/AlignedLabel";
 import { Crash } from "@/types/crashes";
-import { hasRole, useGetToken } from "@/utils/auth";
-import { useAuth0 } from "@auth0/auth0-react";
+import { hasRole, useGetToken, ADMIN_EDIT_ROLES } from "@/utils/auth";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { useAuth0 } from "@auth0/auth0-react";
 
-export const allowedCrashReportDownloadRoles = ["editor", "vz-admin"];
+export const allowedCrashReportDownloadRoles = ADMIN_EDIT_ROLES;
 
 // Downloads pdf from the crash report API and opens it in a new tab
 export const onDownloadCrashReport = async ({
@@ -49,9 +49,7 @@ export default function CrashNarrativeCard({ crash }: { crash: Crash }) {
   const getToken = useGetToken();
 
   const { user } = useAuth0();
-  const canDownloadCrashReport = user
-    ? hasRole(allowedCrashReportDownloadRoles, user)
-    : false;
+  const canDownloadCrashReport = hasRole(allowedCrashReportDownloadRoles, user);
 
   const isCrashReportStored = crash.cr3_stored_fl;
 
