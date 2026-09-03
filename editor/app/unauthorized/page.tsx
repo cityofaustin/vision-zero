@@ -28,7 +28,13 @@ export default function Unauthorized() {
             .
           </h5>
           <div className="my-3">
-            <Button onClick={() => router.back()}>Go back</Button>
+            <Button
+              onClick={() => {
+                router.push("/");
+              }}
+            >
+              Go home
+            </Button>
           </div>
         </Col>
       </Row>
