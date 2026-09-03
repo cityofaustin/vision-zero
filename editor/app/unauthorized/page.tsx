@@ -18,17 +18,25 @@ export default function Unauthorized() {
         <Col className="text-center">
           <h2>Not Authorized</h2>
           <h5 className="text-muted">
-            You don&apos;t have permission to view this page. If you need access, you can{" "}
+            You don&apos;t have permission to view this page. If you need
+            access, you can{" "}
             <a
               target="_blank"
               rel="noreferrer"
               href="https://atd.knack.com/dts#new-service-request/?view_249_vars=%7B%22field_398%22%3A%22Bug%20Report%20%E2%80%94%20Something%20is%20not%20working%22%2C%22field_399%22%3A%22Vision%20Zero%20Editor%22%7D"
             >
               ask for help
-            </a>.
+            </a>
+            .
           </h5>
           <div className="my-3">
-            <Button onClick={() => router.back()}>Go back</Button>
+            <Button
+              onClick={() => {
+                router.push("/");
+              }}
+            >
+              Go home
+            </Button>
           </div>
         </Col>
       </Row>
