@@ -205,7 +205,7 @@ refresh materialized view location_crashes_view;
 
 ### EMS incident details - `/ems/[incident-number]`
 
-- This page will not load for readonly users
+- **Viewer** user will be redirected to `http://localhost:3002/editor/unauthorized`
 - Page breadcrumb and title—which is the EMS record address—look normal
 - Incident map (top right of page)
   - Use the EMS list page to filter/find an incident that has been matched automatically to a crash, person, and non-cr3 record
@@ -290,18 +290,19 @@ refresh materialized view location_crashes_view;
 
 - Vision Zero logo displays on left side
 - Crash search
-  - The **Case Id** / **Crash ID** button toggles the search field
+  - The **Case Id** / **Crash ID** / **Incident number** / **location** menu toggles the search field
+  - **Viewer** users do not see the **Incident number** menu item
   - Searching by a known Case ID will cause the page to redirect to the crash details for the matching crash
   - Searching by a known CRIS Crash ID will cause the page to redirect to the crash details for the matching crash
 - Avatar image displays on right side with dropdown items
   - email address (disabled/not clickable)
   - dark mode toggle
   - signout link
-  - external links to report a bug, request enhancement, and TxDOT's CR3 codesheet
+  - external links to contact support, and TxDOT's CR3 codesheet
 
 ### Upload Non-CR3 records page
 
-- **Viewer** role cannot see this page
+- **Viewer** user will be redirected to `http://localhost:3002/editor/unauthorized`
 - download template file
 - upload unedited template file and observe validation errors
 - fix broken lines
