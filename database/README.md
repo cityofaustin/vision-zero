@@ -325,8 +325,6 @@ The view `crashes_change_log_view` provides a unioned view of the unified table 
 
 #### Crash geolocation provider (`geolocation_provider_id`)
 
-[#crash-geolocation-provider-geolocation_provider_id](#crash-geolocation-provider-geolocation_provider_id)
-
 The `crashes.geolocation_provider_id` column tracks the source of a crash record's lat/lon coordinates. It references the `lookups.geolocation_provider` table:
 
 | id  | label       | description                                                   |
