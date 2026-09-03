@@ -24,7 +24,7 @@ import { useImage } from "@/utils/images";
 import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
 import ImageUploadModal from "@/components/ImageUploadModal";
 import { useAuth0 } from "@auth0/auth0-react";
-import { SERVICE_REQUEST_URL } from "@/utils/serviceRequest";
+import { useServiceRequestUrl } from "@/utils/serviceRequest";
 
 interface DiagramAlertProps {
   variant: "info" | "danger" | "success" | "warning";
@@ -81,6 +81,7 @@ export default function CrashDiagramCard({
   const [isTouched, setIsTouched] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const transformComponentRef = useRef<ReactZoomPanPinchRef | null>(null);
+  const serviceRequestUrl = useServiceRequestUrl();
 
   const defaultValues = useMemo(() => {
     return crash.diagram_transform
@@ -266,7 +267,7 @@ export default function CrashDiagramCard({
             variant="danger"
             message={<p>The crash diagram is not available.</p>}
             link={{
-              href: SERVICE_REQUEST_URL,
+              href: serviceRequestUrl,
               text: "contact support",
             }}
           />

@@ -17,7 +17,7 @@ import NavBarSearch from "@/components/NavBarSearch";
 import AlignedLabel from "@/components/AlignedLabel";
 import DropdownAnchorToggle from "@/components/DropdownAnchorToggle";
 import DarkModeToggle from "@/components/DarkModeToggle";
-import { SERVICE_REQUEST_URL } from "@/utils/serviceRequest";
+import { useServiceRequestUrl } from "@/utils/serviceRequest";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -31,6 +31,7 @@ type NavBarProps = {
  */
 export default function AppNavBar({ user, logout }: NavBarProps) {
   const userId = user?.["https://hasura.io/jwt/claims"]?.["x-hasura-user-id"];
+  const serviceRequestUrl = useServiceRequestUrl();
 
   return (
     <Navbar className="app-navbar border-bottom pe-3 w-100">
@@ -73,7 +74,7 @@ export default function AppNavBar({ user, logout }: NavBarProps) {
               <Dropdown.Item
                 target="_blank"
                 rel="noreferrer"
-                href={SERVICE_REQUEST_URL}
+                href={serviceRequestUrl}
               >
                 <AlignedLabel>
                   <FaBug className="me-3" />
