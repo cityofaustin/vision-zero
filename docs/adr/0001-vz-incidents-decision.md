@@ -21,7 +21,7 @@ This redirects near-term effort toward crash report / EMS-matching UI, ETL, and 
 
 A single real-world crash can generate records in our database from four data sources (`crashes`, `ems__incidents`, `afd__incidents`, `cad_incidents`).
 
- In order to enable the Vision Zero team needs to cleanly identify, analyze, and report out on individual crash events, we conceived of a composite new record type that would organize the [various data sources]([#data-sources](https://github.com/cityofaustin/vision-zero/blob/08ebb40bd2aa06f14010f696b28a7bb46ce0c760/database/README.md#data-sources)) under a single containing object.
+ In order to enable the Vision Zero team to cleanly identify, analyze, and report out on individual crash events, we conceived of a new composite record type that would organize the [various data sources]([#data-sources](https://github.com/cityofaustin/vision-zero/blob/08ebb40bd2aa06f14010f696b28a7bb46ce0c760/database/README.md#data-sources)) under a single containing object.
 
 This record type, `vz_incidents`, would be constructed via a geo-temporal matching ETL and persisted in the database. This [slide deck](https://docs.google.com/presentation/d/19VPgBQTFj_Ygj5V0aQFQ8GFnfTemieUddglz6qWURVM/edit?slide=id.p#slide=id.p) outlines the concept.
 
