@@ -166,7 +166,6 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
     }
   }, [map, cleanupDraw, setMapPolygon]);
 
-  // TODO: disabled when one already exists?
   return <></>;
 };
 
