@@ -19,6 +19,7 @@ import {
   fatalitiesOutlineDataLayer,
   seriousInjuriesDataLayer,
   seriousInjuriesOutlineDataLayer,
+  asmpSourceConfig,
   buildAsmpLayers,
   asmpConfig,
   buildHighInjuryLayer,
@@ -220,7 +221,7 @@ const MapComponent = () => {
     };
   }, []);
 
-  // Restrict map navigation to Travis County
+  // Restrict map navigation to bounding box around Travis County
   const restrictNavAndZoom = useCallback((viewState) => {
     const restricted = { ...viewState };
 
@@ -302,8 +303,8 @@ const MapComponent = () => {
         ...selectedFeature,
         properties: {
           ...selectedFeature.properties,
-          latitude: event.lngLat[1],
-          longitude: event.lngLat[0],
+          latitude: event.lngLat.lat,
+          longitude: event.lngLat.lng,
         },
       };
     }
@@ -453,27 +454,6 @@ const MapComponent = () => {
       });
     }
 
-    console.log("Checking layer IDs:");
-    console.log("fatalitiesDataLayer.id:", typeof fatalitiesDataLayer.id);
-    console.log(
-      "fatalitiesOutlineDataLayer.id:",
-      typeof fatalitiesOutlineDataLayer.id,
-    );
-    console.log(
-      "seriousInjuriesDataLayer.id:",
-      typeof seriousInjuriesDataLayer.id,
-    );
-    console.log(
-      "seriousInjuriesOutlineDataLayer.id:",
-      typeof seriousInjuriesOutlineDataLayer.id,
-    );
-    console.log("cityCouncilDataLayer.id:", typeof cityCouncilDataLayer.id);
-    console.log("travisCountyDataLayer.id:", typeof travisCountyDataLayer.id);
-    console.log(
-      "typeof fatalitiesDataLayer.id:",
-      typeof fatalitiesDataLayer.id,
-    );
-
     // Add a visually hidden label to the attribution toggle button
     const toggleBtn = container.querySelector(".mapboxgl-ctrl-attrib-button");
     if (toggleBtn) {
@@ -507,6 +487,7 @@ const MapComponent = () => {
       {...viewState}
       onMove={onMove}
       mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
+      mapStyle="mapbox://styles/mapbox/light-v11"
       cursor="default"
       interactiveLayerIds={interactiveLayerIds}
       onClick={onClick}
@@ -516,13 +497,15 @@ const MapComponent = () => {
       preserveDrawingBuffer={false}
     >
       {baseSourceAndLayer}
+      <Source {...asmpSourceConfig}>
+        {buildAsmpLayers(asmpConfig, overlay)}
+      </Source>
       {!!mapData && renderCrashDataLayers()}
       {selectedFeature && renderSelectedLayer()}
-      {buildAsmpLayers(asmpConfig, overlay)}
       {buildHighInjuryLayer(overlay)}
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
-          <Layer {...cityCouncilDataLayer} />
+          <Layer beforeId="base-layer" {...cityCouncilDataLayer} />
         </Source>
       )}
       <Source type="geojson" data={travisCountyBboxGeoJSON}>
