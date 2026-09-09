@@ -11,7 +11,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { parse, isValid } from "date-fns";
+import { parse, isValid, format } from "date-fns";
 
 const minDate = new Date(2014, 0, 1);
 const DATE_FORMAT = "MM/dd/yyyy";
@@ -26,6 +26,8 @@ const clampToMinDate = (raw) => {
 };
 
 const SideMapControlDateRange = ({ type }) => {
+  const isMobile = type === "temporary";
+
   const [start, setStart] = useState(dataStartDate);
   const [end, setEnd] = useState(today);
 
@@ -65,12 +67,32 @@ const SideMapControlDateRange = ({ type }) => {
     if (clamped) setEnd(clamped);
   };
 
+  // Native <input type="date"> handlers, used on mobile in place of react-datepicker
+  const handleNativeStartChange = (event) => {
+    const value = event.target.value;
+    handleStartDateChange(value ? parse(value, "yyyy-MM-dd", new Date()) : null);
+  };
+
+  const handleNativeEndChange = (event) => {
+    const value = event.target.value;
+    handleEndDateChange(value ? parse(value, "yyyy-MM-dd", new Date()) : null);
+  };
+
   // Create styled date input
   const StyledDatePicker = styled(DatePicker)`
     font-weight: 200;
     color: rgb(72, 72, 72);
     border: 0px;
-    width: 90px
+    width: 90px;
+    font-size: 15px;
+  `;
+
+  const StyledNativeDateInput = styled.input`
+    font-family: inherit;
+    font-weight: 200;
+    color: rgb(72, 72, 72);
+    background: transparent;
+    border: 0px;
     font-size: 15px;
   `;
 
@@ -109,28 +131,52 @@ const SideMapControlDateRange = ({ type }) => {
   return (
     <>
       <StyledButtonContainer className="pe-0 picker-outline">
-        <StyledDatePicker
-          id={`map-start-date-${type}`}
-          selected={start}
-          onChange={handleStartDateChange}
-          onChangeRaw={handleStartDateRaw}
-          dateFormat={DATE_FORMAT}
-          minDate={minDate}
-          maxDate={today}
-          popperPlacement="bottom-start"
-        />
-        {"-"}
-        <StyledDatePicker
-          id={`map-end-date-${type}`}
-          selected={end}
-          onChange={handleEndDateChange}
-          onChangeRaw={handleEndDateRaw}
-          dateFormat={DATE_FORMAT}
-          minDate={minDate}
-          maxDate={today}
-          popperPlacement="bottom"
-          popperClassName="end-date-popper"
-        />
+        {isMobile ? (
+          <>
+            <StyledNativeDateInput
+              id={`map-start-date-${type}`}
+              type="date"
+              value={format(start, "yyyy-MM-dd")}
+              onChange={handleNativeStartChange}
+              min={format(minDate, "yyyy-MM-dd")}
+              max={format(today, "yyyy-MM-dd")}
+            />
+            {"-"}
+            <StyledNativeDateInput
+              id={`map-end-date-${type}`}
+              type="date"
+              value={format(end, "yyyy-MM-dd")}
+              onChange={handleNativeEndChange}
+              min={format(minDate, "yyyy-MM-dd")}
+              max={format(today, "yyyy-MM-dd")}
+            />
+          </>
+        ) : (
+          <>
+            <StyledDatePicker
+              id={`map-start-date-${type}`}
+              selected={start}
+              onChange={handleStartDateChange}
+              onChangeRaw={handleStartDateRaw}
+              dateFormat={DATE_FORMAT}
+              minDate={minDate}
+              maxDate={today}
+              popperPlacement="bottom-start"
+            />
+            {"-"}
+            <StyledDatePicker
+              id={`map-end-date-${type}`}
+              selected={end}
+              onChange={handleEndDateChange}
+              onChangeRaw={handleEndDateRaw}
+              dateFormat={DATE_FORMAT}
+              minDate={minDate}
+              maxDate={today}
+              popperPlacement="bottom"
+              popperClassName="end-date-popper"
+            />
+          </>
+        )}
         {/* Show reset button to restore default date range or show calendar icon if default*/}
         {start !== dataStartDate || end !== today ? (
           <StyledRedoButton
@@ -143,7 +189,7 @@ const SideMapControlDateRange = ({ type }) => {
             }}
           />
         ) : (
-          <StyledCalendarIcon
+           !isMobile && <StyledCalendarIcon
             title="Default date range"
             icon={faCalendar}
             color={colors.dark}
