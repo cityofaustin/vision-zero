@@ -7,11 +7,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendar,
   faInfoCircle,
-  faRedoAlt,
+  faArrowRight,
+  faUndo,
 } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { parse, isValid, format } from "date-fns";
+import { Button } from "reactstrap";
 
 const minDate = new Date(2014, 0, 1);
 const DATE_FORMAT = "MM/dd/yyyy";
@@ -28,29 +30,54 @@ const clampToMinDate = (raw) => {
 const SideMapControlDateRange = ({ type }) => {
   const isMobile = type === "temporary";
 
+  // Applied date range — what's actually pushed to the map/context
   const [start, setStart] = useState(dataStartDate);
   const [end, setEnd] = useState(today);
 
+  // Staged/draft date range — bound to the inputs, only applied on demand
+  const [pendingStart, setPendingStart] = useState(dataStartDate);
+  const [pendingEnd, setPendingEnd] = useState(today);
+
+  const hasPendingChange =
+    pendingStart.getTime() !== start.getTime() ||
+    pendingEnd.getTime() !== end.getTime();
+
+  const showReset =
+    start.getTime() !== dataStartDate.getTime() || end.getTime() !== today.getTime();
+
   const { setMapDateRange: setMapDate } = React.useContext(StoreContext);
 
-  // Update map date range in Context when picker dates update
+  // Update map date range in Context when the applied dates change
+  // (on mount, and whenever Apply or Reset is clicked)
   useEffect(() => {
     setMapDate({ start, end });
   }, [start, end, setMapDate]);
 
+  const handleApply = () => {
+    setStart(pendingStart);
+    setEnd(pendingEnd);
+  };
+
+  const handleReset = () => {
+    setStart(dataStartDate);
+    setEnd(today);
+    setPendingStart(dataStartDate);
+    setPendingEnd(today);
+  };
+
   const handleStartDateChange = (date) => {
     if (!date) {
-      setStart(dataStartDate);
+      setPendingStart(dataStartDate);
     } else {
-      setStart(date);
+      setPendingStart(date);
     }
   };
 
   const handleEndDateChange = (date) => {
     if (!date) {
-      setEnd(today);
+      setPendingEnd(today);
     } else {
-      setEnd(date);
+      setPendingEnd(date);
     }
   };
 
@@ -59,12 +86,12 @@ const SideMapControlDateRange = ({ type }) => {
    */
   const handleStartDateRaw = (event) => {
     const clamped = clampToMinDate(event.target.value);
-    if (clamped) setStart(clamped);
+    if (clamped) setPendingStart(clamped);
   };
 
   const handleEndDateRaw = (event) => {
     const clamped = clampToMinDate(event.target.value);
-    if (clamped) setEnd(clamped);
+    if (clamped) setPendingEnd(clamped);
   };
 
   // Native <input type="date"> handlers, used on mobile in place of react-datepicker
@@ -82,7 +109,7 @@ const SideMapControlDateRange = ({ type }) => {
   const StyledDatePicker = styled(DatePicker)`
     font-weight: 200;
     color: rgb(72, 72, 72);
-    border: 0px;
+
     width: 110px;
     font-size: 15px;
   `;
@@ -92,7 +119,7 @@ const SideMapControlDateRange = ({ type }) => {
     font-weight: 200;
     color: rgb(72, 72, 72);
     background: transparent;
-    border: 0px;
+
     width: 110px;
     font-size: 15px;
   `;
@@ -100,16 +127,22 @@ const SideMapControlDateRange = ({ type }) => {
   const StyledButtonContainer = styled.div`
     /* Mock a Bootstrap outline button */
     border: 1px solid ${colors.dark};
-    height: 34px;
+    min-height: 34px;
     border-radius: 4px;
     padding-left: 2px;
     display: flex;
-    justify-content: space-around;
-    align-items: center;
+    flex-direction: column;
     color: ${colors.dark};
     .end-date-popper {
       margin-left: -24px;
     }
+  `;
+
+  const StyledDateRow = styled.div`
+    height: 34px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
   `;
 
   // Center and size calendar icon or button
@@ -124,81 +157,19 @@ const SideMapControlDateRange = ({ type }) => {
     ${calendarInputIconStyles}
   `;
 
-  const StyledRedoButton = styled(FontAwesomeIcon)`
-    ${calendarInputIconStyles}
-    cursor: pointer;
+  const StyledActionRow = styled.div`
+    display: flex;
+    gap: 6px;
+    button {
+      flex: 1;
+    }
   `;
 
   return (
     <>
       <StyledButtonContainer className="pe-0 picker-outline">
-        {isMobile ? (
-          <>
-            <StyledNativeDateInput
-              id={`map-start-date-${type}`}
-              type="date"
-              value={format(start, "yyyy-MM-dd")}
-              onChange={handleNativeStartChange}
-              min={format(minDate, "yyyy-MM-dd")}
-              max={format(today, "yyyy-MM-dd")}
-            />
-            {"-"}
-            <StyledNativeDateInput
-              id={`map-end-date-${type}`}
-              type="date"
-              value={format(end, "yyyy-MM-dd")}
-              onChange={handleNativeEndChange}
-              min={format(minDate, "yyyy-MM-dd")}
-              max={format(today, "yyyy-MM-dd")}
-            />
-          </>
-        ) : (
-          <>
-            <StyledDatePicker
-              id={`map-start-date-${type}`}
-              selected={start}
-              onChange={handleStartDateChange}
-              onChangeRaw={handleStartDateRaw}
-              dateFormat={DATE_FORMAT}
-              minDate={minDate}
-              maxDate={today}
-              popperPlacement="bottom-start"
-            />
-            {"-"}
-            <StyledDatePicker
-              id={`map-end-date-${type}`}
-              selected={end}
-              onChange={handleEndDateChange}
-              onChangeRaw={handleEndDateRaw}
-              dateFormat={DATE_FORMAT}
-              minDate={minDate}
-              maxDate={today}
-              popperPlacement="bottom"
-              popperClassName="end-date-popper"
-            />
-          </>
-        )}
-        {/* Show reset button to restore default date range or show calendar icon if default*/}
-        {start !== dataStartDate || end !== today ? (
-          <StyledRedoButton
-            title="Reset to default date range"
-            icon={faRedoAlt}
-            color={colors.dark}
-            onClick={() => {
-              setStart(dataStartDate);
-              setEnd(today);
-            }}
-          />
-        ) : (
-           !isMobile && <StyledCalendarIcon
-            title="Default date range"
-            icon={faCalendar}
-            color={colors.dark}
-            onClick={() => null}
-          />
-        )}
-      </StyledButtonContainer>
-      <div className="form-text">
+        <div style={{padding: "5px"}}><h6>Date range</h6>
+         <div className="form-text">
         <span>
           <FontAwesomeIcon
             icon={faInfoCircle}
@@ -206,7 +177,83 @@ const SideMapControlDateRange = ({ type }) => {
           />
         </span>
         <span>Data starts in 2014</span>
-      </div>
+      </div></div>
+        <StyledDateRow>
+          {isMobile ? (
+            <>
+              <StyledNativeDateInput
+                id={`map-start-date-${type}`}
+                type="date"
+                value={format(pendingStart, "yyyy-MM-dd")}
+                onChange={handleNativeStartChange}
+                min={format(minDate, "yyyy-MM-dd")}
+                max={format(today, "yyyy-MM-dd")}
+              />
+              {"-"}
+              <StyledNativeDateInput
+                id={`map-end-date-${type}`}
+                type="date"
+                value={format(pendingEnd, "yyyy-MM-dd")}
+                onChange={handleNativeEndChange}
+                min={format(minDate, "yyyy-MM-dd")}
+                max={format(today, "yyyy-MM-dd")}
+              />
+            </>
+          ) : (
+            <>
+              <StyledDatePicker
+                id={`map-start-date-${type}`}
+                selected={pendingStart}
+                onChange={handleStartDateChange}
+                onChangeRaw={handleStartDateRaw}
+                dateFormat={DATE_FORMAT}
+                minDate={minDate}
+                maxDate={today}
+                popperPlacement="bottom-start"
+              />
+              {"-"}
+              <StyledDatePicker
+                id={`map-end-date-${type}`}
+                selected={pendingEnd}
+                onChange={handleEndDateChange}
+                onChangeRaw={handleEndDateRaw}
+                dateFormat={DATE_FORMAT}
+                minDate={minDate}
+                maxDate={today}
+                popperPlacement="bottom"
+                popperClassName="end-date-popper"
+              />
+            </>
+          )}
+          {!isMobile && (
+            <StyledCalendarIcon
+              title="Date range"
+              icon={faCalendar}
+              color={colors.dark}
+            />
+          )}
+        </StyledDateRow>
+        {(true) && (
+          <div className="p-2">
+            <StyledActionRow>
+              {showReset && (
+                <Button size="sm" outline color="dark" onClick={handleReset}>
+                  <FontAwesomeIcon icon={faUndo} className="me-1" />
+                  Reset
+                </Button>
+              )}
+              {!showReset && (
+                <Button size="sm" color="dark" onClick={handleApply}
+                disabled={!hasPendingChange}
+                >
+                  Apply filter
+                  <FontAwesomeIcon icon={faArrowRight} className="ms-1" />
+                </Button>
+              )}
+            </StyledActionRow>
+          </div>
+        )}
+      </StyledButtonContainer>
     </>
   );
 };
