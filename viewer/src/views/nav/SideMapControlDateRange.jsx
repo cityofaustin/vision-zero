@@ -83,7 +83,7 @@ const SideMapControlDateRange = ({ type }) => {
     font-weight: 200;
     color: rgb(72, 72, 72);
     border: 0px;
-    width: 90px;
+    width: 110px;
     font-size: 15px;
   `;
 
@@ -93,6 +93,7 @@ const SideMapControlDateRange = ({ type }) => {
     color: rgb(72, 72, 72);
     background: transparent;
     border: 0px;
+    width: 110px;
     font-size: 15px;
   `;
 
