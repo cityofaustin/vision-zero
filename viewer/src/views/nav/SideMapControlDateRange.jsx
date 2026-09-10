@@ -142,7 +142,7 @@ const SideMapControlDateRange = ({ type }) => {
   return (
     <>
       <StyledButtonContainer className="picker-outline">
-        <h6>Date range</h6>
+        <h6>Crash date</h6>
         <StyledDateRow>
           {isMobile ? (
             <>
@@ -198,14 +198,14 @@ const SideMapControlDateRange = ({ type }) => {
               Reset
             </Button>
           )}
-          {!showReset && (
+          {hasPendingChange && (
             <Button
               size="sm"
               color="dark"
               onClick={handleApply}
               disabled={!hasPendingChange}
             >
-              Apply dates
+              Apply date filter
             </Button>
           )}
         </StyledActionRow>
