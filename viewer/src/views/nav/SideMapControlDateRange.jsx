@@ -7,25 +7,75 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendar,
   faInfoCircle,
-  faArrowRight,
   faUndo,
 } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { parse, isValid, format } from "date-fns";
+import { parse, format } from "date-fns";
 import { Button } from "reactstrap";
 
 const minDate = new Date(2014, 0, 1);
 const DATE_FORMAT = "MM/dd/yyyy";
 
-// Parses a fully-typed raw input string and, if it's an earlier-than-minDate
-// date, returns minDate. Returns null if there's nothing to clamp yet.
-const clampToMinDate = (raw) => {
-  if (!raw || raw.length !== DATE_FORMAT.length) return null; // still mid-typing
-  const parsed = parse(raw, DATE_FORMAT, new Date());
-  if (!isValid(parsed)) return null;
-  return parsed < minDate ? minDate : null;
-};
+// Create styled date input
+const StyledDatePicker = styled(DatePicker)`
+  font-weight: 200;
+  color: rgb(72, 72, 72);
+
+  width: 110px;
+  font-size: 15px;
+`;
+
+const StyledNativeDateInput = styled.input`
+  font-family: inherit;
+  font-weight: 200;
+  color: rgb(72, 72, 72);
+  background: transparent;
+
+  width: 110px;
+  font-size: 15px;
+`;
+
+const StyledButtonContainer = styled.div`
+  /* Mock a Bootstrap outline button */
+  border: 1px solid ${colors.dark};
+  min-height: 34px;
+  border-radius: 4px;
+  padding-left: 2px;
+  display: flex;
+  flex-direction: column;
+  color: ${colors.dark};
+  .end-date-popper {
+    margin-left: -24px;
+  }
+`;
+
+const StyledDateRow = styled.div`
+  height: 34px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+`;
+
+// Center and size calendar icon or button
+const calendarInputIconStyles = `position: relative;
+  width: 16px;
+  height: 16px;
+  margin: 2px;
+  right: 1px;
+`;
+
+const StyledCalendarIcon = styled(FontAwesomeIcon)`
+  ${calendarInputIconStyles}
+`;
+
+const StyledActionRow = styled.div`
+  display: flex;
+  gap: 6px;
+  button {
+    flex: 1;
+  }
+`;
 
 const SideMapControlDateRange = ({ type }) => {
   const isMobile = type === "temporary";
@@ -54,8 +104,12 @@ const SideMapControlDateRange = ({ type }) => {
   }, [start, end, setMapDate]);
 
   const handleApply = () => {
-    setStart(pendingStart);
-    setEnd(pendingEnd);
+    const clampedStart = pendingStart < minDate ? minDate : pendingStart;
+    const clampedEnd = pendingEnd < minDate ? minDate : pendingEnd;
+    setStart(clampedStart);
+    setEnd(clampedEnd);
+    setPendingStart(clampedStart);
+    setPendingEnd(clampedEnd);
   };
 
   const handleReset = () => {
@@ -66,32 +120,11 @@ const SideMapControlDateRange = ({ type }) => {
   };
 
   const handleStartDateChange = (date) => {
-    if (!date) {
-      setPendingStart(dataStartDate);
-    } else {
-      setPendingStart(date);
-    }
+    setPendingStart(date ?? dataStartDate);
   };
 
   const handleEndDateChange = (date) => {
-    if (!date) {
-      setPendingEnd(today);
-    } else {
-      setPendingEnd(date);
-    }
-  };
-
-  /**
-   * Raw date handlers intervene when user enters a date before the min data date
-   */
-  const handleStartDateRaw = (event) => {
-    const clamped = clampToMinDate(event.target.value);
-    if (clamped) setPendingStart(clamped);
-  };
-
-  const handleEndDateRaw = (event) => {
-    const clamped = clampToMinDate(event.target.value);
-    if (clamped) setPendingEnd(clamped);
+    setPendingEnd(date ?? today);
   };
 
   // Native <input type="date"> handlers, used on mobile in place of react-datepicker
@@ -104,66 +137,6 @@ const SideMapControlDateRange = ({ type }) => {
     const value = event.target.value;
     handleEndDateChange(value ? parse(value, "yyyy-MM-dd", new Date()) : null);
   };
-
-  // Create styled date input
-  const StyledDatePicker = styled(DatePicker)`
-    font-weight: 200;
-    color: rgb(72, 72, 72);
-
-    width: 110px;
-    font-size: 15px;
-  `;
-
-  const StyledNativeDateInput = styled.input`
-    font-family: inherit;
-    font-weight: 200;
-    color: rgb(72, 72, 72);
-    background: transparent;
-
-    width: 110px;
-    font-size: 15px;
-  `;
-
-  const StyledButtonContainer = styled.div`
-    /* Mock a Bootstrap outline button */
-    border: 1px solid ${colors.dark};
-    min-height: 34px;
-    border-radius: 4px;
-    padding-left: 2px;
-    display: flex;
-    flex-direction: column;
-    color: ${colors.dark};
-    .end-date-popper {
-      margin-left: -24px;
-    }
-  `;
-
-  const StyledDateRow = styled.div`
-    height: 34px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-  `;
-
-  // Center and size calendar icon or button
-  const calendarInputIconStyles = `position: relative;
-    width: 16px;
-    height: 16px;
-    margin: 2px;
-    right: 1px;
-  `;
-
-  const StyledCalendarIcon = styled(FontAwesomeIcon)`
-    ${calendarInputIconStyles}
-  `;
-
-  const StyledActionRow = styled.div`
-    display: flex;
-    gap: 6px;
-    button {
-      flex: 1;
-    }
-  `;
 
   return (
     <>
@@ -205,7 +178,6 @@ const SideMapControlDateRange = ({ type }) => {
                 id={`map-start-date-${type}`}
                 selected={pendingStart}
                 onChange={handleStartDateChange}
-                onChangeRaw={handleStartDateRaw}
                 dateFormat={DATE_FORMAT}
                 minDate={minDate}
                 maxDate={today}
@@ -216,7 +188,6 @@ const SideMapControlDateRange = ({ type }) => {
                 id={`map-end-date-${type}`}
                 selected={pendingEnd}
                 onChange={handleEndDateChange}
-                onChangeRaw={handleEndDateRaw}
                 dateFormat={DATE_FORMAT}
                 minDate={minDate}
                 maxDate={today}
@@ -242,12 +213,11 @@ const SideMapControlDateRange = ({ type }) => {
                   Reset
                 </Button>
               )}
-              {!showReset && (
+              {!showReset && hasPendingChange && (
                 <Button size="sm" color="dark" onClick={handleApply}
                 disabled={!hasPendingChange}
                 >
-                  Apply filter
-                  <FontAwesomeIcon icon={faArrowRight} className="ms-1" />
+                  Apply dates
                 </Button>
               )}
             </StyledActionRow>
