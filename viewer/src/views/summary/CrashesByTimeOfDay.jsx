@@ -232,6 +232,10 @@ const CrashesByTimeOfDay = () => {
           <Col id="demographics-heatmap">
             {!!heatmapData.length > 0 ? (
               <Heatmap
+                // Force a fresh mount per selection so reaviz/framer-motion don't
+                // reuse animation state from a previous render of this same
+                // (cached, reference-identical) dataset and leave stale cell fills.
+                key={`${crashType.name}-${activeYear}`}
                 height={267}
                 margins={[0, 0, 0, 15]}
                 data={heatmapData}

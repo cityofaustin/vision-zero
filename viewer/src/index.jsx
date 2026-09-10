@@ -1,5 +1,4 @@
 import "./utils/chartjs-setup.js";
-import "events-polyfill";
 
 import React from "react";
 import ReactDOM from "react-dom/client";
