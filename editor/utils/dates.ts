@@ -27,6 +27,16 @@ export const getYearsAgoDate = (numYears: number): Date => {
 };
 
 /**
+ * Get the date x days ago @ midnight - in local time
+ */
+export const getDaysAgoDate = (numDays: number): Date => {
+  const targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() - numDays);
+  targetDate.setHours(0, 0, 0, 0);
+  return targetDate;
+};
+
+/**
  * Returns an array of DateFilters constructed from
  * two dates
  */

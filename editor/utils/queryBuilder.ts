@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { gql } from "graphql-request";
 import { produce } from "immer";
 import { MAX_RECORD_EXPORT_LIMIT } from "./constants";
+import { getDaysAgoDate } from "./dates";
 import {
   Filter,
   FilterValue,
@@ -86,9 +87,13 @@ const stringifyFilterValue = (value: FilterValue, wildcard?: boolean) => {
  */
 const filterToWhereExp = (filter: Filter): string => {
   const comment = `\n # ${filter.id} \n`;
+  const value =
+    filter.relativeDays !== undefined
+      ? getDaysAgoDate(filter.relativeDays).toISOString()
+      : filter.value;
   const exp = `{ ${comment} ${filter.column}: { ${
     filter.operator
-  }: ${stringifyFilterValue(filter.value, !!filter.wildcard)} } }`;
+  }: ${stringifyFilterValue(value, !!filter.wildcard)} } }`;
   if (filter.relationshipName) {
     // wrap filter string in relationship
     return `{ ${filter.relationshipName}:  ${exp} }`;
