@@ -336,7 +336,7 @@ The `crashes.geolocation_provider_id` column tracks the source of a crash record
 #### How the provider is assigned
 
 1. **`cris` (default)**: All crash records default to this provider, reflecting that coordinates are provided by CRIS via the standard import process.
-2. **`apd_cad`**: If an APD-investigated crash (`investigat_agency_id = 74`) is inserted into `crashes` with no lat/lon, the `crashes_fill_cad_coordinates_before_insert` trigger searches `cad_incidents` for a record matching the crash's `case_id`, within a ±2-day window of the `crash_timestamp`. If a match is found, the CAD record's coordinates are copied to the crash and the provider is set to `apd_cad`. This trigger must fire _before_ `crashes_set_spatial_attributes_on_insert` and `update_crash_ems_match`, which is why it's named to sort first alphabetically among `BEFORE INSERT` triggers.
+2. **`apd_cad`**: If an APD-investigated crash (`investigat_agency_id = 74`) is inserted into `crashes` with no lat/lon, the `a_crashes_fill_cad_coordinates_before_insert` trigger searches `cad_incidents` for a record matching the crash's `case_id`, within a ±2-day window of the `crash_timestamp`. If a match is found, the CAD record's coordinates are copied to the crash and the provider is set to `apd_cad`. This trigger must fire _before_ `crashes_set_spatial_attributes_on_insert` and `update_crash_ems_match`, which is why it's named to sort first alphabetically among `BEFORE INSERT` triggers.
 3. **`manual_qa`**: If a Vision Zero staff member edits a crash's lat/lon through the VZE, the provider is set to `manual_qa`.
 
 **Note:** once a crash's provider is set to `manual_qa`, there is currently no mechanism to revert it back to `cris` or `apd_cad`—the change is one-directional.
