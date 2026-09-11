@@ -5,11 +5,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { basepath } from "./routes/routes";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import App from "./App";
 import StoreProvider from "./utils/store";
 import * as serviceWorker from "./serviceWorker";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 // IE11 SVG Polyfill
 SVGElement.prototype.contains = function contains(node) {
