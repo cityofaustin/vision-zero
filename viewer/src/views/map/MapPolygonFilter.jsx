@@ -108,7 +108,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
         }
       };
 
-      const handleDelete = (event) => {
+      const handleDelete = () => {
         if (!isMounted.current || !drawRef.current) return;
 
         try {
