@@ -1,3 +1,4 @@
+-- update default comp cost fallback values to 25,000
 CREATE OR REPLACE VIEW crash_injury_metrics_view AS
 SELECT
     crashes.id,
