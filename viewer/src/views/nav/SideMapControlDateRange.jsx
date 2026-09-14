@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { StoreContext } from "src/constants/context";
-import aphroditeInterface from "react-with-styles-interface-aphrodite";
 import styled from "styled-components";
 import { dataStartDate, today } from "../../constants/time";
 import { colors } from "../../constants/colors";
