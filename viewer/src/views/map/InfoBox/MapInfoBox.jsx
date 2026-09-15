@@ -1,5 +1,5 @@
 import React from "react";
-import { Popup } from "react-map-gl";
+import { Popup } from "react-map-gl/mapbox";
 import InfoCard from "./InfoCard";
 import { format } from "date-fns";
 import styled from "styled-components";

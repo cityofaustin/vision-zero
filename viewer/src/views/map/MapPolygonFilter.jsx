@@ -1,4 +1,5 @@
 import React, { useRef, useCallback, useEffect } from "react";
+import { useMap } from "react-map-gl/mapbox";
 import { useMap } from "react-map-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -20,7 +21,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
           try {
             map.off(event, handler);
           } catch (e) {
-            console.error(e)
+            console.error(e);
           }
         });
         eventHandlersRef.current = [];
@@ -95,7 +96,9 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
                   setMapPolygon(wkt);
                   if (editType === "draw.create") {
                     // Switch back to simple_select mode after drawing
-                    draw.changeMode("simple_select", { featureIds: [feature.id] });
+                    draw.changeMode("simple_select", {
+                      featureIds: [feature.id],
+                    });
                   }
                 }
               } catch (error) {
