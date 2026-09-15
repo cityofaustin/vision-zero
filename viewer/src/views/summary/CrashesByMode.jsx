@@ -106,7 +106,7 @@ const getModeData = (fields, chartData, crashType) =>
     }, 0);
   });
 
-// Pure function — chartColors passed in, not closed over
+
 const sortAndColorModeData = (modeData, chartColors) => {
   modeData.forEach((category, i) => {
     const color = chartColors[i];
