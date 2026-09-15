@@ -6,7 +6,7 @@ import React, {
   useMemo,
 } from "react";
 import { StoreContext } from "src/constants/context";
-import Map, { Source, Layer } from "react-map-gl";
+import Map, { Source, Layer } from "react-map-gl/mapbox";
 import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
 import MapCompassSpinner from "./MapCompassSpinner";

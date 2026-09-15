@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useControl } from "react-map-gl";
+import { useControl } from "react-map-gl/mapbox";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import { geocoderBbox } from "../mapData";

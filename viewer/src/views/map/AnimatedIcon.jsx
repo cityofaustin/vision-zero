@@ -1,5 +1,5 @@
 // import React from "react";
-// import { CanvasOverlay } from "react-map-gl";
+// import { CanvasOverlay } from "react-map-gl/mapbox";
 
 // const SIZE = 66.6667;
 // const DURATION = 1000;
