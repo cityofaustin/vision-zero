@@ -1,6 +1,5 @@
 import React, { useRef, useCallback, useEffect } from "react";
 import { useMap } from "react-map-gl/mapbox";
-import { useMap } from "react-map-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import { stringify as stringifyGeoJSON } from "wellknown";
