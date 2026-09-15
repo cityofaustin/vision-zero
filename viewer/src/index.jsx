@@ -9,6 +9,7 @@ import App from "./App";
 import StoreProvider from "./utils/store";
 import * as serviceWorker from "./serviceWorker";
 import "bootstrap/dist/css/bootstrap.min.css";
+import UmamiAnalytics from "./Components/UmamiAnalytics";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -18,6 +19,7 @@ if (import.meta.env.MODE !== "production") {
     root.render(
       <StoreProvider>
         <BrowserRouter basename={basepath}>
+          <UmamiAnalytics />
           <App />
         </BrowserRouter>
       </StoreProvider>,
@@ -27,6 +29,7 @@ if (import.meta.env.MODE !== "production") {
   root.render(
     <StoreProvider>
       <BrowserRouter basename={basepath}>
+        <UmamiAnalytics />
         <App />
       </BrowserRouter>
     </StoreProvider>,
