@@ -2,12 +2,22 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { StoreContext } from "src/constants/context";
 import axios from "axios";
 import { format } from "date-fns";
+import styled from "styled-components";
 import { createMapDataUrl } from "../map/helpers";
 import { crashEndpointUrl } from "../summary/queries/socrataQueries";
-
-import { Container, Button } from "reactstrap";
+import { Button } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUndo } from "@fortawesome/free-solid-svg-icons";
 import { Bar, getElementAtEvent } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
+
+const StyledButtonContainer = styled.div`
+  /* Mock a Bootstrap outline button */
+  border: 1px solid ${colors.dark};
+  border-radius: 4px;
+  padding: 10px;
+  color: ${colors.dark};
+`;
 
 export const SideMapTimeOfDayChart = ({ filters }) => {
   const chartRef = useRef();
@@ -152,7 +162,9 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   };
 
   return (
-    <Container className="px-0 mt-3">
+    <StyledButtonContainer className="mt-3">
+      <h6>Crash time</h6>
+      <span className="form-text">Click a time range to filter</span>
       {!!timeWindowData && !!timeWindowPercentages && (
         <Bar
           ref={(ref) => (chartRef.current = ref)}
@@ -189,16 +201,19 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
           }}
         />
       )}
-      <Button
-        size="sm"
-        color="dark"
-        active={!isMapTimeWindowSet}
-        outline={isMapTimeWindowSet}
-        onClick={handleAllButtonClick}
-      >
-        All Times
-      </Button>
-    </Container>
+      {isMapTimeWindowSet && (
+        <Button
+          size="sm"
+          color="dark"
+          active={!isMapTimeWindowSet}
+          onClick={handleAllButtonClick}
+          outline
+        >
+          <FontAwesomeIcon icon={faUndo} className="me-1" />
+          Reset
+        </Button>
+      )}
+    </StyledButtonContainer>
   );
 };
 

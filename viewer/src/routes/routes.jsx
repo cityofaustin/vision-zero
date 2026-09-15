@@ -1,7 +1,7 @@
 import React from "react";
 import Summary from "../views/summary/Summary";
 import SummaryView from "../views/summary/SummaryView";
-import Map from "../views/map/Map";
+import MapComponent from "src/views/map/MapComponent";
 
 // Set basepath for VZV url
 export const basepath = "/viewer";
@@ -13,7 +13,7 @@ export const routeConfig = [
   },
   {
     path: "/map",
-    element: <Map />,
+    element: <MapComponent />,
   },
   {
     path: "/measures",
