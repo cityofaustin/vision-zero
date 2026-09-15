@@ -172,6 +172,7 @@ const SideMapControlDateRange = ({ type }) => {
                 onChange={handleStartDateChange}
                 dateFormat={DATE_FORMAT}
                 maxDate={today}
+                popperPlacement="bottom-start"
               />
               {"-"}
               <StyledDatePicker
@@ -180,6 +181,7 @@ const SideMapControlDateRange = ({ type }) => {
                 onChange={handleEndDateChange}
                 dateFormat={DATE_FORMAT}
                 maxDate={today}
+                popperPlacement="bottom-start"
               />
             </>
           )}
@@ -193,7 +195,7 @@ const SideMapControlDateRange = ({ type }) => {
         </StyledDateRow>
         <StyledActionRow>
           {showReset && (
-            <Button size="sm" color="dark" onClick={handleReset}>
+            <Button size="sm" color="dark" outline onClick={handleReset}>
               <FontAwesomeIcon icon={faUndo} className="me-1" />
               Reset
             </Button>
