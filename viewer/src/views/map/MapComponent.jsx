@@ -28,8 +28,6 @@ import {
 } from "./map-style";
 import axios from "axios";
 import { useIsTablet } from "../../constants/responsive";
-// import AnimatedIcon from "./AnimatedIcon";
-
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapInfoBox from "./InfoBox/MapInfoBox";
@@ -391,15 +389,7 @@ const MapComponent = () => {
     };
 
     return (
-      <Source id="selectedCrash" type="geojson" data={selectedFeature}>
-        {/* <AnimatedIcon
-          location={{
-            x: parseFloat(selectedFeature.properties.longitude),
-            y: parseFloat(selectedFeature.properties.latitude),
-          }}
-          paint={color}
-        /> */}
-      </Source>
+      <Source id="selectedCrash" type="geojson" data={selectedFeature}/>
     );
   };
 
