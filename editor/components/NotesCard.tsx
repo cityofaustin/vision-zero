@@ -11,8 +11,7 @@ import { CrashNote } from "@/types/crashNote";
 import { formatIsoDate, formatUserNameFromEmail } from "@/utils/formatters";
 import { LuSquarePen } from "react-icons/lu";
 import { LocationNote } from "@/types/locationNote";
-
-const allowedNoteRoles = ["vz-admin", "editor"];
+import { ADMIN_EDIT_ROLES } from "@/utils/auth";
 
 interface NotesCardProps<T extends CrashNote | LocationNote> {
   notes: T[];
@@ -25,7 +24,7 @@ interface NotesCardProps<T extends CrashNote | LocationNote> {
 
 const AddNoteButton = ({ onClick }: { onClick: () => void }) => {
   return (
-    <PermissionsRequired allowedRoles={allowedNoteRoles}>
+    <PermissionsRequired allowedRoles={ADMIN_EDIT_ROLES}>
       <Button size="sm" variant="primary" onClick={onClick}>
         <AlignedLabel>
           <LuCirclePlus className="me-2" />
@@ -82,7 +81,7 @@ export default function NotesCard<T extends CrashNote | LocationNote>({
                       </span>
                     </small>
                   </div>
-                  <PermissionsRequired allowedRoles={allowedNoteRoles}>
+                  <PermissionsRequired allowedRoles={ADMIN_EDIT_ROLES}>
                     <div className="d-flex align-self-start mt-2">
                       <Button
                         className="me-2"

@@ -42,10 +42,8 @@ export default function CrashNarrativeEditableCard({
 
   const { user } = useAuth0();
 
-  const isReadOnlyUser = user && hasRole(["readonly"], user);
-  const canDownloadCrashReport = user
-    ? hasRole(allowedCrashReportDownloadRoles, user)
-    : false;
+  const canDownloadCrashReport = hasRole(allowedCrashReportDownloadRoles, user);
+  const isReadOnlyUser = !canDownloadCrashReport;
 
   const { mutate, loading: isSubmitting } = useMutation(UPDATE_CRASH);
 

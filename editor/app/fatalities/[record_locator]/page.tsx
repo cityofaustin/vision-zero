@@ -10,11 +10,9 @@ import FatalityUnitsCards from "@/components/FatalityUnitsCards";
 import CrashNarrativeEditableCard from "@/components/CrashNarrativeEditableCard";
 import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
-import { canViewEms } from "@/utils/auth";
 import { useDocumentTitle } from "@/utils/documentTitle";
 import { formatIsoDateTimeWithDay, formatYear } from "@/utils/formatters";
 import { useQuery } from "@/utils/graphql";
-import { useAuth0 } from "@auth0/auth0-react";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import DataCard from "@/components/DataCard";
 import { crashesColumns } from "@/configs/crashesColumns";
@@ -23,6 +21,8 @@ import NotesCard from "@/components/NotesCard";
 import UserEventsLogger from "@/components/UserEventsLogger";
 import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/crashNotes";
 import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
+import { ADMIN_EDIT_ROLES, hasRole } from "@/utils/auth";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const otherCardColumns = [
   crashesColumns.case_id,
@@ -43,12 +43,13 @@ export default function FatalCrashDetailsPage({
 
   const { record_locator: recordLocator } = use(params);
   const { user } = useAuth0();
+  const includeEms = hasRole(ADMIN_EDIT_ROLES, user);
 
   const typename = "crashes";
 
   const { data, error, refetch } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
-    variables: { recordLocator, includeEms: canViewEms(user) },
+    variables: { recordLocator, includeEms },
     typename,
   });
 
@@ -101,10 +102,7 @@ export default function FatalCrashDetailsPage({
       {
         // show alert if crash is a temp record, hide delete button on fatalities pages
         crash.is_temp_record && (
-          <CrashIsTemporaryBanner
-            crash={crash}
-            dismissible
-          />
+          <CrashIsTemporaryBanner crash={crash} dismissible />
         )
       }
       <Row className="fatality-details-row">
@@ -145,9 +143,7 @@ export default function FatalCrashDetailsPage({
                     <td style={{ textWrap: "nowrap" }} className="fw-bold">
                       Risk factors
                     </td>
-                    <td>
-                      {crashesColumns.risk_factors.valueRenderer(crash)}
-                    </td>
+                    <td>{crashesColumns.risk_factors.valueRenderer(crash)}</td>
                   </tr>
                   <tr>
                     <td style={{ textWrap: "nowrap" }} className="fw-bold">

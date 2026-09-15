@@ -3,6 +3,7 @@ import { emsListViewColumns } from "@/configs/emsColumns";
 import TableWrapper from "@/components/TableWrapper";
 import UserEventsLogger from "@/components/UserEventsLogger";
 import { emsListViewQueryConfig } from "@/configs/emsListViewTable";
+import { ADMIN_EDIT_ROLES, useRequiredPageRole } from "@/utils/auth";
 import { useDocumentTitle } from "@/utils/documentTitle";
 import { Filter } from "@/types/queryBuilder";
 
@@ -19,6 +20,10 @@ const isDeletedFilter: Filter[] = [
 
 export default function EMS() {
   useDocumentTitle("EMS");
+  const isAuthorized = useRequiredPageRole(ADMIN_EDIT_ROLES);
+  if (!isAuthorized) {
+    return null;
+  }
   return (
     <UserEventsLogger eventName="ems_list_view">
       <div className="h-100 d-flex flex-column">

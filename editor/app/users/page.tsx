@@ -10,12 +10,12 @@ import PermissionsRequired from "@/components/PermissionsRequired";
 import UserModal from "@/components/UserModal";
 import { useUsersInfinite } from "@/utils/users";
 import { User } from "@/types/users";
-import { formatRoleName } from "@/utils/auth";
+import { ADMIN_ROLE, formatRoleName } from "@/utils/auth";
 import { useDocumentTitle } from "@/utils/documentTitle";
 import { LuCheck, LuCopy, LuUserPlus } from "react-icons/lu";
 import { formatIsoDateTime } from "@/utils/formatters";
 
-const allowedCreateUserRoles = ["vz-admin"];
+const allowedCreateUserRoles = [ADMIN_ROLE];
 
 export default function Users() {
   useDocumentTitle("Users");

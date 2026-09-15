@@ -5,7 +5,7 @@ import { PeopleListRow } from "@/types/peopleList";
 import { getInjuryColorClass } from "@/utils/people";
 import { useState } from "react";
 import { Unit } from "@/types/unit";
-import { hasRole } from "@/utils/auth";
+import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
 import { useImage } from "@/utils/images";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -59,7 +59,7 @@ export default function FatalityVictimListItem({
 
   const { user } = useAuth0();
 
-  const isReadOnlyUser = user && hasRole(["readonly"], user);
+  const hasEditPermissions = hasRole(ADMIN_EDIT_ROLES, user);
 
   return (
     <ListGroupItem
@@ -67,7 +67,7 @@ export default function FatalityVictimListItem({
       key={victim.id}
       style={{ border: "none" }}
     >
-      {!isReadOnlyUser && (
+      {hasEditPermissions && (
         <ImageUploadModal
           showModal={showModal}
           setShowModal={setShowModal}
@@ -86,7 +86,7 @@ export default function FatalityVictimListItem({
           onClick={() => setShowModal(true)}
           imageUrl={imageUrl}
           isLoading={isLoading}
-          isReadOnlyUser={isReadOnlyUser}
+          isReadOnlyUser={!hasEditPermissions}
         />
         <div className="d-flex flex-column">
           <div className="pb-1">
