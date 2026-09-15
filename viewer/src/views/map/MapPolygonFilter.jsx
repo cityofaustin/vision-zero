@@ -1,5 +1,6 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import { useMap } from "react-map-gl/mapbox";
+import { useMap } from "react-map-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import { stringify as stringifyGeoJSON } from "wellknown";
@@ -8,7 +9,6 @@ import { mapboxDrawStyles } from "./helpers";
 const MapPolygonFilter = ({ setMapPolygon }) => {
   const { current: map } = useMap();
   const drawRef = useRef(null);
-  const [features, setFeatures] = useState([]);
   const isMounted = useRef(true);
   const eventHandlersRef = useRef([]);
 
@@ -21,7 +21,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
           try {
             map.off(event, handler);
           } catch (e) {
-            // Ignore
+            console.error(e);
           }
         });
         eventHandlersRef.current = [];
@@ -90,14 +90,15 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
               feature.geometry &&
               feature.geometry.type === "Polygon"
             ) {
-              console.log(feature)
               try {
                 const wkt = stringifyGeoJSON(feature);
                 if (isMounted.current) {
                   setMapPolygon(wkt);
                   if (editType === "draw.create") {
                     // Switch back to simple_select mode after drawing
-                    draw.changeMode("simple_select", { featureIds: [feature.id] });
+                    draw.changeMode("simple_select", {
+                      featureIds: [feature.id],
+                    });
                   }
                 }
               } catch (error) {
@@ -110,13 +111,12 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
         }
       };
 
-      const handleDelete = (event) => {
+      const handleDelete = () => {
         if (!isMounted.current || !drawRef.current) return;
 
         try {
           const polygonBtn = document.querySelector(".mapbox-gl-draw_polygon");
           const allFeatures = draw.getAll().features;
-          console.log(allFeatures);
           if (allFeatures.length === 0 && isMounted.current) {
             setMapPolygon(null);
             if (polygonBtn) {
