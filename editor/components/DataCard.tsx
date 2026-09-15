@@ -13,7 +13,7 @@ import {
 import { ColDataCardDef } from "@/types/types";
 import { LookupTableOption } from "@/types/relationships";
 import { useAuth0 } from "@auth0/auth0-react";
-import { hasRole } from "@/utils/auth";
+import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
 import TableColumnVisibilityMenu from "@/components/TableColumnVisibilityMenu";
 import { useVisibleColumns } from "@/components/TableColumnVisibilityMenu";
 import ColumnVisibilityAlert from "@/components/ColumnVisibilityAlert";
@@ -91,7 +91,7 @@ export default function DataCard<T extends Record<string, unknown>>({
 
   const { user } = useAuth0();
 
-  const isReadOnlyUser = user && hasRole(["readonly"], user);
+  const hasEditPermissions = hasRole(ADMIN_EDIT_ROLES, user);
 
   const {
     data: selectOptions,
@@ -139,7 +139,7 @@ export default function DataCard<T extends Record<string, unknown>>({
     <Card>
       <Card.Header className="d-flex justify-content-between">
         <Card.Title>{title}</Card.Title>
-        {HeaderActionComponent && !isReadOnlyUser && (
+        {HeaderActionComponent && hasEditPermissions && (
           <HeaderActionComponent
             record={record}
             mutation={mutation}
@@ -172,12 +172,14 @@ export default function DataCard<T extends Record<string, unknown>>({
                     key={String(col.path)}
                     style={{
                       cursor:
-                        col.editable && !isEditingThisColumn && !isReadOnlyUser
+                        col.editable &&
+                        !isEditingThisColumn &&
+                        hasEditPermissions
                           ? "pointer"
                           : "auto",
                     }}
                     onClick={() => {
-                      if (!col.editable || isReadOnlyUser) {
+                      if (!col.editable || !hasEditPermissions) {
                         return;
                       }
                       if (!isEditingThisColumn) {

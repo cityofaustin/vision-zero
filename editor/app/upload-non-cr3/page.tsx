@@ -24,6 +24,7 @@ import {
   LuInfo,
   LuTriangleAlert,
 } from "react-icons/lu";
+import { ADMIN_EDIT_ROLES, useRequiredPageRole } from "@/utils/auth";
 import { useDocumentTitle } from "@/utils/documentTitle";
 
 const MAX_ERRORS_TO_DISPLAY = 50;
@@ -38,6 +39,8 @@ export default function UploadNonCr3() {
   const [uploadError, setUploadError] = useState(false);
   const [success, setSuccess] = useState(false);
   const { mutate, loading: isMutating } = useMutation(INSERT_NON_CR3);
+
+  const isAuthorized = useRequiredPageRole(ADMIN_EDIT_ROLES);
 
   const onSelectFile = useCallback(
     (file: File) => {
@@ -83,6 +86,10 @@ export default function UploadNonCr3() {
     },
     [setValidationErrors, setParsing, setData]
   );
+
+  if (!isAuthorized) {
+    return null;
+  }
 
   const onUpload = async () => {
     try {

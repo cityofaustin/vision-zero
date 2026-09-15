@@ -7,7 +7,7 @@ import {
 } from "@/components/PointMap";
 
 interface CrashMapCoordinateFormProps {
-  mapLatLon: LatLon;
+  draftLatLon: LatLon;
   formLatLon: LatLonString;
   setFormLatLon: Dispatch<SetStateAction<LatLonString>>;
   validationError?: CoordinateValidationError;
@@ -20,7 +20,7 @@ interface CrashMapCoordinateFormProps {
  * Form component to enter lat/lon coordinates
  */
 export default function CrashMapCoordinateForm({
-  mapLatLon,
+  draftLatLon,
   formLatLon,
   setFormLatLon,
   validationError,
@@ -31,11 +31,11 @@ export default function CrashMapCoordinateForm({
      * Keeps form values in sync with map edits
      */
     setFormLatLon({
-      latitude: String(mapLatLon.latitude),
-      longitude: String(mapLatLon.longitude),
+      latitude: String(draftLatLon.latitude),
+      longitude: String(draftLatLon.longitude),
     });
     setValidationError(undefined);
-  }, [mapLatLon, setFormLatLon, setValidationError]);
+  }, [draftLatLon, setFormLatLon, setValidationError]);
 
   return (
     <Form id="recommendationForm">

@@ -1,5 +1,6 @@
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import Spinner from "react-bootstrap/Spinner";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -16,6 +17,7 @@ import { EMSPatientCareRecord } from "@/types/ems";
 import { Location } from "@/types/locations";
 import { useQuery } from "@/utils/graphql";
 import { useLogUserEvent } from "@/utils/userEvents";
+import { ADMIN_EDIT_ROLES, hasRole, HasuraUserRoleName } from "@/utils/auth";
 
 const navSearchLocalStorageKey = "navBarSearchField";
 
@@ -34,6 +36,7 @@ type SearchField<T extends SearchableTypes = SearchableTypes> = {
   label: string;
   query: string;
   getUrl: (record: T) => string;
+  allowedRoles?: HasuraUserRoleName[];
 };
 
 /**
@@ -62,6 +65,7 @@ const SEARCH_FIELDS = [
     label: "EMS Incident #",
     query: EMS_INCIDENT_NAV_SEARCH,
     getUrl: (record: EMSPatientCareRecord) => `/ems/${record.incident_number}`,
+    allowedRoles: ADMIN_EDIT_ROLES,
   },
   {
     key: "location_id",
@@ -74,29 +78,53 @@ const SEARCH_FIELDS = [
 /**
  * Find a search field config from an input key - it's a safe way to handle an
  * arbitrary key string from local storage
- * @param val
+ * @param key
+ * @param fields - the permission-filtered fields to search/fall back within
  * @returns
  */
-const getValidSearchField = (key: string | null): AnySearchField => {
+const getValidSearchField = (
+  key: string | null,
+  fields: AnySearchField[]
+): AnySearchField => {
   if (!key) {
-    return SEARCH_FIELDS[0];
+    return fields[0];
   }
-  const foundSearchField = SEARCH_FIELDS.find(
+  const foundSearchField = fields.find(
     (searchField) => searchField.key === key
   );
-  return foundSearchField || SEARCH_FIELDS[0];
+  return foundSearchField || fields[0];
 };
+
+const subscribeToNavSearchStorage = (onStoreChange: () => void) => {
+  window.addEventListener("storage", onStoreChange);
+  return () => window.removeEventListener("storage", onStoreChange);
+};
+
+const getNavSearchStorageSnapshot = () =>
+  localStorage.getItem(navSearchLocalStorageKey);
 
 /**
  * Allows users to search for and route to various record types
  * by typing in an ID
  */
 export default function NavBarSearch() {
-  const [searchField, setSearchField] = useState<AnySearchField>(
-    getValidSearchField(null)
+  const storedSearchKey = useSyncExternalStore(
+    subscribeToNavSearchStorage,
+    getNavSearchStorageSnapshot,
+    () => null
   );
+  const { user } = useAuth0();
+  const visibleSearchFields = SEARCH_FIELDS.filter(
+    (field) => !field.allowedRoles || hasRole(field.allowedRoles, user)
+  );
+  const [searchFieldOverride, setSearchFieldOverride] =
+    useState<AnySearchField | null>(null);
+  const searchField =
+    searchFieldOverride ??
+    getValidSearchField(storedSearchKey, visibleSearchFields);
   const [searchValue, setSearchValue] = useState("");
   const [searchClicked, setSearchClicked] = useState(false);
+  const [pendingRoute, setPendingRoute] = useState<string | null>(null);
   const logUserEvent = useLogUserEvent();
 
   const router = useRouter();
@@ -108,29 +136,19 @@ export default function NavBarSearch() {
     options: { keepPreviousData: false },
   });
 
-  useEffect(() => {
-    if (searchClicked && data?.length === 1) {
-      // we are casting our matchedRecord to bypass TS headaches. we have to
-      // trust that our queries are returning the objects we think they are
-      const matchedRecord = data[0] as Crash & Location & EMSPatientCareRecord;
-      const route = searchField.getUrl(matchedRecord);
-      router.push(route);
-      setSearchValue("");
-      setSearchClicked(false);
-    }
-  }, [searchClicked, data, router, searchField]);
+  // When a unique match arrives, prepare navigation during render (React-recommended)
+  if (searchClicked && data?.length === 1 && !pendingRoute) {
+    const matchedRecord = data[0] as Crash & Location & EMSPatientCareRecord;
+    setPendingRoute(searchField.getUrl(matchedRecord));
+    setSearchValue("");
+    setSearchClicked(false);
+  }
 
-  /**
-   * On init, check local storage for search key and use it
-   */
+  // Navigate as an effect — router is an external system
   useEffect(() => {
-    const searchKeyFromLocalStorage = localStorage.getItem(
-      navSearchLocalStorageKey
-    );
-    if (searchKeyFromLocalStorage) {
-      setSearchField(getValidSearchField(searchKeyFromLocalStorage));
-    }
-  }, []);
+    if (!pendingRoute) return;
+    router.push(pendingRoute);
+  }, [pendingRoute, router]);
 
   /**
    * Keep the selected search field key in sync w/ local storage
@@ -141,12 +159,13 @@ export default function NavBarSearch() {
 
   const onSearch = (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setPendingRoute(null);
     setSearchClicked(true);
     logUserEvent(`${userEventName}_${searchField.key}`);
   };
 
   const onSelectSearchField = (field: AnySearchField) => {
-    setSearchField(field);
+    setSearchFieldOverride(field);
     setSearchClicked(false);
   };
 
@@ -169,7 +188,7 @@ export default function NavBarSearch() {
               </AlignedLabel>
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              {SEARCH_FIELDS.map((searchFieldOption) => (
+              {visibleSearchFields.map((searchFieldOption) => (
                 <Dropdown.Item
                   key={searchFieldOption.key}
                   active={searchFieldOption.key === searchField.key}
@@ -190,6 +209,7 @@ export default function NavBarSearch() {
             placeholder="Search..."
             onChange={(e) => {
               setSearchClicked(false);
+              setPendingRoute(null);
               setSearchValue(e.target.value.trim());
             }}
             type="search"

@@ -87,7 +87,9 @@ const Summary = () => {
                     <InfoPopover config={popoverConfig.map.trafficCrashes} />{" "}
                     includes crashes that occurred within the current City of
                     Austin Full Purpose jurisdiction, inclusive of all public
-                    safety jurisdictions.
+                    safety jurisdictions. Fatalities are recorded by crash date,
+                    not date of death, which may differ if a victim died after
+                    the date of the crash.
                   </div>
                 </Alert>
               </Row>
