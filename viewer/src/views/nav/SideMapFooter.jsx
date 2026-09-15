@@ -15,7 +15,6 @@ const Logo = styled.img`
 
 const DepartmentName = styled.div`
   font-size: 18px;
-  font-family: Robot, Helvetica, Arial, sans-serif;
   text-align: center;
   margin-bottom: 10px;
   font-weight: bold;
@@ -24,7 +23,6 @@ const DepartmentName = styled.div`
 const FeedbackLink = styled.a`
   margin-top: 10px;
   font-size: 14px;
-  font-family: Robot, Helvetica, Arial, sans-serif;
   color: white;
   cursor: pointer;
   text-decoration: none;
