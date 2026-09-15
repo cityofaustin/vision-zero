@@ -1,0 +1,33 @@
+import { Point } from "geojson";
+
+export type CadIncident = {
+    address?: string | null;
+    agency_type_short?: string | null;
+    agency_type?: string | null;
+    call_disposition?: string | null;
+    created_at?: string | null;
+    created_by?: string | null;
+    final_problem?: string | null;
+    geom?: Point | null;
+    id?: number;
+    in_austin_full_purpose?: boolean | null;
+    incident_type?: string | null;
+    initial_problem?: string | null;
+    is_cancelled_call?: boolean | null;
+    latitude?: number | null;
+    location_id?: string | null;
+    longitude?: number | null;
+    master_incident_id?: number | null;
+    master_incident_number?: string | null;
+    priority_description?: string | null;
+    priority_number?: number | null;
+    response_date?: string | null;
+    time_call_closed?: string | null;
+    time_first_unit_arrived?: string | null;
+    updated_at?: string | null;
+    updated_by?: string | null;
+    upstream_record_update_timestamp?: string | null;
+    vz_incident_id?: number | null;
+    vz_incident_match_status?: string;
+    vz_incident_matched_ids?: number[] | null;
+};
