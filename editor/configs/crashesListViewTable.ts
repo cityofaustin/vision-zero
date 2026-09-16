@@ -274,6 +274,20 @@ const crashesListViewfilterCards: FilterGroup[] = [
           },
         ],
       },
+      {
+        id: "is_manual_review_qa_complete",
+        label: "Needs manual review/QA",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "is_manual_review_qa_complete",
+            column: "is_manual_review_qa_complete",
+            operator: "_eq",
+            value: false,
+          },
+        ],
+      },
     ],
   },
 ];
