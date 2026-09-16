@@ -47,9 +47,9 @@ It's *possible* that we could develop a more sophisticated incident matching aut
 
 ## Why this direction
 
-We are re-focusing on discrete goals around getting impactful data to our crash data consumers: the Vision Zero team, transportation engineers, and the public (via the Open Data Portal and Vision Zero Viewer). The persitsted incidents concept has proven not to advance that need. 
+We are re-focusing on discrete goals around getting impactful data to our crash data consumers: the Vision Zero team, transportation engineers, and the public (via the Open Data Portal and Vision Zero Viewer). The persisted incidents concept has proven not to advance that need. 
 
-VZE UI enhancements targeting unified views of "incidents" need further refinement, and we have not yet named functionality that calls for a permalinked, cross-source event ID. We should proceed with getting the record-level injury math right first - with the existing data we have - and follow along with athoritative views which clear, reliable metrics.
+VZE UI enhancements targeting unified views of "incidents" need further refinement, and we have not yet named functionality that calls for a permalinked, cross-source event ID. We should proceed with getting the record-level injury math right first - with the existing data we have - and follow along with authoritative views which clear, reliable metrics.
 
 ## Goals & outcomes
 
@@ -69,7 +69,7 @@ VZE UI enhancements targeting unified views of "incidents" need further refineme
 - VZE: surface overridden values where staff need to see them
 - Location-level statistics for orphaned/unmatched EMS/AFD injuries
 - Crash manual QA UI improvements (location polygons, CAD lat/long fallback, non-COA roadway overlay, slimmed QA page)
-- EMS manual QA UI improvements (match filtering, column/language alignment, CAD map context, name-based matching — blocked by BAA)
+- EMS manual QA UI improvements (match filtering, column/language alignment, CAD map context, name-based matching — blocked by data sharing agreement
 
 **ETL**
 - Case ID + address matching, ML-based matching, name-based matching (crash↔EMS/AFD refinement)

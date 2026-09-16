@@ -1,6 +1,6 @@
 # Toolbox
 
-This is a collection of scripts which support recurring maintence tasks. Scripts which have been written to serve a one-time or historical purpose can be found in the `/archive` subdirectory.
+This is a collection of scripts which support recurring maintenance tasks. Scripts which have been written to serve a one-time or historical purpose can be found in the `/archive` subdirectory.
 
 ## Contents
 
