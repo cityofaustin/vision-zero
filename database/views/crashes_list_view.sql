@@ -1,4 +1,4 @@
--- Most recent migration: database/migrations/default/1789585986584_run_sql_migration/up.sql
+-- Most recent migration: database/migrations/default/1789585986584_crashes_list_view_manual_qa_complete/up.sql
 
 CREATE OR REPLACE VIEW crashes_list_view AS
 SELECT
