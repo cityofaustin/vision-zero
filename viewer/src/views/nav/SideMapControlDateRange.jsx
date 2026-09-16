@@ -136,77 +136,77 @@ const SideMapControlDateRange = ({ type }) => {
   };
 
   return (
-    <>
-      <StyledButtonContainer className="picker-outline">
-        <h6>Crash date</h6>
-        <StyledDateRow>
-          {isMobile ? (
-            <>
-              <StyledNativeDateInput
-                id={`map-start-date-${type}`}
-                type="date"
-                value={format(pendingStart, "yyyy-MM-dd")}
-                onChange={handleNativeStartChange}
-                min={format(minDate, "yyyy-MM-dd")}
-                max={format(today, "yyyy-MM-dd")}
-              />
-              {"-"}
-              <StyledNativeDateInput
-                id={`map-end-date-${type}`}
-                type="date"
-                value={format(pendingEnd, "yyyy-MM-dd")}
-                onChange={handleNativeEndChange}
-                min={format(minDate, "yyyy-MM-dd")}
-                max={format(today, "yyyy-MM-dd")}
-              />
-            </>
-          ) : (
-            <>
-              <StyledDatePicker
-                id={`map-start-date-${type}`}
-                selected={pendingStart}
-                onChange={handleStartDateChange}
-                dateFormat={DATE_FORMAT}
-                maxDate={today}
-              />
-              {"-"}
-              <StyledDatePicker
-                id={`map-end-date-${type}`}
-                selected={pendingEnd}
-                onChange={handleEndDateChange}
-                dateFormat={DATE_FORMAT}
-                maxDate={today}
-              />
-            </>
-          )}
-          {!isMobile && (
-            <StyledCalendarIcon
-              title="Date range"
-              icon={faCalendar}
-              color={colors.dark}
+    <StyledButtonContainer className="picker-outline">
+      <h6>Crash date</h6>
+      <StyledDateRow>
+        {isMobile ? (
+          <>
+            <StyledNativeDateInput
+              id={`map-start-date-${type}`}
+              type="date"
+              value={format(pendingStart, "yyyy-MM-dd")}
+              onChange={handleNativeStartChange}
+              min={format(minDate, "yyyy-MM-dd")}
+              max={format(today, "yyyy-MM-dd")}
             />
-          )}
-        </StyledDateRow>
-        <StyledActionRow>
-          {showReset && (
-            <Button size="sm" color="dark" onClick={handleReset}>
-              <FontAwesomeIcon icon={faUndo} className="me-1" />
-              Reset
-            </Button>
-          )}
-          {hasPendingChange && (
-            <Button
-              size="sm"
-              color="dark"
-              onClick={handleApply}
-              disabled={!hasPendingChange}
-            >
-              Apply date filter
-            </Button>
-          )}
-        </StyledActionRow>
-      </StyledButtonContainer>
-    </>
+            {"-"}
+            <StyledNativeDateInput
+              id={`map-end-date-${type}`}
+              type="date"
+              value={format(pendingEnd, "yyyy-MM-dd")}
+              onChange={handleNativeEndChange}
+              min={format(minDate, "yyyy-MM-dd")}
+              max={format(today, "yyyy-MM-dd")}
+            />
+          </>
+        ) : (
+          <>
+            <StyledDatePicker
+              id={`map-start-date-${type}`}
+              selected={pendingStart}
+              onChange={handleStartDateChange}
+              dateFormat={DATE_FORMAT}
+              maxDate={today}
+              popperPlacement="bottom-start"
+            />
+            {"-"}
+            <StyledDatePicker
+              id={`map-end-date-${type}`}
+              selected={pendingEnd}
+              onChange={handleEndDateChange}
+              dateFormat={DATE_FORMAT}
+              maxDate={today}
+              popperPlacement="bottom-start"
+            />
+          </>
+        )}
+        {!isMobile && (
+          <StyledCalendarIcon
+            title="Date range"
+            icon={faCalendar}
+            color={colors.dark}
+          />
+        )}
+      </StyledDateRow>
+      <StyledActionRow>
+        {showReset && (
+          <Button size="sm" color="dark" outline onClick={handleReset}>
+            <FontAwesomeIcon icon={faUndo} className="me-1" />
+            Reset
+          </Button>
+        )}
+        {hasPendingChange && (
+          <Button
+            size="sm"
+            color="dark"
+            onClick={handleApply}
+            disabled={!hasPendingChange}
+          >
+            Apply date filter
+          </Button>
+        )}
+      </StyledActionRow>
+    </StyledButtonContainer>
   );
 };
 

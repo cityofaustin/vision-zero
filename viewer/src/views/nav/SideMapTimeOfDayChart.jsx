@@ -207,6 +207,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
           color="dark"
           active={!isMapTimeWindowSet}
           onClick={handleAllButtonClick}
+          outline
         >
           <FontAwesomeIcon icon={faUndo} className="me-1" />
           Reset

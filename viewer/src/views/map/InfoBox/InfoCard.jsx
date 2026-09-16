@@ -14,6 +14,7 @@ import { colors } from "../../../constants/colors";
 const StyledTableRow = styled.tr`
   .align {
     vertical-align: initial;
+    font-size: 14px;
   }
 `;
 
@@ -46,7 +47,6 @@ const InfoCard = ({ content }) => {
                       backgroundColor: colors.info,
                       border: 0,
                     }}
-                    color="info"
                     outline={false}
                     onClick={() => {
                       navigator.clipboard.writeText(item.content);
