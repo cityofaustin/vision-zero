@@ -43,7 +43,7 @@ const UmamiAnalytics = () => {
     }
 
     document.head.appendChild(script);
-  }, [scriptUrl, websiteId, domains, tag]);
+  }, [websiteId, domains, tag]);
 
   return null;
 };
