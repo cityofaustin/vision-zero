@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
@@ -171,20 +171,15 @@ const CrashesByMode = () => {
   };
 
   // Get an array of annual totals for the selected crash type
-  const getYearTotalsArray = useMemo(() => {
-    const yearTotalsArray = yearsArray.map((year, index) => {
-      let currentYearTotal = 0;
-      if (data.datasets) {
-        data.datasets.forEach((mode) => {
-          currentYearTotal += mode.data[index];
-        });
-      }
-      return currentYearTotal;
-    });
-    return yearTotalsArray;
-  }, [data.datasets]);
-
-  const yearTotalsArray = getYearTotalsArray;
+  const yearTotalsArray = yearsArray.map((_year, index) => {
+    let currentYearTotal = 0;
+    if (data.datasets) {
+      data.datasets.forEach((mode) => {
+        currentYearTotal += mode.data[index];
+      });
+    }
+    return currentYearTotal;
+  });
 
   const StyledDiv = styled.div`
     .year-total-div {
@@ -251,15 +246,6 @@ const CrashesByMode = () => {
                       ></p>
                     </div>
                     {data.datasets.map((dataset, i) => {
-                      const updateLegendColors = () => {
-                        const legendColorsClone = [...legendColors];
-                        if (legendColors[i] !== "dimgray") {
-                          legendColorsClone.splice(i, 1, "dimgray");
-                        } else {
-                          legendColorsClone.splice(i, 1, chartColors[i]);
-                        }
-                        setLegendColors(legendColorsClone);
-                      };
                       const customLegendClickHandler = (datasetIndex) => {
                         if (chartRef.current) {
                           const ci = chartRef.current;

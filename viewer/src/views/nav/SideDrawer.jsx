@@ -23,7 +23,7 @@ const Nav = styled("nav")`
   }
 `;
 
-const DrawerStyled = styled(Drawer)(({ theme }) => ({
+const DrawerStyled = styled(Drawer)(() => ({
   "& .MuiDrawer-paper": {
     width: drawerWidth,
     background: colors.dark,

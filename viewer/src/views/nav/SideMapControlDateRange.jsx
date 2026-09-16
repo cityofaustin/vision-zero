@@ -4,11 +4,7 @@ import styled from "styled-components";
 import { dataStartDate, today } from "../../constants/time";
 import { colors } from "../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCalendar,
-  faInfoCircle,
-  faUndo,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faUndo } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { parse, format } from "date-fns";
