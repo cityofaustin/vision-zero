@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import { useMap } from "react-map-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -8,7 +8,6 @@ import { mapboxDrawStyles } from "./helpers";
 const MapPolygonFilter = ({ setMapPolygon }) => {
   const { current: map } = useMap();
   const drawRef = useRef(null);
-  const [features, setFeatures] = useState([]);
   const isMounted = useRef(true);
   const eventHandlersRef = useRef([]);
 
@@ -20,7 +19,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
         eventHandlersRef.current.forEach(({ event, handler }) => {
           try {
             map.off(event, handler);
-          } catch (e) {
+          } catch {
             // Ignore
           }
         });
@@ -110,7 +109,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
         }
       };
 
-      const handleDelete = (event) => {
+      const handleDelete = () => {
         if (!isMounted.current || !drawRef.current) return;
 
         try {
@@ -128,9 +127,9 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
         }
       };
 
-      const handleModeChange = (event) => {
+      const handleModeChange = ({ mode }) => {
         // when mode is simple select, if polygon exists prevent drawing
-        if (event.mode === "simple_select") {
+        if (mode === "simple_select") {
           const data = draw.getAll();
           const hasPolygon = data.features.some(
             (f) => f.geometry.type === "Polygon",
