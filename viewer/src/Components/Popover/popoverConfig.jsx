@@ -360,7 +360,14 @@ export const popoverConfig = {
             High-Injury Network/High-Injury Roadways
           </div>
           <div className="mb-2">
-            This is an online version of the Combined High-Injury Network Map
+            This is an online version of the{" "}
+            <a
+              href="https://austin.maps.arcgis.com/apps/instant/sidebar/index.html?appid=0af9834f3e1443d88ab784e2d9146442"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Combined High-Injury Network Map
+            </a>{" "}
             included in the adopted Austin Strategic Mobility Plan policy
             document. A detailed crash analysis of crashes from 2017-2021 was
             used to identify the Combined High-Injury Network, which includes

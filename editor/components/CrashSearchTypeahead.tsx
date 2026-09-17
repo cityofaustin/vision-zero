@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback } from "react";
 import type { KeyboardEvent } from "react";
 import Form from "react-bootstrap/Form";
 import Spinner from "react-bootstrap/Spinner";
@@ -32,10 +32,15 @@ export default function CrashSearchTypeahead({
   const [searchInput, setSearchInput] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const [prevSelected, setPrevSelected] = useState(selected);
 
-  useEffect(() => {
-    if (!selected) setSearchInput("");
-  }, [selected]);
+  // Reset the input when the parent clears the selection (no effect needed)
+  if (selected !== prevSelected) {
+    setPrevSelected(selected);
+    if (!selected) {
+      setSearchInput("");
+    }
+  }
 
   // Constrain address search by time to reduce result count
   const minCrashTimestamp = useMemo(() => {

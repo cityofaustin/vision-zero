@@ -8,12 +8,11 @@ import { MapRef } from "react-map-gl";
 import { PointMap } from "@/components/PointMap";
 import FatalityUnitsCards from "@/components/FatalityUnitsCards";
 import CrashNarrativeEditableCard from "@/components/CrashNarrativeEditableCard";
-import { GET_CRASH } from "@/queries/crash";
+import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { Crash } from "@/types/crashes";
 import { useDocumentTitle } from "@/utils/documentTitle";
 import { formatIsoDateTimeWithDay, formatYear } from "@/utils/formatters";
 import { useQuery } from "@/utils/graphql";
-import { UPDATE_CRASH } from "@/queries/crash";
 import CrashDiagramCard from "@/components/CrashDiagramCard";
 import DataCard from "@/components/DataCard";
 import { crashesColumns } from "@/configs/crashesColumns";
@@ -22,11 +21,15 @@ import NotesCard from "@/components/NotesCard";
 import UserEventsLogger from "@/components/UserEventsLogger";
 import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/crashNotes";
 import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
+import { ADMIN_EDIT_ROLES, hasRole } from "@/utils/auth";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const otherCardColumns = [
   crashesColumns.case_id,
   crashesColumns.law_enforcement_ytd_fatality_num,
   crashesColumns.light_cond,
+  crashesColumns.wthr_cond,
+  crashesColumns.surf_cond,
   crashesColumns.crash_speed_limit,
   crashesColumns.obj_struck,
 ];
@@ -39,12 +42,14 @@ export default function FatalCrashDetailsPage({
   const mapRef = useRef<MapRef | null>(null);
 
   const { record_locator: recordLocator } = use(params);
+  const { user } = useAuth0();
+  const includeEms = hasRole(ADMIN_EDIT_ROLES, user);
 
   const typename = "crashes";
 
   const { data, error, refetch } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
-    variables: { recordLocator },
+    variables: { recordLocator, includeEms },
     typename,
   });
 
@@ -97,10 +102,7 @@ export default function FatalCrashDetailsPage({
       {
         // show alert if crash is a temp record, hide delete button on fatalities pages
         crash.is_temp_record && (
-          <CrashIsTemporaryBanner
-            crash={crash}
-            dismissible
-          />
+          <CrashIsTemporaryBanner crash={crash} dismissible />
         )
       }
       <Row className="fatality-details-row">
@@ -136,6 +138,12 @@ export default function FatalCrashDetailsPage({
                       Collision type
                     </td>
                     <td>{crash.collsn?.label}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ textWrap: "nowrap" }} className="fw-bold">
+                      Risk factors
+                    </td>
+                    <td>{crashesColumns.risk_factors.valueRenderer(crash)}</td>
                   </tr>
                   <tr>
                     <td style={{ textWrap: "nowrap" }} className="fw-bold">

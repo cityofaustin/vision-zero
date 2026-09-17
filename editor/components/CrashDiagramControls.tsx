@@ -19,8 +19,7 @@ import { useControls } from "react-zoom-pan-pinch";
 import { CrashDiagramOrientation } from "@/types/crashDiagramOrientation";
 import AlignedLabel from "@/components/AlignedLabel";
 import PermissionsRequired from "@/components/PermissionsRequired";
-
-const allowedUserSaveDiagramRoles = ["vz-admin", "editor"];
+import { ADMIN_EDIT_ROLES } from "@/utils/auth";
 
 export const RotateControls = ({
   setValue,
@@ -114,7 +113,7 @@ export const ZoomResetSaveControls = ({
           </AlignedLabel>
         </Button>
       </ButtonGroup>
-      <PermissionsRequired allowedRoles={allowedUserSaveDiagramRoles}>
+      <PermissionsRequired allowedRoles={ADMIN_EDIT_ROLES}>
         <AlignedLabel>
           <Button
             size="sm"

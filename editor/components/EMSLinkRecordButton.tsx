@@ -8,8 +8,7 @@ import AlignedLabel from "@/components/AlignedLabel";
 import { useMutation } from "@/utils/graphql";
 import { Modal } from "react-bootstrap";
 import { useState } from "react";
-
-const allowedLinkRecordRoles = ["vz-admin", "editor"];
+import { ADMIN_EDIT_ROLES } from "@/utils/auth";
 
 export interface EMSLinkRecordButtonProps extends Record<string, unknown> {
   onClick: (emsId: EMSPatientCareRecord) => void;
@@ -37,7 +36,7 @@ const EMSLinkRecordButton: React.FC<
   const { mutate: updateEMSRecord } = useMutation(mutation);
 
   return (
-    <PermissionsRequired allowedRoles={allowedLinkRecordRoles}>
+    <PermissionsRequired allowedRoles={ADMIN_EDIT_ROLES}>
       <div className="d-flex">
         {!isEditingColumn && (
           <Button

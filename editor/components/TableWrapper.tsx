@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Table from "@/components/Table";
@@ -61,6 +68,86 @@ interface TableProps<T extends Record<string, unknown>> {
 }
 
 /**
+ * Parse and validate a QueryConfig string from localStorage.
+ * Returns initialQueryConfig when missing/invalid/outdated.
+ */
+function parseStoredQueryConfig(
+  raw: string | null,
+  initialQueryConfig: QueryConfig
+): QueryConfig {
+  if (!raw) {
+    return initialQueryConfig;
+  }
+
+  let parsed: QueryConfig;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    console.warn(
+      "Unable to parse queryConfig from local storage. Using default config instead"
+    );
+    return initialQueryConfig;
+  }
+
+  if (parsed?._version !== initialQueryConfig._version) {
+    // New config version found — wipe out the cached version from local storage
+    return initialQueryConfig;
+  }
+
+  try {
+    QueryConfigSchema.strict().parse(parsed);
+  } catch (err) {
+    console.error(
+      "Invalid QueryConfig found in local storage. Using default config instead."
+    );
+    console.error(err);
+    return initialQueryConfig;
+  }
+
+  /**
+   * If date mode filters (YTD, 1Y, 5Y, etc) are in use, bring them into sync
+   * with current date. Recalculate without mutating the parsed object.
+   */
+  if (parsed.dateFilter && parsed.dateFilter.mode !== "custom") {
+    const { mode, column } = parsed.dateFilter;
+    return {
+      ...parsed,
+      dateFilter: makeDateFilterFromMode(mode, parsed, column),
+    };
+  }
+
+  return parsed;
+}
+
+function areQueryConfigsDirty(
+  queryConfig: QueryConfig,
+  initialQueryConfig: QueryConfig
+): boolean {
+  const queryConfigMutable = cloneDeep(queryConfig);
+  const initialQueryConfigMutable = cloneDeep(initialQueryConfig);
+  /**
+   * Ignore date timestamps if not using a custom range
+   */
+  if (
+    queryConfig.dateFilter?.mode === initialQueryConfig.dateFilter?.mode &&
+    queryConfigMutable.dateFilter &&
+    queryConfig.dateFilter?.mode !== "custom"
+  ) {
+    queryConfigMutable.dateFilter = undefined;
+    initialQueryConfigMutable.dateFilter = undefined;
+  }
+  /**
+   * Ignore map toggle state — we don't want filters dirty when switching
+   * between map/list mode
+   */
+  if (queryConfigMutable.mapConfig && initialQueryConfigMutable.mapConfig) {
+    queryConfigMutable.mapConfig.isActive = true;
+    initialQueryConfigMutable.mapConfig.isActive = true;
+  }
+  return !isEqual(queryConfigMutable, initialQueryConfigMutable);
+}
+
+/**
  * The main abstracted table component with all the bells and whistles -
  * designed to interact with the Hasura GraphQL API
  */
@@ -74,22 +161,86 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   mapEventName,
   downloadEventName,
 }: TableProps<T>) {
-  const [areFiltersDirty, setAreFiltersDirty] = useState(false);
-  const [isQueryConfigLocalStorageLoaded, setIsQueryConfigLocalStorageLoaded] =
-    useState(false);
+  /**
+   * Client gate only — do NOT also wait on column-visibility localStorage here.
+   * TablePaginationControls must mount to load column visibility; blocking on
+   * that flag prevents the query from ever firing (blank /crashes page).
+   */
+  const isClient = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
+  const rawStoredConfig = useSyncExternalStore(
+    (onStoreChange) => {
+      window.addEventListener("storage", onStoreChange);
+      return () => window.removeEventListener("storage", onStoreChange);
+    },
+    () => localStorage.getItem(localStorageKey),
+    () => null
+  );
+
+  const configFromStorage = useMemo(
+    () => parseStoredQueryConfig(rawStoredConfig, initialQueryConfig),
+    [rawStoredConfig, initialQueryConfig]
+  );
+
+  const [queryConfigOverride, setQueryConfigOverride] =
+    useState<QueryConfig | null>(null);
+  const [prevLocalStorageKey, setPrevLocalStorageKey] =
+    useState(localStorageKey);
+  if (localStorageKey !== prevLocalStorageKey) {
+    setPrevLocalStorageKey(localStorageKey);
+    setQueryConfigOverride(null);
+  }
+
+  const queryConfig = queryConfigOverride ?? configFromStorage;
+  const setQueryConfig: Dispatch<SetStateAction<QueryConfig>> = (action) => {
+    setQueryConfigOverride((prev) => {
+      const base = prev ?? configFromStorage;
+      return typeof action === "function" ? action(base) : action;
+    });
+  };
+
   const [
     isColVisibilityLocalStorageLoaded,
     setIsColVisibilityLocalStorageLoaded,
   ] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
-  const [searchSettings, setSearchSettings] = useState<SearchSettings>({
-    searchString: String(initialQueryConfig.searchFilter.value),
-    searchColumn: initialQueryConfig.searchFilter.column,
-  });
-  const [queryConfig, setQueryConfig] = useState<QueryConfig>({
-    ...initialQueryConfig,
-  });
+  /**
+   * Draft search input; cleared when queryConfig.searchFilter changes
+   * (e.g. reset filters) so the input stays in sync without an effect.
+   */
+  const searchFilterKey = `${queryConfig.searchFilter.column}:${String(queryConfig.searchFilter.value)}`;
+  const [searchDraft, setSearchDraft] = useState<SearchSettings | null>(null);
+  const [prevSearchFilterKey, setPrevSearchFilterKey] =
+    useState(searchFilterKey);
+  if (searchFilterKey !== prevSearchFilterKey) {
+    setPrevSearchFilterKey(searchFilterKey);
+    setSearchDraft(null);
+  }
+  const searchSettings: SearchSettings = searchDraft ?? {
+    searchString: String(queryConfig.searchFilter.value),
+    searchColumn: queryConfig.searchFilter.column,
+  };
+  const setSearchSettings: Dispatch<SetStateAction<SearchSettings>> = (
+    action
+  ) => {
+    setSearchDraft((prev) => {
+      const base = prev ?? {
+        searchString: String(queryConfig.searchFilter.value),
+        searchColumn: queryConfig.searchFilter.column,
+      };
+      return typeof action === "function" ? action(base) : action;
+    });
+  };
+
+  const areFiltersDirty = useMemo(
+    () => areQueryConfigsDirty(queryConfig, initialQueryConfig),
+    [queryConfig, initialQueryConfig]
+  );
 
   /** Use custom hook to get array of visible columns, column visibility settings,
    * and state setter function */
@@ -129,9 +280,9 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   const exportQuery = useExportQuery(queryConfig, columns, contextFilters);
 
   const { data, aggregateData, isLoading, error, refetch } = useQuery<T>({
-    // don't fire first query until localstorage is loaded
+    // don't fire first query until client + column visibility are ready
     query:
-      isQueryConfigLocalStorageLoaded &&
+      isClient &&
       isColVisibilityLocalStorageLoaded &&
       visibleColumns.length > 0
         ? query
@@ -152,124 +303,12 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   const rows = data || [];
 
   /**
-   * Load queryConfig settings from localstorage
+   * Keep changes to query config in sync with localstorage (external store only)
    */
   useEffect(() => {
-    /**
-     * Try to load queryConfig
-     */
-    const configFromStorageString = localStorage.getItem(localStorageKey) || "";
-    let queryConfigFromStorage: QueryConfig | undefined;
-
-    try {
-      queryConfigFromStorage = JSON.parse(configFromStorageString);
-    } catch {
-      console.warn(
-        "Unable to parse queryConfig from local storage. Using default config instead"
-      );
-      setIsQueryConfigLocalStorageLoaded(true);
-      return;
-    }
-
-    if (
-      queryConfigFromStorage &&
-      queryConfigFromStorage?._version !== initialQueryConfig._version
-    ) {
-      // New config version found — wipe out the cached version from local storage
-      queryConfigFromStorage = initialQueryConfig;
-    }
-
-    /**
-     * Validate the query config we found in local storage
-     */
-    try {
-      QueryConfigSchema.strict().parse(queryConfigFromStorage);
-    } catch (err) {
-      console.error(
-        "Invalid QueryConfig found in local storage. Using default config instead."
-      );
-      console.error(err);
-      setIsQueryConfigLocalStorageLoaded(true);
-      return;
-    }
-    /**
-     * If date mode filters (YTD, 1Y, 5Y, etc) are in use, bring them into sync
-     * with current date. We do this by recalculating the date filter start / end
-     * dates and updating them in the config loaded from storage
-     */
-    if (
-      queryConfigFromStorage?.dateFilter &&
-      queryConfigFromStorage.dateFilter.mode !== "custom"
-    ) {
-      const { mode, column } = queryConfigFromStorage.dateFilter;
-
-      const newDateFilter = makeDateFilterFromMode(
-        mode,
-        queryConfigFromStorage,
-        column
-      );
-
-      queryConfigFromStorage.dateFilter = newDateFilter;
-    }
-
-    setIsQueryConfigLocalStorageLoaded(true);
-    if (queryConfigFromStorage) {
-      setQueryConfig(queryConfigFromStorage);
-    }
-  }, [localStorageKey, initialQueryConfig]);
-
-  /**
-   * Keep changes to query config in sync with localstorage
-   */
-  useEffect(() => {
-    if (isQueryConfigLocalStorageLoaded) {
-      localStorage.setItem(localStorageKey, JSON.stringify(queryConfig));
-    }
-  }, [isQueryConfigLocalStorageLoaded, queryConfig, localStorageKey]);
-
-  /**
-   * Keep the search settings string in sync with queryConfig changes
-   * this enables resetting the search input from a sibling component
-   * (like the 'reset filters' button)
-   */
-  useEffect(() => {
-    setSearchSettings({
-      searchString: String(queryConfig.searchFilter.value),
-      searchColumn: queryConfig.searchFilter.column,
-    });
-  }, [queryConfig.searchFilter]);
-
-  /**
-   * Manage dirty filter state to enable reset filters button
-   */
-  useEffect(() => {
-    const queryConfigMutable = cloneDeep(queryConfig);
-    const initialQueryConfigMutable = cloneDeep(initialQueryConfig);
-    /**
-     * Ignore date timestamps if not using a custom range
-     */
-    if (
-      queryConfig.dateFilter?.mode === initialQueryConfig.dateFilter?.mode &&
-      queryConfigMutable.dateFilter &&
-      queryConfig.dateFilter?.mode !== "custom"
-    ) {
-      /**
-       * date modes are equal for our purposes - so remove the filter properties before
-       * we pass the two configs through isEqual()
-       */
-      queryConfigMutable.dateFilter = undefined;
-      initialQueryConfigMutable.dateFilter = undefined;
-    }
-    /**
-     * Ignore map toggle state by setting the same value in both configs
-     *  - we don't want the filters dirty when switching between map/list mode
-     */
-    if (queryConfigMutable.mapConfig && initialQueryConfigMutable.mapConfig) {
-      queryConfigMutable.mapConfig.isActive = true;
-      initialQueryConfigMutable.mapConfig.isActive = true;
-    }
-    setAreFiltersDirty(!isEqual(queryConfigMutable, initialQueryConfigMutable));
-  }, [queryConfig, initialQueryConfig]);
+    if (!isClient) return;
+    localStorage.setItem(localStorageKey, JSON.stringify(queryConfig));
+  }, [isClient, queryConfig, localStorageKey]);
 
   /**
    * Hook to trigger refetch
@@ -279,10 +318,11 @@ export default function TableWrapper<T extends Record<string, unknown>>({
   }, [_refetch, refetch]);
 
   /**
-   * wait until the localstorage hook resolves to render anything
-   * to prevent filter UI elements from jumping
+   * Wait for client so filter UI uses localStorage on first paint
+   * (avoids a flash of defaults). Column visibility still loads after mount
+   * via TablePaginationControls — do not block render on that flag.
    */
-  if (!isQueryConfigLocalStorageLoaded) {
+  if (!isClient) {
     return;
   }
 

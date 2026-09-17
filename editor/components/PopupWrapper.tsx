@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Popup } from "react-map-gl";
 import { Button } from "react-bootstrap";
 import { GeoJsonProperties } from "geojson";
@@ -23,6 +23,14 @@ export default function PopupWrapper({
 }: PopupWrapperProps) {
   const selectedFeaturesLength = selectedFeatures?.length;
   const [activeFeatureIndex, setActiveFeatureIndex] = useState(0);
+  const [prevSelectedFeatures, setPrevSelectedFeatures] =
+    useState(selectedFeatures);
+
+  // Reset to the first feature when the selection set changes
+  if (selectedFeatures !== prevSelectedFeatures) {
+    setPrevSelectedFeatures(selectedFeatures);
+    setActiveFeatureIndex(0);
+  }
 
   const handleNext = () =>
     activeFeatureIndex === selectedFeaturesLength - 1
@@ -33,11 +41,6 @@ export default function PopupWrapper({
     activeFeatureIndex === 0
       ? setActiveFeatureIndex(selectedFeaturesLength - 1)
       : setActiveFeatureIndex(activeFeatureIndex - 1);
-
-  // reset popup active feature to first element if viewing new array of popups
-  useEffect(() => {
-    setActiveFeatureIndex(0);
-  }, [selectedFeatures]);
 
   return (
     <Popup

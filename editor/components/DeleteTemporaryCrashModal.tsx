@@ -163,11 +163,15 @@ export default function DeleteTemporaryCrashModal({
   const tempFatalityId =
     tempFatalities.length > 0 ? tempFatalities[0].id : null;
 
-  // Detect photo existence via the API
-  const [hasPhotoToTransfer, setHasPhotoToTransfer] = useState(false);
+  // Detect photo existence via the API. Derive "no photo" when the modal is
+  // closed or there is no fatality id, so we don't need a sync setState reset.
+  const [photoCheck, setPhotoCheck] = useState<{
+    personId: number | null;
+    hasPhoto: boolean;
+  }>({ personId: null, hasPhoto: false });
+
   useEffect(() => {
     if (!showModal || !tempFatalityId) {
-      setHasPhotoToTransfer(false);
       return;
     }
     let cancelled = false;
@@ -178,9 +182,13 @@ export default function DeleteTemporaryCrashModal({
           `${process.env.NEXT_PUBLIC_CR3_API_DOMAIN}/images/person/${tempFatalityId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        if (!cancelled) setHasPhotoToTransfer(res.ok);
+        if (!cancelled) {
+          setPhotoCheck({ personId: tempFatalityId, hasPhoto: res.ok });
+        }
       } catch {
-        if (!cancelled) setHasPhotoToTransfer(false);
+        if (!cancelled) {
+          setPhotoCheck({ personId: tempFatalityId, hasPhoto: false });
+        }
       }
     };
     checkPhoto();
@@ -188,6 +196,12 @@ export default function DeleteTemporaryCrashModal({
       cancelled = true;
     };
   }, [showModal, tempFatalityId, getToken]);
+
+  const hasPhotoToTransfer =
+    showModal &&
+    tempFatalityId !== null &&
+    photoCheck.personId === tempFatalityId &&
+    photoCheck.hasPhoto;
 
   const hasVictimPhotoToTransfer =
     tempFatalities.length > 0 && hasPhotoToTransfer;
@@ -288,7 +302,7 @@ export default function DeleteTemporaryCrashModal({
     editedCardFields,
     selectedTarget,
     targetRecommendation,
-    user?.email,
+    user,
     shouldTransferPhoto,
     tempFatalityId,
     targetFatalityPersonId,

@@ -26,8 +26,7 @@ import PermissionsRequired from "@/components/PermissionsRequired";
 import AlignedLabel from "@/components/AlignedLabel";
 import { LuSquarePen } from "react-icons/lu";
 import { stringToNumberNullable } from "@/utils/formHelpers";
-
-const allowedRecommendationEditRoles = ["vz-admin", "editor"];
+import { ADMIN_EDIT_ROLES } from "@/utils/auth";
 
 /**
  * Compares the old vs new RecommendationPartner arrays and returns
@@ -293,7 +292,7 @@ export default function CrashRecommendationCard({
           </Row>
         </Form>
       </Card.Body>
-      <PermissionsRequired allowedRoles={allowedRecommendationEditRoles}>
+      <PermissionsRequired allowedRoles={ADMIN_EDIT_ROLES}>
         <Card.Footer>
           <div className="d-flex justify-content-end">
             {!isEditing && (

@@ -17,10 +17,13 @@ The design supports an editing environment which enables Vision Zero program sta
       - [Lookup tables](#lookup-tables)
         - [Lookup table structure and custom lookup table values](#lookup-table-structure-and-custom-lookup-table-values)
       - [Charges records](#charges-records)
+      - [Crash risk factors](#crash-risk-factors)
       - [Database IDs, CRIS record IDs, and primary keys](#database-ids-cris-record-ids-and-primary-keys)
       - [User-created crash records, aka "temporary" records](#user-created-crash-records-aka-temporary-records)
       - [Audit fields](#audit-fields)
       - [Change logs](#change-logs)
+      - [Crash geolocation provider (`geolocation_provider_id`)](#crash-geolocation-provider-geolocation_provider_id)
+      - [How the provider is assigned](#how-the-provider-is-assigned)
     - [Austin Police Department non-CR3 or "blueform" crashes](#austin-police-department-non-cr3-or-blueform-crashes)
       - [De-duplicating non-CR3 records](#de-duplicating-non-cr3-records)
     - [Austin-Travis County Emergency Medical Services (EMS)](#austin-travis-county-emergency-medical-services-ems)
@@ -37,8 +40,6 @@ The design supports an editing environment which enables Vision Zero program sta
       - [EMS Spatial Attributes](#ems-spatial-attributes)
     - [Austin Fire Department (AFD)](#austin-fire-department-afd)
     - [Computer-Aided Dispatch records](#computer-aided-dispatch-records)
-    - [Vision Zero Incidents](#vision-zero-incidents)
-      - [Sample queries](#sample-queries)
     - [Geospatial layers](#geospatial-layers)
   - [Common maintenance tasks](#common-maintenance-tasks)
     - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
@@ -64,11 +65,29 @@ The design supports an editing environment which enables Vision Zero program sta
 
 ## Data sources
 
+A single real-world crash typically generates data across multiple independent systems — police crash reports, public safety dispatch logs, EMS and fire department patient care records, hospital admissions, medical examiner reports, and so on. No single dataset captures the whole picture of a given crash, and the Vision Zero team has direct access to only a subset of them. The table below summarizes the data sources we currently work with, our level of access to each, and the Vision Zero database tables where applicable.
+
+| Data Source                   | Vision Zero access | Vision Zero table name | Note                                                                                                                   |
+| ----------------------------- | ------------------ | ---------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Crash reports                 | Yes                | `crashes`              | Crash reports are written based on law enforcement officer discretion and written only if a motor vehicle was involved |
+| Computer-aided dispatch (CAD) | Partial            | `cad_incidents`        | Motor-vehicle-involved records only. Vision Zero access is limited to incidents which are coded as crash-related.      |
+| EMS patient care records      | Partial            | `ems__incidents`       | Motor-vehicle-involved records only                                                                                    |
+| AFD patient care records      | Partial\*          | `afd__incidents`       | Motor-vehicle-involved records only                                                                                    |
+| Medical examiner reports      | Yes                | N/A                    | Ad-hoc exchange of XLSX files for Motor-vehicle-involved fatalities                                                    |
+| Vehicle telemetry             | No                 | N/A                    |  Aspirational                                                                                                          |
+| Hospital records              | No                 | N/A                    |  Aspirational                                                                                                          |
+
+\*_Work in progress_
+
+This diagram illustrates the systems and processes which make up our Crash Data System. It is not meant to be exhaustive.
+
+![Diagram of the various networks, systems, and databases which entail the Crash Data System](../docs/images/system_diagram.jpg)
+
 ### TxDOT Crash Records Information System (CRIS)
 
-The [TxDOT Crash Record Information System](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html) (CRIS) is a statewide, automated database for traffic crashes reports.
+The [TxDOT Crash Record Information System](https://www.txdot.gov/data-maps/crash-reports-records/crash-data-analysis-statistics.html) (CRIS) is a statewide, automated database for traffic crash reports.
 
-CRIS data accounts for the vast majority of records in the database: the [Vision Zero Editor (VZE)](../editor/README.md) is designed primarily as a tool for editing and enriching data received from CRIS, and the [Vision Zero Viewer (VZV)](../viewer/README.md) is powered entirely by enriched CRIS data.
+CRIS data accounts for the vast majority of records in the database: the [Vision Zero Editor (VZE)](../editor/README.md) is designed primarily as a tool for editing and enriching crash reports received from CRIS, and the [Vision Zero Viewer (VZV)](../viewer/README.md) is powered entirely by enriched CRIS crash report data.
 
 The CRIS data in our database consists of four record types:
 
@@ -233,6 +252,26 @@ Charges records are provided by CRIS and describe a legal charge filed by the re
 3. The CRIS import ETL filters out charge records where the `charge` value is `NO CHARGE`—this reduces the number of charge records in the database by many thousands.
 4. Because charges are subject to deletion, they are not editable through the VZE/graphql API and should be considered read-only.
 
+#### Crash risk factors
+
+CRIS stores granular contributing factors chosen by investigating officers on each unit record, referencing the [lookup table `lookups.contrib_factr`](metadata/databases/default/tables/lookups_contrib_factr.yaml):
+
+- `units.contrib_factr_1_id`
+- `units.contrib_factr_2_id`
+- `units.contrib_factr_3_id`
+- `units.contrib_factr_p1_id`
+- `units.contrib_factr_p2_id`
+
+Those ~70 CRIS label options are very granular and repetitive, so we compute crash-level **risk factors**. These are simplified categories such as "Distracted driving", "Speeding", and "Impaired driving".
+
+The simplified [`lookups.risk_factor_categories`](metadata/databases/default/tables/lookups_risk_factor_categories.yaml) maps each CRIS `contrib_factr` ID to a Vision Zero risk factor category.
+
+The [`crash_risk_factors_view`](views/crash_risk_factors_view.sql) returns one row per crash with a `risk_factors` array of text values (or `null` when none apply); exposed on `crashes` via Hasura. It also adds categories from other crash attributes when the business rules require it. This database view is the source of truth for how crash risk factor are computed.
+
+For example, impaired driving from positive alcohol/drug results, speeding from speed-related charges or other charges, red light running from collision type plus location signal type, are included in the risk factors calculation in addition to the contributing factor to risk factor category mapping. The Vision Zero team maintains a plain-language list of crash risk factor business rules in their [internal methodology Sharepoint doc](https://cityofaustin.sharepoint.com/:w:/r/sites/VisionZero/_layouts/15/Doc.aspx?sourcedoc=%7BC6A5C38D-42C0-4BA2-89D6-7775CB658389%7D&file=Vision%20Zero%20Methodology.docx&action=default&mobileredirect=true).
+
+The mapping seeds and view definition live in migration [`1784264703617_crash_risk_factors`](migrations/default/1784264703617_crash_risk_factors/up.sql). See also [PR #2086](https://github.com/cityofaustin/vision-zero/pull/2086).
+
 #### Database IDs, CRIS record IDs, and primary keys
 
 Each of the crashes, units, people, and charges tables uses an auto-incrementing integer column called `id` as its primary key. CRIS provides a separate set of columns which can be used to uniquely identify records, and these columns are used to match record updates provided by CRIS to their corresponding record in the database.
@@ -281,6 +320,24 @@ Each change log table follows the same structure:
 | `created_by`     | `text`                     | The user who triggered this change - default `system`                              |
 
 The view `crashes_change_log_view` provides a unioned view of the unified table change logs—this view powers the change log UI in the VZE.
+
+#### Crash geolocation provider (`geolocation_provider_id`)
+
+The `crashes.geolocation_provider_id` column tracks the source of a crash record's lat/lon coordinates. It references the `lookups.geolocation_provider` table:
+
+| id  | label       | description                                                   |
+| --- | ----------- | ------------------------------------------------------------- |
+| 1   | `cris`      | Default. Coordinates were provided by CRIS.                   |
+| 2   | `apd_cad`   | Coordinates were backfilled from a matching APD CAD incident. |
+| 3   | `manual_qa` | Coordinates were set or edited by a Vision Zero staff member. |
+
+#### How the provider is assigned
+
+1. **`cris` (default)**: All crash records default to this provider, reflecting that coordinates are provided by CRIS via the standard import process.
+2. **`apd_cad`**: If an APD-investigated crash (`investigat_agency_id = 74`) is inserted into `crashes` with no lat/lon, the `a_crashes_fill_cad_coordinates_before_insert` trigger searches `cad_incidents` for a record matching the crash's `case_id`, within a ±2-day window of the `crash_timestamp`. If a match is found, the CAD record's coordinates are copied to the crash and the provider is set to `apd_cad`. This trigger must fire _before_ `crashes_set_spatial_attributes_on_insert` and `update_crash_ems_match`, which is why it's named to sort first alphabetically among `BEFORE INSERT` triggers.
+3. **`manual_qa`**: If a Vision Zero staff member edits a crash's lat/lon through the VZE, the provider is set to `manual_qa`.
+
+**Note:** once a crash's provider is set to `manual_qa`, there is currently no mechanism to revert it back to `cris` or `apd_cad`—the change is one-directional.
 
 ### Austin Police Department non-CR3 or "blueform" crashes
 
@@ -442,96 +499,9 @@ Data is provided by the public safety enterprise data team and has been reviewed
 
 For additional information about CAD records, see the [CAD incident import ETL](../etl/cad_incidents_import/README.md).
 
-### Vision Zero Incidents
-
-[Under active development]
-
-The `vz_incidents` table holds Vision Zero incidents, which is a composite record type which attempts to unify various crash-related records under a single containing object. Currently, VZ incidents are only linked to CAD records; they are created as part of the [CAD incident import ETL](../etl/cad_incidents_import/README.md). In the future a VZ incident may be linked to any number of record types, enabling a picture of the total public safety response to a crash:
-
-- Vision Zero incident
-  - Fire CAD incident
-  - EMS CAD incident
-  - Police CAD inicdent
-  - EMS Patient care record (future state)
-  - Police crash report (future state)
-
-This work is ongoing and in a state of flux. The below queries can be used to explore and visualize VZ incidents as they currently exist in the database.
-
-#### Sample queries
-
-- VZ incident stats (number of member CAD incidents, distance spread, response time spread)
-
-```sql
-SELECT
-    v.id AS vz_incident_id,
-    COUNT(c.id) AS cad_incident_count,
-    ROUND(ST_Length (ST_LongestLine (ST_Collect (c.geom), ST_Collect (c.geom))::geography)::numeric, 1) AS spread_meters,
-    ROUND(
-        EXTRACT(
-            EPOCH
-            FROM
-                (MAX(c.response_date) - MIN(c.response_date))
-        ) / 60.0,
-        1
-    ) AS time_spread_minutes
-FROM
-    vz_incidents v
-    JOIN cad_incidents c ON c.vz_incident_id = v.id
-WHERE
-    v.is_deleted = FALSE
-GROUP BY
-    v.id
-ORDER BY
-    v.id
-```
-
-- Generates a geojson of VZ incidents with simple styles that can be visualized in mapping tools such as https://geojson.io.
-
-```sql
-SELECT
-    jsonb_build_object(
-        'type',
-        'FeatureCollection',
-        'features',
-        jsonb_agg(
-            jsonb_build_object(
-                'type',
-                'Feature',
-                'geometry',
-                ST_AsGeoJSON (geom)::jsonb,
-                'properties',
-                jsonb_build_object(
-                    'vz_incident_id',
-                    vz_incident_id,
-                    'master_incident_id',
-                    master_incident_id,
-                    'agency_type',
-                    agency_type,
-                    'response_date',
-                    response_date,
-                    'address',
-                    address,
-                    'marker-color',
-                    '#' || lpad(to_hex(('x' || substr(md5(vz_incident_id::text), 1, 6))::bit(24)::int), 6, '0'),
-                    'marker-size',
-                    'large'
-                )
-            )
-        )
-    ) AS geojson
-FROM
-    cad_incidents
-WHERE
-    vz_incident_id IS NOT NULL
-LIMIT
-    2000;
-```
-
 ### Geospatial layers
 
-We have a number of tables which function as geospatial layers which are referenced by crashes and various other records. At the Vision Zero team's request, our team is actively working to expand the number of layers available in the database as well as add new attribute columns to crash records which will be populated based on their intersection with these layers.
-
-These layers can be updated with our [ArcGIS Online helper utility](/toolbox/load_agol_layer). See also the guidance for creating and updating geospatial layers in the common maintance tasks section, below.
+The database holds geospatial reference layers — jurisdicitional boundaries, council districts, etc — which are referenced by crashes and various other records. These layers are not actively maintained, but can be easily refreshed following the update process [described below](#updating-an-existing-geospatial-layer).
 
 | Table                   | Geometry type  | description                                                                                                      | owner/source                                                         |
 | ----------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |

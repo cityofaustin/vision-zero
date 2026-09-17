@@ -2,11 +2,12 @@ import { useRef } from "react";
 import Card from "react-bootstrap/Card";
 import { MapRef } from "react-map-gl";
 import { useResizeObserver } from "@/utils/map";
-import { LocationMap } from "./LocationMap";
+import { PointMap } from "@/components/PointMap";
 import { Location } from "@/types/locations";
+import LocationPolygonLayer from "@/components/LocationPolygonLayer";
 
 /**
- * Card component that renders the crash map and edit controls
+ * Card component that renders the location polygon map
  */
 export default function LocationMapCard({ location }: { location: Location }) {
   const mapRef = useRef<MapRef | null>(null);
@@ -25,11 +26,9 @@ export default function LocationMapCard({ location }: { location: Location }) {
       </Card.Header>
       <Card.Body className="p-1 crash-header-card-body" ref={mapContainerRef}>
         {location.geometry && (
-          <LocationMap
-            polygon={location.geometry}
-            locationId={location.location_id}
-            mapRef={mapRef}
-          />
+          <PointMap mapRef={mapRef}>
+            <LocationPolygonLayer location={location} />
+          </PointMap>
         )}
       </Card.Body>
     </Card>

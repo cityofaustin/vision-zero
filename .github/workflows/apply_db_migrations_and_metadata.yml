@@ -25,7 +25,7 @@ jobs:
           architecture: "x64"
       # Get the code first
       - name: "Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       # Then install the Hasura CLI and jq
       - name: "Install Hasura CLI and jq"
         run: |

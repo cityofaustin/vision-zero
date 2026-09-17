@@ -23,6 +23,15 @@ object_relationships:
         remote_table:
           name: crash_injury_metrics_view
           schema: public
+  - name: crash_risk_factors_view
+    using:
+      manual_configuration:
+        column_mapping:
+          id: id
+        insertion_order: null
+        remote_table:
+          name: crash_risk_factors_view
+          schema: public
   - name: crashes_cri
     using:
       foreign_key_constraint_on: id
@@ -35,6 +44,9 @@ object_relationships:
         remote_table:
           name: crashes_list_view
           schema: public
+  - name: geolocation_provider
+    using:
+      foreign_key_constraint_on: geolocation_provider_id
   - name: light_cond
     using:
       foreign_key_constraint_on: light_cond_id
@@ -60,6 +72,9 @@ object_relationships:
   - name: rwy_sys_sec
     using:
       foreign_key_constraint_on: rpt_sec_rdwy_sys_id
+  - name: surf_cond
+    using:
+      foreign_key_constraint_on: surf_cond_id
   - name: traffic_cntl
     using:
       foreign_key_constraint_on: traffic_cntl_id
@@ -144,6 +159,7 @@ select_permissions:
         - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
+        - geolocation_provider_id
         - id
         - in_austin_full_purpose
         - intrsct_relat_id
@@ -220,6 +236,7 @@ select_permissions:
         - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
+        - geolocation_provider_id
         - id
         - in_austin_full_purpose
         - intrsct_relat_id
@@ -296,6 +313,7 @@ select_permissions:
         - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
+        - geolocation_provider_id
         - id
         - in_austin_full_purpose
         - intrsct_relat_id
@@ -368,6 +386,7 @@ update_permissions:
         - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
+        - geolocation_provider_id
         - intrsct_relat_id
         - investigat_agency_id
         - investigator_narrative
@@ -433,6 +452,7 @@ update_permissions:
         - diagram_transform
         - engineering_area_id
         - fhe_collsn_id
+        - geolocation_provider_id
         - intrsct_relat_id
         - investigat_agency_id
         - investigator_narrative

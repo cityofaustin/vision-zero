@@ -4,6 +4,7 @@ import os
 import logging
 
 from shapely.geometry import shape
+import shapely
 import geopandas as gpd
 
 from queries import query_vz, query_moped, truncate_query, publishing_query
@@ -63,11 +64,31 @@ def chunk_list(lst, n):
 
 def buffer_geometries(row):
     """Applied to each moped component. Points are buffered to a distance of BUFFER_DISTANCE_POINTS and Lines to
-    BUFFER_DISTANCE_LINES"""
+    BUFFER_DISTANCE_LINES
+
+    Note that Moped stores linear projects as MultiLineStrings. Some of these lines are continuous and others are not.
+    To buffer correctly, we first line_merge which will combine all continuous lines.
+    Then, buffer each line separately and combine all polygon areas.
+    See Also: https://github.com/cityofaustin/atd-data-tech/issues/28126
+    """
     if row.geometry.geom_type == "Point" or row.geometry.geom_type == "MultiPoint":
         return row.geometry.buffer(BUFFER_DISTANCE_POINTS)
-    else:
-        return row.geometry.buffer(BUFFER_DISTANCE_LINES)
+    elif row.geometry.geom_type == "MultiLineString":
+        merged = shapely.line_merge(row.geometry)
+        if merged.geom_type == "LineString":
+            line_parts = [merged]
+        elif merged.geom_type == "MultiLineString":
+            line_parts = list(merged.geoms)
+        else:
+            raise ValueError(f"Unexpected geometry type after line_merge: {merged.geom_type}")
+
+        buffered_parts = [
+        part.buffer(BUFFER_DISTANCE_LINES, cap_style="flat")
+            for part in line_parts
+        ]
+        return shapely.union_all(buffered_parts)
+
+    raise ValueError(f"Unexpected geometry type: {row.geometry.geom_type}")
 
 
 def main():
@@ -105,7 +126,7 @@ def main():
     # Exporting results
     crashes_near_projects.reset_index(inplace=True)
     crashes_near_projects.rename(
-        columns={"id": "crash_pk", "index_right": "mopd_proj_component_id"},
+        columns={"id": "crash_pk", "project_component_id": "mopd_proj_component_id"},
         inplace=True,
     )
     crashes_near_projects = crashes_near_projects[
