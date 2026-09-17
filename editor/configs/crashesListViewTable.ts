@@ -293,7 +293,7 @@ const crashesListViewfilterCards: FilterGroup[] = [
 ];
 
 export const crashesListViewQueryConfig: QueryConfig = {
-  _version: 2,
+  _version: 3,
   exportable: true,
   exportFilename: "crashes",
   tableName: "crashes_list_view",
