@@ -130,14 +130,11 @@ const MapPolygonFilter = ({ setMapPolygon, setIsDrawingPolygon }) => {
       const handleModeChange = ({ mode }) => {
         if (isMounted.current) {
           if (mode === "simple_select") {
-            // The click that closes a polygon (or ends a vertex edit)
-            // triggers this mode change before the underlying map's
-            // native click event reaches MapComponent, so defer clearing
-            // the flag by a tick to avoid that same click being treated
-            // as a normal map click (and selecting a feature underneath).
+            // Prevent the click that closes a polygon from popping up the council district
+            // popup by delaying the state reset for a tick
             setTimeout(() => {
               if (isMounted.current) setIsDrawingPolygon(false);
-            }, 0);
+            }, 10);
           } else {
             setIsDrawingPolygon(true);
           }
