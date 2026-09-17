@@ -26,24 +26,23 @@ const ChartTypeSelector = ({ chartTypes, chartType, setChartType }) => {
   return (
     <Row className="text-center">
       <Col className="pb-2">
-        <StyledButton>
-          {chartTypes.map((type) => (
-            <Button
-              key={type}
-              className={classnames(
-                {
-                  active: chartType === type,
-                },
-                "chart-toggle-button"
-              )}
-              onClick={() => {
-                toggle(type);
-              }}
-            >
-              {type}
-            </Button>
-          ))}
-        </StyledButton>
+        {chartTypes.map((type) => (
+          <Button
+            key={type}
+            color="light"
+            className={classnames(
+              {
+                active: chartType === type,
+              },
+              "chart-toggle-button",
+            )}
+            onClick={() => {
+              toggle(type);
+            }}
+          >
+            {type}
+          </Button>
+        ))}
       </Col>
     </Row>
   );
