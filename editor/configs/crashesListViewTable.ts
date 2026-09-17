@@ -274,12 +274,26 @@ const crashesListViewfilterCards: FilterGroup[] = [
           },
         ],
       },
+      {
+        id: "is_manual_review_qa_complete",
+        label: "Needs manual review/QA",
+        groupOperator: "_and",
+        enabled: false,
+        filters: [
+          {
+            id: "is_manual_review_qa_complete",
+            column: "is_manual_review_qa_complete",
+            operator: "_eq",
+            value: false,
+          },
+        ],
+      },
     ],
   },
 ];
 
 export const crashesListViewQueryConfig: QueryConfig = {
-  _version: 2,
+  _version: 3,
   exportable: true,
   exportFilename: "crashes",
   tableName: "crashes_list_view",

@@ -272,7 +272,7 @@ export const GET_CRASH = gql`
       }
       crashes_list_view {
         crash_day_of_week
-        is_manual_geocode
+        is_manual_review_qa_complete
       }
       change_logs(order_by: { created_at: desc }) {
         id

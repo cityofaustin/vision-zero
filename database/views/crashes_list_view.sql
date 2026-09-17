@@ -1,16 +1,6 @@
--- Most recent migration: database/migrations/default/1776976438072_views_chicago_tz/up.sql
+-- Most recent migration: database/migrations/default/1789585986584_crashes_list_view_manual_qa_complete/up.sql
 
 CREATE OR REPLACE VIEW crashes_list_view AS
-WITH geocode_status AS (
-    SELECT
-        cris.id,
-        unified.latitude IS NOT NULL AND unified.latitude IS DISTINCT
-    FROM cris.latitude
-    OR unified.longitude IS NOT NULL AND unified.longitude IS DISTINCT FROM cris.longitude AS is_manual_geocode
-    FROM crashes_cris cris
-    LEFT JOIN crashes unified ON cris.id = unified.id
-)
-
 SELECT
     crashes.id,
     crashes.cris_crash_id,
@@ -63,15 +53,27 @@ SELECT
     crash_injury_metrics_view.years_of_life_lost,
     injry_sev.label AS crash_injry_sev_desc,
     collsn.label    AS collsn_desc,
-    geocode_status.is_manual_geocode,
-    to_char(
+    crashes.geolocation_provider_id = 3 AND NOT (
+        EXISTS (
+            SELECT 1
+            FROM units u
+            WHERE
+                u.crash_pk = crashes.id
+                AND (
+                    u.movement_id IS NULL
+                    OR u.veh_trvl_dir_id IS NULL
+                    OR (u.veh_trvl_dir_id <> ALL(ARRAY[1, 3, 5, 7, 9, 11]))
+                )
+        )
+    )               AS is_manual_review_qa_complete,
+    TO_CHAR(
         (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'YYYY-MM-DD'::text
     )               AS crash_date_ct,
-    to_char(
+    TO_CHAR(
         (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'HH24:MI:SS'::text
     )               AS crash_time_ct,
-    upper(
-        to_char((crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'dy'::text)
+    UPPER(
+        TO_CHAR((crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'dy'::text)
     )               AS crash_day_of_week
 FROM crashes
 LEFT JOIN LATERAL (SELECT
@@ -106,7 +108,6 @@ LEFT JOIN LATERAL (SELECT
 FROM crash_injury_metrics_view crash_injury_metrics_view_1
 WHERE crashes.id = crash_injury_metrics_view_1.id
 LIMIT 1) crash_injury_metrics_view ON TRUE
-LEFT JOIN geocode_status ON crashes.id = geocode_status.id
 LEFT JOIN lookups.collsn ON crashes.fhe_collsn_id = collsn.id
 LEFT JOIN lookups.injry_sev ON crash_injury_metrics_view.crash_injry_sev_id = injry_sev.id
 WHERE crashes.is_deleted = FALSE
