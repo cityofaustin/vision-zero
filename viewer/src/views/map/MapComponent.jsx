@@ -1,3 +1,4 @@
+
 import React, {
   useState,
   useEffect,
@@ -10,7 +11,7 @@ import Map, { Source, Layer } from "react-map-gl/mapbox";
 import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
 import MapCompassSpinner from "./MapCompassSpinner";
-import { createMapDataUrl, useMapEventHandler } from "./helpers";
+import { createMapDataUrl } from "./helpers";
 import { mapInit, travisCountyBboxGeoJSON, mapNavBbox } from "./mapData";
 import { crashGeoJSONEndpointUrl } from "../summary/queries/socrataQueries";
 import {
@@ -34,8 +35,6 @@ import MapInfoBox from "./InfoBox/MapInfoBox";
 import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 import MapGeocoder from "./Geocoder/Geocoder";
 import { arcgisToGeoJSON } from "@terraformer/arcgis";
-
-import mapboxgl from "mapbox-gl";
 
 const MapComponent = () => {
   const [viewState, setViewState] = useState({
@@ -79,7 +78,7 @@ const MapComponent = () => {
           eventListenersRef.current.forEach(({ event, handler }) => {
             try {
               map.off(event, handler);
-            } catch (e) {
+            } catch {
               // Ignore
             }
           });
@@ -375,19 +374,6 @@ const MapComponent = () => {
       return null;
     }
 
-    const color = {
-      r:
-        selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].r *
-        255,
-      g:
-        selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].g *
-        255,
-      b:
-        selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].b *
-        255,
-      a: selectedFeature.layer.paint[`${selectedFeature.layer.type}-color`].a,
-    };
-
     return (
       <Source id="selectedCrash" type="geojson" data={selectedFeature}/>
     );
@@ -406,7 +392,7 @@ const MapComponent = () => {
           if (map.getLayer(id)) {
             map.setLayoutProperty(id, "visibility", visibilityString);
           }
-        } catch (error) {
+        } catch {
           console.debug(`Layer ${id} not found`);
         }
       });
