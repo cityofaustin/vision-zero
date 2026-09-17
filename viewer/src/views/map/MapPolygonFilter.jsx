@@ -127,9 +127,9 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
         }
       };
 
-      const handleModeChange = (event) => {
+      const handleModeChange = ({ mode }) => {
         // when mode is simple select, if polygon exists prevent drawing
-        if (event.mode === "simple_select") {
+        if (mode === "simple_select") {
           const data = draw.getAll();
           const hasPolygon = data.features.some(
             (f) => f.geometry.type === "Polygon",
