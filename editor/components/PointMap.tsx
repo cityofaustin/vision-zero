@@ -300,7 +300,7 @@ export const PointMap = ({
       {/* editable + not editable point layers */}
       {savedLatitude && savedLongitude && !isEditing && (
         <Marker
-          key={dynamicMarkerKey}
+          key={`marker-view-${dynamicMarkerKey}`}
           latitude={savedLatitude}
           longitude={savedLongitude}
           color={COLORS.primary}
@@ -308,10 +308,10 @@ export const PointMap = ({
       )}
       {isEditing && draftLatLon && (
         <Marker
-          key={dynamicMarkerKey}
+          key={`marker-edit-${dynamicMarkerKey}`}
           latitude={draftLatLon.latitude}
           longitude={draftLatLon.longitude}
-          color={isEditing ? COLORS.danger : undefined}
+          color={COLORS.danger}
         />
       )}
     </MapGL>

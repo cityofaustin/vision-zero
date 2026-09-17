@@ -50,7 +50,7 @@ select_permissions:
         - at_intrsct_fl
         - in_austin_full_purpose
         - is_coa_roadway
-        - is_manual_geocode
+        - is_manual_review_qa_complete
         - is_temp_record
         - onsys_fl
         - private_dr_fl
@@ -111,7 +111,7 @@ select_permissions:
         - at_intrsct_fl
         - in_austin_full_purpose
         - is_coa_roadway
-        - is_manual_geocode
+        - is_manual_review_qa_complete
         - is_temp_record
         - onsys_fl
         - private_dr_fl
@@ -172,7 +172,7 @@ select_permissions:
         - at_intrsct_fl
         - in_austin_full_purpose
         - is_coa_roadway
-        - is_manual_geocode
+        - is_manual_review_qa_complete
         - is_temp_record
         - onsys_fl
         - private_dr_fl

@@ -129,6 +129,7 @@ const SideMapControl = ({ type }) => {
         shared: {
           eachClass: `type-button`,
           uiType: "button",
+          title: "Injury type",
         },
         each: {
           all: {
@@ -161,8 +162,8 @@ const SideMapControl = ({ type }) => {
       mode: {
         shared: {
           uiType: "checkbox",
-          allClass: "outlined py-2 px-0",
           eachClass: "dark-checkbox",
+          title: "Travel mode",
         },
         each: {
           pedestrian: {
@@ -309,7 +310,7 @@ const SideMapControl = ({ type }) => {
         Traffic Crashes{" "}
         <InfoPopover config={popoverConfig.map.trafficCrashes} />
       </span>
-      <Card className="p-3 card-body">
+      <Card className="mt-2 p-3 card-body">
         <Label className="section-title">
           <span className="h5" style={{ display: "block" }}>
             Filters
@@ -317,98 +318,98 @@ const SideMapControl = ({ type }) => {
         </Label>
         {/* Create a button group for each group of mapFilters */}
         {Object.entries(mapFiltersConfig).map(([group, groupParameters]) => (
-          <Row
-            className={`mx-0 mb-3 ${groupParameters.shared.allClass || ""}`}
-            key={`${group}-buttons`}
-          >
-            {/* Create buttons for each filter within a group of mapFilters */}
-            {Object.entries(groupParameters.each).map(([name, parameter]) => {
-              const eachClassName = groupParameters.shared.eachClass || "";
-              const title = name[0].toUpperCase() + name.slice(1);
+          <div className="outlined p-2 mb-3 text-dark" key={`${group}-buttons`}>
+            <h6>{groupParameters.shared.title}</h6>
+            <Row className="mx-0">
+              {/* Create buttons for each filter within a group of mapFilters */}
+              {Object.entries(groupParameters.each).map(([name, parameter]) => {
+                const eachClassName = groupParameters.shared.eachClass || "";
+                const title = name[0].toUpperCase() + name.slice(1);
 
-              switch (groupParameters.shared.uiType) {
-                case "button":
-                  return (
-                    <Col
-                      xs={parameter.colSize && parameter.colSize}
-                      className="px-0"
-                      key={name}
-                    >
-                      <Button
+                switch (groupParameters.shared.uiType) {
+                  case "button":
+                    return (
+                      <Col
+                        xs={parameter.colSize && parameter.colSize}
+                        className="px-0"
                         key={name}
-                        id={name}
-                        color="dark"
-                        className={`p-1 filter-button ${eachClassName}`}
-                        onClick={
-                          parameter.handler
-                            ? parameter.handler
-                            : (event) => handleFilterClick(event, group)
-                        }
-                        active={
-                          parameter.isSelected
-                            ? parameter.isSelected
-                            : isFilterSet(name)
-                        }
-                        outline={
-                          parameter.isSelected
-                            ? !parameter.isSelected
-                            : !isFilterSet(name)
-                        }
                       >
-                        {parameter.icon && (
-                          <FontAwesomeIcon
-                            icon={parameter.icon}
-                            className="mr-1 ml-1"
-                            color={parameter.iconColor && parameter.iconColor}
-                          />
-                        )}
-                        {parameter.text}
-                      </Button>
-                    </Col>
-                  );
-                case "checkbox":
-                  return (
-                    <Col xs={12} key={name}>
-                      <Button
-                        id={name}
-                        color="link"
-                        className={`text-dark py-1 px-0 ${
-                          groupParameters.shared.eachClass || ""
-                        }`}
-                        onClick={
-                          parameter.handler
-                            ? parameter.handler
-                            : (event) => handleFilterClick(event, group)
-                        }
-                        title={`${title} filter`}
-                      >
-                        {parameter.isSelected || isFilterSet(name) ? (
-                          <FontAwesomeIcon
-                            icon={faCheckSquare}
-                            className="mr-1 active far"
-                          />
-                        ) : (
-                          <FontAwesomeIcon
-                            icon={faSquare}
-                            className="mr-1 inactive far"
-                          />
-                        )}
-                        {parameter.icon && (
-                          <FontAwesomeIcon
-                            icon={parameter.icon}
-                            className="mr-2 ml-2 fa-fw"
-                            color={parameter.iconColor && parameter.iconColor}
-                          />
-                        )}
-                        {parameter.text ?? title}
-                      </Button>
-                    </Col>
-                  );
-                default:
-                  return null;
-              }
-            })}
-          </Row>
+                        <Button
+                          key={name}
+                          id={name}
+                          color="dark"
+                          className={`p-1 filter-button ${eachClassName}`}
+                          onClick={
+                            parameter.handler
+                              ? parameter.handler
+                              : (event) => handleFilterClick(event, group)
+                          }
+                          active={
+                            parameter.isSelected
+                              ? parameter.isSelected
+                              : isFilterSet(name)
+                          }
+                          outline={
+                            parameter.isSelected
+                              ? !parameter.isSelected
+                              : !isFilterSet(name)
+                          }
+                        >
+                          {parameter.icon && (
+                            <FontAwesomeIcon
+                              icon={parameter.icon}
+                              className="me-1 ms-1"
+                              color={parameter.iconColor && parameter.iconColor}
+                            />
+                          )}
+                          {parameter.text}
+                        </Button>
+                      </Col>
+                    );
+                  case "checkbox":
+                    return (
+                      <Col xs={12} key={name}>
+                        <Button
+                          id={name}
+                          color="link"
+                          className={`text-dark py-1 px-0 ${
+                            groupParameters.shared.eachClass || ""
+                          }`}
+                          onClick={
+                            parameter.handler
+                              ? parameter.handler
+                              : (event) => handleFilterClick(event, group)
+                          }
+                          title={`${title} filter`}
+                        >
+                          {parameter.isSelected || isFilterSet(name) ? (
+                            <FontAwesomeIcon
+                              icon={faCheckSquare}
+                              className="me-1 active far"
+                            />
+                          ) : (
+                            <FontAwesomeIcon
+                              icon={faSquare}
+                              className="me-1 inactive far"
+                            />
+                          )}
+                          {parameter.icon && (
+                            <FontAwesomeIcon
+                              icon={parameter.icon}
+                              className="me-2 ms-2 fa-fw"
+                              color={parameter.iconColor && parameter.iconColor}
+                            />
+                          )}
+                          {parameter.text ?? title}
+                        </Button>
+                      </Col>
+                    );
+                  default:
+                    return null;
+                }
+              })}
+            </Row>
+          </div>
         ))}
         <SideMapControlDateRange type={type} />
         <SideMapTimeOfDayChart filters={mapOtherFilters.timeOfDay} />

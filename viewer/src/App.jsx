@@ -1,5 +1,5 @@
 import React from "react";
-import { usePath } from "hookrouter";
+import { useLocation } from "react-router-dom";
 import SideDrawer from "./views/nav/SideDrawer";
 import Content from "./views/content/Content";
 import UnderMaintenance from "./views/NotFound/UnderMaintenance";
@@ -9,8 +9,8 @@ const isUnderMaintenance = import.meta.env.VITE_UNDER_MAINTENANCE === "true";
 console.log("Is under maintenance: ", import.meta.env.VITE_UNDER_MAINTENANCE);
 
 const App = () => {
-  const currentPath = usePath();
-  const isMeasuresPath = currentPath === "/measures";
+  const location = useLocation();
+  const isMeasuresPath = location.pathname === "/measures";
 
   if (isUnderMaintenance) {
     return (

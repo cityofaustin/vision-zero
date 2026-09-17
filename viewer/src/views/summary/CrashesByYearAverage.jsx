@@ -42,6 +42,7 @@ const CrashesByYearAverage = ({ avgData, currentYearData }) => {
       data={chartData}
       width={null}
       height={null}
+      aria-label="Monthly crash comparison chart: current year versus five-year average"
       options={{
         responsive: true,
         aspectRatio: 0.849,
@@ -50,13 +51,11 @@ const CrashesByYearAverage = ({ avgData, currentYearData }) => {
           mode: "index",
         },
         scales: {
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-              },
+          y: {
+            ticks: {
+              beginAtZero: true,
             },
-          ],
+          },
         },
         legend: {
           onClick: (e) => e.stopPropagation(),

@@ -91,7 +91,7 @@ const CrashesByPopulation = () => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left font-weight-bold">
+          <h2 className="fw-bold">
             By Population (Rate Per 100,000){" "}
             <InfoPopover config={popoverConfig.summary.byPopulation} />
           </h2>
@@ -150,6 +150,7 @@ const CrashesByPopulation = () => {
                 data={chartData}
                 width={null}
                 height={null}
+                aria-label="Bar chart showing crash rate per 100,000 residents by year"
                 options={{
                   responsive: true,
                   aspectRatio: 0.849,
@@ -158,13 +159,11 @@ const CrashesByPopulation = () => {
                     mode: "index",
                   },
                   scales: {
-                    yAxes: [
-                      {
-                        ticks: {
-                          beginAtZero: true,
-                        },
+                    y: {
+                      ticks: {
+                        beginAtZero: true,
                       },
-                    ],
+                    },
                   },
                   legend: {
                     display: false,

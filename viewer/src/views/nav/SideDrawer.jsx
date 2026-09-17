@@ -1,11 +1,10 @@
 import React from "react";
 import { StoreContext } from "src/constants/context";
-import { usePath } from "hookrouter";
+import { useLocation } from "react-router-dom";
+import { useTheme } from "@mui/material/styles";
 
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Drawer from "@material-ui/core/Drawer";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import styled from "styled-components";
+import Drawer from "@mui/material/Drawer";
+import { styled } from "@mui/material/styles";
 
 import SideDrawerContent from "./SideDrawerContent";
 import { colors } from "../../constants/colors";
@@ -13,33 +12,27 @@ import { responsive } from "../../constants/responsive";
 
 const drawerWidth = responsive.drawerWidth;
 
-// Styles for MUI drawer
-const useStyles = makeStyles((theme) => {
-  return {
-    root: {
-      display: "flex",
-    },
-    drawer: {
-      // Feed drawer component a media query to align with Bootstrap breakpoints
-      [`@media (min-width:${responsive.bootstrapMediumMin}px)`]: {
-        width: drawerWidth,
-        flexShrink: 0,
-      },
-    },
-    drawerPaper: {
-      width: drawerWidth,
-      background: colors.dark,
-      color: colors.light,
-      border: 0,
-    },
-    content: {
-      flexGrow: 1,
-      padding: theme.spacing(3),
-    },
-  };
-});
+const Root = styled("div")`
+  display: flex;
+`;
 
-const StyledDrawer = styled.div`
+const Nav = styled("nav")`
+  @media (min-width: ${responsive.bootstrapMediumMin}px) {
+    width: ${drawerWidth}px;
+    flex-shrink: 0;
+  }
+`;
+
+const DrawerStyled = styled(Drawer)(() => ({
+  "& .MuiDrawer-paper": {
+    width: drawerWidth,
+    background: colors.dark,
+    color: colors.light,
+    border: 0,
+  },
+}));
+
+const StyledDrawer = styled("div")`
   /* Disable side drawer in desktop viewport */
   #summary-side-drawer {
     @media only screen and (min-width: ${responsive.bootstrapMedium}px) {
@@ -74,50 +67,42 @@ const StyledDrawer = styled.div`
 `;
 
 const SideDrawer = () => {
-  const currentPath = usePath();
-  const classes = useStyles();
+  const location = useLocation();
+  const currentPath = location.pathname;
   const theme = useTheme();
+  const direction = theme.direction;
 
   const {
     sidebarToggle: [isOpen, setIsOpen],
   } = React.useContext(StoreContext);
 
+  const anchor = direction === "rtl" ? "right" : "left";
+
   return (
     <StyledDrawer>
-      <div
-        className={classes.root}
-        // Disable side drawer in non-mobile viewport
-        id={currentPath === "/" ? "summary-side-drawer" : ""}
-      >
-        <CssBaseline />
-        <nav className={classes.drawer} aria-label="mobile side drawer">
-          <Drawer
+      <Root id={currentPath === "/" ? "summary-side-drawer" : ""}>
+        <Nav>
+          <DrawerStyled
             id="temporary-drawer"
             variant="temporary"
-            anchor={theme.direction === "rtl" ? "right" : "left"}
+            anchor={anchor}
             open={isOpen}
             onClose={() => setIsOpen(!isOpen)}
-            classes={{
-              paper: classes.drawerPaper,
-            }}
             ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
+              keepMounted: true,
             }}
           >
             <SideDrawerContent type="temporary" />
-          </Drawer>
-          <Drawer
-            classes={{
-              paper: classes.drawerPaper,
-            }}
+          </DrawerStyled>
+          <DrawerStyled
             id="permanent-drawer"
-            variant="permanent"
-            open
+            variant="permanent" // this is always mounted, but when on mobile display is none
+            anchor={anchor}
           >
             <SideDrawerContent type="permanent" />
-          </Drawer>
-        </nav>
-      </div>
+          </DrawerStyled>
+        </Nav>
+      </Root>
     </StyledDrawer>
   );
 };

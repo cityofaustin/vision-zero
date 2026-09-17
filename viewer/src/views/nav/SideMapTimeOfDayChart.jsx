@@ -2,12 +2,22 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { StoreContext } from "src/constants/context";
 import axios from "axios";
 import { format } from "date-fns";
+import styled from "styled-components";
 import { createMapDataUrl } from "../map/helpers";
 import { crashEndpointUrl } from "../summary/queries/socrataQueries";
-
-import { Container, Button } from "reactstrap";
-import { HorizontalBar } from "react-chartjs-2";
+import { Button } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUndo } from "@fortawesome/free-solid-svg-icons";
+import { Bar, getElementAtEvent } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
+
+const StyledButtonContainer = styled.div`
+  /* Mock a Bootstrap outline button */
+  border: 1px solid ${colors.dark};
+  border-radius: 4px;
+  padding: 10px;
+  color: ${colors.dark};
+`;
 
 export const SideMapTimeOfDayChart = ({ filters }) => {
   const chartRef = useRef();
@@ -16,7 +26,9 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   const inactiveBarColor = colors.white;
 
   const [chartData, setChartData] = useState(null);
-  const [barColors, setBarColors] = useState(defaultBarColor);
+  const [barColors, setBarColors] = useState(
+    Object.keys(filters).map(() => defaultBarColor),
+  );
 
   const {
     mapTimeWindow: [mapTimeWindow, setMapTimeWindow],
@@ -86,32 +98,34 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
       return parseInt(((timeWindow / timeWindowsTotal) * 100).toFixed(0));
     });
   }, [timeWindowData]);
-  const handleBarClick = (elems) => {
-    // Store bar label, if click is within a bar
-    const timeWindow = elems.length > 0 ? elems[0]._model.label : null;
-    const index = elems.length > 0 ? elems[0]._index : null;
 
-    // If valid click, set mapTimeWindow state
-    if (timeWindow) {
-      const timeWindowArray = filters[timeWindow];
-      const timeWindowStart = timeWindowArray[0];
-      const timeWindowEnd = timeWindowArray[1];
-      const timeWindowFilterString = ` AND date_extract_hh(crash_timestamp_ct) between ${timeWindowStart} and ${timeWindowEnd} AND date_extract_mm(crash_timestamp_ct) between 0 and 59`;
-      setMapTimeWindow(timeWindowFilterString);
+  const handleBarClick = (event) => {
+    if (chartRef.current) {
+      const elements = getElementAtEvent(chartRef.current, event);
+
+      if (elements && elements.length > 0) {
+        const element = elements[0];
+        const index = element.index;
+        const timeLabel = Object.keys(filters)[index];
+        const timeWindow = filters[timeLabel];
+
+        // If valid click, set mapTimeWindow state
+        if (timeWindow) {
+          const timeWindowStart = timeWindow[0];
+          const timeWindowEnd = timeWindow[1];
+          const timeWindowFilterString = ` AND date_extract_hh(crash_timestamp_ct) between ${timeWindowStart} and ${timeWindowEnd} AND date_extract_mm(crash_timestamp_ct) between 0 and 59`;
+          setMapTimeWindow(timeWindowFilterString);
+        }
+
+        // Style unselected bars as inactive
+        if (index !== null) {
+          const newBarColors = Object.keys(filters).map((filter, i) =>
+            i === index ? defaultBarColor : inactiveBarColor,
+          );
+          setBarColors(newBarColors);
+        }
+      }
     }
-
-    // Style unselected bars as inactive
-    if (index !== null) {
-      const newBarColors = Object.keys(filters).map((filter, i) =>
-        i === index ? defaultBarColor : inactiveBarColor,
-      );
-      setBarColors(newBarColors);
-    }
-  };
-
-  const createTooltipData = (tooltipItem) => {
-    const index = tooltipItem.index;
-    return `${timeWindowPercentages[index]}% (${timeWindowData[index]})`;
   };
 
   const createChartTimeLabels = () =>
@@ -121,16 +135,14 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
 
   const handleAllButtonClick = () => {
     setMapTimeWindow("");
-    setBarColors(defaultBarColor);
+    setBarColors(Object.keys(filters).map(() => defaultBarColor));
   };
 
-  const handleHover = (evt) => {
-    var item = chartRef.current.chartInstance.getElementAtEvent(evt);
-    if (item.length) {
-      // Change cursor if hovering over a data bar
-      evt.target.style.cursor = item[0]._model.datasetLabel && "pointer";
+  const handleHover = (event, elements) => {
+    if (elements && elements.length > 0) {
+      event.native.target.style.cursor = "pointer";
     } else {
-      evt.target.style.cursor = "default";
+      event.native.target.style.cursor = "default";
     }
   };
 
@@ -150,46 +162,58 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   };
 
   return (
-    <Container className="px-0 mt-3">
+    <StyledButtonContainer className="mt-3">
+      <h6>Crash time</h6>
+      <span className="form-text">Click a time range to filter</span>
       {!!timeWindowData && !!timeWindowPercentages && (
-        <HorizontalBar
+        <Bar
           ref={(ref) => (chartRef.current = ref)}
           data={data}
           height={250}
-          onElementsClick={handleBarClick}
+          aria-label="Horizontal bar chart showing crash distribution by time of day"
+          onClick={handleBarClick}
           options={{
+            indexAxis: "y",
             onHover: handleHover,
-            legend: {
-              display: false,
-            },
             scales: {
-              xAxes: [
-                {
-                  ticks: {
-                    beginAtZero: true, // Keep small %s viewable in chart
+              x: {
+                ticks: {
+                  beginAtZero: true, // Keep small %s viewable in chart
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const index = context.dataIndex;
+                    return `${timeWindowPercentages[index]}% (${timeWindowData[index]})`;
+                  },
+                  title: function () {
+                    return null; // Render nothing for tooltip title
                   },
                 },
-              ],
-            },
-            tooltips: {
-              callbacks: {
-                label: createTooltipData,
-                title: () => null, // Render nothing for tooltip title
               },
             },
           }}
         />
       )}
-      <Button
-        size="sm"
-        color="dark"
-        active={!isMapTimeWindowSet}
-        outline={isMapTimeWindowSet}
-        onClick={handleAllButtonClick}
-      >
-        All Times
-      </Button>
-    </Container>
+      {isMapTimeWindowSet && (
+        <Button
+          size="sm"
+          color="dark"
+          active={!isMapTimeWindowSet}
+          onClick={handleAllButtonClick}
+          outline
+        >
+          <FontAwesomeIcon icon={faUndo} className="me-1" />
+          Reset
+        </Button>
+      )}
+    </StyledButtonContainer>
   );
 };
 

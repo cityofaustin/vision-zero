@@ -6,7 +6,7 @@ import { colors } from "../../constants/colors";
 import { responsive } from "../../constants/responsive";
 import logo from "./COA-Logo-Stacked-Faded-White-RGB.svg";
 
-import pckg from "../../../package.json"
+import pckg from "../../../package.json";
 
 console.log(pckg.version);
 
@@ -39,7 +39,7 @@ const Footer = () => {
       z-index: 2;
       position: relative;
       left: 100px;
-      top: 45px;
+      top: 70px;
     }
 
     .version {
@@ -47,9 +47,14 @@ const Footer = () => {
       font-size: 14px;
     }
 
-    a,
-    a:hover {
+    a {
       color: ${colors.light};
+      text-decoration: none;
+
+      &:hover {
+        color: ${colors.light};
+        text-decoration: underline;
+      }
     }
 
     /* Prevent links from overlapping CoA logo */
@@ -57,7 +62,7 @@ const Footer = () => {
       .coa-logo {
         position: relative;
         left: 40px;
-        top: 45px;
+        top: 70px;
       }
     }
 
@@ -71,14 +76,13 @@ const Footer = () => {
       }
 
       .coa-logo {
-        position: relative;
-        background: ${colors.dark};
+        left: auto;
         top: -20px;
+        background: ${colors.dark};
         padding: 8px;
         border: 10px solid ${colors.dark};
         border-radius: 60% 60% 0 0;
-        left: 50%;
-        transform: translate(-50%, 0%);
+        margin: 0 auto;
       }
     }
   `;
@@ -112,12 +116,6 @@ const Footer = () => {
     <footer>
       <StyledFooter>
         <Container fluid className="mt-5">
-          <img
-            alt="City of Austin seal"
-            className="coa-logo float-left"
-            height="100px"
-            src={logo}
-          />
           <Row className="col-12 link-table">
             <Col xs="12" className="link link-title">
               City of Austin Transportation Public Works
@@ -128,6 +126,12 @@ const Footer = () => {
               </Col>
             ))}
           </Row>
+          <img
+            alt="City of Austin logo"
+            className="coa-logo"
+            height="100px"
+            src={logo}
+          />
         </Container>
       </StyledFooter>
     </footer>

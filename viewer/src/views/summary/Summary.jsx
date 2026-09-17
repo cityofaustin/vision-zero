@@ -57,14 +57,14 @@ const Summary = () => {
           <Col className="px-xs-0">
             <StyledSummary>
               <Row className="summary-child">
-                <Alert className="col-12 mb-0 banner">
+                <Alert className="col-12 mb-0 banner" fade={false}>
                   <div className="mb-2">
                     Austin is consistently ranked as one of America's best
                     places to live, but too many of our fellow Austinites are
                     killed or seriously injured in traffic crashes each year. To
                     learn more about the City's transportation safety
-                    initiatives, visit Austin Transportation's Vision Zero
-                    Program{" "}
+                    initiatives, visit Austin's Transportation and Public Works
+                    Vision Zero Program{" "}
                     <a
                       href="https://www.austintexas.gov/transportation-public-works/programs/vision-zero"
                       target="_blank"

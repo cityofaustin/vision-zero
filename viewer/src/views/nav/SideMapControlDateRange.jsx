@@ -1,294 +1,211 @@
 import React, { useState, useEffect } from "react";
 import { StoreContext } from "src/constants/context";
-import ThemedStyleSheet from "react-with-styles/lib/ThemedStyleSheet";
-import aphroditeInterface from "react-with-styles-interface-aphrodite";
-import DefaultTheme from "react-dates/lib/theme/DefaultTheme";
 import styled from "styled-components";
-import { DateRangePicker } from "react-dates";
-import moment from "moment";
-import { format, getYear } from "date-fns";
-import {
-  UncontrolledDropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-} from "reactstrap";
-import {
-  dataStartDate,
-  dataEndDate,
-  mapStartDate,
-  mapEndDate,
-} from "../../constants/time";
+import { dataStartDate, today } from "../../constants/time";
 import { colors } from "../../constants/colors";
-import {
-  useIsTablet,
-  useIsMobile,
-  useCanTwoMonthsFit,
-} from "../../constants/responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faRedoAlt,
-  faTimesCircle,
-  faCalendar,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faUndo } from "@fortawesome/free-solid-svg-icons";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { parse, format } from "date-fns";
+import { Button } from "reactstrap";
+
+const minDate = new Date(2014, 0, 1);
+const DATE_FORMAT = "MM/dd/yyyy";
+
+// Create styled date input
+const StyledDatePicker = styled(DatePicker)`
+  font-weight: 200;
+  color: rgb(72, 72, 72);
+  width: 110px;
+  font-size: 15px;
+`;
+
+const StyledNativeDateInput = styled.input`
+  font-family: inherit;
+  font-weight: 200;
+  color: rgb(72, 72, 72);
+  background: transparent;
+  width: 110px;
+  font-size: 15px;
+`;
+
+const StyledButtonContainer = styled.div`
+  /* Mock a Bootstrap outline button */
+  border: 1px solid ${colors.dark};
+  min-height: 34px;
+  border-radius: 4px;
+  display: flex;
+  padding: 10px;
+  flex-direction: column;
+  color: ${colors.dark};
+`;
+
+const StyledDateRow = styled.div`
+  height: 34px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 0px;
+`;
+
+// Center and size calendar icon or button
+const calendarInputIconStyles = `position: relative;
+  width: 16px;
+  height: 16px;
+  margin: 2px;
+  right: 1px;
+`;
+
+const StyledCalendarIcon = styled(FontAwesomeIcon)`
+  ${calendarInputIconStyles}
+`;
+
+const StyledActionRow = styled.div`
+  display: flex;
+  gap: 6px;
+  margin-top: 5px;
+  button {
+    flex: 1;
+  }
+`;
 
 const SideMapControlDateRange = ({ type }) => {
-  const [focused, setFocused] = useState(null);
-  const [start, setStart] = useState(mapStartDate);
-  const [end, setEnd] = useState(mapEndDate);
+  const isMobile = type === "temporary";
 
-  /**
-   * We need to calculate the width differently in windows, by a few pixels.
-   * Windows = 94px, everyone else: 99px
-   */
-  const inputWidth = navigator.appVersion.indexOf("Win") !== -1 ? 92 : 99;
+  // Applied date range — what's actually pushed to the map/context
+  const [start, setStart] = useState(dataStartDate);
+  const [end, setEnd] = useState(today);
 
-  // Override defaultTheme https://github.com/airbnb/react-dates/blob/master/src/theme/DefaultTheme.js
-  const vzTheme = {
-    reactDates: {
-      ...DefaultTheme.reactDates,
-      zIndex: 1301, // MUI SideDrawer is 1300 so need to exceed to show picker
-      border: {
-        ...DefaultTheme.reactDates.border,
-        input: {
-          ...DefaultTheme.reactDates.border.input,
-          borderBottomFocused: `2px solid ${colors.dark}`,
-        },
-        pickerInput: {
-          ...DefaultTheme.reactDates.border.pickerInput,
-          borderWidth: 0, // Remove any space between picker and StyledButtonContainer
-        },
-      },
-      color: {
-        ...DefaultTheme.reactDates.color,
-        placeholderText: `${colors.dark}`, // Set to same color as .dropdown-header to overcome z-index issue (hide text)
-        border: `transparent`, // Hide DateRangePicker border and show StyledButtonContainer instead
-        selected: {
-          backgroundColor: `${colors.dark}`,
-          backgroundColor_active: `${colors.dark}`,
-          backgroundColor_hover: `${colors.dark}`,
-          borderColor: `${colors.light}`,
-          borderColor_active: `${colors.light}`,
-          borderColor_hover: `${colors.light}`,
-          color: `${colors.light}`,
-          color_active: `${colors.light}`,
-          color_hover: `${colors.light}`,
-        },
-        selectedSpan: {
-          backgroundColor: `${colors.secondary}`,
-          backgroundColor_active: `${colors.secondary}`,
-          backgroundColor_hover: `${colors.dark}`,
-          borderColor: `${colors.light}`,
-          borderColor_active: `${colors.light}`,
-          borderColor_hover: `${colors.light}`,
-          color: `${colors.dark}`,
-          color_active: `${colors.light}`,
-          color_hover: `${colors.light}`,
-        },
-        hoveredSpan: {
-          backgroundColor: `${colors.secondary}`,
-          backgroundColor_active: `${colors.dark}`,
-          backgroundColor_hover: `${colors.dark}`,
-          borderColor: `${colors.light}`,
-          borderColor_active: `${colors.light}`,
-          borderColor_hover: `${colors.light}`,
-          color: `${colors.dark}`,
-          color_active: `${colors.light}`,
-          color_hover: `${colors.light}`,
-        },
-      },
-      sizing: {
-        inputWidth: 90,
-        inputWidth_small: inputWidth,
-        arrowWidth: 10,
-      },
-      spacing: {
-        ...DefaultTheme.reactDates.spacing,
-        displayTextPaddingLeft_small: 4,
-        displayTextPaddingRight_small: 4,
-        displayTextPaddingBottom_small: 4,
-      },
-    },
-  };
+  // Staged/draft date range — bound to the inputs, only applied on demand
+  const [pendingStart, setPendingStart] = useState(dataStartDate);
+  const [pendingEnd, setPendingEnd] = useState(today);
 
-  ThemedStyleSheet.registerTheme(vzTheme);
-  ThemedStyleSheet.registerInterface(aphroditeInterface);
+  const hasPendingChange =
+    pendingStart.getTime() !== start.getTime() ||
+    pendingEnd.getTime() !== end.getTime();
+
+  const showReset =
+    !hasPendingChange &&
+    (start.getTime() !== dataStartDate.getTime() ||
+      end.getTime() !== today.getTime());
 
   const { setMapDateRange: setMapDate } = React.useContext(StoreContext);
 
-  // Update map date range in Context when picker dates update
+  // Update map date range in Context when the applied dates change
+  // (on mount, and whenever Apply or Reset is clicked)
   useEffect(() => {
     setMapDate({ start, end });
   }, [start, end, setMapDate]);
 
-  const handleDateChange = (dates) => {
-    let { startDate, endDate } = dates;
-
-    startDate =
-      // If startDate is not null and before n year window, set to dataStartDate
-      (!!startDate &&
-        startDate.isBefore(dataStartDate, "day") &&
-        dataStartDate) ||
-      startDate;
-
-    endDate =
-      // If endDate is not null and after n year window, set to dataEndDate
-      (!!endDate && endDate.isAfter(dataEndDate, "day") && dataEndDate) ||
-      endDate;
-
-    setStart(startDate);
-    setEnd(endDate);
+  const handleApply = () => {
+    const clampedStart = pendingStart < minDate ? minDate : pendingStart;
+    const clampedEnd = pendingEnd < minDate ? minDate : pendingEnd;
+    setStart(clampedStart);
+    setEnd(clampedEnd);
+    setPendingStart(clampedStart);
+    setPendingEnd(clampedEnd);
   };
 
-  // Check if date is outside n year rolling window
-  const isOutsideDateLimits = (date) =>
-    date.isBefore(dataStartDate, "day") || date.isAfter(dataEndDate, "day");
+  const handleReset = () => {
+    setStart(dataStartDate);
+    setEnd(today);
+    setPendingStart(dataStartDate);
+    setPendingEnd(today);
+  };
 
-  const isMobile = useIsMobile();
-  const isTablet = useIsTablet();
-  const canTwoMonthsFit = useCanTwoMonthsFit();
+  const handleStartDateChange = (date) => {
+    setPendingStart(date ?? dataStartDate);
+  };
 
-  // Create year dropdown picker in calendar
-  const StyledMonthYearDropdown = styled(UncontrolledDropdown)`
-    .dropdown-header {
-      /* Set color and position to hide weekday calendar headers with unchangeable z-index */
-      background: ${colors.dark};
-      color: ${colors.white};
-      position: relative;
-      top: -2px;
-    }
-  `;
+  const handleEndDateChange = (date) => {
+    setPendingEnd(date ?? today);
+  };
 
-  const renderMonthElement = ({ month, onYearSelect }) => {
-    let yearArray = [];
-    for (let i = getYear(dataStartDate); i <= getYear(dataEndDate); i++) {
-      yearArray.push(i);
-    }
-
-    return (
-      <StyledMonthYearDropdown>
-        <DropdownToggle caret color="dark">
-          {format(new Date(month), "MMMM yyyy")}
-        </DropdownToggle>
-        <DropdownMenu flip={false}>
-          <DropdownItem header className="dropdown-header">
-            Choose a year
-          </DropdownItem>
-          {yearArray.map((year) => (
-            <DropdownItem
-              key={`${format(new Date(month), "MMMM")}-${year}`}
-              onClick={() => {
-                onYearSelect(month, year);
-              }}
-            >
-              {format(new Date(month), "MMMM")} {year}
-            </DropdownItem>
-          ))}
-        </DropdownMenu>
-      </StyledMonthYearDropdown>
+  // Native <input type="date"> handlers, used on mobile in place of react-datepicker
+  const handleNativeStartChange = (event) => {
+    const value = event.target.value;
+    handleStartDateChange(
+      value ? parse(value, "yyyy-MM-dd", new Date()) : null,
     );
   };
 
-  // Create and style custom close button (for mobile full screen view)
-  const StyledCalendarInfo = styled.div`
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 1304;
-    background: ${colors.white};
-  `;
-
-  const renderCalendarInfo = () => (
-    <StyledCalendarInfo>
-      <FontAwesomeIcon
-        icon={faTimesCircle}
-        color={colors.dark}
-        size="2x"
-        onClick={() => setFocused(null)}
-      />
-    </StyledCalendarInfo>
-  );
-
-  const StyledButtonContainer = styled.div`
-    /* Mock a Bootstrap outline button */
-    border: 1px solid ${colors.dark};
-    height: 34px;
-    border-radius: 4px;
-    padding-left: 2px;
-
-    /* Center start and end date inputs */
-    [id^="start_date_"],
-    [id^="end_date_"] {
-      text-align: center;
-    }
-  `;
-
-  // Center and size calendar icon or button
-  const calendarInputIconStyles = `position: relative;
-    top: 2px;
-    width: 16px;
-    height: 16px;`;
-
-  const StyledCalendarIcon = styled(FontAwesomeIcon)`
-    ${calendarInputIconStyles}
-    left: 1px;
-  `;
-
-  const StyledRedoButton = styled(FontAwesomeIcon)`
-    ${calendarInputIconStyles}
-    right: 1px;
-    cursor: pointer;
-  `;
+  const handleNativeEndChange = (event) => {
+    const value = event.target.value;
+    handleEndDateChange(value ? parse(value, "yyyy-MM-dd", new Date()) : null);
+  };
 
   return (
-    <StyledButtonContainer className="pr-0 picker-outline">
-      <DateRangePicker
-        startDateId={`start_date_${type}`} // PropTypes.string.isRequired,
-        endDateId={`end_date_${type}`} // PropTypes.string.isRequired,
-        startDate={start} // momentPropTypes.momentObj or null,
-        endDate={end} // momentPropTypes.momentObj or null,
-        onDatesChange={handleDateChange} // PropTypes.func.isRequired,
-        focusedInput={focused} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
-        onFocusChange={(focusedInput) => {
-          setFocused(focusedInput);
-          // Do not prompt the keyboard on mobile/tablet
-          if (isTablet) {
-            document.activeElement.blur();
-          }
-        }} // PropTypes.func.isRequired,
-        keepFocusOnInput
-        minDate={moment(dataStartDate)}
-        maxDate={moment(dataEndDate)}
-        renderCalendarInfo={() => (isMobile && renderCalendarInfo()) || true} // Render custom close button on mobile
-        calendarInfoPosition="top" // Position custom close button
-        appendToBody // Allow calendar to pop out over SideDrawer and Map components
-        withFullScreenPortal={isMobile} // Show full screen picker on mobile
-        small
-        renderMonthElement={renderMonthElement} // Render year picker
-        orientation={isMobile ? "vertical" : "horizontal"} // More mobile friendly than horizontal
-        isOutsideRange={() => false} // Enable past dates
-        isDayBlocked={isOutsideDateLimits} // Grey out dates
-        numberOfMonths={!canTwoMonthsFit || (isTablet && !isMobile) ? 1 : 2}
-      />
-      {/* Show reset button to restore default date range or show calendar icon if default*/}
-      {start !== mapStartDate || end !== mapEndDate ? (
-        <StyledRedoButton
-          title="Reset to default date range"
-          icon={faRedoAlt}
-          color={colors.dark}
-          onClick={() => {
-            setStart(mapStartDate);
-            setEnd(mapEndDate);
-          }}
-        />
-      ) : (
-        <StyledCalendarIcon
-          title="Default date range"
-          icon={faCalendar}
-          color={colors.dark}
-          onClick={() => null}
-        />
-      )}
+    <StyledButtonContainer className="picker-outline">
+      <h6>Crash date</h6>
+      <StyledDateRow>
+        {isMobile ? (
+          <>
+            <StyledNativeDateInput
+              id={`map-start-date-${type}`}
+              type="date"
+              value={format(pendingStart, "yyyy-MM-dd")}
+              onChange={handleNativeStartChange}
+              min={format(minDate, "yyyy-MM-dd")}
+              max={format(today, "yyyy-MM-dd")}
+            />
+            {"-"}
+            <StyledNativeDateInput
+              id={`map-end-date-${type}`}
+              type="date"
+              value={format(pendingEnd, "yyyy-MM-dd")}
+              onChange={handleNativeEndChange}
+              min={format(minDate, "yyyy-MM-dd")}
+              max={format(today, "yyyy-MM-dd")}
+            />
+          </>
+        ) : (
+          <>
+            <StyledDatePicker
+              id={`map-start-date-${type}`}
+              selected={pendingStart}
+              onChange={handleStartDateChange}
+              dateFormat={DATE_FORMAT}
+              maxDate={today}
+              popperPlacement="bottom-start"
+            />
+            {"-"}
+            <StyledDatePicker
+              id={`map-end-date-${type}`}
+              selected={pendingEnd}
+              onChange={handleEndDateChange}
+              dateFormat={DATE_FORMAT}
+              maxDate={today}
+              popperPlacement="bottom-start"
+            />
+          </>
+        )}
+        {!isMobile && (
+          <StyledCalendarIcon
+            title="Date range"
+            icon={faCalendar}
+            color={colors.dark}
+          />
+        )}
+      </StyledDateRow>
+      <StyledActionRow>
+        {showReset && (
+          <Button size="sm" color="dark" outline onClick={handleReset}>
+            <FontAwesomeIcon icon={faUndo} className="me-1" />
+            Reset
+          </Button>
+        )}
+        {hasPendingChange && (
+          <Button
+            size="sm"
+            color="dark"
+            onClick={handleApply}
+            disabled={!hasPendingChange}
+          >
+            Apply date filter
+          </Button>
+        )}
+      </StyledActionRow>
     </StyledButtonContainer>
   );
 };

@@ -17,11 +17,13 @@ The design supports an editing environment which enables Vision Zero program sta
       - [Lookup tables](#lookup-tables)
         - [Lookup table structure and custom lookup table values](#lookup-table-structure-and-custom-lookup-table-values)
       - [Charges records](#charges-records)
-      - [Crash risk factors and contributing factors](#crash-risk-factors)
+      - [Crash risk factors](#crash-risk-factors)
       - [Database IDs, CRIS record IDs, and primary keys](#database-ids-cris-record-ids-and-primary-keys)
       - [User-created crash records, aka "temporary" records](#user-created-crash-records-aka-temporary-records)
       - [Audit fields](#audit-fields)
       - [Change logs](#change-logs)
+      - [Crash geolocation provider (`geolocation_provider_id`)](#crash-geolocation-provider-geolocation_provider_id)
+      - [How the provider is assigned](#how-the-provider-is-assigned)
     - [Austin Police Department non-CR3 or "blueform" crashes](#austin-police-department-non-cr3-or-blueform-crashes)
       - [De-duplicating non-CR3 records](#de-duplicating-non-cr3-records)
     - [Austin-Travis County Emergency Medical Services (EMS)](#austin-travis-county-emergency-medical-services-ems)
@@ -38,8 +40,6 @@ The design supports an editing environment which enables Vision Zero program sta
       - [EMS Spatial Attributes](#ems-spatial-attributes)
     - [Austin Fire Department (AFD)](#austin-fire-department-afd)
     - [Computer-Aided Dispatch records](#computer-aided-dispatch-records)
-    - [Vision Zero Incidents](#vision-zero-incidents)
-      - [Sample queries](#sample-queries)
     - [Geospatial layers](#geospatial-layers)
   - [Common maintenance tasks](#common-maintenance-tasks)
     - [Add a new CRIS-managed column to `crashes`, `units`, or `people`](#add-a-new-cris-managed-column-to-crashes-units-or-people)
@@ -321,6 +321,24 @@ Each change log table follows the same structure:
 
 The view `crashes_change_log_view` provides a unioned view of the unified table change logs—this view powers the change log UI in the VZE.
 
+#### Crash geolocation provider (`geolocation_provider_id`)
+
+The `crashes.geolocation_provider_id` column tracks the source of a crash record's lat/lon coordinates. It references the `lookups.geolocation_provider` table:
+
+| id  | label       | description                                                   |
+| --- | ----------- | ------------------------------------------------------------- |
+| 1   | `cris`      | Default. Coordinates were provided by CRIS.                   |
+| 2   | `apd_cad`   | Coordinates were backfilled from a matching APD CAD incident. |
+| 3   | `manual_qa` | Coordinates were set or edited by a Vision Zero staff member. |
+
+#### How the provider is assigned
+
+1. **`cris` (default)**: All crash records default to this provider, reflecting that coordinates are provided by CRIS via the standard import process.
+2. **`apd_cad`**: If an APD-investigated crash (`investigat_agency_id = 74`) is inserted into `crashes` with no lat/lon, the `a_crashes_fill_cad_coordinates_before_insert` trigger searches `cad_incidents` for a record matching the crash's `case_id`, within a ±2-day window of the `crash_timestamp`. If a match is found, the CAD record's coordinates are copied to the crash and the provider is set to `apd_cad`. This trigger must fire _before_ `crashes_set_spatial_attributes_on_insert` and `update_crash_ems_match`, which is why it's named to sort first alphabetically among `BEFORE INSERT` triggers.
+3. **`manual_qa`**: If a Vision Zero staff member edits a crash's lat/lon through the VZE, the provider is set to `manual_qa`.
+
+**Note:** once a crash's provider is set to `manual_qa`, there is currently no mechanism to revert it back to `cris` or `apd_cad`—the change is one-directional.
+
 ### Austin Police Department non-CR3 or "blueform" crashes
 
 Non-CR3 crashes, known colloquially as "blueform" crashes, are crash incidents reported by the Austin Police Department which were not investigated as a TxDOT-reportable crash. These are typically minor traffic incidents with minimal damage or injuries, for which no crash report was submitted.
@@ -480,120 +498,6 @@ These records (`cad_incidents` table) contain information on 911 calls and offic
 Data is provided by the public safety enterprise data team and has been reviewed and approved by subject matter experts at the Austin Fire Department, Austin Police Department, and Austin-Travis County EMS.
 
 For additional information about CAD records, see the [CAD incident import ETL](../etl/cad_incidents_import/README.md).
-
-### Vision Zero Incidents
-
-A single real-world crash is often seen by multiple public-safety systems — an APD crash report, one or more CAD calls, an EMS patient record, an AFD response — each recorded in its own table. **Vision Zero incidents** (`vz_incidents`) are a composite record type that organizes [various crash-related records](#data-sources) under a single containing object. A VZ incident may be linked to multiple record types; it attempts to provide a complete picture of the public safety response to a single real-world crash. This work is ongoing.
-
-![Diagram of vision zero incident with points overlaid on a map which represent different agencies responding to the same crash](../docs/images/vz_incident.jpg)
-
-_This diagram illustrates how a multi-agency crash response may be represented in our database_
-
-VZ incidents are populated by the `incident_linker.py` script in the [VZ incidents ETL](../etl/vz_incidents/README.md). The script processes one source record type at a time — CAD incidents, crash reports, EMS incidents, and AFD incidents — reading from the unified `vz_incident_records_view` and linking each record to a VZ incident (or creating a new one). Refer to the ETL readme for details on how `vz_incident` records are identified and created.
-
-The queries below can be used to explore and visualize `vz_incidents`.
-
-#### Sample queries
-
-- VZ incident stats (number of member incidents, distance spread, response time spread)
-
-```sql
-SELECT
-    v.vz_incident_id,
-    COUNT(*) AS record_count,
-    COUNT(*) FILTER (
-        WHERE
-            record_table_name = 'crashes'
-    ) AS crashes_count,
-    COUNT(*) FILTER (
-        WHERE
-            record_table_name = 'cad_incidents'
-    ) AS cad_incidents_count,
-    COUNT(*) FILTER (
-        WHERE
-            record_table_name = 'ems__inicidents'
-    ) AS ems_inicidents_count,
-    COUNT(*) FILTER (
-        WHERE
-            record_table_name = 'afd__inicidents'
-    ) AS afd__incidents_count,
-    COUNT(*) FILTER (
-        WHERE
-            record_table_name = 'crashes'
-    ) AS crash_count,
-    ROUND(ST_Length (ST_LongestLine (ST_Collect (v.geom), ST_Collect (v.geom))::geography)::numeric, 1) AS spread_meters,
-    ROUND(
-        EXTRACT(
-            EPOCH
-            FROM
-                (MAX(v.record_timestamp) - MIN(v.record_timestamp))
-        ) / 60.0,
-        1
-    ) AS time_spread_minutes
-FROM
-    vz_incident_records_view v
-WHERE
-    v.vz_incident_id IS NOT NULL
-GROUP BY
-    v.vz_incident_id
-ORDER BY
-    v.vz_incident_id
-LIMIT
-    1000;
-```
-
-- Generates a geojson of VZ incidents with simple styles that can be visualized in mapping tools such as https://geojson.io.
-
-```sql
-SELECT
-    jsonb_build_object(
-        'type',
-        'FeatureCollection',
-        'features',
-        jsonb_agg(
-            jsonb_build_object(
-                'type',
-                'Feature',
-                'geometry',
-                ST_AsGeoJSON (geom)::jsonb,
-                'properties',
-                jsonb_build_object(
-                    'vz_incident_id',
-                    vz_incident_id,
-                    'record_table_name',
-                    record_table_name,
-                    'record_id',
-                    record_id,
-                    'record_incident_number',
-                    record_incident_number,
-                    'record_responding_agency',
-                    record_responding_agency,
-                    'record_timestamp',
-                    record_timestamp,
-                    'record_address',
-                    record_address,
-                    'marker-color',
-                    '#' || lpad(to_hex(('x' || substr(md5(vz_incident_id::text), 1, 6))::bit(24)::int), 6, '0'),
-                    'marker-size',
-                    'large'
-                )
-            )
-        )
-    ) AS geojson
-FROM
-    (
-        SELECT
-            *
-        FROM
-            vz_incident_records_view
-        WHERE
-            geom IS NOT NULL
-        ORDER BY
-            record_timestamp DESC
-        LIMIT
-            500
-    ) sub;
-```
 
 ### Geospatial layers
 

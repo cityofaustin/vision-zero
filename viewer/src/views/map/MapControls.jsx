@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { GeolocateControl, NavigationControl } from "react-map-gl";
+import { GeolocateControl, NavigationControl } from "react-map-gl/mapbox";
 
 const StyledMapNav = styled.div`
   .nav-buttons {
