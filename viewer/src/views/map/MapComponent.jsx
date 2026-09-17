@@ -374,7 +374,9 @@ const MapComponent = () => {
       return null;
     }
 
-    return <Source id="selectedCrash" type="geojson" data={selectedFeature} />;
+    return (
+      <Source id="selectedCrash" type="geojson" data={selectedFeature}/>
+    );
   };
 
   // Show/hide type layers
