@@ -19,7 +19,6 @@
     "@fortawesome/react-fontawesome": "^0.1.19",
     "@mapbox/mapbox-gl-draw": "^1.5.1",
     "@mapbox/mapbox-gl-geocoder": "^5.1.2",
-    "@mui/icons-material": "^9.4.0",
     "@mui/material": "^9.4.0",
     "@mui/styles": "^6.5.0",
     "@terraformer/arcgis": "^2.2.2",
