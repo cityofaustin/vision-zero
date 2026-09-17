@@ -15,8 +15,7 @@ export const trackUmamiEvent = (eventName, eventData) => {
 
   if (eventData) {
     window.umami.track(eventName, eventData);
-    return;
+  } else {
+    window.umami.track(eventName);
   }
-
-  window.umami.track(eventName);
 };

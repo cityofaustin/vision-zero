@@ -6,12 +6,8 @@ const SCRIPT_URL = "https://umami.austinmobility.io/script.js";
 const SCRIPT_ELEMENT_ID = "umami-analytics";
 
 /**
- * Loads the Umami analytics tracker script when VITE_UMAMI_WEBSITE_ID is set.
- * Configure per deploy context in the Netlify UI (Environment variables):
- *
- *   VITE_UMAMI_WEBSITE_ID  → (staging or production website ID from Umami)
- *   VITE_UMAMI_DOMAINS     → (production only, e.g. "visionzero.austin.gov")
- *   VITE_UMAMI_TAG         → (optional, e.g. "staging" or "production")
+ * Umami Analytics is loaded when VITE_UMAMI_WEBSITE_ID is set.
+ * See @viewer/README.md for details.
  */
 const UmamiAnalytics = () => {
   const websiteId = import.meta.env.VITE_UMAMI_WEBSITE_ID;
