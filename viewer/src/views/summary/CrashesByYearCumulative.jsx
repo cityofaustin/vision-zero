@@ -68,6 +68,7 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
       data={chartData}
       height={null}
       width={null}
+      aria-label="Cumulative monthly crash comparison chart: current year versus five-year average"
       options={{
         responsive: true,
         aspectRatio: 0.849,
@@ -76,13 +77,11 @@ const CrashesByYearCumulative = ({ avgData, currentYearData }) => {
           mode: "x",
         },
         scales: {
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-              },
+          y: {
+            ticks: {
+              beginAtZero: true,
             },
-          ],
+          },
         },
         legend: {
           onClick: (e) => e.stopPropagation(),

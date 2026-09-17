@@ -32,7 +32,7 @@ const SummaryWidget = ({
     flex-grow: 1;
 
     .total {
-      font-size: 4em;
+      font-size: 3.5em;
     }
 
     .widget-body {
@@ -41,10 +41,12 @@ const SummaryWidget = ({
 
     .widget-footer {
       height: 30%;
+      font-size: 0.9em;
     }
 
     /* Shift icon left to align with Bootstrap card text */
     .widget-icon {
+      font-size: 2.6em
       position: relative;
       right: 5.25px;
     }
@@ -57,7 +59,7 @@ const SummaryWidget = ({
     }
 
     .widget-header-text > span {
-      font-size: 1.2em;
+      font-size: 1em;
     }
   `;
 
@@ -71,9 +73,9 @@ const SummaryWidget = ({
       (currentYearTotal < lastYearTotal && "Down from") ||
       "Same as";
     return (
-      <div className="text-left widget-footer-icon d-flex flex-row align-items-center">
+      <div className="widget-footer-icon d-flex flex-row align-items-center">
         <FontAwesomeIcon size="2x" icon={icon} color={colors.dark} />
-        <span className="text-muted text-wrap pl-4">
+        <span className="text-muted text-wrap ps-4">
           {`${text} ${numberWithCommas(lastYearTotal)} this time last year`}
         </span>
       </div>
@@ -98,8 +100,8 @@ const SummaryWidget = ({
             )}
           </Col>
         </Row>
-        <div className="text-left d-flex flex-row">
-          <span className="fa-layers fa-3x fa-fw widget-icon">
+        <div className="d-flex flex-row">
+          <span className="fa-layers fa-fw widget-icon">
             <FontAwesomeIcon icon={faCircle} color={backgroundColor} />
             <FontAwesomeIcon
               icon={icon}
@@ -120,7 +122,7 @@ const SummaryWidget = ({
         <CardFooter className="bg-white d-flex widget-footer">
           {renderFooterBasedOnChange(
             totalsObject[currentYear],
-            totalsObject[prevYear]
+            totalsObject[prevYear],
           )}
         </CardFooter>
       )}

@@ -177,7 +177,7 @@ const CrashesByTimeOfDay = () => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left, font-weight-bold">By Time of Day</h2>
+          <h2 className="fw-bold">By Time of Day</h2>
         </Col>
       </Row>
       <Row>
@@ -232,6 +232,8 @@ const CrashesByTimeOfDay = () => {
           <Col id="demographics-heatmap">
             {!!heatmapData.length > 0 ? (
               <Heatmap
+                // Force a fresh mount per selection to ensure all chart cells update
+                key={`${crashType.name}-${activeYear}`}
                 height={267}
                 margins={[0, 0, 0, 15]}
                 data={heatmapData}
@@ -260,9 +262,7 @@ const CrashesByTimeOfDay = () => {
                                   borderRadius: 5,
                                 }}
                               >
-                                <span className="font-weight-bold">
-                                  {label}
-                                </span>
+                                <span className="fw-bold">{label}</span>
                                 <div>
                                   <span>
                                     {formatCrashCount(crashCount || 0)}

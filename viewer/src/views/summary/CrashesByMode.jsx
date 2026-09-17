@@ -24,176 +24,179 @@ import {
   summaryCurrentYearEndDate,
 } from "../../constants/time";
 import { crashEndpointUrl } from "./queries/socrataQueries";
+import { CRASH_TYPES } from "../../constants/crashTypes";
 import ColorSpinner from "../../Components/Spinner/ColorSpinner";
 
-const CrashesByMode = () => {
-  const chartColors = [
-    colors.viridis1Of6Highest,
-    colors.viridis2Of6,
-    colors.viridis3Of6,
-    colors.viridis4Of6,
-    colors.viridis5Of6,
-    colors.viridis6Of6Lowest,
-  ];
+const chartColorsBase = [
+  colors.viridis1Of6Highest,
+  colors.viridis2Of6,
+  colors.viridis3Of6,
+  colors.viridis4Of6,
+  colors.viridis5Of6,
+  colors.viridis6Of6Lowest,
+];
 
+const modes = [
+  {
+    label: "Motorist",
+    icon: faCar,
+    fields: {
+      fatal: "motor_vehicle_death_count",
+      injury: "motor_vehicle_serious_injury_count",
+    },
+  },
+  {
+    label: "Pedestrian",
+    icon: faWalking,
+    fields: {
+      fatal: "pedestrian_death_count",
+      injury: "pedestrian_serious_injury_count",
+    },
+  },
+  {
+    label: "Motorcyclist",
+    icon: faMotorcycle,
+    fields: {
+      fatal: "motorcycle_death_count",
+      injury: "motorcycle_serious_injury_count",
+    },
+  },
+  {
+    label: "Bicyclist",
+    icon: faBiking,
+    fields: {
+      fatal: "bicycle_death_count",
+      injury: "bicycle_serious_injury_count",
+    },
+  },
+  {
+    label: "E-Scooter Rider",
+    icon: faMobileAlt,
+    fields: {
+      fatal: "micromobility_death_count",
+      injury: "micromobility_serious_injury_count",
+    },
+  },
+  {
+    label: "Other",
+    icon: faEllipsisH,
+    fields: {
+      fatal: "other_death_count",
+      injury: "other_serious_injury_count",
+    },
+  },
+];
+
+const getModeData = (fields, chartData, crashType) =>
+  yearsArray.map((year) => {
+    return chartData[year].reduce((accumulator, record) => {
+      const isFatalQuery =
+        crashType.name === "fatalities" ||
+        crashType.name === "fatalitiesAndSeriousInjuries";
+      const isInjuryQuery =
+        crashType.name === "seriousInjuries" ||
+        crashType.name === "fatalitiesAndSeriousInjuries";
+
+      accumulator += isFatalQuery && parseInt(record[fields.fatal]);
+      accumulator += isInjuryQuery && parseInt(record[fields.injury]);
+
+      return accumulator;
+    }, 0);
+  });
+
+const sortAndColorModeData = (modeData, chartColors) => {
+  modeData.forEach((category, i) => {
+    const color = chartColors[i];
+    category.backgroundColor = color;
+    category.borderColor = color;
+    category.hoverBackgroundColor = color;
+    category.hoverBorderColor = color;
+  });
+  return modeData;
+};
+
+const CrashesByMode = () => {
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
-  const [chartLegend, setChartLegend] = useState(null);
-  const [legendColors, setLegendColors] = useState([...chartColors]);
+  const [legendColors, setLegendColors] = useState([...chartColorsBase]);
 
   const chartRef = useRef();
 
-  const modes = [
-    {
-      label: "Motorist",
-      icon: faCar,
-      fields: {
-        fatal: `motor_vehicle_death_count`,
-        injury: `motor_vehicle_serious_injury_count`,
-      },
-    },
-    {
-      label: "Pedestrian",
-      icon: faWalking,
-      fields: {
-        fatal: `pedestrian_death_count`,
-        injury: `pedestrian_serious_injury_count`,
-      },
-    },
-    {
-      label: "Motorcyclist",
-      icon: faMotorcycle,
-      fields: {
-        fatal: `motorcycle_death_count`,
-        injury: `motorcycle_serious_injury_count`,
-      },
-    },
-    {
-      label: "Bicyclist",
-      icon: faBiking,
-      fields: {
-        fatal: `bicycle_death_count`,
-        injury: `bicycle_serious_injury_count`,
-      },
-    },
-    {
-      label: "E-Scooter Rider",
-      icon: faMobileAlt,
-      fields: {
-        fatal: `micromobility_death_count`,
-        injury: `micromobility_serious_injury_count`,
-      },
-    },
-    {
-      label: "Other",
-      icon: faEllipsisH,
-      fields: {
-        fatal: `other_death_count`,
-        injury: `other_serious_injury_count`,
-      },
-    },
-  ];
-
-  // Fetch data and set in state by years in yearsArray
+  // Fetch data once — covers every crash type (fatalities and serious
+  // injuries are subsets), so switching tabs never re-fetches, it just
+  // re-aggregates the same records client-side in getModeData below
   useEffect(() => {
-    // Wait for crashType to be passed up from setCrashType component
-    if (crashType.queryStringPerson) {
-      const getChartData = async () => {
-        let newData = {};
-        // Use Promise.all to let all requests resolve before setting chart data by year
-        await Promise.all(
-          yearsArray.map(async (year) => {
-            // If getting data for current year (only including years past January), set end of query to last day of previous month,
-            // else if getting data for previous years, set end of query to last day of year
-            let endDate =
-              year.toString() === format(dataEndDate, "yyyy")
-                ? `${summaryCurrentYearEndDate}T23:59:59`
-                : `${year}-12-31T23:59:59`;
-            let url = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_timestamp_ct between '${year}-01-01T00:00:00' and '${endDate}'`;
-            await axios.get(url).then((res) => {
-              newData = { ...newData, ...{ [year]: res.data } };
-            });
-            return null;
-          }),
-        );
+    const controller = new AbortController();
+    let ignore = false;
+
+    const getChartData = async () => {
+      const firstYear = yearsArray[0];
+      const lastYear = yearsArray[yearsArray.length - 1];
+      const endDate =
+        lastYear.toString() === format(dataEndDate, "yyyy")
+          ? `${summaryCurrentYearEndDate}T23:59:59`
+          : `${lastYear}-12-31T23:59:59`;
+
+      const url = `${crashEndpointUrl}?$limit=999999&$where=${CRASH_TYPES.fatalitiesAndSeriousInjuries.queryStringCrash} AND crash_timestamp_ct between '${firstYear}-01-01T00:00:00' and '${endDate}'`;
+
+      try {
+        const res = await axios.get(url, { signal: controller.signal });
+        if (ignore) return; // stale response, drop it
+
+        const newData = Object.fromEntries(yearsArray.map((y) => [y, []]));
+        res.data.forEach((record) => {
+          const year = new Date(record.crash_timestamp_ct).getFullYear();
+          if (newData[year]) newData[year].push(record);
+        });
         setChartData(newData);
-      };
-      getChartData();
-    }
-  }, [crashType]);
-
-  useEffect(() => {
-    if (chartRef.current) {
-      if (chartData) {
-        setChartLegend(chartRef.current.chartInstance.generateLegend());
+      } catch (err) {
+        if (!ignore && !axios.isCancel(err)) console.error(err);
       }
+    };
+
+    getChartData();
+
+    return () => {
+      ignore = true;
+      controller.abort();
+    };
+  }, []);
+
+  // Builds the full chart-ready object: { labels, datasets }
+  const data = useMemo(() => {
+    const labels = yearsArray.map((year) => `${year}`);
+
+    if (!chartData) {
+      return { labels, datasets: false };
     }
-  }, [chartData, legendColors]);
 
-  const createChartLabels = () => yearsArray.map((year) => `${year}`);
-
-  // Tabulate fatalities/injuries by mode fields in data
-  const getModeData = (fields) =>
-    yearsArray.map((year) => {
-      return chartData[year].reduce((accumulator, record) => {
-        const isFatalQuery =
-          crashType.name === "fatalities" ||
-          crashType.name === "fatalitiesAndSeriousInjuries";
-        const isInjuryQuery =
-          crashType.name === "seriousInjuries" ||
-          crashType.name === "fatalitiesAndSeriousInjuries";
-
-        accumulator += isFatalQuery && parseInt(record[fields.fatal]);
-        accumulator += isInjuryQuery && parseInt(record[fields.injury]);
-
-        return accumulator;
-      }, 0);
-    });
-
-  // Sort mode order in stack and apply colors by averaging total mode fatalities across all years in chart
-  const sortAndColorModeData = (modeData) => {
-    modeData.forEach((category, i) => {
-      const color = chartColors[i];
-      category.backgroundColor = color;
-      category.borderColor = color;
-      category.hoverBackgroundColor = color;
-      category.hoverBorderColor = color;
-    });
-    return modeData;
-  };
-
-  // Create dataset for each mode type, data property is an array of fatality sums sorted chronologically
-  const createTypeDatasets = () => {
     const modeData = modes.map((mode) => ({
       borderWidth: 2,
       label: mode.label,
       icon: mode.icon,
-      data: getModeData(mode.fields),
+      data: getModeData(mode.fields, chartData, crashType),
     }));
-    // Determine order of modes in each year stack and color appropriately
-    return sortAndColorModeData(modeData);
-  };
 
-  const data = {
-    labels: createChartLabels(),
-    datasets: !!chartData && createTypeDatasets(),
-  };
+    return {
+      labels,
+      datasets: sortAndColorModeData(modeData, chartColorsBase),
+    };
+  }, [chartData, crashType]);
+
+  const { datasets } = data;
 
   // Get an array of annual totals for the selected crash type
-  const getYearTotalsArray = useMemo(() => {
-    const yearTotalsArray = yearsArray.map((year, index) => {
+  const yearTotalsArray = useMemo(() => {
+    return yearsArray.map((year, index) => {
       let currentYearTotal = 0;
-      if (data.datasets) {
-        data.datasets.forEach((mode) => {
+      if (datasets) {
+        datasets.forEach((mode) => {
           currentYearTotal += mode.data[index];
         });
       }
       return currentYearTotal;
     });
-    return yearTotalsArray;
-  }, [data.datasets]);
-
-  const yearTotalsArray = getYearTotalsArray;
+  }, [datasets]);
 
   const StyledDiv = styled.div`
     .year-total-div {
@@ -228,7 +231,7 @@ const CrashesByMode = () => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left font-weight-bold">
+          <h2 className=" fw-bold">
             By Travel Mode <InfoPopover config={popoverConfig.summary.byMode} />
           </h2>
         </Col>
@@ -249,154 +252,131 @@ const CrashesByMode = () => {
       {data.datasets ? (
         <Row className="mt-1">
           <Col>
-            {chartLegend}
+            <Container>
+              <Row className="pb-2">
+                <Col className="pe-1 col-sm-4">
+                  <StyledDiv>
+                    <div>
+                      <p
+                        className="h6 text-center my-1 pt-2"
+                        style={{ height: "27px" }}
+                      ></p>
+                    </div>
+                    {data.datasets.map((dataset, i) => {
+                      const customLegendClickHandler = (datasetIndex) => {
+                        if (chartRef.current) {
+                          const ci = chartRef.current;
+                          const meta = ci.getDatasetMeta(datasetIndex);
+
+                          // Toggle the hidden state of the dataset
+                          meta.hidden = meta.hidden === null ? true : null;
+
+                          // Update the chart
+                          ci.update();
+
+                          // Update legend colors
+                          const legendColorsClone = [...legendColors];
+                          if (legendColorsClone[datasetIndex] !== "dimgray") {
+                            legendColorsClone[datasetIndex] = "dimgray";
+                          } else {
+                            legendColorsClone[datasetIndex] = legendColorsClone[
+                              datasetIndex
+                            ] = chartColorsBase[datasetIndex];
+                          }
+                          setLegendColors(legendColorsClone);
+                        }
+                      };
+
+                      return (
+                        <div
+                          key={i}
+                          className="mode-label-div"
+                          title={dataset.label}
+                          onClick={() => customLegendClickHandler(i)}
+                        >
+                          <hr className="my-0"></hr>
+                          <p className="h6 text-center my-0 py-1">
+                            <FontAwesomeIcon
+                              aria-hidden="true"
+                              className="block-icon"
+                              icon={dataset.icon}
+                              color={legendColors[i]}
+                            />
+                            <span className="sr-only">{dataset.label}</span>
+                            <span className="mode-label-text">
+                              {" "}
+                              {dataset.label}
+                            </span>
+                          </p>
+                        </div>
+                      );
+                    })}
+                    <div>
+                      <hr className="my-0"></hr>
+                      <p className="h6 text-center my-0 py-1">
+                        <span className="sr-only">Total</span>
+                        <span className="mode-label-text">Total</span>
+                      </p>
+                    </div>
+                  </StyledDiv>
+                </Col>
+                {data.labels.map((year, yearIterator) => {
+                  let paddingRight = yearIterator === 4 ? "null" : "pe-1";
+                  return (
+                    <Col key={yearIterator} className={`ps-0 ${paddingRight}`}>
+                      <StyledDiv>
+                        <div className="year-total-div">
+                          <div>
+                            <p className="h6 text-center my-1 pt-2">
+                              <strong>{year}</strong>
+                            </p>
+                          </div>
+                          {data.datasets.map((mode, modeIterator) => {
+                            return (
+                              <div key={modeIterator}>
+                                <hr className="my-0"></hr>
+                                <p className={`h6 text-center my-1`}>
+                                  {mode.data[yearIterator]}
+                                </p>
+                              </div>
+                            );
+                          })}
+                          <hr className="my-0"></hr>
+                          <p className={`h6 text-center my-1 pb-1`}>
+                            {data.datasets && yearTotalsArray[yearIterator]}
+                          </p>
+                        </div>
+                      </StyledDiv>
+                    </Col>
+                  );
+                })}
+              </Row>
+            </Container>
             {
               <Container>
                 <Bar
-                  ref={(ref) => (chartRef.current = ref)}
+                  ref={chartRef}
                   data={data}
                   height={null}
                   width={null}
+                  aria-label="Stacked bar chart showing crash fatalities or injuries by travel mode over time"
                   options={{
                     responsive: true,
                     aspectRatio: 1.37,
                     maintainAspectRatio: false,
                     scales: {
-                      xAxes: [
-                        {
-                          stacked: true,
-                        },
-                      ],
-                      yAxes: [
-                        {
-                          stacked: true,
-                        },
-                      ],
+                      x: {
+                        stacked: true,
+                      },
+
+                      y: {
+                        stacked: true,
+                      },
                     },
-                    legend: {
-                      display: false,
-                    },
-                    legendCallback: function (chart) {
-                      return (
-                        <Row className="pb-2">
-                          <Col className="pr-1 col-sm-4">
-                            <StyledDiv>
-                              <div>
-                                <p
-                                  className="h6 text-center my-1 pt-2"
-                                  style={{ height: "27px" }}
-                                ></p>
-                              </div>
-                              {chart.data.datasets.map((dataset, i) => {
-                                const updateLegendColors = () => {
-                                  const legendColorsClone = [...legendColors];
-                                  if (legendColors[i] !== "dimgray") {
-                                    legendColorsClone.splice(i, 1, "dimgray");
-                                  } else {
-                                    legendColorsClone.splice(
-                                      i,
-                                      1,
-                                      chartColors[i],
-                                    );
-                                  }
-                                  setLegendColors(legendColorsClone);
-                                };
-
-                                const customLegendClickHandler = () => {
-                                  const legendItem =
-                                    chart.legend.legendItems[i];
-                                  const index = legendItem.datasetIndex;
-                                  const ci =
-                                    chartRef.current.chartInstance.chart;
-                                  const meta = ci.getDatasetMeta(index);
-
-                                  // See controller.isDatasetVisible comment
-                                  meta.hidden =
-                                    meta.hidden === null
-                                      ? !ci.data.datasets[index].hidden
-                                      : null;
-
-                                  // We hid a dataset ... rerender the chart,
-                                  // then update the legend colors
-                                  updateLegendColors(ci.update());
-                                };
-
-                                return (
-                                  <div
-                                    key={i}
-                                    className="mode-label-div"
-                                    title={dataset.label}
-                                    onClick={customLegendClickHandler}
-                                  >
-                                    <hr className="my-0"></hr>
-                                    <p className="h6 text-center my-0 py-1">
-                                      <FontAwesomeIcon
-                                        aria-hidden="true"
-                                        className="block-icon"
-                                        icon={dataset.icon}
-                                        color={legendColors[i]}
-                                      />
-                                      <span className="sr-only">
-                                        {dataset.label}
-                                      </span>
-                                      <span className="mode-label-text">
-                                        {" "}
-                                        {dataset.label}
-                                      </span>
-                                    </p>
-                                  </div>
-                                );
-                              })}
-                              <div>
-                                <hr className="my-0"></hr>
-                                <p className="h6 text-center my-0 py-1">
-                                  <span className="sr-only">Total</span>
-                                  <span className="mode-label-text">Total</span>
-                                </p>
-                              </div>
-                            </StyledDiv>
-                          </Col>
-                          {chart.data.labels.map((year, yearIterator) => {
-                            let paddingRight =
-                              yearIterator === 4 ? "null" : "pr-1";
-                            return (
-                              <Col
-                                key={yearIterator}
-                                className={`pl-0 ${paddingRight}`}
-                              >
-                                <StyledDiv>
-                                  <div className="year-total-div">
-                                    <div>
-                                      <p className="h6 text-center my-1 pt-2">
-                                        <strong>{year}</strong>
-                                      </p>
-                                    </div>
-                                    {chart.data.datasets.map(
-                                      (mode, modeIterator) => {
-                                        return (
-                                          <div key={modeIterator}>
-                                            <hr className="my-0"></hr>
-                                            <p
-                                              className={`h6 text-center my-1`}
-                                            >
-                                              {mode.data[yearIterator]}
-                                            </p>
-                                          </div>
-                                        );
-                                      },
-                                    )}
-                                    <hr className="my-0"></hr>
-                                    <p className={`h6 text-center my-1 pb-1`}>
-                                      {data.datasets &&
-                                        yearTotalsArray[yearIterator]}
-                                    </p>
-                                  </div>
-                                </StyledDiv>
-                              </Col>
-                            );
-                          })}
-                        </Row>
-                      );
+                    plugins: {
+                      legend: {
+                        display: false,
+                      },
                     },
                   }}
                 />

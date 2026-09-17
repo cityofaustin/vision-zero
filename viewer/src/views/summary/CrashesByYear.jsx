@@ -94,7 +94,7 @@ const CrashesByYear = () => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left font-weight-bold">
+          <h2 className="fw-bold">
             By Year & Month{" "}
             <InfoPopover config={popoverConfig.summary.byYear} />
           </h2>

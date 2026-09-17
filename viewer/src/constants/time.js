@@ -1,5 +1,4 @@
 import { sub, startOfYear, format, endOfYear, add } from "date-fns";
-import moment from "moment";
 
 // Set the sliding window of data that feeds VZV
 // Number of past years data to fetch
@@ -9,6 +8,8 @@ export const MONTHS_AGO = 2;
 
 // Last date of records that should be referenced in VZV
 export const dataEndDate = sub(new Date(), { days: 14 });
+
+export const today = new Date();
 
 // Create array of ints of last n years
 const getYearsArray = () => {
@@ -42,11 +43,6 @@ export const summaryLastYearEndDate = format(sub(dataEndDate, { years: 1 }), "yy
 
 export const currentYearString = summaryCurrentYearStartDate.slice(0, 4);
 export const prevYearString = summaryLastYearStartDate.slice(0, 4);
-
-// Map time data
-export const mapStartDate = moment(dataStartDate);
-
-export const mapEndDate = moment(dataEndDate);
 
 // Five year average
 export const fiveYearAvgStartDate = format(

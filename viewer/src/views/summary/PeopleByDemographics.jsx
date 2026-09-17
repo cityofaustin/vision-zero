@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useReducer, useMemo } from "react";
 import axios from "axios";
-import { HorizontalBar } from "react-chartjs-2";
-import "chartjs-plugin-stacked100";
+import { Bar } from "react-chartjs-2";
+import { Chart } from "chart.js";
+import ChartjsPluginStacked100 from "chartjs-plugin-stacked100";
 import ChartTypeSelector from "./Components/ChartTypeSelector";
 import { Container, Row, Col } from "reactstrap";
 import { format } from "date-fns";
@@ -13,6 +14,8 @@ import { personEndpointUrl } from "./queries/socrataQueries";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import ColorSpinner from "../../Components/Spinner/ColorSpinner";
+
+Chart.register(ChartjsPluginStacked100);
 
 const url = `${personEndpointUrl}?$query=`;
 
@@ -292,7 +295,7 @@ const PeopleByDemographics = () => {
     <Container className="m-0 p-0">
       <Row>
         <Col>
-          <h2 className="text-left font-weight-bold">
+          <h2 className="fw-bold">
             By Demographics{" "}
             <InfoPopover config={popoverConfig.summary.demographics} />
           </h2>
@@ -320,12 +323,14 @@ const PeopleByDemographics = () => {
           />
           <Row>
             <Col>
-              <HorizontalBar
+              <Bar
                 redraw
                 data={chartData}
                 height={null}
                 width={null}
+                aria-label="Crash victim demographics by year with race, age, and sex filters"
                 options={{
+                  indexAxis: "y",
                   responsive: true,
                   aspectRatio: 1,
                   maintainAspectRatio: false,

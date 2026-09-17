@@ -49,6 +49,20 @@ npm run format           # Format all source files
 npm run format:check     # Check formatting without modifying files
 ```
 
+## Analytics (Umami)
+
+We use [Umami](https://umami.is) for privacy-focused analytics (no cookies). Infrastructure and dashboard access are documented in [tpw-umami-analytics](https://github.com/cityofaustin/tpw-umami-analytics).
+
+The tracker is loaded by `src/Components/UmamiAnalytics.jsx` when `VITE_UMAMI_WEBSITE_ID` is set. Configure these in Netlify environment variables (per deploy context):
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `VITE_UMAMI_WEBSITE_ID` | Yes | Website ID from the Umami dashboard |
+| `VITE_UMAMI_DOMAINS` | No | Comma-separated allowed domains (e.g. `visionzero.austin.gov` for production). Omit on staging so deploy previews can track. |
+| `VITE_UMAMI_TAG` | No | Tag like `staging` or `production` |
+
+Local `npm run dev` does not load the tracker unless you set these in `.env.local`.
+
 ## Deployment
 
 Production and staging instances are deployed on Netlify automatically whenever commits are merged to production or main, respectively.

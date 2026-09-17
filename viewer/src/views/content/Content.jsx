@@ -1,7 +1,6 @@
 import React from "react";
-import { usePath } from "hookrouter";
-import { useTrackedRoutes } from "../../constants/nav";
-import { routes } from "../../routes/routes";
+import { useLocation, Routes, Route } from "react-router-dom";
+import { routeConfig } from "../../routes/routes";
 import Header from "../nav/Header";
 import Footer from "../nav/Footer";
 import NotFound from "../NotFound/NotFound";
@@ -11,8 +10,8 @@ import styled from "styled-components";
 import { responsive } from "../../constants/responsive";
 
 const Content = () => {
-  const routeResult = useTrackedRoutes(routes);
-  const currentPath = usePath();
+  const location = useLocation();
+  const currentPath = location.pathname;
   const isMapPath = currentPath === "/map";
   const isMeasuresPath = currentPath === "/measures";
 
@@ -60,7 +59,12 @@ const Content = () => {
       <StyledContent>
         {/* Remove padding from all content */}
         <Container fluid className="content px-0">
-          {routeResult || <NotFound />}
+          <Routes>
+            {routeConfig.map((route, index) => (
+              <Route key={index} path={route.path} element={route.element} />
+            ))}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
           {!isMapPath && !isMeasuresPath && <Footer />}
         </Container>
       </StyledContent>

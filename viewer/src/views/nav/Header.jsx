@@ -1,6 +1,6 @@
 import React from "react";
 import { StoreContext } from "src/constants/context";
-import { A, usePath } from "hookrouter";
+import { Link, useLocation } from "react-router-dom";
 
 import { Container, Navbar, Button, Nav, NavItem, NavLink } from "reactstrap";
 import styled from "styled-components";
@@ -11,7 +11,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
-  const currentPath = usePath();
+  const location = useLocation();
+  const currentPath = location.pathname;
   const isSummaryView = currentPath === "/";
 
   const StyledNavbar = styled.div`
@@ -107,20 +108,20 @@ const Header = () => {
             // In Summary view, match padding and margins of Summary content below
             className={`${
               isSummaryView
-                ? "px-xs-0 mx-xs-0 pl-md-2 pr-md-1 px-lg-3 mx-lg-4"
-                : "px-0"
+                ? "px-xs-0 mx-xs-0 ps-md-2 pe-md-1 px-lg-3 mx-lg-4 d-flex justify-content-between"
+                : "px-0 d-flex justify-content-between"
             }`}
           >
             <Button
-              className="ml-3 sidedrawer-toggle"
+              className="ms-3 sidedrawer-toggle"
               color="dark"
               onClick={() => setIsOpen(!isOpen)}
             >
-              <span className="sr-only">Menu Button</span>
+              <span className="visually-hidden">Menu Button</span>
               <FontAwesomeIcon icon={faBars} />
             </Button>
             <div className="vz-logo-wrapper">
-              <h1 className="sr-only">
+              <h1 className="visually-hidden">
                 Vision Zero -- Help Austin reach zero traffic deaths
               </h1>
               <img
@@ -131,7 +132,7 @@ const Header = () => {
               ></img>
             </div>
             <Nav
-              className={`navbar-links ml-auto ${
+              className={`navbar-links ms-auto ${
                 isSummaryView ? "px-lg-3" : "px-3"
               }`}
               navbar
@@ -141,16 +142,16 @@ const Header = () => {
                   currentPath !== config.url && (
                     <NavItem key={i}>
                       <NavLink
-                        tag={A}
-                        href={config.url}
-                        className="pr-0 pl-2 mr-0 ml-2 "
+                        tag={Link}
+                        to={config.url}
+                        className="pe-0 ps-2 me-0 ms-2 "
                         style={{ color: "#fff" }}
                       >
                         <span
                           className={`btn nav-button inactive-nav-button mx-xs-0 mx-lg-2`}
                         >
                           {config.icon}
-                          <span className="pl-2">{config.title}</span>
+                          <span className="ps-2">{config.title}</span>
                         </span>
                       </NavLink>
                     </NavItem>

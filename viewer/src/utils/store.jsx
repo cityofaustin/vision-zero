@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer } from "react";
-import { mapStartDate, mapEndDate } from "../constants/time";
+import { dataStartDate, dataEndDate } from "../constants/time";
 import { useIsTablet } from "../constants/responsive";
 import { mapFilterReducer } from "src/constants/map";
 import { StoreContext } from "src/constants/context";
@@ -12,8 +12,8 @@ export default function StoreProvider({ children }) {
     injury: true,
   });
   const [mapDateRange, setMapDateRange] = useState({
-    start: mapStartDate,
-    end: mapEndDate,
+    start: dataStartDate,
+    end: dataEndDate,
   });
   const [mapTimeWindow, setMapTimeWindow] = useState("");
   const [mapOverlay, setMapOverlay] = useState({
