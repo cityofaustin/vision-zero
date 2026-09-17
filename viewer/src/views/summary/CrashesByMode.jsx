@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
@@ -24,162 +24,179 @@ import {
   summaryCurrentYearEndDate,
 } from "../../constants/time";
 import { crashEndpointUrl } from "./queries/socrataQueries";
+import { CRASH_TYPES } from "../../constants/crashTypes";
 import ColorSpinner from "../../Components/Spinner/ColorSpinner";
 
-const CrashesByMode = () => {
-  const chartColors = [
-    colors.viridis1Of6Highest,
-    colors.viridis2Of6,
-    colors.viridis3Of6,
-    colors.viridis4Of6,
-    colors.viridis5Of6,
-    colors.viridis6Of6Lowest,
-  ];
+const chartColorsBase = [
+  colors.viridis1Of6Highest,
+  colors.viridis2Of6,
+  colors.viridis3Of6,
+  colors.viridis4Of6,
+  colors.viridis5Of6,
+  colors.viridis6Of6Lowest,
+];
 
+const modes = [
+  {
+    label: "Motorist",
+    icon: faCar,
+    fields: {
+      fatal: "motor_vehicle_death_count",
+      injury: "motor_vehicle_serious_injury_count",
+    },
+  },
+  {
+    label: "Pedestrian",
+    icon: faWalking,
+    fields: {
+      fatal: "pedestrian_death_count",
+      injury: "pedestrian_serious_injury_count",
+    },
+  },
+  {
+    label: "Motorcyclist",
+    icon: faMotorcycle,
+    fields: {
+      fatal: "motorcycle_death_count",
+      injury: "motorcycle_serious_injury_count",
+    },
+  },
+  {
+    label: "Bicyclist",
+    icon: faBiking,
+    fields: {
+      fatal: "bicycle_death_count",
+      injury: "bicycle_serious_injury_count",
+    },
+  },
+  {
+    label: "E-Scooter Rider",
+    icon: faMobileAlt,
+    fields: {
+      fatal: "micromobility_death_count",
+      injury: "micromobility_serious_injury_count",
+    },
+  },
+  {
+    label: "Other",
+    icon: faEllipsisH,
+    fields: {
+      fatal: "other_death_count",
+      injury: "other_serious_injury_count",
+    },
+  },
+];
+
+const getModeData = (fields, chartData, crashType) =>
+  yearsArray.map((year) => {
+    return chartData[year].reduce((accumulator, record) => {
+      const isFatalQuery =
+        crashType.name === "fatalities" ||
+        crashType.name === "fatalitiesAndSeriousInjuries";
+      const isInjuryQuery =
+        crashType.name === "seriousInjuries" ||
+        crashType.name === "fatalitiesAndSeriousInjuries";
+
+      accumulator += isFatalQuery && parseInt(record[fields.fatal]);
+      accumulator += isInjuryQuery && parseInt(record[fields.injury]);
+
+      return accumulator;
+    }, 0);
+  });
+
+const sortAndColorModeData = (modeData, chartColors) => {
+  modeData.forEach((category, i) => {
+    const color = chartColors[i];
+    category.backgroundColor = color;
+    category.borderColor = color;
+    category.hoverBackgroundColor = color;
+    category.hoverBorderColor = color;
+  });
+  return modeData;
+};
+
+const CrashesByMode = () => {
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
-  const [legendColors, setLegendColors] = useState([...chartColors]);
+  const [legendColors, setLegendColors] = useState([...chartColorsBase]);
 
   const chartRef = useRef();
 
-  const modes = [
-    {
-      label: "Motorist",
-      icon: faCar,
-      fields: {
-        fatal: `motor_vehicle_death_count`,
-        injury: `motor_vehicle_serious_injury_count`,
-      },
-    },
-    {
-      label: "Pedestrian",
-      icon: faWalking,
-      fields: {
-        fatal: `pedestrian_death_count`,
-        injury: `pedestrian_serious_injury_count`,
-      },
-    },
-    {
-      label: "Motorcyclist",
-      icon: faMotorcycle,
-      fields: {
-        fatal: `motorcycle_death_count`,
-        injury: `motorcycle_serious_injury_count`,
-      },
-    },
-    {
-      label: "Bicyclist",
-      icon: faBiking,
-      fields: {
-        fatal: `bicycle_death_count`,
-        injury: `bicycle_serious_injury_count`,
-      },
-    },
-    {
-      label: "E-Scooter Rider",
-      icon: faMobileAlt,
-      fields: {
-        fatal: `micromobility_death_count`,
-        injury: `micromobility_serious_injury_count`,
-      },
-    },
-    {
-      label: "Other",
-      icon: faEllipsisH,
-      fields: {
-        fatal: `other_death_count`,
-        injury: `other_serious_injury_count`,
-      },
-    },
-  ];
-
-  // Fetch data and set in state by years in yearsArray
+  // Fetch data once — covers every crash type (fatalities and serious
+  // injuries are subsets), so switching tabs never re-fetches, it just
+  // re-aggregates the same records client-side in getModeData below
   useEffect(() => {
-    // Wait for crashType to be passed up from setCrashType component
-    if (crashType.queryStringPerson) {
-      const getChartData = async () => {
-        let newData = {};
-        // Use Promise.all to let all requests resolve before setting chart data by year
-        await Promise.all(
-          yearsArray.map(async (year) => {
-            // If getting data for current year (only including years past January), set end of query to last day of previous month,
-            // else if getting data for previous years, set end of query to last day of year
-            let endDate =
-              year.toString() === format(dataEndDate, "yyyy")
-                ? `${summaryCurrentYearEndDate}T23:59:59`
-                : `${year}-12-31T23:59:59`;
-            let url = `${crashEndpointUrl}?$where=${crashType.queryStringCrash} AND crash_timestamp_ct between '${year}-01-01T00:00:00' and '${endDate}'`;
-            await axios.get(url).then((res) => {
-              newData = { ...newData, ...{ [year]: res.data } };
-            });
-            return null;
-          }),
-        );
+    const controller = new AbortController();
+    let ignore = false;
+
+    const getChartData = async () => {
+      const firstYear = yearsArray[0];
+      const lastYear = yearsArray[yearsArray.length - 1];
+      const endDate =
+        lastYear.toString() === format(dataEndDate, "yyyy")
+          ? `${summaryCurrentYearEndDate}T23:59:59`
+          : `${lastYear}-12-31T23:59:59`;
+
+      const url = `${crashEndpointUrl}?$limit=999999&$where=${CRASH_TYPES.fatalitiesAndSeriousInjuries.queryStringCrash} AND crash_timestamp_ct between '${firstYear}-01-01T00:00:00' and '${endDate}'`;
+
+      try {
+        const res = await axios.get(url, { signal: controller.signal });
+        if (ignore) return; // stale response, drop it
+
+        const newData = Object.fromEntries(yearsArray.map((y) => [y, []]));
+        res.data.forEach((record) => {
+          const year = new Date(record.crash_timestamp_ct).getFullYear();
+          if (newData[year]) newData[year].push(record);
+        });
         setChartData(newData);
-      };
-      getChartData();
+      } catch (err) {
+        if (!ignore && !axios.isCancel(err)) console.error(err);
+      }
+    };
+
+    getChartData();
+
+    return () => {
+      ignore = true;
+      controller.abort();
+    };
+  }, []);
+
+  // Builds the full chart-ready object: { labels, datasets }
+  const data = useMemo(() => {
+    const labels = yearsArray.map((year) => `${year}`);
+
+    if (!chartData) {
+      return { labels, datasets: false };
     }
-  }, [crashType]);
 
-  const createChartLabels = () => yearsArray.map((year) => `${year}`);
-
-  // Tabulate fatalities/injuries by mode fields in data
-  const getModeData = (fields) =>
-    yearsArray.map((year) => {
-      return chartData[year].reduce((accumulator, record) => {
-        const isFatalQuery =
-          crashType.name === "fatalities" ||
-          crashType.name === "fatalitiesAndSeriousInjuries";
-        const isInjuryQuery =
-          crashType.name === "seriousInjuries" ||
-          crashType.name === "fatalitiesAndSeriousInjuries";
-
-        accumulator += isFatalQuery && parseInt(record[fields.fatal]);
-        accumulator += isInjuryQuery && parseInt(record[fields.injury]);
-
-        return accumulator;
-      }, 0);
-    });
-
-  // Sort mode order in stack and apply colors by averaging total mode fatalities across all years in chart
-  const sortAndColorModeData = (modeData) => {
-    modeData.forEach((category, i) => {
-      const color = chartColors[i];
-      category.backgroundColor = color;
-      category.borderColor = color;
-      category.hoverBackgroundColor = color;
-      category.hoverBorderColor = color;
-    });
-    return modeData;
-  };
-
-  // Create dataset for each mode type, data property is an array of fatality sums sorted chronologically
-  const createTypeDatasets = () => {
     const modeData = modes.map((mode) => ({
       borderWidth: 2,
       label: mode.label,
       icon: mode.icon,
-      data: getModeData(mode.fields),
+      data: getModeData(mode.fields, chartData, crashType),
     }));
-    // Determine order of modes in each year stack and color appropriately
-    return sortAndColorModeData(modeData);
-  };
 
-  const data = {
-    labels: createChartLabels(),
-    datasets: !!chartData && createTypeDatasets(),
-  };
+    return {
+      labels,
+      datasets: sortAndColorModeData(modeData, chartColorsBase),
+    };
+  }, [chartData, crashType]);
+
+  const { datasets } = data;
 
   // Get an array of annual totals for the selected crash type
-  const yearTotalsArray = yearsArray.map((_year, index) => {
-    let currentYearTotal = 0;
-    if (data.datasets) {
-      data.datasets.forEach((mode) => {
-        currentYearTotal += mode.data[index];
-      });
-    }
-    return currentYearTotal;
-  });
+  const yearTotalsArray = useMemo(() => {
+    return yearsArray.map((year, index) => {
+      let currentYearTotal = 0;
+      if (datasets) {
+        datasets.forEach((mode) => {
+          currentYearTotal += mode.data[index];
+        });
+      }
+      return currentYearTotal;
+    });
+  }, [datasets]);
 
   const StyledDiv = styled.div`
     .year-total-div {
@@ -262,8 +279,9 @@ const CrashesByMode = () => {
                           if (legendColorsClone[datasetIndex] !== "dimgray") {
                             legendColorsClone[datasetIndex] = "dimgray";
                           } else {
-                            legendColorsClone[datasetIndex] =
-                              chartColors[datasetIndex];
+                            legendColorsClone[datasetIndex] = legendColorsClone[
+                              datasetIndex
+                            ] = chartColorsBase[datasetIndex];
                           }
                           setLegendColors(legendColorsClone);
                         }
