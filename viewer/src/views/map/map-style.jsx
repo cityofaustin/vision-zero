@@ -1,5 +1,5 @@
 import React from "react";
-import { Source, Layer } from "react-map-gl";
+import { Source, Layer } from "react-map-gl/mapbox";
 import { colors } from "../../constants/colors";
 
 // Empty source and layer placeholder to place other layers beneath road labels

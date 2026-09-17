@@ -1,3 +1,4 @@
+
 import React, {
   useState,
   useEffect,
@@ -6,7 +7,7 @@ import React, {
   useMemo,
 } from "react";
 import { StoreContext } from "src/constants/context";
-import Map, { Source, Layer } from "react-map-gl";
+import Map, { Source, Layer } from "react-map-gl/mapbox";
 import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
 import MapCompassSpinner from "./MapCompassSpinner";
@@ -28,8 +29,6 @@ import {
 } from "./map-style";
 import axios from "axios";
 import { useIsTablet } from "../../constants/responsive";
-// import AnimatedIcon from "./AnimatedIcon";
-
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapInfoBox from "./InfoBox/MapInfoBox";
@@ -375,17 +374,7 @@ const MapComponent = () => {
       return null;
     }
 
-    return (
-      <Source id="selectedCrash" type="geojson" data={selectedFeature}>
-        {/* <AnimatedIcon
-          location={{
-            x: parseFloat(selectedFeature.properties.longitude),
-            y: parseFloat(selectedFeature.properties.latitude),
-          }}
-          paint={color}
-        /> */}
-      </Source>
-    );
+    return <Source id="selectedCrash" type="geojson" data={selectedFeature} />;
   };
 
   // Show/hide type layers
