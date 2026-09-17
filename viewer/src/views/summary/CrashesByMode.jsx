@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { Container, Row, Col } from "reactstrap";
@@ -26,7 +26,6 @@ import {
 import { crashEndpointUrl } from "./queries/socrataQueries";
 import { CRASH_TYPES } from "../../constants/crashTypes";
 import ColorSpinner from "../../Components/Spinner/ColorSpinner";
-
 
 const chartColorsBase = [
   colors.viridis1Of6Highest,
@@ -88,7 +87,6 @@ const modes = [
   },
 ];
 
-
 const getModeData = (fields, chartData, crashType) =>
   yearsArray.map((year) => {
     return chartData[year].reduce((accumulator, record) => {
@@ -105,7 +103,6 @@ const getModeData = (fields, chartData, crashType) =>
       return accumulator;
     }, 0);
   });
-
 
 const sortAndColorModeData = (modeData, chartColors) => {
   modeData.forEach((category, i) => {
