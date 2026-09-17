@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { mapRequestFields } from "../summary/queries/socrataQueries";
 import { format, isValid } from "date-fns";
 
@@ -65,27 +64,6 @@ export const createMapDataUrl = (
         `${filters.length > 0 ? " AND" : ""} ${whereFilterString || ""}` +
         `${mapTimeWindow}`;
 };
-
-/**
- * Listen for a Mapbox map event name, invoke a callback, and clean up
- * @param {String} eventName - name of Mapbox map event
- * @param {Function} callback - function to call when event is triggered
- * @param {Object} mapRef - React ref to Mapbox map
- */
-export function useMapEventHandler(eventName, callback, mapRef) {
-  useEffect(() => {
-    if (!mapRef.current) return;
-
-    const currentMapRef = mapRef.current.getMap();
-    const mapDataListener = currentMapRef.on(eventName, function () {
-      callback();
-    });
-
-    return () => {
-      currentMapRef.off(eventName, mapDataListener);
-    };
-  }, [eventName, callback, mapRef]);
-}
 
 // Draw styles adapted from '@mapbox/mapbox-gl-draw/src/lib/theme.js';
 const blue = "#3bb2d0";
