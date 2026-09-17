@@ -1,5 +1,4 @@
--- Most recent migration: database/migrations/default/1789408261445_upddate_comp_cost_crash_injury_view/up.sql
-
+-- set unknown est comp cost back to 20000
 CREATE OR REPLACE VIEW crash_injury_metrics_view AS
 SELECT
     crashes.id,
@@ -83,10 +82,10 @@ SELECT
         SUM(person_injury_metrics_view.years_of_life_lost), 0::bigint
     )                                                                        AS years_of_life_lost,
     COALESCE(
-        MAX(person_injury_metrics_view.est_comp_cost_crash_based), 25000
+        MAX(person_injury_metrics_view.est_comp_cost_crash_based), 20000
     )                                                                        AS est_comp_cost_crash_based,
     COALESCE(
-        SUM(person_injury_metrics_view.est_comp_cost_crash_based), 25000::bigint
+        SUM(person_injury_metrics_view.est_comp_cost_crash_based), 20000::bigint
     )                                                                        AS est_total_person_comp_cost
 FROM crashes crashes
 LEFT JOIN person_injury_metrics_view ON crashes.id = person_injury_metrics_view.crash_pk

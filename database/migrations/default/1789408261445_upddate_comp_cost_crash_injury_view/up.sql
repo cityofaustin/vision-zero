@@ -1,5 +1,4 @@
--- Most recent migration: database/migrations/default/1789408261445_upddate_comp_cost_crash_injury_view/up.sql
-
+-- update default comp cost fallback values to 25,000
 CREATE OR REPLACE VIEW crash_injury_metrics_view AS
 SELECT
     crashes.id,
