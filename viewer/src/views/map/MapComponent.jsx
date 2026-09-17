@@ -58,6 +58,7 @@ const MapComponent = () => {
   const [isMapDataLoading, setIsMapDataLoading] = useState(false);
   const [crashCounts, setCrashCounts] = useState(null);
   const [, setPointData] = useState(null);
+  const [isDrawingPolygon, setIsDrawingPolygon] = useState(false);
 
   const {
     mapFilters: [filters],
@@ -254,13 +255,14 @@ const MapComponent = () => {
 
   // Set interactive layer IDs
   const interactiveLayerIds = useMemo(() => {
+    if (isDrawingPolygon) return [];
     const layers = [
       isMapTypeSet.fatal && "fatalities",
       isMapTypeSet.injury && "seriousInjuries",
       cityCouncilOverlay && overlay.name === "cityCouncil" && "cityCouncil",
     ];
     return layers.filter((id) => !!id);
-  }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
+  }, [isMapTypeSet, cityCouncilOverlay, overlay.name, isDrawingPolygon]);
 
   // Event handler for selecting crash points
   const onClick = useCallback((event) => {
@@ -503,7 +505,10 @@ const MapComponent = () => {
       )}
       <MapCompassSpinner isSpinning={isMapDataLoading} />
       <MapControls setViewport={setViewState} />
-      <MapPolygonFilter setMapPolygon={setMapPolygon} />
+      <MapPolygonFilter
+        setMapPolygon={setMapPolygon}
+        setIsDrawingPolygon={setIsDrawingPolygon}
+      />
       <MapGeocoder handleViewportChange={onMove} />
     </Map>
   );

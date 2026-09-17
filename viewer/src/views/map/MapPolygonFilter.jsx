@@ -5,7 +5,7 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import { stringify as stringifyGeoJSON } from "wellknown";
 import { mapboxDrawStyles } from "./helpers";
 
-const MapPolygonFilter = ({ setMapPolygon }) => {
+const MapPolygonFilter = ({ setMapPolygon, setIsDrawingPolygon }) => {
   const { current: map } = useMap();
   const drawRef = useRef(null);
   const isMounted = useRef(true);
@@ -128,6 +128,10 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
       };
 
       const handleModeChange = ({ mode }) => {
+        if (isMounted.current) {
+          setIsDrawingPolygon(mode !== "simple_select");
+        }
+
         // when mode is simple select, if polygon exists prevent drawing
         if (mode === "simple_select") {
           const data = draw.getAll();
@@ -163,7 +167,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
       console.error("Failed to initialize draw control:", error);
       return cleanupDraw;
     }
-  }, [map, cleanupDraw, setMapPolygon]);
+  }, [map, cleanupDraw, setMapPolygon, setIsDrawingPolygon]);
 
   return <></>;
 };
