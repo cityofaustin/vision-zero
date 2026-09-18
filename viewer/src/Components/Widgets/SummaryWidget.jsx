@@ -20,14 +20,7 @@ const numberWithCommas = (x) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
-const SummaryWidget = ({
-  totalsObject,
-  text,
-  icon,
-  backgroundColor,
-  infoPopover,
-}) => {
-  const StyledWidgetCard = styled(Card)`
+const StyledWidgetCard = styled(Card)`
     height: 100%;
     flex-grow: 1;
 
@@ -63,6 +56,13 @@ const SummaryWidget = ({
     }
   `;
 
+const SummaryWidget = ({
+  totalsObject,
+  text,
+  icon,
+  backgroundColor,
+  infoPopover,
+}) => {
   const renderFooterBasedOnChange = (currentYearTotal, lastYearTotal) => {
     const icon =
       (currentYearTotal > lastYearTotal && faCaretUp) ||
