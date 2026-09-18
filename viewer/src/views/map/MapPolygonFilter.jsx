@@ -1,5 +1,4 @@
 import React, { useRef, useCallback, useEffect, useState } from "react";
-import styled from "styled-components";
 import { useMap, Source, Layer } from "react-map-gl/mapbox";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -9,6 +8,8 @@ import {
   selectedPolygonDataLayer,
   selectedPolygonOutlineDataLayer,
 } from "./map-style";
+import PolygonIcon from "../../assets/icons/polygon.svg?react";
+import TrashIcon from "../../assets/icons/trash.svg?react";
 
 // mapbox-gl-draw's touch handling calls preventDefault() on every tap on
 // the map for as long as its control is attached (regardless of mode),
@@ -16,26 +17,6 @@ import {
 // on. To avoid breaking popups on touch devices, the control is only
 // attached to the map while the user is actively drawing a polygon, and
 // removed again the moment drawing finishes or is cancelled.
-const StyledPolygonControl = styled.div`
-  position: absolute;
-  top: 136px;
-  right: 30px;
-
-  button {
-    display: block;
-    background: #fff;
-    border: none;
-    border-radius: 4px;
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-    padding: 6px 10px;
-    font-size: 12px;
-    cursor: pointer;
-
-    &:hover {
-      background: #f2f2f2;
-    }
-  }
-`;
 
 const MapPolygonFilter = ({ setMapPolygon }) => {
   const { current: map } = useMap();
@@ -193,8 +174,14 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
     if (!draw) return;
 
     try {
+      // draw_polygon's onStop (run by changeMode) tries to salvage the
+      // in-progress shape into a finished polygon if it already has
+      // enough vertices to be valid, firing draw.create instead of
+      // discarding it. trash() runs draw_polygon's onTrash instead, which
+      // unconditionally deletes the in-progress feature before switching
+      // modes - a true cancel regardless of vertex count.
       // Triggers draw.modechange -> detachDraw()
-      draw.changeMode("simple_select");
+      draw.trash();
     } catch (error) {
       console.debug("Cancel draw error:", error);
       detachDraw();
@@ -218,33 +205,31 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
           <Layer {...selectedPolygonOutlineDataLayer} />
         </Source>
       )}
-      <StyledPolygonControl>
+      <div className="polygon-filter-control mapboxgl-ctrl mapboxgl-ctrl-group">
         {isDrawing ? (
           <button
             type="button"
             aria-label="Cancel drawing polygon filter"
+            className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_trash"
             onClick={handleCancelDraw}
-          >
-            Cancel
-          </button>
+          />
         ) : drawnFeature ? (
           <button
+            className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_trash"
             type="button"
             aria-label="Clear polygon filter"
             onClick={handleClearPolygon}
-          >
-            Clear polygon
-          </button>
+          />
         ) : (
           <button
             type="button"
             aria-label="Draw polygon filter"
+            className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon"
+
             onClick={handleStartDraw}
-          >
-            Draw polygon
-          </button>
+          />
         )}
-      </StyledPolygonControl>
+      </div>
     </>
   );
 };
