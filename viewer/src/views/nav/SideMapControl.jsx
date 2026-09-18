@@ -10,6 +10,7 @@ import { colors } from "../../constants/colors";
 import { createModeFilterString } from "src/constants/map";
 import { Button, Card, Label, Row, Col } from "reactstrap";
 import styled from "styled-components";
+import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faWalking,
@@ -44,21 +45,6 @@ const StyledCard = styled.div`
     background: ${colors.white};
   }
 
-  .filter-button {
-    min-width: 38px;
-  }
-
-  .type-button {
-    font-size: ${typeFilterTextSize}px;
-    color: ${colors.dark};
-    background: ${colors.buttonBackground};
-    border-style: none;
-    border-radius: 18px;
-    opacity: 1;
-    margin-right: 2px;
-    padding-right: 6px !important;
-    height: 33px;
-  }
   [class^="DateInput_"] {
     text-align: center;
   }
@@ -127,7 +113,7 @@ const SideMapControl = ({ type }) => {
     () => ({
       type: {
         shared: {
-          eachClass: `type-button`,
+          eachClass: `chart-toggle-button`,
           uiType: "button",
           title: "Injury type",
         },
@@ -337,23 +323,23 @@ const SideMapControl = ({ type }) => {
                         <Button
                           key={name}
                           id={name}
-                          color="dark"
-                          className={`p-1 filter-button ${eachClassName}`}
+                          type="button"
+                          color="light"
+                          className={classnames(
+                            {
+                              active: parameter.isSelected
+                                ? parameter.isSelected
+                                : isFilterSet(name),
+                            },
+                            "p-1",
+                            eachClassName,
+                          )}
                           onClick={
                             parameter.handler
                               ? parameter.handler
                               : (event) => handleFilterClick(event, group)
                           }
-                          active={
-                            parameter.isSelected
-                              ? parameter.isSelected
-                              : isFilterSet(name)
-                          }
-                          outline={
-                            parameter.isSelected
-                              ? !parameter.isSelected
-                              : !isFilterSet(name)
-                          }
+                          style={{ fontSize: typeFilterTextSize }}
                         >
                           {parameter.icon && (
                             <FontAwesomeIcon
