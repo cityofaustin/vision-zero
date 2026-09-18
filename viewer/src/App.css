@@ -40,6 +40,10 @@ div.Tooltip-module_tooltip__omIxd {
   min-height: 33px;
 }
 
+.btn.chart-toggle-button:last-child {
+  margin-right: 0;
+}
+
 .btn.chart-toggle-button.active {
   color: #fff;
   /* this is the bootstrap secondary + active color */
