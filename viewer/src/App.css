@@ -49,3 +49,9 @@ div.Tooltip-module_tooltip__omIxd {
   /* this is the bootstrap secondary + active color */
   background-color: #565e64;
 }
+
+.polygon-filter-control {
+  position: absolute;
+  top: 126px;
+  right: 10px;
+}
