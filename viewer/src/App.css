@@ -25,7 +25,27 @@ div.Tooltip-module_tooltip__omIxd {
   background: rgb(54, 51, 51);
 }
 
-.mapbox-gl-draw_polygon.disabled{
+.mapbox-gl-draw_polygon.disabled {
   filter: opacity(0.3) drop-shadow(0 0 0 #fff);
   pointer-events: none;
+}
+
+.btn.chart-toggle-button {
+  font-size: 14px;
+  border-style: none;
+  border-radius: 18px;
+  opacity: 1;
+  margin-right: 5px;
+  min-width: 38px;
+  min-height: 33px;
+}
+
+.btn.chart-toggle-button:last-child {
+  margin-right: 0;
+}
+
+.btn.chart-toggle-button.active {
+  color: #fff;
+  /* this is the bootstrap secondary + active color */
+  background-color: #565e64;
 }

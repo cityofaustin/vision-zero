@@ -1,25 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "reactstrap";
 import { trackPageEvent } from "../../../constants/nav";
-import styled from "styled-components";
 import classnames from "classnames";
 import { colors } from "../../../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeartbeat, faMedkit } from "@fortawesome/free-solid-svg-icons";
 import { CRASH_TYPES } from "src/constants/crashTypes";
-
-// Set styles to override Bootstrap default styling
-const StyledButton = styled.div`
-  .crash-type {
-    font-size: 14px;
-    color: ${colors.dark};
-    background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
-    border-style: none;
-    border-radius: 18px;
-    opacity: 1;
-    margin-right: 2px;
-  }
-`;
 
 const fatalitiesIcon = (
   <FontAwesomeIcon
@@ -53,13 +39,14 @@ const CrashTypeSelector = ({ setCrashType, componentName }) => {
   }, [setCrashType, activeTab]);
 
   return (
-    <StyledButton>
+    <>
       <Button
         id={`${componentName}-all-btn`}
         type="button"
+        color="light"
         className={classnames(
           { active: activeTab.name === "fatalitiesAndSeriousInjuries" },
-          "crash-type",
+          "chart-toggle-button",
         )}
         onClick={() => {
           toggle(CRASH_TYPES.fatalitiesAndSeriousInjuries);
@@ -70,9 +57,10 @@ const CrashTypeSelector = ({ setCrashType, componentName }) => {
       <Button
         id={`${componentName}-fatalities-btn`}
         type="button"
+        color="light"
         className={classnames(
           { active: activeTab.name === "fatalities" },
-          "crash-type",
+          "chart-toggle-button",
         )}
         onClick={() => {
           toggle(CRASH_TYPES.fatalities);
@@ -84,9 +72,10 @@ const CrashTypeSelector = ({ setCrashType, componentName }) => {
       <Button
         id={`${componentName}-serious-injuries-btn`}
         type="button"
+        color="light"
         className={classnames(
           { active: activeTab.name === "seriousInjuries" },
-          "crash-type",
+          "chart-toggle-button",
         )}
         onClick={() => {
           toggle(CRASH_TYPES.seriousInjuries);
@@ -95,7 +84,7 @@ const CrashTypeSelector = ({ setCrashType, componentName }) => {
       >
         {seriousInjuriesIcon} Serious Injuries
       </Button>
-    </StyledButton>
+    </>
   );
 };
 
