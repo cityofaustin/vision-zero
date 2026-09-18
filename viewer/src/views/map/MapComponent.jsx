@@ -49,6 +49,9 @@ const MapComponent = () => {
   const isMounted = useRef(true);
   const isMapReady = useRef(false);
   const eventListenersRef = useRef([]);
+  // Read synchronously in onClick to suppress feature popups (e.g. council
+  // district) that would otherwise fire while the user is mid-polygon-draw.
+  const isDrawingPolygonRef = useRef(false);
 
   const isTablet = useIsTablet();
 
@@ -262,9 +265,14 @@ const MapComponent = () => {
     return layers.filter((id) => !!id);
   }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
 
+  const handleDrawingChange = useCallback((drawing) => {
+    isDrawingPolygonRef.current = drawing;
+  }, []);
+
   // Event handler for selecting crash points
   const onClick = useCallback((event) => {
-    if (!isMounted.current || !mapRef.current) return;
+    if (!isMounted.current || !mapRef.current || isDrawingPolygonRef.current)
+      return;
 
     if (
       event.srcEvent &&
@@ -503,7 +511,10 @@ const MapComponent = () => {
       )}
       <MapCompassSpinner isSpinning={isMapDataLoading} />
       <MapControls setViewport={setViewState} />
-      <MapPolygonFilter setMapPolygon={setMapPolygon} />
+      <MapPolygonFilter
+        setMapPolygon={setMapPolygon}
+        onDrawingChange={handleDrawingChange}
+      />
       <MapGeocoder handleViewportChange={onMove} />
     </Map>
   );

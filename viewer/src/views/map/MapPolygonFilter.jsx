@@ -8,8 +8,6 @@ import {
   selectedPolygonDataLayer,
   selectedPolygonOutlineDataLayer,
 } from "./map-style";
-import PolygonIcon from "../../assets/icons/polygon.svg?react";
-import TrashIcon from "../../assets/icons/trash.svg?react";
 
 // mapbox-gl-draw's touch handling calls preventDefault() on every tap on
 // the map for as long as its control is attached (regardless of mode),
@@ -18,7 +16,7 @@ import TrashIcon from "../../assets/icons/trash.svg?react";
 // attached to the map while the user is actively drawing a polygon, and
 // removed again the moment drawing finishes or is cancelled.
 
-const MapPolygonFilter = ({ setMapPolygon }) => {
+const MapPolygonFilter = ({ setMapPolygon, onDrawingChange }) => {
   const { current: map } = useMap();
   const drawRef = useRef(null);
   const isMounted = useRef(true);
@@ -26,6 +24,13 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawnFeature, setDrawnFeature] = useState(null);
+
+  // Let the parent map know when polygon drawing starts/stops so it can
+  // suppress other click-driven popups (e.g. crash/council district) that
+  // would otherwise pop up mid-draw.
+  useEffect(() => {
+    onDrawingChange?.(isDrawing);
+  }, [isDrawing, onDrawingChange]);
 
   // Detach the draw control from the map and reset its internal state.
   // Safe to call whether or not the control is currently attached.
