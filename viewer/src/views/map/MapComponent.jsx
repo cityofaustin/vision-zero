@@ -266,7 +266,21 @@ const MapComponent = () => {
   }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
 
   const handleDrawingChange = useCallback((drawing) => {
-    isDrawingPolygonRef.current = drawing;
+    if (drawing) {
+      isDrawingPolygonRef.current = true;
+      return;
+    }
+
+    // mapbox-gl-draw closes a polygon on "mouseup" (its own event
+    // delegation, not the browser's "click" event), which is what fires
+    // draw.modechange -> this callback. The browser's trailing "click"
+    // event for that same gesture - the one our onClick/popup logic below
+    // listens for - fires just after. Deferring the flag reset by a tick
+    // keeps clicks suppressed through that trailing click, while still
+    // clearing in time for the user's next real click.
+    setTimeout(() => {
+      isDrawingPolygonRef.current = false;
+    }, 0);
   }, []);
 
   // Event handler for selecting crash points
