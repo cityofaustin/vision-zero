@@ -1,9 +1,41 @@
-import React, { useRef, useCallback, useEffect } from "react";
-import { useMap } from "react-map-gl/mapbox";
+import React, { useRef, useCallback, useEffect, useState } from "react";
+import styled from "styled-components";
+import { useMap, Source, Layer } from "react-map-gl/mapbox";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import { stringify as stringifyGeoJSON } from "wellknown";
 import { mapboxDrawStyles } from "./helpers";
+import {
+  selectedPolygonDataLayer,
+  selectedPolygonOutlineDataLayer,
+} from "./map-style";
+
+// mapbox-gl-draw's touch handling calls preventDefault() on every tap on
+// the map for as long as its control is attached (regardless of mode),
+// which silently blocks the tap-to-click behavior the crash popups rely
+// on. To avoid breaking popups on touch devices, the control is only
+// attached to the map while the user is actively drawing a polygon, and
+// removed again the moment drawing finishes or is cancelled.
+const StyledPolygonControl = styled.div`
+  position: absolute;
+  top: 136px;
+  right: 30px;
+
+  button {
+    display: block;
+    background: #fff;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+
+    &:hover {
+      background: #f2f2f2;
+    }
+  }
+`;
 
 const MapPolygonFilter = ({ setMapPolygon }) => {
   const { current: map } = useMap();
@@ -11,11 +43,28 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
   const isMounted = useRef(true);
   const eventHandlersRef = useRef([]);
 
-  // Cleanup draw control
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [drawnFeature, setDrawnFeature] = useState(null);
+
+  // Detach the draw control from the map and reset its internal state.
+  // Safe to call whether or not the control is currently attached.
+  const detachDraw = useCallback(() => {
+    const draw = drawRef.current;
+    if (!draw || !map || map._removed) return;
+    try {
+      draw.deleteAll();
+      if (map.hasControl(draw)) {
+        map.removeControl(draw);
+      }
+    } catch (error) {
+      console.debug("Draw detach error:", error.message);
+    }
+  }, [map]);
+
+  // Cleanup draw control and its listeners
   const cleanupDraw = useCallback(() => {
-    if (drawRef.current && map && !map._removed) {
+    if (map && !map._removed) {
       try {
-        // Remove event listeners
         eventHandlersRef.current.forEach(({ event, handler }) => {
           try {
             map.off(event, handler);
@@ -25,8 +74,7 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
         });
         eventHandlersRef.current = [];
 
-        // Remove control
-        if (map.hasControl(drawRef.current)) {
+        if (drawRef.current && map.hasControl(drawRef.current)) {
           map.removeControl(drawRef.current);
         }
       } catch (error) {
@@ -46,116 +94,76 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
     };
   }, [cleanupDraw]);
 
-  // Initialize draw control
+  // Initialize draw control (not yet attached to the map) and listeners
   useEffect(() => {
-    // Check if map is ready and component is mounted
     if (!map || map._removed || !isMounted.current) {
       console.debug("Map not ready for DrawControl");
       return;
     }
 
-    // Clean up any existing draw instance
     cleanupDraw();
 
     try {
-      // Create draw control with custom styles
       const draw = new MapboxDraw({
+        // No built-in toolbar - custom buttons below drive the control,
+        // so it can be added/removed from the map on demand.
         displayControlsDefault: false,
-        controls: {
-          polygon: true,
-          trash: true,
-        },
+        controls: {},
         defaultMode: "simple_select",
         styles: mapboxDrawStyles,
       });
-
-      // Add draw control to map
-      map.addControl(draw, "top-right");
       drawRef.current = draw;
 
-      // Set up event listeners
-      const handleUpdate = (event) => {
-        if (!isMounted.current || !drawRef.current) return;
+      const handleCreate = (event) => {
+        if (!isMounted.current) return;
 
         try {
-          const editType = event.type;
+          const feature = event.features && event.features[0];
           if (
-            (editType === "draw.create" || editType === "draw.update") &&
-            event.features.length > 0
+            feature &&
+            feature.geometry &&
+            feature.geometry.type === "Polygon"
           ) {
-            const feature = event.features[0];
-            if (
-              feature &&
-              feature.geometry &&
-              feature.geometry.type === "Polygon"
-            ) {
-              try {
-                const wkt = stringifyGeoJSON(feature);
-                if (isMounted.current) {
-                  setMapPolygon(wkt);
-                  if (editType === "draw.create") {
-                    // Switch back to simple_select mode after drawing
-                    draw.changeMode("simple_select", {
-                      featureIds: [feature.id],
-                    });
-                  }
-                }
-              } catch (error) {
-                console.error("Failed to stringify polygon:", error);
-              }
-            }
+            const wkt = stringifyGeoJSON(feature);
+            setMapPolygon(wkt);
+            setDrawnFeature(feature);
           }
         } catch (error) {
-          console.debug("Draw update error:", error);
+          console.error("Failed to process drawn polygon:", error);
         }
-      };
 
-      const handleDelete = () => {
-        if (!isMounted.current || !drawRef.current) return;
-
+        // Returning to simple_select fires draw.modechange, which detaches
+        // the control below - keeping the "leave idle -> detach" logic in
+        // one place regardless of how drawing ends.
         try {
-          const polygonBtn = document.querySelector(".mapbox-gl-draw_polygon");
-          const allFeatures = draw.getAll().features;
-          if (allFeatures.length === 0 && isMounted.current) {
-            setMapPolygon(null);
-            if (polygonBtn) {
-              polygonBtn.classList.toggle("disabled", false);
-            }
-          }
+          draw.changeMode("simple_select");
         } catch (error) {
-          console.debug("Draw delete error:", error);
+          console.debug("Draw mode change error:", error);
         }
       };
 
       const handleModeChange = ({ mode }) => {
-        // when mode is simple select, if polygon exists prevent drawing
+        if (!isMounted.current) return;
+
+        // Covers our own "cancel" button as well as mapbox-gl-draw's own
+        // internal cancellation (e.g. the Escape key), so the control
+        // never stays attached once drawing stops.
         if (mode === "simple_select") {
-          const data = draw.getAll();
-          const hasPolygon = data.features.some(
-            (f) => f.geometry.type === "Polygon",
-          );
-          const polygonBtn = document.querySelector(".mapbox-gl-draw_polygon");
-          if (polygonBtn) {
-            polygonBtn.classList.toggle("disabled", hasPolygon);
-          }
+          setIsDrawing(false);
+          detachDraw();
+        } else {
+          setIsDrawing(true);
         }
       };
 
-      // Register event listeners
-      map.on("draw.create", handleUpdate);
-      map.on("draw.update", handleUpdate);
-      map.on("draw.delete", handleDelete);
+      map.on("draw.create", handleCreate);
       map.on("draw.modechange", handleModeChange);
 
-      // Store handlers for cleanup
       eventHandlersRef.current = [
-        { event: "draw.create", handler: handleUpdate },
-        { event: "draw.update", handler: handleUpdate },
-        { event: "draw.delete", handler: handleDelete },
+        { event: "draw.create", handler: handleCreate },
         { event: "draw.modechange", handler: handleModeChange },
       ];
 
-      // Cleanup
       return () => {
         cleanupDraw();
       };
@@ -163,9 +171,82 @@ const MapPolygonFilter = ({ setMapPolygon }) => {
       console.error("Failed to initialize draw control:", error);
       return cleanupDraw;
     }
-  }, [map, cleanupDraw, setMapPolygon]);
+  }, [map, cleanupDraw, detachDraw, setMapPolygon]);
 
-  return <></>;
+  const handleStartDraw = useCallback(() => {
+    const draw = drawRef.current;
+    if (!map || map._removed || !draw) return;
+
+    try {
+      if (!map.hasControl(draw)) {
+        map.addControl(draw, "top-right");
+      }
+      draw.changeMode("draw_polygon");
+      setIsDrawing(true);
+    } catch (error) {
+      console.debug("Start draw error:", error);
+    }
+  }, [map]);
+
+  const handleCancelDraw = useCallback(() => {
+    const draw = drawRef.current;
+    if (!draw) return;
+
+    try {
+      // Triggers draw.modechange -> detachDraw()
+      draw.changeMode("simple_select");
+    } catch (error) {
+      console.debug("Cancel draw error:", error);
+      detachDraw();
+      setIsDrawing(false);
+    }
+  }, [detachDraw]);
+
+  const handleClearPolygon = useCallback(() => {
+    detachDraw();
+    if (isMounted.current) {
+      setDrawnFeature(null);
+    }
+    setMapPolygon(null);
+  }, [detachDraw, setMapPolygon]);
+
+  return (
+    <>
+      {drawnFeature && (
+        <Source id="selectedPolygon" type="geojson" data={drawnFeature}>
+          <Layer {...selectedPolygonDataLayer} />
+          <Layer {...selectedPolygonOutlineDataLayer} />
+        </Source>
+      )}
+      <StyledPolygonControl>
+        {isDrawing ? (
+          <button
+            type="button"
+            aria-label="Cancel drawing polygon filter"
+            onClick={handleCancelDraw}
+          >
+            Cancel
+          </button>
+        ) : drawnFeature ? (
+          <button
+            type="button"
+            aria-label="Clear polygon filter"
+            onClick={handleClearPolygon}
+          >
+            Clear polygon
+          </button>
+        ) : (
+          <button
+            type="button"
+            aria-label="Draw polygon filter"
+            onClick={handleStartDraw}
+          >
+            Draw polygon
+          </button>
+        )}
+      </StyledPolygonControl>
+    </>
+  );
 };
 
 export default MapPolygonFilter;
