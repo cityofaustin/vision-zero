@@ -32,6 +32,7 @@ export const colors = {
   customAlert: "#eff6fb",
   info: "#18A2B8",
   infoDark: "#257A8B",
+  infoLight: "#eaf7f9",
   dark: "#1D2124",
   light: "#f0f3f5",
   white: "#ffffff",

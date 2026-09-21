@@ -2,27 +2,18 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { StoreContext } from "src/constants/context";
 import axios from "axios";
 import { format } from "date-fns";
-import styled from "styled-components";
 import { createMapDataUrl } from "../map/helpers";
 import { crashEndpointUrl } from "../summary/queries/socrataQueries";
-import { Button } from "reactstrap";
+import { Button, Card } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUndo } from "@fortawesome/free-solid-svg-icons";
 import { Bar, getElementAtEvent } from "react-chartjs-2";
 import { colors } from "../../constants/colors";
 
-const StyledButtonContainer = styled.div`
-  /* Mock a Bootstrap outline button */
-  border: 1px solid ${colors.dark};
-  border-radius: 4px;
-  padding: 10px;
-  color: ${colors.dark};
-`;
-
 export const SideMapTimeOfDayChart = ({ filters }) => {
   const chartRef = useRef();
 
-  const defaultBarColor = colors.dark;
+  const defaultBarColor = colors.viridis1Of6Highest;
   const inactiveBarColor = colors.white;
 
   const [chartData, setChartData] = useState(null);
@@ -162,8 +153,8 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   };
 
   return (
-    <StyledButtonContainer className="mt-3">
-      <h6>Crash time</h6>
+    <Card className="p-2 mb-3" style={{ backgroundColor: colors.light }}>
+      <h6 className="fw-bold">Crash time</h6>
       <span className="form-text">Click a time range to filter</span>
       {!!timeWindowData && !!timeWindowPercentages && (
         <Bar
@@ -213,7 +204,7 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
           Reset
         </Button>
       )}
-    </StyledButtonContainer>
+    </Card>
   );
 };
 

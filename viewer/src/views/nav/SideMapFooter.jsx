@@ -1,11 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 import logo from "./COA-Logo-Stacked-Faded-White-RGB.svg";
+import { colors } from "src/constants/colors";
 
 const FooterContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: ${colors.dark};
 `;
 
 const Logo = styled.img`
@@ -23,7 +25,7 @@ const DepartmentName = styled.div`
 const FeedbackLink = styled.a`
   margin-top: 10px;
   font-size: 14px;
-  color: white;
+  color: ${colors.dark};
   cursor: pointer;
   text-decoration: none;
 

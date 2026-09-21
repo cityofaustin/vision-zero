@@ -8,7 +8,7 @@ import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { colors } from "../../constants/colors";
 import { createModeFilterString } from "src/constants/map";
-import { Button, Card, Label, Row, Col } from "reactstrap";
+import { Button, Card, Row, Col } from "reactstrap";
 import styled from "styled-components";
 import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -33,7 +33,7 @@ const StyledCard = styled.div`
 
   .card-title {
     font-weight: bold;
-    color: ${colors.white};
+    color: ${colors.dark};
   }
 
   .section-title {
@@ -42,16 +42,11 @@ const StyledCard = styled.div`
   }
 
   .card-body {
-    background: ${colors.white};
+    background: ${colors.light};
   }
 
   [class^="DateInput_"] {
     text-align: center;
-  }
-
-  .outlined {
-    border: 1px solid ${colors.dark};
-    border-radius: 4px;
   }
 
   .dark-checkbox {
@@ -296,16 +291,15 @@ const SideMapControl = ({ type }) => {
         Traffic Crashes{" "}
         <InfoPopover config={popoverConfig.map.trafficCrashes} />
       </span>
-      <Card className="mt-2 p-3 card-body">
-        <Label className="section-title">
-          <span className="h5" style={{ display: "block" }}>
-            Filters
-          </span>
-        </Label>
+      <div className="mt-1 pt-2">
         {/* Create a button group for each group of mapFilters */}
         {Object.entries(mapFiltersConfig).map(([group, groupParameters]) => (
-          <div className="outlined p-2 mb-3 text-dark" key={`${group}-buttons`}>
-            <h6>{groupParameters.shared.title}</h6>
+          <Card
+            className="p-2 mb-3 text-dark card-body"
+            // style={{border: "none"}}
+            key={`${group}-buttons`}
+          >
+            <h6 className="fw-bold">{groupParameters.shared.title}</h6>
             <Row className="mx-0">
               {/* Create buttons for each filter within a group of mapFilters */}
               {Object.entries(groupParameters.each).map(([name, parameter]) => {
@@ -395,11 +389,11 @@ const SideMapControl = ({ type }) => {
                 }
               })}
             </Row>
-          </div>
+          </Card>
         ))}
         <SideMapControlDateRange type={type} />
         <SideMapTimeOfDayChart filters={mapOtherFilters.timeOfDay} />
-      </Card>
+      </div>
       <SideMapControlOverlays />
       <SideMapFooter />
     </StyledCard>

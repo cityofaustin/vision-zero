@@ -8,7 +8,7 @@ import { faCalendar, faUndo } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { parse, format } from "date-fns";
-import { Button } from "reactstrap";
+import { Button, Card } from "reactstrap";
 
 const minDate = new Date(2014, 0, 1);
 const DATE_FORMAT = "MM/dd/yyyy";
@@ -28,17 +28,6 @@ const StyledNativeDateInput = styled.input`
   background: transparent;
   width: 110px;
   font-size: 15px;
-`;
-
-const StyledButtonContainer = styled.div`
-  /* Mock a Bootstrap outline button */
-  border: 1px solid ${colors.dark};
-  min-height: 34px;
-  border-radius: 4px;
-  display: flex;
-  padding: 10px;
-  flex-direction: column;
-  color: ${colors.dark};
 `;
 
 const StyledDateRow = styled.div`
@@ -136,8 +125,8 @@ const SideMapControlDateRange = ({ type }) => {
   };
 
   return (
-    <StyledButtonContainer className="picker-outline">
-      <h6>Crash date</h6>
+    <Card className="p-2 mb-3 " style={{ backgroundColor: colors.light }}>
+      <h6 className="fw-bold">Crash date</h6>
       <StyledDateRow>
         {isMobile ? (
           <>
@@ -206,7 +195,7 @@ const SideMapControlDateRange = ({ type }) => {
           </Button>
         )}
       </StyledActionRow>
-    </StyledButtonContainer>
+    </Card>
   );
 };
 
