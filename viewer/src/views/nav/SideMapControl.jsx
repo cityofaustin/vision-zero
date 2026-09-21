@@ -25,9 +25,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faSquare } from "@fortawesome/free-regular-svg-icons";
 
-// Keep type buttons from wrapping on Windows (scroll bar takes extra width)
-const typeFilterTextSize = navigator.appVersion.indexOf("Win") !== -1 ? 12 : 14;
-
 const StyledCard = styled.div`
   font-size: 1rem;
 
@@ -317,7 +314,7 @@ const SideMapControl = ({ type }) => {
                     return (
                       <Col
                         xs={parameter.colSize && parameter.colSize}
-                        className="px-0"
+                        className="px-0 me-1"
                         key={name}
                       >
                         <Button
@@ -331,7 +328,6 @@ const SideMapControl = ({ type }) => {
                                 ? parameter.isSelected
                                 : isFilterSet(name),
                             },
-                            "p-1",
                             eachClassName,
                           )}
                           onClick={
@@ -339,7 +335,6 @@ const SideMapControl = ({ type }) => {
                               ? parameter.handler
                               : (event) => handleFilterClick(event, group)
                           }
-                          style={{ fontSize: typeFilterTextSize }}
                         >
                           {parameter.icon && (
                             <FontAwesomeIcon
