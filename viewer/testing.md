@@ -2,7 +2,7 @@
 
 Follow this guide to test the Vision Zero Viewer.
 
-### Support browsers and operating systems
+### Supported browsers and operating systems
 
 We have [Browserstack](https://www.browserstack.com/) available to us for cross-platform testing. Credentials are in 1Pass. All releases should be tested on:
 
