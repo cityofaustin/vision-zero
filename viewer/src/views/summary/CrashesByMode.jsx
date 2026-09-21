@@ -115,6 +115,35 @@ const sortAndColorModeData = (modeData, chartColors) => {
   return modeData;
 };
 
+const StyledDiv = styled.div`
+  .year-total-div {
+    color: ${colors.dark};
+    background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
+    border-radius: 4px;
+    border-style: none;
+    opacity: 1;
+  }
+
+  .mode-label-div:hover {
+    cursor: pointer;
+    color: ${colors.buttonBackground};
+    background: dimgray 0% 0% no-repeat padding-box;
+    border-radius: 4px;
+    border-style: none;
+  }
+
+  .mode-label-text {
+    display: none;
+    @media (min-width: 576px) {
+      display: inline;
+    }
+  }
+
+  .sr-only {
+    display: hidden;
+  }
+`;
+
 const CrashesByMode = () => {
   const [chartData, setChartData] = useState(null); // {yearInt: [{record}, {record}, ...]}
   const [crashType, setCrashType] = useState([]);
@@ -197,35 +226,6 @@ const CrashesByMode = () => {
       return currentYearTotal;
     });
   }, [datasets]);
-
-  const StyledDiv = styled.div`
-    .year-total-div {
-      color: ${colors.dark};
-      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
-      border-radius: 4px;
-      border-style: none;
-      opacity: 1;
-    }
-
-    .mode-label-div:hover {
-      cursor: pointer;
-      color: ${colors.buttonBackground};
-      background: dimgray 0% 0% no-repeat padding-box;
-      border-radius: 4px;
-      border-style: none;
-    }
-
-    .mode-label-text {
-      display: none;
-      @media (min-width: 576px) {
-        display: inline;
-      }
-    }
-
-    .sr-only {
-      display: hidden;
-    }
-  `;
 
   return (
     <Container className="m-0 p-0">
