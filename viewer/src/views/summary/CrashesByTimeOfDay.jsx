@@ -6,7 +6,7 @@ import clonedeep from "lodash.clonedeep";
 import CrashTypeSelector from "./Components/CrashTypeSelector";
 import { CRASH_TYPES } from "src/constants/crashTypes";
 import { Row, Col, Container, Button } from "reactstrap";
-import styled from "styled-components";
+
 import classnames from "classnames";
 import {
   Heatmap,
@@ -161,18 +161,6 @@ const CrashesByTimeOfDay = () => {
     [heatmapData],
   );
 
-  // Set styles to override Bootstrap default styling
-  const StyledButton = styled.div`
-    .year-selector {
-      color: ${colors.dark};
-      background: ${colors.buttonBackground} 0% 0% no-repeat padding-box;
-      border-style: none;
-      opacity: 1;
-      margin-left: 5px;
-      margin-right: 5px;
-    }
-  `;
-
   return (
     <Container className="m-0 p-0">
       <Row>
@@ -197,35 +185,35 @@ const CrashesByTimeOfDay = () => {
       <div>
         <Row className="text-center">
           <Col className="pb-2">
-            <StyledButton>
-              {yearsArray // Calculate years ago for each year in data window
-                .map((year) => (
-                  <Button
-                    key={year}
-                    className={classnames(
-                      { active: activeYear === year },
-                      "year-selector",
-                    )}
-                    onClick={() => {
-                      setActiveYear(year);
-                    }}
-                  >
-                    {year}
-                  </Button>
-                ))}
-              <Button
-                key="all_years"
-                className={classnames(
-                  { active: activeYear === "all_years" },
-                  "year-selector",
-                )}
-                onClick={() => {
-                  setActiveYear("all_years");
-                }}
-              >
-                All
-              </Button>
-            </StyledButton>
+            {yearsArray // Calculate years ago for each year in data window
+              .map((year) => (
+                <Button
+                  color="light"
+                  key={year}
+                  className={classnames(
+                    { active: activeYear === year },
+                    "chart-toggle-button",
+                  )}
+                  onClick={() => {
+                    setActiveYear(year);
+                  }}
+                >
+                  {year}
+                </Button>
+              ))}
+            <Button
+              key="all_years"
+              color="light"
+              className={classnames(
+                { active: activeYear === "all_years" },
+                "chart-toggle-button",
+              )}
+              onClick={() => {
+                setActiveYear("all_years");
+              }}
+            >
+              All
+            </Button>
           </Col>
         </Row>
         <Row className="h-auto">

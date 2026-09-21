@@ -49,6 +49,9 @@ const MapComponent = () => {
   const isMounted = useRef(true);
   const isMapReady = useRef(false);
   const eventListenersRef = useRef([]);
+  // Read synchronously in onClick to suppress feature popups (e.g. council
+  // district) that would otherwise fire while the user is mid-polygon-draw.
+  const isDrawingPolygonRef = useRef(false);
 
   const isTablet = useIsTablet();
 
@@ -262,9 +265,28 @@ const MapComponent = () => {
     return layers.filter((id) => !!id);
   }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
 
+  const handleDrawingChange = useCallback((drawing) => {
+    if (drawing) {
+      isDrawingPolygonRef.current = true;
+      return;
+    }
+
+    // mapbox-gl-draw closes a polygon on "mouseup" (its own event
+    // delegation, not the browser's "click" event), which is what fires
+    // draw.modechange -> this callback. The browser's trailing "click"
+    // event for that same gesture - the one our onClick/popup logic below
+    // listens for - fires just after. Deferring the flag reset by a tick
+    // keeps clicks suppressed through that trailing click, while still
+    // clearing in time for the user's next real click.
+    setTimeout(() => {
+      isDrawingPolygonRef.current = false;
+    }, 0);
+  }, []);
+
   // Event handler for selecting crash points
   const onClick = useCallback((event) => {
-    if (!isMounted.current || !mapRef.current) return;
+    if (!isMounted.current || !mapRef.current || isDrawingPolygonRef.current)
+      return;
 
     if (
       event.srcEvent &&
@@ -503,7 +525,10 @@ const MapComponent = () => {
       )}
       <MapCompassSpinner isSpinning={isMapDataLoading} />
       <MapControls setViewport={setViewState} />
-      <MapPolygonFilter setMapPolygon={setMapPolygon} />
+      <MapPolygonFilter
+        setMapPolygon={setMapPolygon}
+        onDrawingChange={handleDrawingChange}
+      />
       <MapGeocoder handleViewportChange={onMove} />
     </Map>
   );
