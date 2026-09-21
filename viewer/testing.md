@@ -1,6 +1,17 @@
 # Testing
 
-The Vision Zero Viewer (VZV) is a public-facing app with no accounts or user roles — everything below should be tested as an anonymous visitor.
+Follow this guide to test the Vision Zero Viewer.
+
+### Support browsers and operating systems
+
+We have [Browserstack](https://www.browserstack.com/) available to us for cross-platform testing. Credentials are in 1Pass. All releases should be tested on:
+
+- Windows - Chrome
+- Windows - Firefox
+- Macos - Safari
+- Macos - Chrome
+- Android - Chrome
+- iOS - Safari
 
 ### Summary page - `/`
 
