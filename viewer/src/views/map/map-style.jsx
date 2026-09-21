@@ -234,3 +234,28 @@ export const travisCountyDataLayer = {
     "fill-color": colors.dark,
   },
 };
+
+// Renders the user-drawn polygon filter once mapbox-gl-draw has finished
+// drawing it and its control has been detached from the map (see
+// MapPolygonFilter.jsx) - colors match mapbox-gl-draw's default theme.
+export const selectedPolygonDataLayer = {
+  id: "selectedPolygon",
+  type: "fill",
+  paint: {
+    "fill-color": "#3bb2d0",
+    "fill-opacity": 0.1,
+  },
+};
+
+export const selectedPolygonOutlineDataLayer = {
+  id: "selectedPolygonOutline",
+  type: "line",
+  layout: {
+    "line-cap": "round",
+    "line-join": "round",
+  },
+  paint: {
+    "line-color": "#3bb2d0",
+    "line-width": 2,
+  },
+};

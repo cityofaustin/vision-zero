@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button, Nav, NavItem, NavLink } from "reactstrap";
 import { navConfig, trackPageEvent } from "../../constants/nav";
 import { responsive } from "../../constants/responsive";
 import { colors } from "../../constants/colors";
+import { StoreContext } from "../../constants/context";
 import styled from "styled-components";
 
 const StyledMobileNav = styled.div`
@@ -32,6 +33,10 @@ const SideDrawerMobileNav = () => {
   const location = useLocation();
   const currentPath = location.pathname;
 
+  const {
+    sidebarToggle: [, setIsOpen],
+  } = useContext(StoreContext);
+
   return (
     <StyledMobileNav>
       <Nav className="me-auto mb-2" navbar>
@@ -42,7 +47,10 @@ const SideDrawerMobileNav = () => {
                 className={`nav-button ${
                   currentPath === config.url ? "active" : "inactive"
                 }-button w-100`}
-                onClick={() => trackPageEvent(config.eventKey)}
+                onClick={() => {
+                  trackPageEvent(config.eventKey);
+                  setIsOpen(false);
+                }}
               >
                 {config.icon} {config.title}
               </Button>
