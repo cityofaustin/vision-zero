@@ -26,8 +26,8 @@ const Nav = styled("nav")`
 const DrawerStyled = styled(Drawer)(() => ({
   "& .MuiDrawer-paper": {
     width: drawerWidth,
-    // background: colors.light,
-    background: colors.white,
+    background: colors.light,
+    // background: colors.white,
     // background: colors.infoLight,
     color: colors.light,
     border: 0,

@@ -39,7 +39,7 @@ const StyledCard = styled.div`
   }
 
   .card-body {
-    background: ${colors.light};
+    background: ${colors.white};
   }
 
   [class^="DateInput_"] {
