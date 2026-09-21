@@ -46,7 +46,7 @@ const SummaryWidget = ({
 
     /* Shift icon left to align with Bootstrap card text */
     .widget-icon {
-      font-size: 2.6em
+      font-size: 2.6em;
       position: relative;
       right: 5.25px;
     }
