@@ -3,6 +3,7 @@ import axios from "axios";
 import { Source, Layer } from "react-map-gl/mapbox";
 import { arcgisToGeoJSON } from "@terraformer/arcgis";
 import { colors } from "../../constants/colors";
+import MapCompassSpinner from "src/views/map/MapCompassSpinner";
 
 export const cityCouncilDistrictsUrl =
   "https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&relationParam=&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=8&outSR=4326&defaultSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=json";
@@ -40,8 +41,8 @@ const cityCouncilDataLayer = {
   },
 };
 
-export default function CouncilDistrictLayer({ beforeId }) {
-  const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
+export default function CouncilDistrictLayer({ beforeId, set }) {
+  const [geojson, setGeojson] = useState(null);
 
   // Fetch City Council Districts geojson
   useEffect(() => {
@@ -51,7 +52,7 @@ export default function CouncilDistrictLayer({ beforeId }) {
       .get(cityCouncilDistrictsUrl, { signal: abortController.signal })
       .then((res) => {
         const fixedGeoJSON = arcgisToGeoJSON(res.data);
-        setCityCouncilOverlay(fixedGeoJSON);
+        setGeojson(fixedGeoJSON);
       })
       .catch((error) => {
         if (axios.isCancel(error)) return;
@@ -63,10 +64,11 @@ export default function CouncilDistrictLayer({ beforeId }) {
     };
   }, []);
 
-  if (!cityCouncilOverlay) return null;
+  // show spinner until map data loads
+  if (!geojson) return <MapCompassSpinner isSpinning={true} />;
 
   return (
-    <Source id="cityCouncil-source" type="geojson" data={cityCouncilOverlay}>
+    <Source id="cityCouncil-source" type="geojson" data={geojson}>
       <Layer beforeId={beforeId} {...cityCouncilDataLayer} />
     </Source>
   );
