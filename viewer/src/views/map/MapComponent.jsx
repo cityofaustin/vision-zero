@@ -12,7 +12,7 @@ import MapPolygonFilter from "./MapPolygonFilter";
 import MapCompassSpinner from "./MapCompassSpinner";
 import { createMapDataUrl } from "./helpers";
 import {
-  mapInit,
+  mapInitalViewState,
   travisCountyBboxGeoJSON,
   mapNavBbox,
   cityCouncilDistrictsUrl,
@@ -24,10 +24,6 @@ import {
   fatalitiesOutlineDataLayer,
   seriousInjuriesDataLayer,
   seriousInjuriesOutlineDataLayer,
-  asmpSourceConfig,
-  buildAsmpLayers,
-  asmpConfig,
-  buildHighInjuryLayer,
   cityCouncilDataLayer,
   travisCountyDataLayer,
 } from "./map-style";
@@ -39,6 +35,8 @@ import MapInfoBox from "./InfoBox/MapInfoBox";
 import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 import MapGeocoder from "./Geocoder/Geocoder";
 import { arcgisToGeoJSON } from "@terraformer/arcgis";
+import { HighInjuryLayer } from "src/views/map/HighInjuryLayer";
+import { AsmpLayers } from "src/views/map/AsmpLayer";
 
 const sortAndCountCrashData = (data) => {
   if (!data) {
@@ -70,14 +68,6 @@ const sortAndCountCrashData = (data) => {
     );
 
   return [features, crashCounts];
-};
-
-const initialViewState = {
-  longitude: mapInit.longitude,
-  latitude: mapInit.latitude,
-  zoom: mapInit.zoom,
-  bearing: mapInit.bearing || 0,
-  pitch: mapInit.pitch || 0,
 };
 
 const MapComponent = () => {
@@ -300,7 +290,7 @@ const MapComponent = () => {
   return (
     <Map
       ref={mapRef}
-      initialViewState={initialViewState}
+      initialViewState={mapInitalViewState}
       maxBounds={[
         [mapNavBbox.longitude.min, mapNavBbox.latitude.min],
         [mapNavBbox.longitude.max, mapNavBbox.latitude.max],
@@ -315,9 +305,19 @@ const MapComponent = () => {
       style={{ width: "100%", height: "100%" }}
     >
       {baseSourceAndLayer}
-      <Source {...asmpSourceConfig}>
-        {buildAsmpLayers(asmpConfig, overlay)}
-      </Source>
+      {/* Z-order anchor: overlays insert below this, crash points get added above it */}
+      <Layer
+        id="overlay-slot"
+        type="background"
+        layout={{ visibility: "none" }}
+      />
+      {overlay.name === "asmp" && (
+        <AsmpLayers beforeId="overlay-slot" activeLevels={overlay.options} />
+      )}
+      {overlay.name === "highInjury" && (
+        <HighInjuryLayer beforeId="overlay-slot" />
+      )}
+
       {!!mapData && (
         <>
           <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
@@ -333,7 +333,7 @@ const MapComponent = () => {
           </Source>
         </>
       )}
-      {buildHighInjuryLayer(overlay)}
+
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
           <Layer beforeId="base-layer" {...cityCouncilDataLayer} />
