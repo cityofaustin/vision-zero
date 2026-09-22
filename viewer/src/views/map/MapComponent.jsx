@@ -269,7 +269,7 @@ const MapComponent = () => {
     }
 
     const { features } = event;
-    let selectedFeature =
+    let selectedFeatureDraft =
       features &&
       features.find(
         (f) =>
@@ -279,16 +279,16 @@ const MapComponent = () => {
       );
 
     let selectedFeatureLayer =
-      (!!selectedFeature &&
-        selectedFeature.layer &&
-        selectedFeature.layer.id) ||
+      (!!selectedFeatureDraft &&
+        selectedFeatureDraft.layer &&
+        selectedFeatureDraft.layer.id) ||
       null;
 
-    if (!!selectedFeature && selectedFeatureLayer === "cityCouncil") {
-      selectedFeature = {
-        ...selectedFeature,
+    if (!!selectedFeatureDraft && selectedFeatureLayer === "cityCouncil") {
+      selectedFeatureDraft = {
+        ...selectedFeatureDraft,
         properties: {
-          ...selectedFeature.properties,
+          ...selectedFeatureDraft.properties,
           latitude: event.lngLat.lat,
           longitude: event.lngLat.lng,
         },
@@ -296,20 +296,20 @@ const MapComponent = () => {
     }
 
     if (
-      !!selectedFeature &&
+      !!selectedFeatureDraft &&
       (selectedFeatureLayer === "fatalities" ||
         selectedFeatureLayer === "seriousInjuries")
     ) {
       try {
         const map = mapRef.current.getMap();
         if (map) {
-          selectedFeature = {
-            ...selectedFeature,
+          selectedFeatureDraft = {
+            ...selectedFeatureDraft,
             properties: {
-              ...selectedFeature.properties,
+              ...selectedFeatureDraft.properties,
               pixelCoordinates: map.project([
-                parseFloat(selectedFeature.properties.longitude),
-                parseFloat(selectedFeature.properties.latitude),
+                parseFloat(selectedFeatureDraft.properties.longitude),
+                parseFloat(selectedFeatureDraft.properties.latitude),
               ]),
             },
           };
@@ -319,7 +319,7 @@ const MapComponent = () => {
       }
     }
 
-    setSelectedFeature(selectedFeature);
+    setSelectedFeature(selectedFeatureDraft);
   }, []);
 
   useEffect(() => {
