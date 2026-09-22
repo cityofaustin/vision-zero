@@ -11,11 +11,7 @@ import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
 import MapCompassSpinner from "./MapCompassSpinner";
 import { createMapDataUrl } from "./helpers";
-import {
-  mapInitalViewState,
-  travisCountyBboxGeoJSON,
-  mapNavBbox,
-} from "./mapData";
+import { mapInitalViewState, mapNavBbox } from "./mapData";
 import { crashGeoJSONEndpointUrl } from "../summary/queries/socrataQueries";
 import {
   baseSourceAndLayer,
@@ -23,7 +19,6 @@ import {
   fatalitiesOutlineDataLayer,
   seriousInjuriesDataLayer,
   seriousInjuriesOutlineDataLayer,
-  travisCountyDataLayer,
 } from "./map-style";
 import axios from "axios";
 import { useIsTablet } from "../../constants/responsive";
@@ -35,6 +30,7 @@ import MapGeocoder from "./Geocoder/Geocoder";
 import HighInjuryLayer from "src/views/map/HighInjuryLayer";
 import AsmpLayers from "src/views/map/AsmpLayer";
 import CouncilDistrictLayer from "src/views/map/CouncilDistrictLayer";
+import TravisCountyBboxLayer from "src/views/map/TravisCountyBboxLayer";
 
 const sortAndCountCrashData = (data) => {
   if (!data) {
@@ -79,7 +75,6 @@ const MapComponent = () => {
   const isTablet = useIsTablet();
   const [crashData, setCrashData] = useState(null);
   const [selectedFeature, setSelectedFeature] = useState(null);
-  const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
   const [isCrashDataFetching, setIsCrashDataFetching] = useState(false);
   const [mapData, crashCounts] = useMemo(() => {
     return sortAndCountCrashData(crashData);
@@ -136,10 +131,10 @@ const MapComponent = () => {
     const layers = [
       isMapTypeSet.fatal && "fatalities",
       isMapTypeSet.injury && "seriousInjuries",
-      cityCouncilOverlay && overlay.name === "cityCouncil" && "cityCouncil",
+      overlay.name === "cityCouncil" && "cityCouncil",
     ];
     return layers.filter((id) => !!id);
-  }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
+  }, [isMapTypeSet, overlay.name]);
 
   // mapbox-gl-draw closes a polygon on "mouseup" (its own event delegation,
   // not the browser's "click" event), which is what flips `isDrawing` to
@@ -313,11 +308,7 @@ const MapComponent = () => {
           </Source>
         </>
       )}
-
-      {/* council */}
-      <Source type="geojson" data={travisCountyBboxGeoJSON}>
-        <Layer {...travisCountyDataLayer} />
-      </Source>
+      <TravisCountyBboxLayer beforeId="overlay-slot" />
       {selectedFeature && (
         <MapInfoBox
           selectedFeature={selectedFeature}

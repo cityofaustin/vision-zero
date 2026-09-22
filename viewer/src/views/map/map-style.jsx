@@ -66,7 +66,6 @@ export const seriousInjuriesOutlineDataLayer = {
   },
 };
 
-
 // Map Overlay configuration
 // Hide/show based on overlay state, add layers only once and let state determine visibility
 // Using state in any other config parameters will cause layer to add again and break map layer
@@ -102,15 +101,6 @@ export const cityCouncilDataLayer = {
       colors.mapCityCouncil10,
       /* other */ "#ccc",
     ],
-  },
-};
-
-export const travisCountyDataLayer = {
-  id: "travisCounty",
-  type: "fill",
-  paint: {
-    "fill-opacity": 0.15,
-    "fill-color": colors.dark,
   },
 };
 
