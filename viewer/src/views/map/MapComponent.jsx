@@ -71,14 +71,8 @@ const MapComponent = () => {
   // to suppress feature popups (e.g. council district) that would otherwise
   // fire while the user is mid-polygon-draw.
   const isDrawingPolygonRef = useRef(false);
-
   const isTablet = useIsTablet();
-  const [crashData, setCrashData] = useState(null);
   const [selectedFeature, setSelectedFeature] = useState(null);
-  const [isCrashDataFetching, setIsCrashDataFetching] = useState(false);
-  const [mapData, crashCounts] = useMemo(() => {
-    return sortAndCountCrashData(crashData);
-  }, [crashData]);
 
   const {
     mapFilters: [filters],
@@ -89,42 +83,46 @@ const MapComponent = () => {
     mapPolygon: [mapPolygon, setMapPolygon],
   } = React.useContext(StoreContext);
 
+  const apiUrl = useMemo(
+    () =>
+      createMapDataUrl(
+        crashGeoJSONEndpointUrl,
+        filters,
+        dateRange,
+        mapPolygon,
+        mapTimeWindow,
+      ),
+    [filters, dateRange, mapPolygon, mapTimeWindow],
+  );
+
+  const [crashResponse, setCrashResponse] = useState({ url: null, data: null });
+  const crashData = apiUrl ? crashResponse.data : null;
+  const isCrashDataFetching = !!apiUrl && crashResponse.url !== apiUrl;
+  const [mapData, crashCounts] = useMemo(() => {
+    return sortAndCountCrashData(crashData);
+  }, [crashData]);
+
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
-    const apiUrl = createMapDataUrl(
-      crashGeoJSONEndpointUrl,
-      filters,
-      dateRange,
-      mapPolygon,
-      mapTimeWindow,
-    );
+    if (!apiUrl) return;
 
-    if (apiUrl) {
-      const abortController = new AbortController();
+    const abortController = new AbortController();
 
-      setIsCrashDataFetching(true);
-      axios
-        .get(apiUrl, { signal: abortController.signal })
-        .then((res) => setCrashData(res.data))
-        .catch((error) => {
-          if (axios.isCancel(error)) return;
-          console.error("Failed to fetch map data:", error);
-        })
-        .finally(() => {
-          // Skip if this request was superseded by a newer one - that
-          // request's own finally is responsible for clearing the flag.
-          if (!abortController.signal.aborted) {
-            setIsCrashDataFetching(false);
-          }
-        });
+    axios
+      .get(apiUrl, { signal: abortController.signal })
+      .then((res) => {
+        if (abortController.signal.aborted) return;
+        setCrashResponse({ url: apiUrl, data: res.data });
+      })
+      .catch((error) => {
+        if (axios.isCancel(error) || abortController.signal.aborted) return;
+        console.error("Failed to fetch map data:", error);
+        // Mark this URL as settled so the spinner stops; keep previous data
+        setCrashResponse((prev) => ({ ...prev, url: apiUrl }));
+      });
 
-      return () => {
-        abortController.abort();
-      };
-    }
-
-    setIsCrashDataFetching(false);
-  }, [filters, dateRange, mapTimeWindow, mapPolygon]);
+    return () => abortController.abort();
+  }, [apiUrl]);
 
   // Set interactive layer IDs
   const interactiveLayerIds = useMemo(() => {
