@@ -96,8 +96,6 @@ const MapComponent = () => {
     return sortAndCountCrashData(crashData);
   }, [crashData]);
 
-  const [, setPointData] = useState(null);
-
   const {
     mapFilters: [filters],
     mapFilterType: [isMapTypeSet],
@@ -294,13 +292,6 @@ const MapComponent = () => {
 
     setSelectedFeature(selectedFeatureDraft);
   }, []);
-
-  useEffect(() => {
-    const animation = window.requestAnimationFrame(() => {
-      if (selectedFeature) setPointData({});
-    });
-    return () => window.cancelAnimationFrame(animation);
-  }, [selectedFeature]);
 
   const renderSelectedLayer = () => {
     if (!selectedFeature) return null;
