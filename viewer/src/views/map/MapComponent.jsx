@@ -15,7 +15,6 @@ import {
   mapInitalViewState,
   travisCountyBboxGeoJSON,
   mapNavBbox,
-  cityCouncilDistrictsUrl,
 } from "./mapData";
 import { crashGeoJSONEndpointUrl } from "../summary/queries/socrataQueries";
 import {
@@ -24,7 +23,6 @@ import {
   fatalitiesOutlineDataLayer,
   seriousInjuriesDataLayer,
   seriousInjuriesOutlineDataLayer,
-  cityCouncilDataLayer,
   travisCountyDataLayer,
 } from "./map-style";
 import axios from "axios";
@@ -34,9 +32,9 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapInfoBox from "./InfoBox/MapInfoBox";
 import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 import MapGeocoder from "./Geocoder/Geocoder";
-import { arcgisToGeoJSON } from "@terraformer/arcgis";
-import { HighInjuryLayer } from "src/views/map/HighInjuryLayer";
-import { AsmpLayers } from "src/views/map/AsmpLayer";
+import HighInjuryLayer from "src/views/map/HighInjuryLayer";
+import AsmpLayers from "src/views/map/AsmpLayer";
+import CouncilDistrictLayer from "src/views/map/CouncilDistrictLayer";
 
 const sortAndCountCrashData = (data) => {
   if (!data) {
@@ -132,26 +130,6 @@ const MapComponent = () => {
 
     setIsCrashDataFetching(false);
   }, [filters, dateRange, mapTimeWindow, mapPolygon]);
-
-  // Fetch City Council Districts geojson
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    axios
-      .get(cityCouncilDistrictsUrl, { signal: abortController.signal })
-      .then((res) => {
-        const fixedGeoJSON = arcgisToGeoJSON(res.data);
-        setCityCouncilOverlay(fixedGeoJSON);
-      })
-      .catch((error) => {
-        if (axios.isCancel(error)) return;
-        console.error("Failed to fetch city council data:", error);
-      });
-
-    return () => {
-      abortController.abort();
-    };
-  }, []);
 
   // Set interactive layer IDs
   const interactiveLayerIds = useMemo(() => {
@@ -317,7 +295,9 @@ const MapComponent = () => {
       {overlay.name === "highInjury" && (
         <HighInjuryLayer beforeId="overlay-slot" />
       )}
-
+      {overlay.name === "cityCouncil" && (
+        <CouncilDistrictLayer beforeId="overlay-slot" />
+      )}
       {!!mapData && (
         <>
           <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
@@ -334,11 +314,7 @@ const MapComponent = () => {
         </>
       )}
 
-      {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
-        <Source type="geojson" data={cityCouncilOverlay}>
-          <Layer beforeId="base-layer" {...cityCouncilDataLayer} />
-        </Source>
-      )}
+      {/* council */}
       <Source type="geojson" data={travisCountyBboxGeoJSON}>
         <Layer {...travisCountyDataLayer} />
       </Source>
