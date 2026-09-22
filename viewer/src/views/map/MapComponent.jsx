@@ -48,7 +48,6 @@ const MapComponent = () => {
   const mapRef = useRef(null);
   const isMounted = useRef(true);
   const isMapReady = useRef(false);
-  const eventListenersRef = useRef([]);
   // Read synchronously in onClick to suppress feature popups (e.g. council
   // district) that would otherwise fire while the user is mid-polygon-draw.
   const isDrawingPolygonRef = useRef(false);
@@ -77,17 +76,6 @@ const MapComponent = () => {
       try {
         const map = mapRef.current.getMap();
         if (map && !map._removed && typeof map.remove === "function") {
-          // Remove all event listeners
-          eventListenersRef.current.forEach(({ event, handler }) => {
-            try {
-              map.off(event, handler);
-            } catch {
-              // Ignore
-            }
-          });
-          eventListenersRef.current = [];
-
-          // Remove the map
           map.remove();
         }
       } catch (error) {
@@ -107,31 +95,6 @@ const MapComponent = () => {
       cleanupMap();
     };
   }, [cleanupMap]);
-
-  // Add/remove listeners for spinner logic
-  useEffect(() => {
-    const map = mapRef.current?.getMap();
-    if (!map || !isMounted.current) return;
-
-    const onData = () => {
-      if (isMounted.current) setIsMapDataLoading(true);
-    };
-    const onIdle = () => {
-      if (isMounted.current) setIsMapDataLoading(false);
-    };
-
-    map.on("data", onData);
-    map.on("idle", onIdle);
-    eventListenersRef.current.push({ event: "data", handler: onData });
-    eventListenersRef.current.push({ event: "idle", handler: onIdle });
-
-    return () => {
-      if (map && !map._removed) {
-        map.off("data", onData);
-        map.off("idle", onIdle);
-      }
-    };
-  }, []);
 
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
@@ -490,6 +453,12 @@ const MapComponent = () => {
       interactiveLayerIds={interactiveLayerIds}
       onClick={onClick}
       onLoad={handleMapLoad}
+      onData={() => {
+        if (isMounted.current) setIsMapDataLoading(true);
+      }}
+      onIdle={() => {
+        if (isMounted.current) setIsMapDataLoading(false);
+      }}
       style={{ width: "100%", height: "100%" }}
       // Prevent map from being removed on unmount (we handle it manually)
       preserveDrawingBuffer={false}
