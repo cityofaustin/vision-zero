@@ -36,7 +36,7 @@ const MapPolygonFilter = ({ setMapPolygon, onDrawingChange }) => {
   // Safe to call whether or not the control is currently attached.
   const detachDraw = useCallback(() => {
     const draw = drawRef.current;
-    if (!draw || !map || map._removed) return;
+    if (!draw || !map) return;
     try {
       draw.deleteAll();
       if (map.hasControl(draw)) {
@@ -49,7 +49,7 @@ const MapPolygonFilter = ({ setMapPolygon, onDrawingChange }) => {
 
   // Cleanup draw control and its listeners
   const cleanupDraw = useCallback(() => {
-    if (map && !map._removed) {
+    if (map) {
       try {
         eventHandlersRef.current.forEach(({ event, handler }) => {
           try {
@@ -82,7 +82,7 @@ const MapPolygonFilter = ({ setMapPolygon, onDrawingChange }) => {
 
   // Initialize draw control (not yet attached to the map) and listeners
   useEffect(() => {
-    if (!map || map._removed || !isMounted.current) {
+    if (!map || !isMounted.current) {
       console.debug("Map not ready for DrawControl");
       return;
     }
@@ -161,7 +161,7 @@ const MapPolygonFilter = ({ setMapPolygon, onDrawingChange }) => {
 
   const handleStartDraw = useCallback(() => {
     const draw = drawRef.current;
-    if (!map || map._removed || !draw) return;
+    if (!map || !draw) return;
 
     try {
       if (!map.hasControl(draw)) {
