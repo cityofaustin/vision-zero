@@ -40,6 +40,37 @@ import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 import MapGeocoder from "./Geocoder/Geocoder";
 import { arcgisToGeoJSON } from "@terraformer/arcgis";
 
+const sortAndCountCrashData = (data) => {
+  if (!data) {
+    return [null, null];
+  }
+  const crashCounts = { injury: 0, fatality: 0 };
+  const features =
+    data.features &&
+    data.features.reduce(
+      (acc, feature) => {
+        crashCounts["injury"] += parseInt(
+          feature.properties.sus_serious_injry_cnt,
+        );
+        crashCounts["fatality"] += parseInt(feature.properties.death_cnt);
+
+        if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {
+          acc.injuries.features.push(feature);
+        }
+        if (parseInt(feature.properties.death_cnt) > 0) {
+          acc.fatalities.features.push(feature);
+        }
+        return acc;
+      },
+      {
+        fatalities: { ...data, features: [] },
+        injuries: { ...data, features: [] },
+      },
+    );
+
+  return [features, crashCounts];
+};
+
 const MapComponent = () => {
   const [viewState, setViewState] = useState({
     longitude: mapInit.longitude,
@@ -57,13 +88,14 @@ const MapComponent = () => {
   const isDrawingPolygonRef = useRef(false);
 
   const isTablet = useIsTablet();
-
-  const [mapData, setMapData] = useState("");
+  const [crashData, setCrashData] = useState(null);
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
-  const [isTileDataLoading, setIsTileDataLoading] = useState(false);
   const [isCrashDataFetching, setIsCrashDataFetching] = useState(false);
-  const [crashCounts, setCrashCounts] = useState(null);
+  const [mapData, crashCounts] = useMemo(() => {
+    return sortAndCountCrashData(crashData);
+  }, [crashData]);
+
   const [, setPointData] = useState(null);
 
   const {
@@ -77,36 +109,6 @@ const MapComponent = () => {
 
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
-    const sortAndCountMapData = (data) => {
-      const crashCounts = { injury: 0, fatality: 0 };
-      const features =
-        data.features &&
-        data.features.reduce(
-          (acc, feature) => {
-            crashCounts["injury"] += parseInt(
-              feature.properties.sus_serious_injry_cnt,
-            );
-            crashCounts["fatality"] += parseInt(feature.properties.death_cnt);
-
-            if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {
-              acc.injuries.features.push(feature);
-            }
-            if (parseInt(feature.properties.death_cnt) > 0) {
-              acc.fatalities.features.push(feature);
-            }
-            return acc;
-          },
-          {
-            fatalities: { ...data, features: [] },
-            injuries: { ...data, features: [] },
-          },
-        );
-
-      setCrashCounts(crashCounts);
-
-      return features;
-    };
-
     const apiUrl = createMapDataUrl(
       crashGeoJSONEndpointUrl,
       filters,
@@ -121,10 +123,7 @@ const MapComponent = () => {
       setIsCrashDataFetching(true);
       axios
         .get(apiUrl, { signal: abortController.signal })
-        .then((res) => {
-          const sortedMapData = sortAndCountMapData(res.data);
-          setMapData(sortedMapData);
-        })
+        .then((res) => setCrashData(res.data))
         .catch((error) => {
           if (error.name === "AbortError") return;
           console.error("Failed to fetch map data:", error);
@@ -142,21 +141,16 @@ const MapComponent = () => {
       };
     }
 
-    // No valid query yet - clear out any previously fetched data rather than leaving it stale.
-    setMapData("");
-    setCrashCounts(null);
     setIsCrashDataFetching(false);
   }, [filters, dateRange, mapTimeWindow, mapPolygon]);
 
   // Fetch City Council Districts geojson
   useEffect(() => {
-
     const abortController = new AbortController();
 
     axios
       .get(cityCouncilDistrictsUrl, { signal: abortController.signal })
       .then((res) => {
-
         const fixedGeoJSON = arcgisToGeoJSON(res.data);
         setCityCouncilOverlay(fixedGeoJSON);
       })
@@ -197,7 +191,6 @@ const MapComponent = () => {
   // Handle view state changes
   const onMove = useCallback(
     (evt) => {
-
       const restrictedViewState = restrictNavAndZoom(evt.viewState);
       setViewState(restrictedViewState);
     },
@@ -234,8 +227,7 @@ const MapComponent = () => {
 
   // Event handler for selecting crash points
   const onClick = useCallback((event) => {
-    if (!mapRef.current || isDrawingPolygonRef.current)
-      return;
+    if (!mapRef.current || isDrawingPolygonRef.current) return;
 
     if (
       event.srcEvent &&
