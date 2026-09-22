@@ -415,7 +415,6 @@ const MapComponent = () => {
       onData={onMapData}
       onIdle={onMapIdle}
       style={{ width: "100%", height: "100%" }}
-      preserveDrawingBuffer={false}
     >
       {baseSourceAndLayer}
       <Source {...asmpSourceConfig}>
