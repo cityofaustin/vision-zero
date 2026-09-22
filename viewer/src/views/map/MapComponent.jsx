@@ -1,4 +1,3 @@
-
 import React, {
   useState,
   useEffect,
@@ -323,32 +322,6 @@ const MapComponent = () => {
     setSelectedFeature(selectedFeature);
   }, []);
 
-  const renderCrashDataLayers = () => {
-    if (!mapData) return null;
-
-    const fatalVisibility = { visibility: isMapTypeSet.fatal ? "visible" : "none" };
-    const injuryVisibility = { visibility: isMapTypeSet.injury ? "visible" : "none" };
-
-    const injuryLayer = (
-      <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
-        <Layer {...seriousInjuriesOutlineDataLayer} layout={injuryVisibility} />
-        <Layer {...seriousInjuriesDataLayer} layout={injuryVisibility} />
-      </Source>
-    );
-    const fatalityLayer = (
-      <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
-        <Layer {...fatalitiesOutlineDataLayer} layout={fatalVisibility} />
-        <Layer {...fatalitiesDataLayer} layout={fatalVisibility} />
-      </Source>
-    );
-    return (
-      <>
-        {injuryLayer}
-        {fatalityLayer}
-      </>
-    );
-  };
-
   useEffect(() => {
     const animation = window.requestAnimationFrame(() => {
       if (selectedFeature && isMounted.current) setPointData({});
@@ -368,9 +341,7 @@ const MapComponent = () => {
       return null;
     }
 
-    return (
-      <Source id="selectedCrash" type="geojson" data={selectedFeature}/>
-    );
+    return <Source id="selectedCrash" type="geojson" data={selectedFeature} />;
   };
 
   // Handle map load
@@ -423,6 +394,13 @@ const MapComponent = () => {
     if (isMounted.current) setIsMapDataLoading(false);
   }, []);
 
+  const fatalVisibility = {
+    visibility: isMapTypeSet.fatal ? "visible" : "none",
+  };
+  const injuryVisibility = {
+    visibility: isMapTypeSet.injury ? "visible" : "none",
+  };
+
   return (
     <Map
       ref={mapRef}
@@ -443,7 +421,21 @@ const MapComponent = () => {
       <Source {...asmpSourceConfig}>
         {buildAsmpLayers(asmpConfig, overlay)}
       </Source>
-      {!!mapData && renderCrashDataLayers()}
+      {!!mapData && (
+        <>
+          <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
+            <Layer
+              {...seriousInjuriesOutlineDataLayer}
+              layout={injuryVisibility}
+            />
+            <Layer {...seriousInjuriesDataLayer} layout={injuryVisibility} />
+          </Source>
+          <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
+            <Layer {...fatalitiesOutlineDataLayer} layout={fatalVisibility} />
+            <Layer {...fatalitiesDataLayer} layout={fatalVisibility} />
+          </Source>
+        </>
+      )}
       {selectedFeature && renderSelectedLayer()}
       {buildHighInjuryLayer(overlay)}
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
