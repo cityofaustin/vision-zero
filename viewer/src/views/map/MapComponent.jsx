@@ -12,7 +12,12 @@ import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
 import MapCompassSpinner from "./MapCompassSpinner";
 import { createMapDataUrl } from "./helpers";
-import { mapInit, travisCountyBboxGeoJSON, mapNavBbox } from "./mapData";
+import {
+  mapInit,
+  travisCountyBboxGeoJSON,
+  mapNavBbox,
+  cityCouncilDistrictsUrl,
+} from "./mapData";
 import { crashGeoJSONEndpointUrl } from "../summary/queries/socrataQueries";
 import {
   baseSourceAndLayer,
@@ -74,7 +79,7 @@ const MapComponent = () => {
     if (mapRef.current) {
       try {
         const map = mapRef.current.getMap();
-        if (map && !map._removed && typeof map.remove === "function") {
+        if (map && typeof map.remove === "function") {
           map.remove();
         }
       } catch (error) {
@@ -156,6 +161,10 @@ const MapComponent = () => {
         abortController.abort();
       };
     }
+
+    // No valid query yet - clear out any previously fetched data rather than leaving it stale.
+    setMapData("");
+    setCrashCounts(null);
   }, [filters, dateRange, mapTimeWindow, mapPolygon]);
 
   // Fetch City Council Districts geojson
@@ -163,10 +172,9 @@ const MapComponent = () => {
     if (!isMounted.current) return;
 
     const abortController = new AbortController();
-    const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&relationParam=&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=8&outSR=4326&defaultSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=json&token=`;
 
     axios
-      .get(overlayUrl, { signal: abortController.signal })
+      .get(cityCouncilDistrictsUrl, { signal: abortController.signal })
       .then((res) => {
         if (!isMounted.current) return;
         const fixedGeoJSON = arcgisToGeoJSON(res.data);
@@ -268,8 +276,7 @@ const MapComponent = () => {
         (f) =>
           f.layer.id === "fatalities" ||
           f.layer.id === "seriousInjuries" ||
-          f.layer.id === "cityCouncil" ||
-          null,
+          f.layer.id === "cityCouncil",
       );
 
     let selectedFeatureLayer =
@@ -290,12 +297,13 @@ const MapComponent = () => {
     }
 
     if (
-      (!!selectedFeature && selectedFeatureLayer === "fatalities") ||
-      selectedFeatureLayer === "seriousInjuries"
+      !!selectedFeature &&
+      (selectedFeatureLayer === "fatalities" ||
+        selectedFeatureLayer === "seriousInjuries")
     ) {
       try {
         const map = mapRef.current.getMap();
-        if (map && !map._removed) {
+        if (map) {
           selectedFeature = {
             ...selectedFeature,
             properties: {
@@ -407,6 +415,14 @@ const MapComponent = () => {
     }
   }, []);
 
+  const onMapData = useCallback(() => {
+    if (isMounted.current) setIsMapDataLoading(true);
+  }, []);
+
+  const onMapIdle = useCallback(() => {
+    if (isMounted.current) setIsMapDataLoading(false);
+  }, []);
+
   return (
     <Map
       ref={mapRef}
@@ -418,14 +434,9 @@ const MapComponent = () => {
       interactiveLayerIds={interactiveLayerIds}
       onClick={onClick}
       onLoad={handleMapLoad}
-      onData={() => {
-        if (isMounted.current) setIsMapDataLoading(true);
-      }}
-      onIdle={() => {
-        if (isMounted.current) setIsMapDataLoading(false);
-      }}
+      onData={onMapData}
+      onIdle={onMapIdle}
       style={{ width: "100%", height: "100%" }}
-      // Prevent map from being removed on unmount (we handle it manually)
       preserveDrawingBuffer={false}
     >
       {baseSourceAndLayer}
