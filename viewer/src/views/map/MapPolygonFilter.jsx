@@ -16,21 +16,12 @@ import {
 // attached to the map while the user is actively drawing a polygon, and
 // removed again the moment drawing finishes or is cancelled.
 
-const MapPolygonFilter = ({ setMapPolygon, onDrawingChange }) => {
+const MapPolygonFilter = ({ setMapPolygon, isDrawing, setIsDrawing }) => {
   const { current: map } = useMap();
   const drawRef = useRef(null);
-  const isMounted = useRef(true);
   const eventHandlersRef = useRef([]);
 
-  const [isDrawing, setIsDrawing] = useState(false);
   const [drawnFeature, setDrawnFeature] = useState(null);
-
-  // Let the parent map know when polygon drawing starts/stops so it can
-  // suppress other click-driven popups (e.g. crash/council district) that
-  // would otherwise pop up mid-draw.
-  useEffect(() => {
-    onDrawingChange?.(isDrawing);
-  }, [isDrawing, onDrawingChange]);
 
   // Detach the draw control from the map and reset its internal state.
   // Safe to call whether or not the control is currently attached.
@@ -72,17 +63,14 @@ const MapPolygonFilter = ({ setMapPolygon, onDrawingChange }) => {
 
   // Component unmount cleanup
   useEffect(() => {
-    isMounted.current = true;
-
     return () => {
-      isMounted.current = false;
       cleanupDraw();
     };
   }, [cleanupDraw]);
 
   // Initialize draw control (not yet attached to the map) and listeners
   useEffect(() => {
-    if (!map || !isMounted.current) {
+    if (!map) {
       console.debug("Map not ready for DrawControl");
       return;
     }
@@ -101,8 +89,6 @@ const MapPolygonFilter = ({ setMapPolygon, onDrawingChange }) => {
       drawRef.current = draw;
 
       const handleCreate = (event) => {
-        if (!isMounted.current) return;
-
         try {
           const feature = event.features && event.features[0];
           if (
@@ -129,8 +115,6 @@ const MapPolygonFilter = ({ setMapPolygon, onDrawingChange }) => {
       };
 
       const handleModeChange = ({ mode }) => {
-        if (!isMounted.current) return;
-
         // Covers our own "cancel" button as well as mapbox-gl-draw's own
         // internal cancellation (e.g. the Escape key), so the control
         // never stays attached once drawing stops.
@@ -157,7 +141,7 @@ const MapPolygonFilter = ({ setMapPolygon, onDrawingChange }) => {
       console.error("Failed to initialize draw control:", error);
       return cleanupDraw;
     }
-  }, [map, cleanupDraw, detachDraw, setMapPolygon]);
+  }, [map, cleanupDraw, detachDraw, setMapPolygon, setIsDrawing]);
 
   const handleStartDraw = useCallback(() => {
     const draw = drawRef.current;
@@ -172,7 +156,7 @@ const MapPolygonFilter = ({ setMapPolygon, onDrawingChange }) => {
     } catch (error) {
       console.debug("Start draw error:", error);
     }
-  }, [map]);
+  }, [map, setIsDrawing]);
 
   const handleCancelDraw = useCallback(() => {
     const draw = drawRef.current;
@@ -192,13 +176,11 @@ const MapPolygonFilter = ({ setMapPolygon, onDrawingChange }) => {
       detachDraw();
       setIsDrawing(false);
     }
-  }, [detachDraw]);
+  }, [detachDraw, setIsDrawing]);
 
   const handleClearPolygon = useCallback(() => {
     detachDraw();
-    if (isMounted.current) {
-      setDrawnFeature(null);
-    }
+    setDrawnFeature(null);
     setMapPolygon(null);
   }, [detachDraw, setMapPolygon]);
 
