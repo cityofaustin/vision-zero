@@ -49,15 +49,16 @@ const sortAndCountCrashData = (data) => {
     data.features &&
     data.features.reduce(
       (acc, feature) => {
-        crashCounts["injury"] += parseInt(
-          feature.properties.sus_serious_injry_cnt,
-        );
-        crashCounts["fatality"] += parseInt(feature.properties.death_cnt);
+        const injuryCount =
+          Number(feature.properties.sus_serious_injry_cnt) || 0;
+        const fatalityCount = Number(feature.properties.death_cnt) || 0;
+        crashCounts["injury"] += injuryCount;
+        crashCounts["fatality"] += fatalityCount;
 
-        if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {
+        if (injuryCount) {
           acc.injuries.features.push(feature);
         }
-        if (parseInt(feature.properties.death_cnt) > 0) {
+        if (fatalityCount) {
           acc.fatalities.features.push(feature);
         }
         return acc;
@@ -71,15 +72,15 @@ const sortAndCountCrashData = (data) => {
   return [features, crashCounts];
 };
 
-const MapComponent = () => {
-  const [viewState, setViewState] = useState({
-    longitude: mapInit.longitude,
-    latitude: mapInit.latitude,
-    zoom: mapInit.zoom,
-    bearing: mapInit.bearing || 0,
-    pitch: mapInit.pitch || 0,
-  });
+const initialViewState = {
+  longitude: mapInit.longitude,
+  latitude: mapInit.latitude,
+  zoom: mapInit.zoom,
+  bearing: mapInit.bearing || 0,
+  pitch: mapInit.pitch || 0,
+};
 
+const MapComponent = () => {
   const mapRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   // Mirrors `isDrawing` (see effect below) for synchronous reads in onClick
@@ -123,7 +124,7 @@ const MapComponent = () => {
         .get(apiUrl, { signal: abortController.signal })
         .then((res) => setCrashData(res.data))
         .catch((error) => {
-          if (error.name === "AbortError") return;
+          if (axios.isCancel(error)) return;
           console.error("Failed to fetch map data:", error);
         })
         .finally(() => {
@@ -162,39 +163,6 @@ const MapComponent = () => {
     };
   }, []);
 
-  // Restrict map navigation to bounding box around Travis County
-  const restrictNavAndZoom = useCallback((viewState) => {
-    const restricted = { ...viewState };
-
-    if (restricted.longitude < mapNavBbox.longitude.min) {
-      restricted.longitude = mapNavBbox.longitude.min;
-    }
-    if (restricted.longitude > mapNavBbox.longitude.max) {
-      restricted.longitude = mapNavBbox.longitude.max;
-    }
-    if (restricted.latitude < mapNavBbox.latitude.min) {
-      restricted.latitude = mapNavBbox.latitude.min;
-    }
-    if (restricted.latitude > mapNavBbox.latitude.max) {
-      restricted.latitude = mapNavBbox.latitude.max;
-    }
-
-    if (restricted.zoom < 10) {
-      restricted.zoom = 10;
-    }
-
-    return restricted;
-  }, []);
-
-  // Handle view state changes
-  const onMove = useCallback(
-    (evt) => {
-      const restrictedViewState = restrictNavAndZoom(evt.viewState);
-      setViewState(restrictedViewState);
-    },
-    [restrictNavAndZoom],
-  );
-
   // Set interactive layer IDs
   const interactiveLayerIds = useMemo(() => {
     const layers = [
@@ -226,18 +194,6 @@ const MapComponent = () => {
   // Event handler for selecting crash points
   const onClick = useCallback((event) => {
     if (!mapRef.current || isDrawingPolygonRef.current) return;
-
-    if (
-      event.srcEvent &&
-      event.srcEvent.srcElement &&
-      event.srcEvent.srcElement.classList
-    ) {
-      if (
-        event.srcEvent.srcElement.classList.value.includes("mapbox") ||
-        event.srcEvent.target.localName === "circle"
-      )
-        return;
-    }
 
     const { features } = event;
     let selectedFeatureDraft =
@@ -293,21 +249,6 @@ const MapComponent = () => {
     setSelectedFeature(selectedFeatureDraft);
   }, []);
 
-  const renderSelectedLayer = () => {
-    if (!selectedFeature) return null;
-
-    // Ensure selectedFeature is a proper GeoJSON feature
-    const featureData = selectedFeature;
-
-    // Make sure it has the required structure
-    if (!featureData.geometry) {
-      console.warn("Selected feature missing geometry");
-      return null;
-    }
-
-    return <Source id="selectedCrash" type="geojson" data={selectedFeature} />;
-  };
-
   // Handle map load
   const handleMapLoad = useCallback((event) => {
     const map = event.target;
@@ -359,8 +300,12 @@ const MapComponent = () => {
   return (
     <Map
       ref={mapRef}
-      {...viewState}
-      onMove={onMove}
+      initialViewState={initialViewState}
+      maxBounds={[
+        [mapNavBbox.longitude.min, mapNavBbox.latitude.min],
+        [mapNavBbox.longitude.max, mapNavBbox.latitude.max],
+      ]}
+      minZoom={10}
       mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
       mapStyle="mapbox://styles/mapbox/light-v11"
       cursor="default"
@@ -388,7 +333,6 @@ const MapComponent = () => {
           </Source>
         </>
       )}
-      {selectedFeature && renderSelectedLayer()}
       {buildHighInjuryLayer(overlay)}
       {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
         <Source type="geojson" data={cityCouncilOverlay}>
@@ -413,13 +357,13 @@ const MapComponent = () => {
         />
       )}
       <MapCompassSpinner isSpinning={isCrashDataFetching && !isDrawing} />
-      <MapControls setViewport={setViewState} />
+      <MapControls />
       <MapPolygonFilter
         setMapPolygon={setMapPolygon}
         isDrawing={isDrawing}
         setIsDrawing={setIsDrawing}
       />
-      <MapGeocoder handleViewportChange={onMove} />
+      <MapGeocoder />
     </Map>
   );
 };
