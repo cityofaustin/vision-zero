@@ -50,9 +50,10 @@ const MapComponent = () => {
   });
 
   const mapRef = useRef(null);
-  const isMounted = useRef(true);
-  // Read synchronously in onClick to suppress feature popups (e.g. council
-  // district) that would otherwise fire while the user is mid-polygon-draw.
+  const [isDrawing, setIsDrawing] = useState(false);
+  // Mirrors `isDrawing` (see effect below) for synchronous reads in onClick
+  // to suppress feature popups (e.g. council district) that would otherwise
+  // fire while the user is mid-polygon-draw.
   const isDrawingPolygonRef = useRef(false);
 
   const isTablet = useIsTablet();
@@ -74,35 +75,8 @@ const MapComponent = () => {
     mapPolygon: [mapPolygon, setMapPolygon],
   } = React.useContext(StoreContext);
 
-  // Cleanup function
-  const cleanupMap = useCallback(() => {
-    if (mapRef.current) {
-      try {
-        const map = mapRef.current.getMap();
-        if (map && typeof map.remove === "function") {
-          map.remove();
-        }
-      } catch (error) {
-        console.debug("Map cleanup error:", error.message);
-      }
-    }
-    mapRef.current = null;
-  }, []);
-
-  // Component unmount cleanup
-  useEffect(() => {
-    isMounted.current = true;
-
-    return () => {
-      isMounted.current = false;
-      cleanupMap();
-    };
-  }, [cleanupMap]);
-
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
-    if (!isMounted.current) return;
-
     const sortAndCountMapData = (data) => {
       const crashCounts = { injury: 0, fatality: 0 };
       const features =
@@ -128,9 +102,8 @@ const MapComponent = () => {
           },
         );
 
-      if (isMounted.current) {
-        setCrashCounts(crashCounts);
-      }
+      setCrashCounts(crashCounts);
+
       return features;
     };
 
@@ -149,7 +122,6 @@ const MapComponent = () => {
       axios
         .get(apiUrl, { signal: abortController.signal })
         .then((res) => {
-          if (!isMounted.current) return;
           const sortedMapData = sortAndCountMapData(res.data);
           setMapData(sortedMapData);
         })
@@ -160,7 +132,7 @@ const MapComponent = () => {
         .finally(() => {
           // Skip if this request was superseded by a newer one - that
           // request's own finally is responsible for clearing the flag.
-          if (isMounted.current && !abortController.signal.aborted) {
+          if (!abortController.signal.aborted) {
             setIsCrashDataFetching(false);
           }
         });
@@ -178,19 +150,18 @@ const MapComponent = () => {
 
   // Fetch City Council Districts geojson
   useEffect(() => {
-    if (!isMounted.current) return;
 
     const abortController = new AbortController();
 
     axios
       .get(cityCouncilDistrictsUrl, { signal: abortController.signal })
       .then((res) => {
-        if (!isMounted.current) return;
+
         const fixedGeoJSON = arcgisToGeoJSON(res.data);
         setCityCouncilOverlay(fixedGeoJSON);
       })
       .catch((error) => {
-        if (error.name === "AbortError") return;
+        if (axios.isCancel(error)) return;
         console.error("Failed to fetch city council data:", error);
       });
 
@@ -226,7 +197,7 @@ const MapComponent = () => {
   // Handle view state changes
   const onMove = useCallback(
     (evt) => {
-      if (!isMounted.current) return;
+
       const restrictedViewState = restrictNavAndZoom(evt.viewState);
       setViewState(restrictedViewState);
     },
@@ -243,27 +214,27 @@ const MapComponent = () => {
     return layers.filter((id) => !!id);
   }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
 
-  const handleDrawingChange = useCallback((drawing) => {
-    if (drawing) {
+  // mapbox-gl-draw closes a polygon on "mouseup" (its own event delegation,
+  // not the browser's "click" event), which is what flips `isDrawing` to
+  // false. The browser's trailing "click" event for that same gesture - the
+  // one onClick's popup-suppression logic below reacts to - fires just
+  // after. Deferring the ref reset by a tick keeps clicks suppressed
+  // through that trailing click, while still clearing in time for the
+  // user's next real click.
+  useEffect(() => {
+    if (isDrawing) {
       isDrawingPolygonRef.current = true;
       return;
     }
-
-    // mapbox-gl-draw closes a polygon on "mouseup" (its own event
-    // delegation, not the browser's "click" event), which is what fires
-    // draw.modechange -> this callback. The browser's trailing "click"
-    // event for that same gesture - the one our onClick/popup logic below
-    // listens for - fires just after. Deferring the flag reset by a tick
-    // keeps clicks suppressed through that trailing click, while still
-    // clearing in time for the user's next real click.
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       isDrawingPolygonRef.current = false;
     }, 0);
-  }, []);
+    return () => clearTimeout(timeoutId);
+  }, [isDrawing]);
 
   // Event handler for selecting crash points
   const onClick = useCallback((event) => {
-    if (!isMounted.current || !mapRef.current || isDrawingPolygonRef.current)
+    if (!mapRef.current || isDrawingPolygonRef.current)
       return;
 
     if (
@@ -334,7 +305,7 @@ const MapComponent = () => {
 
   useEffect(() => {
     const animation = window.requestAnimationFrame(() => {
-      if (selectedFeature && isMounted.current) setPointData({});
+      if (selectedFeature) setPointData({});
     });
     return () => window.cancelAnimationFrame(animation);
   }, [selectedFeature]);
@@ -356,7 +327,6 @@ const MapComponent = () => {
 
   // Handle map load
   const handleMapLoad = useCallback((event) => {
-    if (!isMounted.current) return;
     const map = event.target;
     const container = map.getContainer();
     if (!container) return;
@@ -402,8 +372,6 @@ const MapComponent = () => {
   const injuryVisibility = {
     visibility: isMapTypeSet.injury ? "visible" : "none",
   };
-
-  //   !isDrawingPolygonRef.current
 
   return (
     <Map
@@ -461,11 +429,12 @@ const MapComponent = () => {
           isMapTypeSet={isMapTypeSet}
         />
       )}
-      <MapCompassSpinner isSpinning={isCrashDataFetching} />
+      <MapCompassSpinner isSpinning={isCrashDataFetching && !isDrawing} />
       <MapControls setViewport={setViewState} />
       <MapPolygonFilter
         setMapPolygon={setMapPolygon}
-        onDrawingChange={handleDrawingChange}
+        isDrawing={isDrawing}
+        setIsDrawing={setIsDrawing}
       />
       <MapGeocoder handleViewportChange={onMove} />
     </Map>
