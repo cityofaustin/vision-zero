@@ -2,7 +2,7 @@ import React from "react";
 import { Source, Layer } from "react-map-gl/mapbox";
 import { colors } from "../../constants/colors";
 
-export const travisCountyBboxGeoJSON = {
+const travisCountyBboxGeoJSON = {
   type: "FeatureCollection",
   features: [
     {
@@ -37,7 +37,7 @@ export const travisCountyBboxGeoJSON = {
   ],
 };
 
-export const travisCountyDataLayer = {
+const travisCountyDataLayer = {
   id: "travis-county-bbox",
   type: "fill",
   paint: {

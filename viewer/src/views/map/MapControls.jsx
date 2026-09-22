@@ -18,7 +18,7 @@ const StyledMapNav = styled.div`
   }
 `;
 
-const MapControls = ({ setViewport }) => {
+const MapControls = () => {
   
   return (
     <StyledMapNav>
