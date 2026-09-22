@@ -459,7 +459,9 @@ const MapComponent = () => {
           isMapTypeSet={isMapTypeSet}
         />
       )}
-      <MapCompassSpinner isSpinning={isMapDataLoading} />
+      <MapCompassSpinner
+        isSpinning={isMapDataLoading && !isDrawingPolygonRef.current}
+      />
       <MapControls setViewport={setViewState} />
       <MapPolygonFilter
         setMapPolygon={setMapPolygon}
