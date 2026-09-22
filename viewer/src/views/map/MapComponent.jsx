@@ -47,7 +47,6 @@ const MapComponent = () => {
 
   const mapRef = useRef(null);
   const isMounted = useRef(true);
-  const isMapReady = useRef(false);
   // Read synchronously in onClick to suppress feature popups (e.g. council
   // district) that would otherwise fire while the user is mid-polygon-draw.
   const isDrawingPolygonRef = useRef(false);
@@ -83,7 +82,6 @@ const MapComponent = () => {
       }
     }
     mapRef.current = null;
-    isMapReady.current = false;
   }, []);
 
   // Component unmount cleanup
@@ -320,16 +318,19 @@ const MapComponent = () => {
   const renderCrashDataLayers = () => {
     if (!mapData) return null;
 
+    const fatalVisibility = { visibility: isMapTypeSet.fatal ? "visible" : "none" };
+    const injuryVisibility = { visibility: isMapTypeSet.injury ? "visible" : "none" };
+
     const injuryLayer = (
       <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
-        <Layer {...seriousInjuriesOutlineDataLayer} />
-        <Layer {...seriousInjuriesDataLayer} />
+        <Layer {...seriousInjuriesOutlineDataLayer} layout={injuryVisibility} />
+        <Layer {...seriousInjuriesDataLayer} layout={injuryVisibility} />
       </Source>
     );
     const fatalityLayer = (
       <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
-        <Layer {...fatalitiesOutlineDataLayer} />
-        <Layer {...fatalitiesDataLayer} />
+        <Layer {...fatalitiesOutlineDataLayer} layout={fatalVisibility} />
+        <Layer {...fatalitiesDataLayer} layout={fatalVisibility} />
       </Source>
     );
     return (
@@ -364,45 +365,9 @@ const MapComponent = () => {
     );
   };
 
-  // Show/hide type layers
-  useEffect(() => {
-    if (!mapRef.current || !isMounted.current) return;
-
-    const map = mapRef.current.getMap();
-    if (!map || map._removed) return;
-
-    const setLayersVisibility = (idArray, visibilityString) => {
-      idArray.forEach((id) => {
-        try {
-          if (map.getLayer(id)) {
-            map.setLayoutProperty(id, "visibility", visibilityString);
-          }
-        } catch {
-          console.debug(`Layer ${id} not found`);
-        }
-      });
-    };
-
-    if (map.getLayer("fatalities") && map.getLayer("fatalitiesOutline")) {
-      const fatalityIds = ["fatalities", "fatalitiesOutline"];
-      const fatalVisibility = isMapTypeSet.fatal ? "visible" : "none";
-      setLayersVisibility(fatalityIds, fatalVisibility);
-    }
-
-    if (
-      map.getLayer("seriousInjuries") &&
-      map.getLayer("seriousInjuriesOutline")
-    ) {
-      const injuryIds = ["seriousInjuries", "seriousInjuriesOutline"];
-      const injuryVisibility = isMapTypeSet.injury ? "visible" : "none";
-      setLayersVisibility(injuryIds, injuryVisibility);
-    }
-  }, [isMapTypeSet]);
-
   // Handle map load
   const handleMapLoad = useCallback((event) => {
     if (!isMounted.current) return;
-    isMapReady.current = true;
     const map = event.target;
     const container = map.getContainer();
     if (!container) return;
