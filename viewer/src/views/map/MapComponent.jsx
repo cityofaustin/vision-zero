@@ -60,7 +60,8 @@ const MapComponent = () => {
   const [mapData, setMapData] = useState("");
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
-  const [isMapDataLoading, setIsMapDataLoading] = useState(false);
+  const [isTileDataLoading, setIsTileDataLoading] = useState(false);
+  const [isCrashDataFetching, setIsCrashDataFetching] = useState(false);
   const [crashCounts, setCrashCounts] = useState(null);
   const [, setPointData] = useState(null);
 
@@ -144,6 +145,7 @@ const MapComponent = () => {
     if (apiUrl) {
       const abortController = new AbortController();
 
+      setIsCrashDataFetching(true);
       axios
         .get(apiUrl, { signal: abortController.signal })
         .then((res) => {
@@ -154,6 +156,13 @@ const MapComponent = () => {
         .catch((error) => {
           if (error.name === "AbortError") return;
           console.error("Failed to fetch map data:", error);
+        })
+        .finally(() => {
+          // Skip if this request was superseded by a newer one - that
+          // request's own finally is responsible for clearing the flag.
+          if (isMounted.current && !abortController.signal.aborted) {
+            setIsCrashDataFetching(false);
+          }
         });
 
       return () => {
@@ -164,6 +173,7 @@ const MapComponent = () => {
     // No valid query yet - clear out any previously fetched data rather than leaving it stale.
     setMapData("");
     setCrashCounts(null);
+    setIsCrashDataFetching(false);
   }, [filters, dateRange, mapTimeWindow, mapPolygon]);
 
   // Fetch City Council Districts geojson
@@ -386,20 +396,14 @@ const MapComponent = () => {
     }
   }, []);
 
-  const onMapData = useCallback(() => {
-    if (isMounted.current) setIsMapDataLoading(true);
-  }, []);
-
-  const onMapIdle = useCallback(() => {
-    if (isMounted.current) setIsMapDataLoading(false);
-  }, []);
-
   const fatalVisibility = {
     visibility: isMapTypeSet.fatal ? "visible" : "none",
   };
   const injuryVisibility = {
     visibility: isMapTypeSet.injury ? "visible" : "none",
   };
+
+  //   !isDrawingPolygonRef.current
 
   return (
     <Map
@@ -412,8 +416,6 @@ const MapComponent = () => {
       interactiveLayerIds={interactiveLayerIds}
       onClick={onClick}
       onLoad={handleMapLoad}
-      onData={onMapData}
-      onIdle={onMapIdle}
       style={{ width: "100%", height: "100%" }}
     >
       {baseSourceAndLayer}
@@ -459,9 +461,7 @@ const MapComponent = () => {
           isMapTypeSet={isMapTypeSet}
         />
       )}
-      <MapCompassSpinner
-        isSpinning={isMapDataLoading && !isDrawingPolygonRef.current}
-      />
+      <MapCompassSpinner isSpinning={isCrashDataFetching} />
       <MapControls setViewport={setViewState} />
       <MapPolygonFilter
         setMapPolygon={setMapPolygon}
