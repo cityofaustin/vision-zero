@@ -9,28 +9,39 @@ import {
   selectedPolygonOutlineDataLayer,
 } from "./map-style";
 
-// mapbox-gl-draw's touch handling calls preventDefault() on every tap on
-// the map for as long as its control is attached (regardless of mode),
-// which silently blocks the tap-to-click behavior the crash popups rely
-// on. To avoid breaking popups on touch devices, the control is only
-// attached to the map while the user is actively drawing a polygon, and
-// removed again the moment drawing finishes or is cancelled.
-
+/**
+ * Component which handles polygon drawing + filtering.
+ *
+ * Mapbox-gl-draw's touch handling calls preventDefault() on every tap on
+ * the map for as long as its control is attached (regardless of mode),
+ * which silently blocks the tap-to-click behavior the crash popups rely
+ * on. To avoid breaking popups on touch devices, the control is only
+ * attached to the map while the user is actively drawing a polygon.
+ **/
 const MapPolygonFilter = ({ setMapPolygon, isDrawing, setIsDrawing }) => {
   const { current: map } = useMap();
   const drawRef = useRef(null);
   const eventHandlersRef = useRef([]);
-
+  const detachTimeoutRef = useRef(null);
   const [drawnFeature, setDrawnFeature] = useState(null);
 
-  // Detach the draw control from the map and reset its internal state.
+  const cancelPendingDetach = useCallback(() => {
+    if (detachTimeoutRef.current !== null) {
+      clearTimeout(detachTimeoutRef.current);
+      detachTimeoutRef.current = null;
+    }
+  }, []);
+
+  // Detach the draw control from the map and clear its internal features.
   // Safe to call whether or not the control is currently attached.
   const detachDraw = useCallback(() => {
     const draw = drawRef.current;
     if (!draw || !map) return;
     try {
-      draw.deleteAll();
+      // Only touch Draw's API while attached: once removed, its internal
+      // store is null and API calls like deleteAll() would throw.
       if (map.hasControl(draw)) {
+        draw.deleteAll();
         map.removeControl(draw);
       }
     } catch (error) {
@@ -38,8 +49,25 @@ const MapPolygonFilter = ({ setMapPolygon, isDrawing, setIsDrawing }) => {
     }
   }, [map]);
 
-  // Cleanup draw control and its listeners
+  // Detach on the next tick rather than synchronously. draw.modechange is
+  // fired partway through Draw's own mode transition, and Draw continues
+  // using its internal store after the event returns. Removing the control
+  // inside the handler nulls that store and makes Draw throw.
+  const scheduleDetach = useCallback(() => {
+    cancelPendingDetach();
+    detachTimeoutRef.current = setTimeout(() => {
+      detachTimeoutRef.current = null;
+      const draw = drawRef.current;
+      if (!draw || !map) return;
+      // If the user started a new drawing within the same tick, leave it be.
+      if (map.hasControl(draw) && draw.getMode() !== "simple_select") return;
+      detachDraw();
+    }, 0);
+  }, [map, detachDraw, cancelPendingDetach]);
+
+  // Full teardown: listeners, pending detach, and the control itself.
   const cleanupDraw = useCallback(() => {
+    cancelPendingDetach();
     if (map) {
       try {
         eventHandlersRef.current.forEach(({ event, handler }) => {
@@ -59,16 +87,11 @@ const MapPolygonFilter = ({ setMapPolygon, isDrawing, setIsDrawing }) => {
       }
     }
     drawRef.current = null;
-  }, [map]);
+  }, [map, cancelPendingDetach]);
 
-  // Component unmount cleanup
-  useEffect(() => {
-    return () => {
-      cleanupDraw();
-    };
-  }, [cleanupDraw]);
-
-  // Initialize draw control (not yet attached to the map) and listeners
+  // Create the Draw instance (not yet attached to the map) and register
+  // listeners on the map. Listeners persist across attach/detach cycles.
+  // The returned cleanup also covers component unmount.
   useEffect(() => {
     if (!map) {
       console.debug("Map not ready for DrawControl");
@@ -89,6 +112,9 @@ const MapPolygonFilter = ({ setMapPolygon, isDrawing, setIsDrawing }) => {
       drawRef.current = draw;
 
       const handleCreate = (event) => {
+        // Fired from inside draw_polygon's onStop while Draw is already
+        // transitioning to simple_select, so no mode change is needed
+        // (or safe) here - draw.modechange follows and handles detaching.
         try {
           const feature = event.features && event.features[0];
           if (
@@ -103,24 +129,14 @@ const MapPolygonFilter = ({ setMapPolygon, isDrawing, setIsDrawing }) => {
         } catch (error) {
           console.error("Failed to process drawn polygon:", error);
         }
-
-        // Returning to simple_select fires draw.modechange, which detaches
-        // the control below - keeping the "leave idle -> detach" logic in
-        // one place regardless of how drawing ends.
-        try {
-          draw.changeMode("simple_select");
-        } catch (error) {
-          console.debug("Draw mode change error:", error);
-        }
       };
 
       const handleModeChange = ({ mode }) => {
-        // Covers our own "cancel" button as well as mapbox-gl-draw's own
-        // internal cancellation (e.g. the Escape key), so the control
-        // never stays attached once drawing stops.
+        // Covers finishing a polygon, our cancel button (trash()), and
+        // Draw's own cancellation (e.g. the Escape key).
         if (mode === "simple_select") {
           setIsDrawing(false);
-          detachDraw();
+          scheduleDetach();
         } else {
           setIsDrawing(true);
         }
@@ -141,35 +157,37 @@ const MapPolygonFilter = ({ setMapPolygon, isDrawing, setIsDrawing }) => {
       console.error("Failed to initialize draw control:", error);
       return cleanupDraw;
     }
-  }, [map, cleanupDraw, detachDraw, setMapPolygon, setIsDrawing]);
+  }, [map, cleanupDraw, scheduleDetach]);
 
   const handleStartDraw = useCallback(() => {
     const draw = drawRef.current;
     if (!map || !draw) return;
 
+    // A detach may still be queued from a previous drawing session.
+    cancelPendingDetach();
+
     try {
       if (!map.hasControl(draw)) {
         map.addControl(draw, "top-right");
       }
+      // Silent via the public API - no draw.modechange, so set state here.
       draw.changeMode("draw_polygon");
       setIsDrawing(true);
     } catch (error) {
       console.debug("Start draw error:", error);
     }
-  }, [map, setIsDrawing]);
+  }, [map, setIsDrawing, cancelPendingDetach]);
 
   const handleCancelDraw = useCallback(() => {
     const draw = drawRef.current;
     if (!draw) return;
 
     try {
-      // draw_polygon's onStop (run by changeMode) tries to salvage the
-      // in-progress shape into a finished polygon if it already has
-      // enough vertices to be valid, firing draw.create instead of
-      // discarding it. trash() runs draw_polygon's onTrash instead, which
-      // unconditionally deletes the in-progress feature before switching
-      // modes - a true cancel regardless of vertex count.
-      // Triggers draw.modechange -> detachDraw()
+      // changeMode() would run draw_polygon's onStop, which salvages an
+      // in-progress shape with enough vertices into a finished polygon
+      // (firing draw.create). trash() runs onTrash instead, which always
+      // deletes the in-progress feature and then switches to simple_select
+      // internally - firing draw.modechange -> scheduleDetach().
       draw.trash();
     } catch (error) {
       console.debug("Cancel draw error:", error);
@@ -179,10 +197,12 @@ const MapPolygonFilter = ({ setMapPolygon, isDrawing, setIsDrawing }) => {
   }, [detachDraw, setIsDrawing]);
 
   const handleClearPolygon = useCallback(() => {
+    // Not inside a Draw transition here, so detaching directly is fine.
+    cancelPendingDetach();
     detachDraw();
     setDrawnFeature(null);
     setMapPolygon(null);
-  }, [detachDraw, setMapPolygon]);
+  }, [detachDraw, setMapPolygon, cancelPendingDetach]);
 
   return (
     <>
@@ -202,9 +222,9 @@ const MapPolygonFilter = ({ setMapPolygon, isDrawing, setIsDrawing }) => {
           />
         ) : drawnFeature ? (
           <button
-            className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_trash"
             type="button"
             aria-label="Clear polygon filter"
+            className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_trash"
             onClick={handleClearPolygon}
           />
         ) : (
@@ -212,7 +232,6 @@ const MapPolygonFilter = ({ setMapPolygon, isDrawing, setIsDrawing }) => {
             type="button"
             aria-label="Draw polygon filter"
             className="mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon"
-
             onClick={handleStartDraw}
           />
         )}
