@@ -345,14 +345,12 @@ const MapComponent = () => {
           type={selectedFeature.layer.id}
         />
       )}
-      {!!crashCounts &&
-        mapPolygon &&
-        !selectedFeature(
-          <MapPolygonInfoBox
-            crashCounts={crashCounts}
-            isMapTypeSet={isMapTypeSet}
-          />,
-        )}
+      {!!crashCounts && mapPolygon && !selectedFeature && (
+        <MapPolygonInfoBox
+          crashCounts={crashCounts}
+          isMapTypeSet={isMapTypeSet}
+        />
+      )}
       <MapCompassSpinner
         isSpinning={shouldFetchCouncilDistrictData || isCrashDataFetching}
       />
