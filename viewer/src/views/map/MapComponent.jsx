@@ -356,6 +356,7 @@ const MapComponent = () => {
       />
       <MapControls />
       <MapPolygonFilter
+        mapPolygon={mapPolygon}
         setMapPolygon={setMapPolygon}
         isDrawing={isDrawing}
         setIsDrawing={setIsDrawing}

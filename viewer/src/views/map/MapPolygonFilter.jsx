@@ -1,8 +1,14 @@
-import React, { useRef, useCallback, useEffect, useState } from "react";
+import React, {
+  useRef,
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+} from "react";
 import { useMap, Source, Layer } from "react-map-gl/mapbox";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
-import { stringify as stringifyGeoJSON } from "wellknown";
+import { stringify as stringifyGeoJSON, parse as parseWKT } from "wellknown";
 import { mapboxDrawStyles } from "./helpers";
 import {
   selectedPolygonDataLayer,
@@ -18,12 +24,21 @@ import {
  * on. To avoid breaking popups on touch devices, the control is only
  * attached to the map while the user is actively drawing a polygon.
  **/
-const MapPolygonFilter = ({ setMapPolygon, isDrawing, setIsDrawing }) => {
+const MapPolygonFilter = ({
+  mapPolygon,
+  setMapPolygon,
+  isDrawing,
+  setIsDrawing,
+}) => {
   const { current: map } = useMap();
   const drawRef = useRef(null);
   const eventHandlersRef = useRef([]);
   const detachTimeoutRef = useRef(null);
-  const [drawnFeature, setDrawnFeature] = useState(null);
+  const drawnFeature = useMemo(() => {
+    if (!mapPolygon) return null;
+    const geometry = parseWKT(mapPolygon);
+    return geometry ? { type: "Feature", geometry, properties: {} } : null;
+  }, [mapPolygon]);
 
   const cancelPendingDetach = useCallback(() => {
     if (detachTimeoutRef.current !== null) {
@@ -122,9 +137,7 @@ const MapPolygonFilter = ({ setMapPolygon, isDrawing, setIsDrawing }) => {
             feature.geometry &&
             feature.geometry.type === "Polygon"
           ) {
-            const wkt = stringifyGeoJSON(feature);
-            setMapPolygon(wkt);
-            setDrawnFeature(feature);
+            setMapPolygon(stringifyGeoJSON(feature));
           }
         } catch (error) {
           console.error("Failed to process drawn polygon:", error);
@@ -197,10 +210,8 @@ const MapPolygonFilter = ({ setMapPolygon, isDrawing, setIsDrawing }) => {
   }, [detachDraw, setIsDrawing]);
 
   const handleClearPolygon = useCallback(() => {
-    // Not inside a Draw transition here, so detaching directly is fine.
     cancelPendingDetach();
     detachDraw();
-    setDrawnFeature(null);
     setMapPolygon(null);
   }, [detachDraw, setMapPolygon, cancelPendingDetach]);
 
