@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect, useMemo, useReducer } from "react";
 import { dataStartDate, dataEndDate } from "../constants/time";
 import { useIsTablet } from "../constants/responsive";
 import { mapFilterReducer } from "src/constants/map";
@@ -31,16 +31,27 @@ export default function StoreProvider({ children }) {
     }
   }, [isTablet, setIsOpen]);
 
-  const store = {
-    mapFilters: [mapFilters, mapFilterDispatch],
-    mapFilterType: [isMapTypeSet, setIsMapTypeSet],
-    mapDateRange,
-    setMapDateRange,
-    mapTimeWindow: [mapTimeWindow, setMapTimeWindow],
-    sidebarToggle: [isOpen, setIsOpen],
-    mapOverlay: [mapOverlay, setMapOverlay],
-    mapPolygon: [mapPolygon, setMapPolygon],
-  };
+  const store = useMemo(
+    () => ({
+      mapFilters: [mapFilters, mapFilterDispatch],
+      mapFilterType: [isMapTypeSet, setIsMapTypeSet],
+      mapDateRange,
+      setMapDateRange,
+      mapTimeWindow: [mapTimeWindow, setMapTimeWindow],
+      sidebarToggle: [isOpen, setIsOpen],
+      mapOverlay: [mapOverlay, setMapOverlay],
+      mapPolygon: [mapPolygon, setMapPolygon],
+    }),
+    [
+      mapFilters,
+      isMapTypeSet,
+      mapDateRange,
+      mapTimeWindow,
+      isOpen,
+      mapOverlay,
+      mapPolygon,
+    ],
+  );
 
   return (
     <StoreContext.Provider value={store}>{children}</StoreContext.Provider>

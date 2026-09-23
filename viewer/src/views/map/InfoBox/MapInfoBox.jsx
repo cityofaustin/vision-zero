@@ -5,6 +5,18 @@ import { format } from "date-fns";
 import styled from "styled-components";
 import { StyledMobileInfo, setPopupPosition } from "./infoBoxStyles";
 
+const StyledPopup = styled.div`
+  user-select: text;
+
+  .mapboxgl-popup-close-button {
+    font-size: 25px;
+  }
+
+  .mapboxgl-popup-content {
+    ${(props) => setPopupPosition(props.$popupX)}
+  }
+`;
+
 const MapInfoBox = React.memo(
   ({
     selectedFeature,
@@ -13,18 +25,6 @@ const MapInfoBox = React.memo(
   }) => {
     const popupInfo = selectedFeature && selectedFeature.properties;
     const popupX = popupInfo.pixelCoordinates && popupInfo.pixelCoordinates.x;
-
-    const StyledPopup = styled.div`
-      user-select: text;
-
-      .mapboxgl-popup-close-button {
-        font-size: 25px;
-      }
-
-      .mapboxgl-popup-content {
-        ${setPopupPosition(popupX)}
-      }
-    `;
 
     const buildSeriousInjuriesOrFatalitiesConfig = (info) => [
       {
@@ -55,7 +55,7 @@ const MapInfoBox = React.memo(
 
     return (
       popupInfo && (
-        <StyledPopup>
+        <StyledPopup $popupX={popupX}>
           <Popup
             tipSize={10}
             anchor="top"
@@ -65,7 +65,13 @@ const MapInfoBox = React.memo(
             closeOnClick={false}
             dynamicPosition={false} // Set popup position with StyledPopup
           >
-            <StyledMobileInfo>{infoCard}</StyledMobileInfo>
+            <StyledMobileInfo
+              role="region"
+              aria-live="polite"
+              aria-label="Selected crash details"
+            >
+              {infoCard}
+            </StyledMobileInfo>
           </Popup>
         </StyledPopup>
       )

@@ -1,4 +1,3 @@
-
 import React, {
   useState,
   useEffect,
@@ -6,13 +5,18 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
+import { arcgisToGeoJSON } from "@terraformer/arcgis";
 import { StoreContext } from "src/constants/context";
 import Map, { Source, Layer } from "react-map-gl/mapbox";
 import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
 import MapCompassSpinner from "./MapCompassSpinner";
 import { createMapDataUrl } from "./helpers";
-import { mapInit, travisCountyBboxGeoJSON, mapNavBbox } from "./mapData";
+import {
+  mapInitalViewState,
+  mapNavBbox,
+  cityCouncilDistrictsUrl,
+} from "./mapData";
 import { crashGeoJSONEndpointUrl } from "../summary/queries/socrataQueries";
 import {
   baseSourceAndLayer,
@@ -20,12 +24,6 @@ import {
   fatalitiesOutlineDataLayer,
   seriousInjuriesDataLayer,
   seriousInjuriesOutlineDataLayer,
-  asmpSourceConfig,
-  buildAsmpLayers,
-  asmpConfig,
-  buildHighInjuryLayer,
-  cityCouncilDataLayer,
-  travisCountyDataLayer,
 } from "./map-style";
 import axios from "axios";
 import { useIsTablet } from "../../constants/responsive";
@@ -34,33 +32,52 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapInfoBox from "./InfoBox/MapInfoBox";
 import MapPolygonInfoBox from "./InfoBox/MapPolygonInfoBox";
 import MapGeocoder from "./Geocoder/Geocoder";
-import { arcgisToGeoJSON } from "@terraformer/arcgis";
+import HighInjuryLayer from "src/views/map/HighInjuryLayer";
+import AsmpLayers from "src/views/map/AsmpLayer";
+import CouncilDistrictLayer from "src/views/map/CouncilDistrictLayer";
+import TravisCountyBboxLayer from "src/views/map/TravisCountyBboxLayer";
+
+const sortAndCountCrashData = (data) => {
+  if (!data) {
+    return [null, null];
+  }
+  const crashCounts = { injury: 0, fatality: 0 };
+  const features =
+    data.features &&
+    data.features.reduce(
+      (acc, feature) => {
+        const injuryCount =
+          Number(feature.properties.sus_serious_injry_cnt) || 0;
+        const fatalityCount = Number(feature.properties.death_cnt) || 0;
+        crashCounts["injury"] += injuryCount;
+        crashCounts["fatality"] += fatalityCount;
+
+        if (injuryCount) {
+          acc.injuries.features.push(feature);
+        }
+        if (fatalityCount) {
+          acc.fatalities.features.push(feature);
+        }
+        return acc;
+      },
+      {
+        fatalities: { ...data, features: [] },
+        injuries: { ...data, features: [] },
+      },
+    );
+
+  return [features, crashCounts];
+};
 
 const MapComponent = () => {
-  const [viewState, setViewState] = useState({
-    longitude: mapInit.longitude,
-    latitude: mapInit.latitude,
-    zoom: mapInit.zoom,
-    bearing: mapInit.bearing || 0,
-    pitch: mapInit.pitch || 0,
-  });
-
   const mapRef = useRef(null);
-  const isMounted = useRef(true);
-  const isMapReady = useRef(false);
-  const eventListenersRef = useRef([]);
-  // Read synchronously in onClick to suppress feature popups (e.g. council
-  // district) that would otherwise fire while the user is mid-polygon-draw.
+  const [isDrawing, setIsDrawing] = useState(false);
+  // Mirrors `isDrawing` (see effect below) for synchronous reads in onClick
+  // to suppress feature popups (e.g. council district) that would otherwise
+  // fire while the user is mid-polygon-draw.
   const isDrawingPolygonRef = useRef(false);
-
   const isTablet = useIsTablet();
-
-  const [mapData, setMapData] = useState("");
   const [selectedFeature, setSelectedFeature] = useState(null);
-  const [cityCouncilOverlay, setCityCouncilOverlay] = useState(null);
-  const [isMapDataLoading, setIsMapDataLoading] = useState(false);
-  const [crashCounts, setCrashCounts] = useState(null);
-  const [, setPointData] = useState(null);
 
   const {
     mapFilters: [filters],
@@ -71,257 +88,122 @@ const MapComponent = () => {
     mapPolygon: [mapPolygon, setMapPolygon],
   } = React.useContext(StoreContext);
 
-  // Cleanup function
-  const cleanupMap = useCallback(() => {
-    if (mapRef.current) {
-      try {
-        const map = mapRef.current.getMap();
-        if (map && !map._removed && typeof map.remove === "function") {
-          // Remove all event listeners
-          eventListenersRef.current.forEach(({ event, handler }) => {
-            try {
-              map.off(event, handler);
-            } catch {
-              // Ignore
-            }
-          });
-          eventListenersRef.current = [];
+  const apiUrl = useMemo(
+    () =>
+      createMapDataUrl(
+        crashGeoJSONEndpointUrl,
+        filters,
+        dateRange,
+        mapPolygon,
+        mapTimeWindow,
+      ),
+    [filters, dateRange, mapPolygon, mapTimeWindow],
+  );
 
-          // Remove the map
-          map.remove();
-        }
-      } catch (error) {
-        console.debug("Map cleanup error:", error.message);
-      }
-    }
-    mapRef.current = null;
-    isMapReady.current = false;
-  }, []);
-
-  // Component unmount cleanup
-  useEffect(() => {
-    isMounted.current = true;
-
-    return () => {
-      isMounted.current = false;
-      cleanupMap();
-    };
-  }, [cleanupMap]);
-
-  // Add/remove listeners for spinner logic
-  useEffect(() => {
-    const map = mapRef.current?.getMap();
-    if (!map || !isMounted.current) return;
-
-    const onData = () => {
-      if (isMounted.current) setIsMapDataLoading(true);
-    };
-    const onIdle = () => {
-      if (isMounted.current) setIsMapDataLoading(false);
-    };
-
-    map.on("data", onData);
-    map.on("idle", onIdle);
-    eventListenersRef.current.push({ event: "data", handler: onData });
-    eventListenersRef.current.push({ event: "idle", handler: onIdle });
-
-    return () => {
-      if (map && !map._removed) {
-        map.off("data", onData);
-        map.off("idle", onIdle);
-      }
-    };
-  }, []);
+  const [crashResponse, setCrashResponse] = useState({ url: null, data: null });
+  const crashData = apiUrl ? crashResponse.data : null;
+  const isCrashDataFetching = !!apiUrl && crashResponse.url !== apiUrl;
+  const [mapData, crashCounts] = useMemo(() => {
+    return sortAndCountCrashData(crashData);
+  }, [crashData]);
 
   // Fetch initial crash data and refetch upon filters change
   useEffect(() => {
-    if (!isMounted.current) return;
-
-    const sortAndCountMapData = (data) => {
-      const crashCounts = { injury: 0, fatality: 0 };
-      const features =
-        data.features &&
-        data.features.reduce(
-          (acc, feature) => {
-            crashCounts["injury"] += parseInt(
-              feature.properties.sus_serious_injry_cnt,
-            );
-            crashCounts["fatality"] += parseInt(feature.properties.death_cnt);
-
-            if (parseInt(feature.properties.sus_serious_injry_cnt) > 0) {
-              acc.injuries.features.push(feature);
-            }
-            if (parseInt(feature.properties.death_cnt) > 0) {
-              acc.fatalities.features.push(feature);
-            }
-            return acc;
-          },
-          {
-            fatalities: { ...data, features: [] },
-            injuries: { ...data, features: [] },
-          },
-        );
-
-      if (isMounted.current) {
-        setCrashCounts(crashCounts);
-      }
-      return features;
-    };
-
-    const apiUrl = createMapDataUrl(
-      crashGeoJSONEndpointUrl,
-      filters,
-      dateRange,
-      mapPolygon,
-      mapTimeWindow,
-    );
-
-    if (apiUrl) {
-      const abortController = new AbortController();
-
-      axios
-        .get(apiUrl, { signal: abortController.signal })
-        .then((res) => {
-          if (!isMounted.current) return;
-          const sortedMapData = sortAndCountMapData(res.data);
-          setMapData(sortedMapData);
-        })
-        .catch((error) => {
-          if (error.name === "AbortError") return;
-          console.error("Failed to fetch map data:", error);
-        });
-
-      return () => {
-        abortController.abort();
-      };
-    }
-  }, [filters, dateRange, mapTimeWindow, mapPolygon]);
-
-  // Fetch City Council Districts geojson
-  useEffect(() => {
-    if (!isMounted.current) return;
+    if (!apiUrl) return;
 
     const abortController = new AbortController();
-    const overlayUrl = `https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&relationParam=&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=8&outSR=4326&defaultSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=json&token=`;
 
     axios
-      .get(overlayUrl, { signal: abortController.signal })
+      .get(apiUrl, { signal: abortController.signal })
       .then((res) => {
-        if (!isMounted.current) return;
-        const fixedGeoJSON = arcgisToGeoJSON(res.data);
-        setCityCouncilOverlay(fixedGeoJSON);
+        if (abortController.signal.aborted) return;
+        setCrashResponse({ url: apiUrl, data: res.data });
       })
       .catch((error) => {
-        if (error.name === "AbortError") return;
-        console.error("Failed to fetch city council data:", error);
+        if (axios.isCancel(error) || abortController.signal.aborted) return;
+        console.error("Failed to fetch map data:", error);
+        // Mark this URL as settled so the spinner stops; keep previous data
+        setCrashResponse((prev) => ({ ...prev, url: apiUrl }));
       });
+
+    return () => abortController.abort();
+  }, [apiUrl]);
+
+  // fetch council district geojson when overlay is enabled
+  const [councilDistrictData, setCouncilDistrictData] = useState(null);
+  const shouldFetchCouncilDistrictData =
+    overlay.name === "cityCouncil" && !councilDistrictData;
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    if (shouldFetchCouncilDistrictData) {
+      axios
+        .get(cityCouncilDistrictsUrl, { signal: abortController.signal })
+        .then((res) => setCouncilDistrictData(arcgisToGeoJSON(res.data)))
+        .catch((error) => {
+          if (axios.isCancel(error)) return;
+          console.error("Failed to fetch city council data:", error);
+        });
+    }
 
     return () => {
       abortController.abort();
     };
-  }, []);
-
-  // Restrict map navigation to bounding box around Travis County
-  const restrictNavAndZoom = useCallback((viewState) => {
-    const restricted = { ...viewState };
-
-    if (restricted.longitude < mapNavBbox.longitude.min) {
-      restricted.longitude = mapNavBbox.longitude.min;
-    }
-    if (restricted.longitude > mapNavBbox.longitude.max) {
-      restricted.longitude = mapNavBbox.longitude.max;
-    }
-    if (restricted.latitude < mapNavBbox.latitude.min) {
-      restricted.latitude = mapNavBbox.latitude.min;
-    }
-    if (restricted.latitude > mapNavBbox.latitude.max) {
-      restricted.latitude = mapNavBbox.latitude.max;
-    }
-
-    if (restricted.zoom < 10) {
-      restricted.zoom = 10;
-    }
-
-    return restricted;
-  }, []);
-
-  // Handle view state changes
-  const onMove = useCallback(
-    (evt) => {
-      if (!isMounted.current) return;
-      const restrictedViewState = restrictNavAndZoom(evt.viewState);
-      setViewState(restrictedViewState);
-    },
-    [restrictNavAndZoom],
-  );
+  }, [shouldFetchCouncilDistrictData]);
 
   // Set interactive layer IDs
   const interactiveLayerIds = useMemo(() => {
     const layers = [
       isMapTypeSet.fatal && "fatalities",
       isMapTypeSet.injury && "seriousInjuries",
-      cityCouncilOverlay && overlay.name === "cityCouncil" && "cityCouncil",
+      overlay.name === "cityCouncil" && "cityCouncil",
     ];
     return layers.filter((id) => !!id);
-  }, [isMapTypeSet, cityCouncilOverlay, overlay.name]);
+  }, [isMapTypeSet, overlay.name]);
 
-  const handleDrawingChange = useCallback((drawing) => {
-    if (drawing) {
+  // mapbox-gl-draw closes a polygon on "mouseup" (its own event delegation,
+  // not the browser's "click" event), which is what flips `isDrawing` to
+  // false. The browser's trailing "click" event for that same gesture - the
+  // one onClick's popup-suppression logic below reacts to - fires just
+  // after. Deferring the ref reset by a tick keeps clicks suppressed
+  // through that trailing click, while still clearing in time for the
+  // user's next real click.
+  useEffect(() => {
+    if (isDrawing) {
       isDrawingPolygonRef.current = true;
       return;
     }
-
-    // mapbox-gl-draw closes a polygon on "mouseup" (its own event
-    // delegation, not the browser's "click" event), which is what fires
-    // draw.modechange -> this callback. The browser's trailing "click"
-    // event for that same gesture - the one our onClick/popup logic below
-    // listens for - fires just after. Deferring the flag reset by a tick
-    // keeps clicks suppressed through that trailing click, while still
-    // clearing in time for the user's next real click.
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       isDrawingPolygonRef.current = false;
     }, 0);
-  }, []);
+    return () => clearTimeout(timeoutId);
+  }, [isDrawing]);
 
   // Event handler for selecting crash points
   const onClick = useCallback((event) => {
-    if (!isMounted.current || !mapRef.current || isDrawingPolygonRef.current)
-      return;
-
-    if (
-      event.srcEvent &&
-      event.srcEvent.srcElement &&
-      event.srcEvent.srcElement.classList
-    ) {
-      if (
-        event.srcEvent.srcElement.classList.value.includes("mapbox") ||
-        event.srcEvent.target.localName === "circle"
-      )
-        return;
-    }
+    if (!mapRef.current || isDrawingPolygonRef.current) return;
 
     const { features } = event;
-    let selectedFeature =
+    let selectedFeatureDraft =
       features &&
       features.find(
         (f) =>
           f.layer.id === "fatalities" ||
           f.layer.id === "seriousInjuries" ||
-          f.layer.id === "cityCouncil" ||
-          null,
+          f.layer.id === "cityCouncil",
       );
 
     let selectedFeatureLayer =
-      (!!selectedFeature &&
-        selectedFeature.layer &&
-        selectedFeature.layer.id) ||
+      (!!selectedFeatureDraft &&
+        selectedFeatureDraft.layer &&
+        selectedFeatureDraft.layer.id) ||
       null;
 
-    if (!!selectedFeature && selectedFeatureLayer === "cityCouncil") {
-      selectedFeature = {
-        ...selectedFeature,
+    if (!!selectedFeatureDraft && selectedFeatureLayer === "cityCouncil") {
+      selectedFeatureDraft = {
+        ...selectedFeatureDraft,
         properties: {
-          ...selectedFeature.properties,
+          ...selectedFeatureDraft.properties,
           latitude: event.lngLat.lat,
           longitude: event.lngLat.lng,
         },
@@ -329,19 +211,20 @@ const MapComponent = () => {
     }
 
     if (
-      (!!selectedFeature && selectedFeatureLayer === "fatalities") ||
-      selectedFeatureLayer === "seriousInjuries"
+      !!selectedFeatureDraft &&
+      (selectedFeatureLayer === "fatalities" ||
+        selectedFeatureLayer === "seriousInjuries")
     ) {
       try {
         const map = mapRef.current.getMap();
-        if (map && !map._removed) {
-          selectedFeature = {
-            ...selectedFeature,
+        if (map) {
+          selectedFeatureDraft = {
+            ...selectedFeatureDraft,
             properties: {
-              ...selectedFeature.properties,
+              ...selectedFeatureDraft.properties,
               pixelCoordinates: map.project([
-                parseFloat(selectedFeature.properties.longitude),
-                parseFloat(selectedFeature.properties.latitude),
+                parseFloat(selectedFeatureDraft.properties.longitude),
+                parseFloat(selectedFeatureDraft.properties.latitude),
               ]),
             },
           };
@@ -351,95 +234,11 @@ const MapComponent = () => {
       }
     }
 
-    setSelectedFeature(selectedFeature);
+    setSelectedFeature(selectedFeatureDraft);
   }, []);
-
-  const renderCrashDataLayers = () => {
-    if (!mapData) return null;
-
-    const injuryLayer = (
-      <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
-        <Layer {...seriousInjuriesOutlineDataLayer} />
-        <Layer {...seriousInjuriesDataLayer} />
-      </Source>
-    );
-    const fatalityLayer = (
-      <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
-        <Layer {...fatalitiesOutlineDataLayer} />
-        <Layer {...fatalitiesDataLayer} />
-      </Source>
-    );
-    return (
-      <>
-        {injuryLayer}
-        {fatalityLayer}
-      </>
-    );
-  };
-
-  useEffect(() => {
-    const animation = window.requestAnimationFrame(() => {
-      if (selectedFeature && isMounted.current) setPointData({});
-    });
-    return () => window.cancelAnimationFrame(animation);
-  }, [selectedFeature]);
-
-  const renderSelectedLayer = () => {
-    if (!selectedFeature) return null;
-
-    // Ensure selectedFeature is a proper GeoJSON feature
-    const featureData = selectedFeature;
-
-    // Make sure it has the required structure
-    if (!featureData.geometry) {
-      console.warn("Selected feature missing geometry");
-      return null;
-    }
-
-    return (
-      <Source id="selectedCrash" type="geojson" data={selectedFeature}/>
-    );
-  };
-
-  // Show/hide type layers
-  useEffect(() => {
-    if (!mapRef.current || !isMounted.current) return;
-
-    const map = mapRef.current.getMap();
-    if (!map || map._removed) return;
-
-    const setLayersVisibility = (idArray, visibilityString) => {
-      idArray.forEach((id) => {
-        try {
-          if (map.getLayer(id)) {
-            map.setLayoutProperty(id, "visibility", visibilityString);
-          }
-        } catch {
-          console.debug(`Layer ${id} not found`);
-        }
-      });
-    };
-
-    if (map.getLayer("fatalities") && map.getLayer("fatalitiesOutline")) {
-      const fatalityIds = ["fatalities", "fatalitiesOutline"];
-      const fatalVisibility = isMapTypeSet.fatal ? "visible" : "none";
-      setLayersVisibility(fatalityIds, fatalVisibility);
-    }
-
-    if (
-      map.getLayer("seriousInjuries") &&
-      map.getLayer("seriousInjuriesOutline")
-    ) {
-      const injuryIds = ["seriousInjuries", "seriousInjuriesOutline"];
-      const injuryVisibility = isMapTypeSet.injury ? "visible" : "none";
-      setLayersVisibility(injuryIds, injuryVisibility);
-    }
-  }, [isMapTypeSet]);
 
   // Handle map load
   const handleMapLoad = useCallback((event) => {
-    if (!isMounted.current) return;
-    isMapReady.current = true;
     const map = event.target;
     const container = map.getContainer();
     if (!container) return;
@@ -479,11 +278,22 @@ const MapComponent = () => {
     }
   }, []);
 
+  const fatalVisibility = {
+    visibility: isMapTypeSet.fatal ? "visible" : "none",
+  };
+  const injuryVisibility = {
+    visibility: isMapTypeSet.injury ? "visible" : "none",
+  };
+
   return (
     <Map
       ref={mapRef}
-      {...viewState}
-      onMove={onMove}
+      initialViewState={mapInitalViewState}
+      maxBounds={[
+        [mapNavBbox.longitude.min, mapNavBbox.latitude.min],
+        [mapNavBbox.longitude.max, mapNavBbox.latitude.max],
+      ]}
+      minZoom={10}
       mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
       mapStyle="mapbox://styles/mapbox/light-v11"
       cursor="default"
@@ -491,24 +301,42 @@ const MapComponent = () => {
       onClick={onClick}
       onLoad={handleMapLoad}
       style={{ width: "100%", height: "100%" }}
-      // Prevent map from being removed on unmount (we handle it manually)
-      preserveDrawingBuffer={false}
     >
       {baseSourceAndLayer}
-      <Source {...asmpSourceConfig}>
-        {buildAsmpLayers(asmpConfig, overlay)}
-      </Source>
-      {!!mapData && renderCrashDataLayers()}
-      {selectedFeature && renderSelectedLayer()}
-      {buildHighInjuryLayer(overlay)}
-      {!!cityCouncilOverlay && overlay.name === "cityCouncil" && (
-        <Source type="geojson" data={cityCouncilOverlay}>
-          <Layer beforeId="base-layer" {...cityCouncilDataLayer} />
-        </Source>
+      {/* Z-order anchor: overlays insert below this, crash points get added above it */}
+      <Layer
+        id="overlay-slot"
+        type="background"
+        layout={{ visibility: "none" }}
+      />
+      {overlay.name === "asmp" && (
+        <AsmpLayers beforeId="overlay-slot" activeLevels={overlay.options} />
       )}
-      <Source type="geojson" data={travisCountyBboxGeoJSON}>
-        <Layer {...travisCountyDataLayer} />
-      </Source>
+      {overlay.name === "highInjury" && (
+        <HighInjuryLayer beforeId="overlay-slot" />
+      )}
+      {overlay.name === "cityCouncil" && (
+        <CouncilDistrictLayer
+          beforeId="overlay-slot"
+          data={councilDistrictData}
+        />
+      )}
+      {!!mapData && (
+        <>
+          <Source id="crashInjuries" type="geojson" data={mapData.injuries}>
+            <Layer
+              {...seriousInjuriesOutlineDataLayer}
+              layout={injuryVisibility}
+            />
+            <Layer {...seriousInjuriesDataLayer} layout={injuryVisibility} />
+          </Source>
+          <Source id="crashFatalities" type="geojson" data={mapData.fatalities}>
+            <Layer {...fatalitiesOutlineDataLayer} layout={fatalVisibility} />
+            <Layer {...fatalitiesDataLayer} layout={fatalVisibility} />
+          </Source>
+        </>
+      )}
+      <TravisCountyBboxLayer beforeId="overlay-slot" />
       {selectedFeature && (
         <MapInfoBox
           selectedFeature={selectedFeature}
@@ -517,19 +345,23 @@ const MapComponent = () => {
           type={selectedFeature.layer.id}
         />
       )}
-      {!!crashCounts && !!mapPolygon && !selectedFeature && (
+      {!!crashCounts && mapPolygon && !selectedFeature && (
         <MapPolygonInfoBox
           crashCounts={crashCounts}
           isMapTypeSet={isMapTypeSet}
         />
       )}
-      <MapCompassSpinner isSpinning={isMapDataLoading} />
-      <MapControls setViewport={setViewState} />
-      <MapPolygonFilter
-        setMapPolygon={setMapPolygon}
-        onDrawingChange={handleDrawingChange}
+      <MapCompassSpinner
+        isSpinning={shouldFetchCouncilDistrictData || isCrashDataFetching}
       />
-      <MapGeocoder handleViewportChange={onMove} />
+      <MapControls />
+      <MapPolygonFilter
+        mapPolygon={mapPolygon}
+        setMapPolygon={setMapPolygon}
+        isDrawing={isDrawing}
+        setIsDrawing={setIsDrawing}
+      />
+      <MapGeocoder />
     </Map>
   );
 };
