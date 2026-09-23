@@ -37,64 +37,64 @@ function useWindowSize() {
   return windowSize;
 }
 
+const StyledViewTheMap = styled.div`
+  .img-wrapper {
+    position: relative;
+    width: 100%;
+  }
+  .img-wrapper:after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: all 0.2s;
+    -webkit-transition: all 0.2s;
+  }
+  .img-wrapper:hover:after {
+    opacity: 1;
+  }
+  .map-image {
+    width: 100%;
+    height: ${(props) => props.$height};
+    vertical-align: top;
+    background-image: url(${import.meta.env.BASE_URL + "map_preview.jpg"});
+    background-position: center;
+  }
+  .map-icon-row {
+    height: 40px;
+    border-top: 2px solid #8080804d;
+    margin: 0;
+  }
+  .map-icon-circle {
+    background-color: white;
+    border-radius: 50%;
+    border: 2px solid #8080804d;
+    border-radius: 50%;
+    border-bottom-color: #fff;
+    border-right-color: #fff;
+    transform: rotate(45deg);
+    height: 100px;
+    width: 100px;
+    position: relative;
+    top: -50px;
+    text-align: center;
+    padding-top: 25px;
+  }
+  .map-fa-icon {
+    transform: rotate(-45deg);
+  }
+`;
+
 const ViewTheMap = () => {
   const size = useWindowSize();
 
-  const StyledViewTheMap = styled.div`
-    .img-wrapper {
-      position: relative;
-      width: 100%;
-    }
-    .img-wrapper:after {
-      content: "";
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      background: rgba(0, 0, 0, 0.3);
-      opacity: 0;
-      transition: all 0.2s;
-      -webkit-transition: all 0.2s;
-    }
-    .img-wrapper:hover:after {
-      opacity: 1;
-    }
-    .map-image {
-      width: 100%;
-      height: ${size.width > 1325 ? "403px" : "442px"};
-      vertical-align: top;
-      background-image: url(${import.meta.env.BASE_URL + "map_preview.jpg"});
-      background-position: center;
-    }
-    .map-icon-row {
-      height: 40px;
-      border-top: 2px solid #8080804d;
-      margin: 0;
-    }
-    .map-icon-circle {
-      background-color: white;
-      border-radius: 50%;
-      border: 2px solid #8080804d;
-      border-radius: 50%;
-      border-bottom-color: #fff;
-      border-right-color: #fff;
-      transform: rotate(45deg);
-      height: 100px;
-      width: 100px;
-      position: relative;
-      top: -50px;
-      text-align: center;
-      padding-top: 25px;
-    }
-    .map-fa-icon {
-      transform: rotate(-45deg);
-    }
-  `;
-
   return (
     <Container className="m-0 p-0">
-      <StyledViewTheMap>
+      <StyledViewTheMap $height={size.width > 1325 ? "403px" : "442px"}>
         <Link to="/map" className="text-dark text-decoration-none">
           <Row>
             <Col>

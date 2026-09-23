@@ -9,6 +9,39 @@ import { Container } from "reactstrap";
 import styled from "styled-components";
 import { responsive } from "../../constants/responsive";
 
+// Map view needs to consider header height and have no overflow scroll to fill view
+// Summary view needs to scroll to show all content
+const mapStyles = `
+  position: fixed;
+  height: calc(100% - ${responsive.headerHeight}px);
+  width: calc(100vw - ${responsive.drawerWidth}px);
+`;
+
+const mainStyles = `
+  top: ${responsive.headerHeight}px;
+`;
+
+const mainMobileStyle = `
+  top: ${responsive.headerHeightMobile}px;
+`;
+
+const StyledContent = styled.div`
+  .content {
+    position: relative;
+    ${(props) => !props.$isMeasuresPath && mainStyles}
+    ${(props) => props.$isMapPath && mapStyles}
+  }
+
+  /* Fill space left behind by SideDrawer on mobile */
+  @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
+    .content {
+      width: 100vw;
+      height: calc(100% - ${responsive.headerHeightMobile}px);
+      ${(props) => !props.$isMeasuresPath && mainMobileStyle}
+    }
+  }
+`;
+
 const Content = () => {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -20,43 +53,10 @@ const Content = () => {
   // which causes map or summary views to refetch all data on sidebar toggle
   // https://github.com/facebook/react/issues/14110
 
-  // Map view needs to consider header height and have no overflow scroll to fill view
-  // Summary view needs to scroll to show all content
-  const mapStyles = `
-    position: fixed;
-    height: calc(100% - ${responsive.headerHeight}px);
-    width: calc(100vw - ${responsive.drawerWidth}px);
-  `;
-
-  const mainStyles = `
-    top: ${responsive.headerHeight}px;
-  `;
-
-  const mainMobileStyle = `
-    top: ${responsive.headerHeightMobile}px;
-  `;
-
-  const StyledContent = styled.div`
-    .content {
-      position: relative;
-      ${!isMeasuresPath && mainStyles}
-      ${isMapPath && mapStyles}
-    }
-
-    /* Fill space left behind by SideDrawer on mobile */
-    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
-      .content {
-        width: 100vw;
-        height: calc(100% - ${responsive.headerHeightMobile}px);
-        ${!isMeasuresPath && mainMobileStyle}
-      }
-    }
-  `;
-
   return (
     <>
       {!isMeasuresPath && <Header />}
-      <StyledContent>
+      <StyledContent $isMapPath={isMapPath} $isMeasuresPath={isMeasuresPath}>
         {/* Remove padding from all content */}
         <Container fluid className="content px-0">
           <Routes>
