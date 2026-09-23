@@ -1,10 +1,4 @@
-import React, {
-  useRef,
-  useCallback,
-  useEffect,
-  useState,
-  useMemo,
-} from "react";
+import React, { useRef, useCallback, useEffect, useMemo } from "react";
 import { useMap, Source, Layer } from "react-map-gl/mapbox";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -170,7 +164,7 @@ const MapPolygonFilter = ({
       console.error("Failed to initialize draw control:", error);
       return cleanupDraw;
     }
-  }, [map, cleanupDraw, scheduleDetach]);
+  }, [map, cleanupDraw, scheduleDetach, setIsDrawing, setMapPolygon]);
 
   const handleStartDraw = useCallback(() => {
     const draw = drawRef.current;
