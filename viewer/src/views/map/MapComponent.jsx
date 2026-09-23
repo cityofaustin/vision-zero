@@ -5,13 +5,18 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
+import { arcgisToGeoJSON } from "@terraformer/arcgis";
 import { StoreContext } from "src/constants/context";
 import Map, { Source, Layer } from "react-map-gl/mapbox";
 import MapControls from "./MapControls";
 import MapPolygonFilter from "./MapPolygonFilter";
 import MapCompassSpinner from "./MapCompassSpinner";
 import { createMapDataUrl } from "./helpers";
-import { mapInitalViewState, mapNavBbox } from "./mapData";
+import {
+  mapInitalViewState,
+  mapNavBbox,
+  cityCouncilDistrictsUrl,
+} from "./mapData";
 import { crashGeoJSONEndpointUrl } from "../summary/queries/socrataQueries";
 import {
   baseSourceAndLayer,
@@ -123,6 +128,28 @@ const MapComponent = () => {
 
     return () => abortController.abort();
   }, [apiUrl]);
+
+  // fetch council district geojson when overlay is enabled
+  const [councilDistrictData, setCouncilDistrictData] = useState(null);
+  const shouldFetchCouncilDistrictData =
+    overlay.name === "cityCouncil" && !councilDistrictData;
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    if (shouldFetchCouncilDistrictData) {
+      axios
+        .get(cityCouncilDistrictsUrl, { signal: abortController.signal })
+        .then((res) => setCouncilDistrictData(arcgisToGeoJSON(res.data)))
+        .catch((error) => {
+          if (axios.isCancel(error)) return;
+          console.error("Failed to fetch city council data:", error);
+        });
+    }
+
+    return () => {
+      abortController.abort();
+    };
+  }, [shouldFetchCouncilDistrictData]);
 
   // Set interactive layer IDs
   const interactiveLayerIds = useMemo(() => {
@@ -289,7 +316,10 @@ const MapComponent = () => {
         <HighInjuryLayer beforeId="overlay-slot" />
       )}
       {overlay.name === "cityCouncil" && (
-        <CouncilDistrictLayer beforeId="overlay-slot" />
+        <CouncilDistrictLayer
+          beforeId="overlay-slot"
+          data={councilDistrictData}
+        />
       )}
       {!!mapData && (
         <>
@@ -321,7 +351,9 @@ const MapComponent = () => {
           isMapTypeSet={isMapTypeSet}
         />
       )}
-      <MapCompassSpinner isSpinning={isCrashDataFetching && !isDrawing} />
+      <MapCompassSpinner
+        isSpinning={shouldFetchCouncilDistrictData || isCrashDataFetching}
+      />
       <MapControls />
       <MapPolygonFilter
         setMapPolygon={setMapPolygon}
