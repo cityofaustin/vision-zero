@@ -345,7 +345,7 @@ const MapComponent = () => {
           type={selectedFeature.layer.id}
         />
       )}
-      {!!crashCounts && (
+      {!!crashCounts && mapPolygon && (
         <MapPolygonInfoBox
           crashCounts={crashCounts}
           isMapTypeSet={isMapTypeSet}
