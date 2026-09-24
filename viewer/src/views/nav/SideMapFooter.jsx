@@ -7,7 +7,8 @@ const FooterContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: ${colors.dark};
+  color: ${colors.white};
+  background-color: ${colors.dark}
 `;
 
 const Logo = styled.img`
@@ -25,7 +26,7 @@ const DepartmentName = styled.div`
 const FeedbackLink = styled.a`
   margin-top: 10px;
   font-size: 14px;
-  color: ${colors.dark};
+  color: ${colors.white};
   cursor: pointer;
   text-decoration: none;
 
