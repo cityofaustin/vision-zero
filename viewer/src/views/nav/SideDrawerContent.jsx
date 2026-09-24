@@ -46,7 +46,7 @@ const SideDrawerContent = ({ type }) => {
           key="vz-logo-static"
         />
       </StyledDrawerHeader>
-      <Container className="pt-3 pb-3 drawer-content">
+      <Container className="pt-3 pb-3 shadow">
         <SideDrawerMobileNav />
         {currentPath === "/map" && <SideMapControl type={type} />}
       </Container>

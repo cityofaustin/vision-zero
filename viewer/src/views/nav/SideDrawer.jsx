@@ -63,7 +63,6 @@ const StyledDrawer = styled("div")`
   .drawer-content {
     overflow-y: scroll;
     height: calc(100vh - ${responsive.headerHeight}px);
-    box-shadow: 5px 0px 7px -4px #0000004d;
   }
 `;
 
