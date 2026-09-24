@@ -12,7 +12,7 @@ export const responsive = {
   headerButtonHeight: 50,
   headerButtonWidth: 200,
   headerLogoOffset: 34,
-  drawerWidth: 365,
+  drawerWidth: 340,
   datePickerTwoMonthsHeight: 700, // Height for two months to fit in mobile datepicker view
   infoPopoverFullWidth: 500,
 };
