@@ -2,6 +2,7 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import SideMapControl from "./SideMapControl";
+import SideMapFooter from "./SideMapFooter";
 import SideDrawerMobileNav from "./SideDrawerMobileNav";
 import { Container } from "reactstrap";
 import { colors } from "../../constants/colors";
@@ -46,10 +47,13 @@ const SideDrawerContent = ({ type }) => {
           key="vz-logo-static"
         />
       </StyledDrawerHeader>
-      <Container className="pt-3 pb-3 drawer-content shadow">
-        <SideDrawerMobileNav />
-        {currentPath === "/map" && <SideMapControl type={type} />}
-      </Container>
+      <div className="drawer-content shadow">
+        <Container className="pt-3 pb-3">
+          <SideDrawerMobileNav />
+          {currentPath === "/map" && <SideMapControl type={type} />}
+        </Container>
+        {currentPath === "/map" && <SideMapFooter />}
+      </div>
     </div>
   );
 };

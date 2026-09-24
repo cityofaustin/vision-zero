@@ -61,6 +61,8 @@ const StyledDrawer = styled("div")`
 
   /* Allow user to scroll when drawer content height exceeds device viewport */
   .drawer-content {
+    display: flex;
+    flex-direction: column;
     overflow-y: scroll;
     height: calc(100vh - ${responsive.headerHeight}px);
   }

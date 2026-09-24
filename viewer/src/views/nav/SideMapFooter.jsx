@@ -8,7 +8,11 @@ const FooterContainer = styled.div`
   flex-direction: column;
   align-items: center;
   color: ${colors.white};
-  background-color: ${colors.dark}
+  background-color: ${colors.dark};
+  /* Push to bottom of drawer when content is shorter than the viewport */
+  margin-top: auto;
+  flex-shrink: 0;
+  padding-bottom: 20px;
 `;
 
 const Logo = styled.img`

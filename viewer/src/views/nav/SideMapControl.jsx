@@ -3,7 +3,6 @@ import { StoreContext } from "src/constants/context";
 import SideMapControlDateRange from "./SideMapControlDateRange";
 import SideMapTimeOfDayChart from "./SideMapTimeOfDayChart";
 import SideMapControlOverlays from "./SideMapControlOverlays";
-import SideMapFooter from "./SideMapFooter";
 import InfoPopover from "../../Components/Popover/InfoPopover";
 import { popoverConfig } from "../../Components/Popover/popoverConfig";
 import { colors } from "../../constants/colors";
@@ -389,7 +388,6 @@ const SideMapControl = ({ type }) => {
         <SideMapTimeOfDayChart filters={mapOtherFilters.timeOfDay} />
       </div>
       <SideMapControlOverlays />
-      <SideMapFooter />
     </StyledCard>
   );
 };
