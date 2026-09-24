@@ -27,8 +27,6 @@ const DrawerStyled = styled(Drawer)(() => ({
   "& .MuiDrawer-paper": {
     width: drawerWidth,
     background: colors.light,
-    // background: colors.white,
-    // background: colors.infoLight,
     color: colors.light,
     border: 0,
   },
@@ -65,6 +63,7 @@ const StyledDrawer = styled("div")`
   .drawer-content {
     overflow-y: scroll;
     height: calc(100vh - ${responsive.headerHeight}px);
+    box-shadow: 5px 0px 7px -4px #0000004d;
   }
 `;
 

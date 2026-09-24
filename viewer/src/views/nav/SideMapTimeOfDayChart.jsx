@@ -155,7 +155,6 @@ export const SideMapTimeOfDayChart = ({ filters }) => {
   return (
     <Card
       className="p-2 mb-3"
-      // style={{ backgroundColor: colors.light }}
     >
       <h6 className="fw-bold">Crash time</h6>
       <span className="form-text">Click a time range to filter</span>

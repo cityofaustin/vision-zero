@@ -293,7 +293,6 @@ const SideMapControl = ({ type }) => {
         {Object.entries(mapFiltersConfig).map(([group, groupParameters]) => (
           <Card
             className="p-2 mb-3 text-dark card-body"
-            // style={{border: "none"}}
             key={`${group}-buttons`}
           >
             <h6 className="fw-bold">{groupParameters.shared.title}</h6>
