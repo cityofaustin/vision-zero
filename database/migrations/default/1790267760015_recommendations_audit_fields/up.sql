@@ -11,4 +11,4 @@ WHERE "updated_by" IS NULL;
 
 -- Make the column non-nullable
 ALTER TABLE "public"."recommendations" 
-ALTER COLUMN "updated_by" SET NOT NULL,
+ALTER COLUMN "updated_by" SET NOT NULL;
