@@ -29,12 +29,12 @@ export const INSERT_RECOMMENDATION_MUTATION = gql`
 
 export const UPDATE_RECOMMENDATION_MUTATION = gql`
   mutation UpdateRecommendation(
-    $record: recommendations_set_input!
+    $updates: recommendations_set_input!
     $id: Int!
     $partnerPksToDelete: [Int!]!
     $partnersToAdd: [recommendations_partners_insert_input!]!
   ) {
-    update_recommendations_by_pk(pk_columns: { id: $id }, _set: $record) {
+    update_recommendations_by_pk(pk_columns: { id: $id }, _set: $updates) {
       id
     }
     delete_recommendations_partners(

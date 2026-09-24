@@ -1,12 +1,8 @@
 import { gql } from "graphql-request";
 
 export const INSERT_CRASH_NOTE = gql`
-  mutation InsertCrashNote(
-    $updates: crash_notes_insert_input!
-  ) {
-    insert_crash_notes_one(
-      object: $updates
-    ) {
+  mutation InsertCrashNote($updates: crash_notes_insert_input!) {
+    insert_crash_notes_one(object: $updates) {
       id
       text
       updated_at
