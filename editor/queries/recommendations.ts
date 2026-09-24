@@ -20,8 +20,8 @@ export const RECOMMENDATION_PARTNERS_QUERY = gql`
 `;
 
 export const INSERT_RECOMMENDATION_MUTATION = gql`
-  mutation InsertRecommendation($record: recommendations_insert_input!) {
-    insert_recommendations_one(object: $record) {
+  mutation InsertRecommendation($updates: recommendations_insert_input!) {
+    insert_recommendations_one(object: $updates) {
       id
     }
   }
