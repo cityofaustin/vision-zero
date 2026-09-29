@@ -10,83 +10,83 @@ import pckg from "../../../package.json";
 
 console.log(pckg.version);
 
-const Footer = () => {
-  const StyledFooter = styled.div`
+const StyledFooter = styled.div`
+  color: ${colors.light};
+  font-weight: bold;
+
+  .link-table {
+    background: ${colors.dark};
+    position: absolute;
+    left: 0px;
+    padding: 45px 40px 45px 25%;
     color: ${colors.light};
-    font-weight: bold;
+    font-size: 16px;
+    /* Prevent horizontal scroll */
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .link-title {
+    font-size: 20px;
+  }
+
+  .link {
+    padding: 10px 15px 10px 15px;
+  }
+
+  .coa-logo {
+    z-index: 2;
+    position: relative;
+    left: 100px;
+    top: 70px;
+  }
+
+  .version {
+    font-weight: normal;
+    font-size: 14px;
+  }
+
+  a {
+    color: ${colors.light};
+    text-decoration: none;
+
+    &:hover {
+      color: ${colors.light};
+      text-decoration: underline;
+    }
+  }
+
+  /* Prevent links from overlapping CoA logo */
+  @media only screen and (max-width: ${responsive.bootstrapLarge}px) {
+    .coa-logo {
+      position: relative;
+      left: 40px;
+      top: 70px;
+    }
+  }
+
+  /* Center CoA logo and links on mobile */
+  @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
+    text-align: center;
 
     .link-table {
-      background: ${colors.dark};
-      position: absolute;
-      left: 0px;
-      padding: 45px 40px 45px 25%;
-      color: ${colors.light};
-      font-size: 16px;
-      /* Prevent horizontal scroll */
-      margin-right: auto;
-      margin-left: auto;
-    }
-
-    .link-title {
-      font-size: 20px;
-    }
-
-    .link {
-      padding: 10px 15px 10px 15px;
+      padding: 80px 0px 0px 0px;
+      margin: 0px auto;
     }
 
     .coa-logo {
-      z-index: 2;
-      position: relative;
-      left: 100px;
-      top: 70px;
+      left: auto;
+      top: -20px;
+      background: ${colors.dark};
+      padding: 8px;
+      border: 10px solid ${colors.dark};
+      border-radius: 60% 60% 0 0;
+      margin: 0 auto;
     }
+  }
+`;
 
-    .version {
-      font-weight: normal;
-      font-size: 14px;
-    }
-
-    a {
-      color: ${colors.light};
-      text-decoration: none;
-
-      &:hover {
-        color: ${colors.light};
-        text-decoration: underline;
-      }
-    }
-
-    /* Prevent links from overlapping CoA logo */
-    @media only screen and (max-width: ${responsive.bootstrapLarge}px) {
-      .coa-logo {
-        position: relative;
-        left: 40px;
-        top: 70px;
-      }
-    }
-
-    /* Center CoA logo and links on mobile */
-    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
-      text-align: center;
-
-      .link-table {
-        padding: 80px 0px 0px 0px;
-        margin: 0px auto;
-      }
-
-      .coa-logo {
-        left: auto;
-        top: -20px;
-        background: ${colors.dark};
-        padding: 8px;
-        border: 10px solid ${colors.dark};
-        border-radius: 60% 60% 0 0;
-        margin: 0 auto;
-      }
-    }
-  `;
-
+const Footer = () => {
   const footerLinks = [
     {
       text: "Data",

@@ -35,6 +35,7 @@ const InfoCard = ({ content }) => {
                 <td className="align" ref={ref}>
                   <Button
                     id="copyCrashIDButton"
+                    aria-label="Copy crash ID"
                     style={{
                       boxShadow: "none",
                       width: "30px",

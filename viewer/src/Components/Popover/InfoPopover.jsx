@@ -5,26 +5,26 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { colors } from "../../constants/colors";
 
+const StyledModalContent = styled.div`
+  font-size: 12px;
+  padding: 3px;
+
+  /* Style links for devices that show them as plain text */
+  a {
+    color: ${colors.viridis2Of6};
+    text-decoration: underline;
+  }
+`;
+
+const StyledInfoIcon = styled.span`
+  .modal-button {
+    cursor: pointer;
+  }
+`;
+
 const InfoPopover = ({ config }) => {
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
-
-  const StyledModalContent = styled.div`
-    font-size: 12px;
-    padding: 3px;
-
-    /* Style links for devices that show them as plain text */
-    a {
-      color: ${colors.viridis2Of6};
-      text-decoration: underline;
-    }
-  `;
-
-  const StyledInfoIcon = styled.span`
-    .modal-button {
-      cursor: pointer;
-    }
-  `;
 
   const content = <StyledModalContent>{config.html}</StyledModalContent>;
 

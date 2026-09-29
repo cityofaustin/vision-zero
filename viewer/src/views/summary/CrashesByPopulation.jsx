@@ -14,6 +14,16 @@ import { popEsts } from "../../constants/popEsts";
 import { colors } from "../../constants/colors";
 import ColorSpinner from "../../Components/Spinner/ColorSpinner";
 
+const StyledDiv = styled.div`
+  .year-total-div {
+    color: ${colors.dark};
+    background: ${colors.buttonBackground};
+    border-radius: 4px;
+    border-style: none;
+    opacity: 1;
+  }
+`;
+
 const CrashesByPopulation = () => {
   const [crashType, setCrashType] = useState(null);
   const [chartData, setChartData] = useState({});
@@ -76,16 +86,6 @@ const CrashesByPopulation = () => {
         });
     }
   }, [crashType, url]);
-
-  const StyledDiv = styled.div`
-    .year-total-div {
-      color: ${colors.dark};
-      background: ${colors.buttonBackground};
-      border-radius: 4px;
-      border-style: none;
-      opacity: 1;
-    }
-  `;
 
   return (
     <Container className="m-0 p-0">

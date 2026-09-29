@@ -66,133 +66,11 @@ export const seriousInjuriesOutlineDataLayer = {
   },
 };
 
-// Config ASMP Street Level layers
-export const asmpConfig = {
-  asmp_1: {
-    filter: 0,
-    color: colors.mapAsmp1,
-  },
-  asmp_2: {
-    filter: 1,
-    color: colors.mapAsmp2,
-  },
-  asmp_3: {
-    filter: 2,
-    color: colors.mapAsmp3,
-  },
-  asmp_4: {
-    filter: 3,
-    color: colors.mapAsmp4,
-  },
-  asmp_5: {
-    filter: 4,
-    color: colors.mapAsmp5,
-  },
-};
-
-export const asmpSourceConfig = {
-  id: "asmp-network",
-  type: "vector",
-  tiles: [
-    "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/tile/{z}/{y}/{x}.pbf",
-  ],
-};
-
 // Map Overlay configuration
 // Hide/show based on overlay state, add layers only once and let state determine visibility
 // Using state in any other config parameters will cause layer to add again and break map layer
 
-// Build Mapbox GL layers for each ASMP Street Level in config
-export const buildAsmpLayers = (config, overlay) =>
-  Object.entries(config).map(([level, parameters], i) => {
-    const asmpLevel = level.split("").pop();
-    // Set config for each ASMP level layer based on ArcGIS VectorTileServer styles
-    // https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/ASMP_Streets_VectorTile/VectorTileServer/resources/styles/root.json?f=pjson
-    const asmpLayerConfig = {
-      id: `asmplayer${asmpLevel}`,
-      type: "line",
-      source: "asmp-network",
-      "source-layer": "asmp_street_network",
-      filter: ["==", "_symbol", parameters.filter],
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-        visibility: `${
-          overlay.options && overlay.options.includes(asmpLevel)
-            ? "visible"
-            : "none"
-        }`,
-      },
-      paint: {
-        "line-color": parameters.color,
-        "line-width": 2,
-      },
-    };
-
-    // Return a Layer component with config prop passed for each level
-    return <Layer key={i} {...asmpLayerConfig} />;
-  });
-
-// Build Mapbox GL layer of High Injury Network & Roadways (focused segments)
-// https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_Vision_Zero_Viewer/VectorTileServer/resources/styles/root.json?f=pjson
-export const buildHighInjuryLayer = (overlay) => {
-  // Set config for each ASMP level layer based on ArcGIS VectorTileServer styles
-  const overlayId = "highInjury";
-
-  const highInjuryNetworkLayerConfig = {
-    id: "highInjuryNetwork",
-    type: "line",
-    source: "high-injury",
-    "source-layer": "Combined_HIN_HIR",
-    filter: ["==", "_symbol", 1], // Select line within layer by ID
-    layout: {
-      "line-join": "round",
-      visibility: `${overlay.name === overlayId ? "visible" : "none"}`,
-    },
-    paint: {
-      "line-color": colors.mapHighInjuryNetwork,
-      "line-width": 2,
-    },
-  };
-
-  const highInjuryRoadwaysLayerConfig = {
-    id: "highInjuryRoadways",
-    type: "line",
-    source: "high-injury",
-    "source-layer": "Combined_HIN_HIR",
-    filter: ["==", "_symbol", 0],
-    layout: {
-      "line-join": "round",
-      visibility: `${overlay.name === overlayId ? "visible" : "none"}`,
-    },
-    paint: {
-      "line-color": colors.mapHighInjuryRoadways,
-      "line-width": 4,
-    },
-  };
-
-  return (
-    <Source
-      id={"high-injury"}
-      type={"vector"}
-      tiles={[
-        "https://tiles.arcgis.com/tiles/0L95CJ0VTaxqcmED/arcgis/rest/services/High_Injury_Network_HIR_2022/VectorTileServer/tile/{z}/{y}/{x}.pbf",
-      ]}
-    >
-      <Layer
-        key={highInjuryNetworkLayerConfig.id}
-        {...highInjuryNetworkLayerConfig}
-      />
-      <Layer
-        key={highInjuryRoadwaysLayerConfig.id}
-        {...highInjuryRoadwaysLayerConfig}
-      />
-    </Source>
-  );
-};
-
 // Style geojson returned from ArcGIS that populates the Source and Layer in Map component
-// https://services.arcgis.com/0L95CJ0VTaxqcmED/ArcGIS/rest/services/BOUNDARIES_single_member_districts/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&relationParam=&returnGeodetic=false&outFields=COUNCIL_DISTRICT&returnGeometry=true&returnCentroid=false&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=6&outSR=4326&defaultSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pgeojson&token=
 export const cityCouncilDataLayer = {
   id: "cityCouncil",
   type: "fill",
@@ -223,15 +101,6 @@ export const cityCouncilDataLayer = {
       colors.mapCityCouncil10,
       /* other */ "#ccc",
     ],
-  },
-};
-
-export const travisCountyDataLayer = {
-  id: "travisCounty",
-  type: "fill",
-  paint: {
-    "fill-opacity": 0.15,
-    "fill-color": colors.dark,
   },
 };
 
