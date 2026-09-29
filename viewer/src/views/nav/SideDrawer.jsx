@@ -26,7 +26,7 @@ const Nav = styled("nav")`
 const DrawerStyled = styled(Drawer)(() => ({
   "& .MuiDrawer-paper": {
     width: drawerWidth,
-    background: colors.dark,
+    background: colors.light,
     color: colors.light,
     border: 0,
   },
@@ -61,6 +61,8 @@ const StyledDrawer = styled("div")`
 
   /* Allow user to scroll when drawer content height exceeds device viewport */
   .drawer-content {
+    display: flex;
+    flex-direction: column;
     overflow-y: scroll;
     height: calc(100vh - ${responsive.headerHeight}px);
   }
