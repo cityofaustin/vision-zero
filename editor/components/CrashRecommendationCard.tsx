@@ -170,16 +170,16 @@ export default function CrashRecommendationCard({
       if (recommendation) {
         delete payload.recommendations_partners;
         variables = {
-          record: payload,
+          updates: payload,
           id: recommendation?.id,
           partnersToAdd,
           partnerPksToDelete,
         };
       } else {
         payload.recommendations_partners = { data: partnersToAdd };
-        variables = { record: payload };
+        variables = { updates: payload };
       }
-      await mutate(variables, { skip_updated_by_setter: true });
+      await mutate(variables);
       await onSaveCallback();
       setIsMutating(false);
       setIsEditing(false);
