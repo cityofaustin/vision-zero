@@ -1,31 +1,31 @@
-import React from "react";
+import React, { useMemo } from "react";
 import InfoCard from "./InfoCard";
 import { StyledPoylgonInfo } from "./infoBoxStyles";
 
 const MapPolygonInfoBox = ({ crashCounts, isMapTypeSet }) => {
-  const createCrashContent = (crashCounts) => {
-    const content = [];
+  const content = useMemo(() => {
+    const contentDraft = [];
     if (isMapTypeSet.fatal) {
-      content.push({
+      contentDraft.push({
         title: "Fatalities",
         content: `${crashCounts?.fatality || 0}`,
       });
     }
 
     if (isMapTypeSet.injury) {
-      content.push({
+      contentDraft.push({
         title: "Serious Injuries",
         content: `${crashCounts?.injury || 0}`,
       });
     }
-    return content;
-  };
+    return contentDraft;
+  }, [crashCounts, isMapTypeSet]);
 
-  const content = createCrashContent(crashCounts);
-
-  const infoCard = <InfoCard content={content} />;
-
-  return <StyledPoylgonInfo>{infoCard}</StyledPoylgonInfo>;
+  return (
+    <StyledPoylgonInfo>
+      <InfoCard content={content} />
+    </StyledPoylgonInfo>
+  );
 };
 
 export default MapPolygonInfoBox;
