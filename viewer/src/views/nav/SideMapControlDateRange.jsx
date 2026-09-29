@@ -127,7 +127,6 @@ const SideMapControlDateRange = ({ type }) => {
   return (
     <Card
       className="p-2 mb-3 "
-      // style={{ backgroundColor: colors.light }}
     >
       <h6 className="fw-bold">Crash date</h6>
       <StyledDateRow>
