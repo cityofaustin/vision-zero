@@ -16,7 +16,7 @@ We have [Browserstack](https://www.browserstack.com/) available to us for cross-
 ### Summary page - `/`
 
 - Info banner at the top links to the Vision Zero Program **website** and the **Capital Projects Explorer** (both open in a new tab)
-- Click the info icon (ⓘ) next to **Crash data** to open the "Traffic Crashes" definitions popover; confirm it closes
+- Click the info icon (ⓘ) next to **Crash data** to open the "Traffic Crashes" definitions popover; Confirm the hyperlink to **Form CR-3 Instruction Manual** works properly; confirm the modal can be closed normally.
 - KPI widget row (Fatalities, Years of Life Lost, Serious Injuries, Total Crashes) loads without error and shows a current-year vs. prior-year comparison for each
 - Click the info icon on **Years of Life Lost** to open its definition popover
 - For each of the 6 chart cards below, click the info icon (ⓘ) in the card header to open/close its definitions popover, and use the **All / Fatalities / Serious Injuries** toggle to confirm the chart re-renders:

@@ -42,7 +42,7 @@ const StyledNavbar = styled.div`
     opacity: 1;
     margin-left: 5px;
     margin-right: 5px;
-    :hover {
+    &:hover {
       background: ${colors.info};
       color: ${colors.white};
     }
