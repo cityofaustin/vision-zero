@@ -4,7 +4,7 @@ alter table "public"."recommendations" add column "updated_by" text null ;
 
 -- Backfill updated_at with created_at value
 UPDATE "public"."recommendations" 
-SET "updated_by" = "created_by";
+SET "updated_at" = "created_at";
 
 -- Backfill updated_by with created_by value
 UPDATE "public"."recommendations" 
