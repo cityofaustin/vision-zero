@@ -26,27 +26,27 @@ const children = [
   { component: <ViewTheMap /> },
 ];
 
+const StyledSummary = styled.div`
+  /* Set padding for all Summary children in grid that are Bootstrap columns and have .summary-child class */
+  .summary-child,
+  [class*=".col-"] {
+    padding: 0.75em;
+  }
+
+  .banner {
+    background: ${colors.light};
+    color: ${colors.dark};
+    border-style: none;
+  }
+
+  /* Style links for devices that show them as plain text */
+  a {
+    color: ${colors.viridis2Of6};
+    text-decoration: underline;
+  }
+`;
+
 const Summary = () => {
-  const StyledSummary = styled.div`
-    /* Set padding for all Summary children in grid that are Bootstrap columns and have .summary-child class */
-    .summary-child,
-    [class*=".col-"] {
-      padding: 0.75em;
-    }
-
-    .banner {
-      background: ${colors.light};
-      color: ${colors.dark};
-      border-style: none;
-    }
-
-    /* Style links for devices that show them as plain text */
-    a {
-      color: ${colors.viridis2Of6};
-      text-decoration: underline;
-    }
-  `;
-
   const lastUpdated = format(dataEndDate, "MMMM dd, yyyy");
 
   return (
