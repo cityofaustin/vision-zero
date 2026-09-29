@@ -18,17 +18,15 @@ const StyledMapNav = styled.div`
   }
 `;
 
-const MapControls = ({ setViewport }) => {
-  const _onViewportGeolocate = (viewport) =>
-    setViewport({ ...viewport, zoom: 15 });
-
+const MapControls = () => {
+  
   return (
     <StyledMapNav>
       <div className="nav-buttons">
         <NavigationControl showCompass={false} />
       </div>
       <div className="geolocate-button">
-        <GeolocateControl onViewportChange={_onViewportGeolocate} />
+        <GeolocateControl />
       </div>
     </StyledMapNav>
   );

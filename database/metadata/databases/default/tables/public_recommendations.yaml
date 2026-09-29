@@ -21,24 +21,28 @@ insert_permissions:
     permission:
       check: {}
       columns:
-        - id
-        - created_at
         - crash_pk
-        - recommendation_status_id
-        - rec_text
+        - created_at
         - created_by
+        - id
+        - rec_text
         - rec_update
+        - recommendation_status_id
+        - updated_at
+        - updated_by
   - role: vz-admin
     permission:
       check: {}
       columns:
-        - id
-        - created_at
         - crash_pk
+        - id
         - recommendation_status_id
-        - rec_text
         - created_by
+        - rec_text
         - rec_update
+        - updated_by
+        - created_at
+        - updated_at
 select_permissions:
   - role: editor
     permission:
@@ -49,18 +53,22 @@ select_permissions:
         - created_by
         - rec_text
         - rec_update
+        - updated_by
         - created_at
+        - updated_at
       filter: {}
   - role: readonly
     permission:
       columns:
         - crash_pk
-        - created_at
-        - created_by
         - id
+        - recommendation_status_id
+        - created_by
         - rec_text
         - rec_update
-        - recommendation_status_id
+        - updated_by
+        - created_at
+        - updated_at
       filter: {}
     comment: ""
   - role: vz-admin
@@ -72,7 +80,9 @@ select_permissions:
         - created_by
         - rec_text
         - rec_update
+        - updated_by
         - created_at
+        - updated_at
       filter: {}
 update_permissions:
   - role: editor
@@ -84,7 +94,9 @@ update_permissions:
         - created_by
         - rec_text
         - rec_update
+        - updated_by
         - created_at
+        - updated_at
       filter: {}
       check: {}
   - role: vz-admin
@@ -96,7 +108,9 @@ update_permissions:
         - created_by
         - rec_text
         - rec_update
+        - updated_by
         - created_at
+        - updated_at
       filter: {}
       check: {}
 delete_permissions:

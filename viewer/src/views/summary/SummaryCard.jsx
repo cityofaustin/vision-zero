@@ -3,13 +3,13 @@ import React from "react";
 import styled from "styled-components";
 import { Card, CardBody, Col } from "reactstrap";
 
-const SummaryCard = ({ child }) => {
-  const StyledCardTitle = styled.div`
-    font-size: 2em;
-    text-align: center;
-    padding-bottom: 0.75em;
-  `;
+const StyledCardTitle = styled.div`
+  font-size: 2em;
+  text-align: center;
+  padding-bottom: 0.75em;
+`;
 
+const SummaryCard = ({ child }) => {
   return (
     <Col className="summary-child" xl="6" md="12">
       {/* Set height to fill parent column */}
