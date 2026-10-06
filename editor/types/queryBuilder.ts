@@ -143,7 +143,13 @@ export interface QueryConfig {
    */
   sortAsc: boolean;
 
+  /**
+   * (Optional) secondary col name to sort by
+   */
   secondarySortColName?: string;
+  /**
+   * (Optional) sort secondary col results ascending (true) or descending (false)
+   */
   secondarySortAsc?: boolean;
   /**
    * The filter to be managed by the search component.
