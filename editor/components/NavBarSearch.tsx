@@ -42,7 +42,7 @@ type SearchField<T extends SearchableTypes = SearchableTypes> = {
  */
 type AnySearchField = SearchField<Crash> | SearchField<Location>;
 
-const SEARCH_FIELDS = [
+const SEARCH_FIELDS: AnySearchField[] = [
   {
     key: "case_id",
     label: "Case ID",
@@ -61,7 +61,7 @@ const SEARCH_FIELDS = [
     query: LOCATION_NAV_SEARCH,
     getUrl: (record: Location) => `/locations/${record.location_id}`,
   },
-] satisfies AnySearchField[];
+];
 
 /**
  * Find a search field config from an input key - it's a safe way to handle an
