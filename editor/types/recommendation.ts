@@ -6,6 +6,8 @@ export type Recommendation = {
   id: number;
   created_at: string;
   created_by: string;
+  updated_at: string;
+  updated_by: string;
   crash_pk: number;
   rec_text: string | null;
   rec_update: string | null;
@@ -57,7 +59,5 @@ export type RecommendationFormInputs = {
   rec_update?: string | null | undefined;
   recommendation_status_id?: number | null | undefined;
   recommendations_partners?:
-    | Partial<RecommendationPartner>[]
-    | null
-    | undefined;
+    Partial<RecommendationPartner>[] | null | undefined;
 };
