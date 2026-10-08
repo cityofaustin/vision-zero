@@ -1,4 +1,3 @@
-
 drop function if exists find_matching_person_ids cascade;
 drop function if exists ems_incidents_trigger cascade;
 drop function if exists ems_update_incident_crash_pk cascade;
