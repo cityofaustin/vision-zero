@@ -6,8 +6,8 @@ WITH unit_factors AS (
         units.crash_pk AS id,
         categories.risk_factor_category
     FROM units
-    CROSS JOIN LATERAL
-        (
+    CROSS JOIN
+        LATERAL (
             VALUES (units.contrib_factr_1_id),
             (units.contrib_factr_2_id),
             (units.contrib_factr_3_id),
@@ -89,6 +89,6 @@ aggregated AS (
 
 SELECT
     crashes.id,
-    nullif(aggregated.risk_factors, '{}'::text []) AS risk_factors
+    nullif(aggregated.risk_factors, '{}'::text[]) AS risk_factors
 FROM crashes
 LEFT JOIN aggregated ON aggregated.id = crashes.id;

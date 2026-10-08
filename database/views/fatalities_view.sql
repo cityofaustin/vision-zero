@@ -2,20 +2,25 @@
 
 CREATE OR REPLACE VIEW fatalities_view AS
 SELECT
-    people.id  AS person_id,
-    crashes.id AS crash_pk,
+    people.id
+        AS person_id,
+    crashes.id
+        AS crash_pk,
     crashes.cris_crash_id,
     crashes.record_locator,
     crashes.longitude,
     crashes.latitude,
     crashes.address_display,
-    units.id   AS unit_id,
+    units.id
+        AS unit_id,
     concat_ws(
         ' '::text, people.prsn_first_name, people.prsn_mid_name, people.prsn_last_name
-    )          AS victim_name,
+    )
+        AS victim_name,
     to_char(
         (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'yyyy'::text
-    )          AS year,
+    )
+        AS year,
     crashes.crash_timestamp,
     concat_ws(
         ' '::text,
@@ -27,27 +32,30 @@ SELECT
         crashes.rpt_sec_street_pfx,
         crashes.rpt_sec_street_name,
         ')'
-    )          AS location,
+    )
+        AS location,
     to_char(
         (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'YYYY-MM-DD'::text
-    )          AS crash_date_ct,
+    )
+        AS crash_date_ct,
     to_char(
         (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'HH24:MI:SS'::text
-    )          AS crash_time_ct,
+    )
+        AS crash_time_ct,
     row_number()
         OVER (
             PARTITION BY
                 (extract(YEAR FROM (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text)))
             ORDER BY ((crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text))
         )
-    AS ytd_fatality,
+        AS ytd_fatality,
     dense_rank()
         OVER (
             PARTITION BY
                 (extract(YEAR FROM (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text)))
             ORDER BY ((crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text)), crashes.id
         )
-    AS ytd_fatal_crash,
+        AS ytd_fatal_crash,
     crashes.case_id,
     crashes.law_enforcement_ytd_fatality_num,
     crashes.engineering_area_id
