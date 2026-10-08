@@ -289,6 +289,8 @@ export const GET_CRASH = gql`
         created_at
         rec_text
         created_by
+        updated_by
+        updated_at
         crash_pk
         rec_update
         recommendation_status_id
