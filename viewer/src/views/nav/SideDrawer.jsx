@@ -3,7 +3,7 @@ import { StoreContext } from "src/constants/context";
 import { useLocation } from "react-router-dom";
 
 import Drawer from "@mui/material/Drawer";
-import { styled } from "@mui/material/styles";
+import styled from "styled-components";
 
 import SideDrawerContent from "./SideDrawerContent";
 import { colors } from "../../constants/colors";
