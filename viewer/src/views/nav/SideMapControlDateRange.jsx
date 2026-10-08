@@ -159,6 +159,7 @@ const SideMapControlDateRange = ({ type }) => {
               dateFormat={DATE_FORMAT}
               maxDate={today}
               popperPlacement="bottom-start"
+              aria-label="map-filter-start-date"
             />
             {"-"}
             <StyledDatePicker
@@ -168,6 +169,7 @@ const SideMapControlDateRange = ({ type }) => {
               dateFormat={DATE_FORMAT}
               maxDate={today}
               popperPlacement="bottom-start"
+              aria-label="map-filter-end-date"
             />
           </>
         )}

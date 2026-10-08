@@ -1,7 +1,6 @@
 import React from "react";
 import { StoreContext } from "src/constants/context";
 import { useLocation } from "react-router-dom";
-import { useTheme } from "@mui/material/styles";
 
 import Drawer from "@mui/material/Drawer";
 import { styled } from "@mui/material/styles";
@@ -71,14 +70,11 @@ const StyledDrawer = styled("div")`
 const SideDrawer = () => {
   const location = useLocation();
   const currentPath = location.pathname;
-  const theme = useTheme();
-  const direction = theme.direction;
 
   const {
     sidebarToggle: [isOpen, setIsOpen],
   } = React.useContext(StoreContext);
 
-  const anchor = direction === "rtl" ? "right" : "left";
 
   return (
     <StyledDrawer>
@@ -87,7 +83,6 @@ const SideDrawer = () => {
           <DrawerStyled
             id="temporary-drawer"
             variant="temporary"
-            anchor={anchor}
             open={isOpen}
             onClose={() => setIsOpen(!isOpen)}
             ModalProps={{
@@ -99,7 +94,6 @@ const SideDrawer = () => {
           <DrawerStyled
             id="permanent-drawer"
             variant="permanent" // this is always mounted, but when on mobile display is none
-            anchor={anchor}
           >
             <SideDrawerContent type="permanent" />
           </DrawerStyled>
