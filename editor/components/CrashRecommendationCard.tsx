@@ -27,6 +27,7 @@ import AlignedLabel from "@/components/AlignedLabel";
 import { LuSquarePen } from "react-icons/lu";
 import { stringToNumberNullable } from "@/utils/formHelpers";
 import { ADMIN_EDIT_ROLES } from "@/utils/auth";
+import { formatUserNameFromEmail, formatIsoDate } from "@/utils/formatters";
 
 /**
  * Compares the old vs new RecommendationPartner arrays and returns
@@ -293,8 +294,22 @@ export default function CrashRecommendationCard({
         </Form>
       </Card.Body>
       <PermissionsRequired allowedRoles={ADMIN_EDIT_ROLES}>
-        <Card.Footer>
-          <div className="d-flex justify-content-end">
+        <Card.Footer className="d-flex justify-content-between align-items-end">
+          {recommendation && (
+            <div className="text-secondary">
+              <small>
+                <span className="">
+                  Updated by{" "}
+                  {formatUserNameFromEmail(recommendation.updated_by)}
+                </span>
+                <span>{` on `}</span>
+                <span className="text-nowrap">
+                  {formatIsoDate(recommendation.updated_at)}
+                </span>
+              </small>
+            </div>
+          )}
+          <div>
             {!isEditing && (
               <Button
                 size="sm"
