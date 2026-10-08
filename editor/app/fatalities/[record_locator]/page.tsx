@@ -43,13 +43,11 @@ export default function FatalCrashDetailsPage({
 
   const { record_locator: recordLocator } = use(params);
   const { user } = useAuth0();
-  const includeEms = hasRole(ADMIN_EDIT_ROLES, user);
-
   const typename = "crashes";
 
   const { data, error, refetch } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
-    variables: { recordLocator, includeEms },
+    variables: { recordLocator },
     typename,
   });
 

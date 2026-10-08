@@ -11,9 +11,7 @@ import DropdownButtonToggle from "@/components/DropdownButtonToggle";
 import AlignedLabel from "@/components/AlignedLabel";
 import { CRASH_NAV_SEARCH, CASE_NAV_SEARCH } from "@/queries/crash";
 import { LOCATION_NAV_SEARCH } from "@/queries/location";
-import { EMS_INCIDENT_NAV_SEARCH } from "@/queries/ems";
 import { Crash } from "@/types/crashes";
-import { EMSPatientCareRecord } from "@/types/ems";
 import { Location } from "@/types/locations";
 import { useQuery } from "@/utils/graphql";
 import { useLogUserEvent } from "@/utils/userEvents";
@@ -26,7 +24,7 @@ const userEventName = "navbar_search";
 /**
  * Types that can be used in the search field config
  */
-type SearchableTypes = Crash | Location | EMSPatientCareRecord;
+type SearchableTypes = Crash | Location;
 
 /**
  * The search field config
@@ -44,8 +42,7 @@ type SearchField<T extends SearchableTypes = SearchableTypes> = {
  */
 type AnySearchField =
   | SearchField<Crash>
-  | SearchField<Location>
-  | SearchField<EMSPatientCareRecord>;
+  | SearchField<Location>;
 
 const SEARCH_FIELDS = [
   {
@@ -59,13 +56,6 @@ const SEARCH_FIELDS = [
     label: "Crash ID",
     query: CRASH_NAV_SEARCH,
     getUrl: (record: Crash) => `/crashes/${record.record_locator}`,
-  },
-  {
-    key: "incident_number",
-    label: "EMS Incident #",
-    query: EMS_INCIDENT_NAV_SEARCH,
-    getUrl: (record: EMSPatientCareRecord) => `/ems/${record.incident_number}`,
-    allowedRoles: ADMIN_EDIT_ROLES,
   },
   {
     key: "location_id",
@@ -138,7 +128,7 @@ export default function NavBarSearch() {
 
   // When a unique match arrives, prepare navigation during render (React-recommended)
   if (searchClicked && data?.length === 1 && !pendingRoute) {
-    const matchedRecord = data[0] as Crash & Location & EMSPatientCareRecord;
+    const matchedRecord = data[0] as Crash & Location;
     setPendingRoute(searchField.getUrl(matchedRecord));
     setSearchValue("");
     setSearchClicked(false);

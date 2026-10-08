@@ -33,12 +33,6 @@ export const routes: Route[] = [
     icon: LuMapPin,
   },
   {
-    path: "ems",
-    label: "EMS",
-    icon: LuAmbulance,
-    allowedRoles: ADMIN_EDIT_ROLES,
-  },
-  {
     path: "upload-non-cr3",
     label: "Upload Non-CR3",
     icon: LuCloudUpload,
