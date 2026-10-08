@@ -26,6 +26,7 @@ TABLES_TO_IGNORE = [
     "public.change_log_units",
     "public.change_log_ems__incidents",
     "public.location_crashes_view",
+    "public.ems__incidents",
 ]
 
 
