@@ -21,8 +21,6 @@ import NotesCard from "@/components/NotesCard";
 import UserEventsLogger from "@/components/UserEventsLogger";
 import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/crashNotes";
 import CrashIsTemporaryBanner from "@/components/CrashIsTemporaryBanner";
-import { ADMIN_EDIT_ROLES, hasRole } from "@/utils/auth";
-import { useAuth0 } from "@auth0/auth0-react";
 
 const otherCardColumns = [
   crashesColumns.case_id,
@@ -42,7 +40,6 @@ export default function FatalCrashDetailsPage({
   const mapRef = useRef<MapRef | null>(null);
 
   const { record_locator: recordLocator } = use(params);
-  const { user } = useAuth0();
   const typename = "crashes";
 
   const { data, error, refetch } = useQuery<Crash>({

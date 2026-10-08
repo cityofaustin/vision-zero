@@ -1,6 +1,6 @@
 "use client";
 import { notFound } from "next/navigation";
-import { use, useCallback, useMemo } from "react";
+import { use, useCallback } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import ChangeLog from "@/components/ChangeLog";
@@ -13,7 +13,6 @@ import CrashNarrativeCard from "@/components/CrashNarrativeCard";
 import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 import DataCard from "@/components/DataCard";
 import NotesCard from "@/components/NotesCard";
-import PermissionsRequired from "@/components/PermissionsRequired";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
 import ShortcutHelperText from "@/components/ShortcutHelperText";
 import UserEventsLogger from "@/components/UserEventsLogger";
@@ -33,8 +32,6 @@ import {
   useKeyboardShortcut,
 } from "@/utils/shortcuts";
 import { useDocumentTitle } from "@/utils/documentTitle";
-import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
-import { useAuth0 } from "@auth0/auth0-react";
 
 const typename = "crashes";
 
@@ -53,9 +50,6 @@ export default function CrashDetailsPage({
   params: Promise<{ record_locator: string }>;
 }) {
   const { record_locator: recordLocator } = use(params);
-  const { user } = useAuth0();
-
-
 
   // Call hook to watch out for the use of keyboard shortcuts
   useKeyboardShortcut(shortcutKeyLookup, scrollToElementOnKeyPress);

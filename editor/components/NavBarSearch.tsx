@@ -15,7 +15,7 @@ import { Crash } from "@/types/crashes";
 import { Location } from "@/types/locations";
 import { useQuery } from "@/utils/graphql";
 import { useLogUserEvent } from "@/utils/userEvents";
-import { ADMIN_EDIT_ROLES, hasRole, HasuraUserRoleName } from "@/utils/auth";
+import { hasRole, HasuraUserRoleName } from "@/utils/auth";
 
 const navSearchLocalStorageKey = "navBarSearchField";
 
@@ -40,9 +40,7 @@ type SearchField<T extends SearchableTypes = SearchableTypes> = {
 /**
  * This union lets us pass Search<some-type> around in state and handlers
  */
-type AnySearchField =
-  | SearchField<Crash>
-  | SearchField<Location>;
+type AnySearchField = SearchField<Crash> | SearchField<Location>;
 
 const SEARCH_FIELDS = [
   {

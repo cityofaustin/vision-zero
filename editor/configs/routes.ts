@@ -1,6 +1,6 @@
 import { FaRegHeart, FaCarBurst } from "react-icons/fa6";
 import { RiDashboard3Line } from "react-icons/ri";
-import { LuMapPin, LuAmbulance, LuCloudUpload, LuUsers } from "react-icons/lu";
+import { LuMapPin, LuCloudUpload, LuUsers } from "react-icons/lu";
 import { IconType } from "react-icons";
 import { ADMIN_EDIT_ROLES, HasuraUserRoleName } from "@/utils/auth";
 
