@@ -450,7 +450,7 @@ const locationsListViewFiltercards: FilterGroup[] = [
 ];
 
 export const locationsListViewQueryConfig: QueryConfig = {
-  _version: 3,
+  _version: 4,
   exportable: true,
   exportFilename: "locations",
   tableName: "locations_list_view",
@@ -458,6 +458,8 @@ export const locationsListViewQueryConfig: QueryConfig = {
   offset: 0,
   sortColName: "cr3_crash_count",
   sortAsc: false,
+  secondarySortColName: "location_id",
+  secondarySortAsc: true,
   searchFilter: {
     id: "search",
     value: "",
