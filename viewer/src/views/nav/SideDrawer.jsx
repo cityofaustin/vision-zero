@@ -2,7 +2,6 @@ import React from "react";
 import { StoreContext } from "src/constants/context";
 import { useLocation } from "react-router-dom";
 
-import Drawer from "@mui/material/Drawer";
 import styled from "styled-components";
 
 import SideDrawerContent from "./SideDrawerContent";
@@ -11,7 +10,7 @@ import { responsive } from "src/constants/responsive";
 
 const drawerWidth = responsive.drawerWidth;
 
-const Root = styled("div")`
+const Root = styled.div`
   display: flex;
 `;
 
@@ -22,15 +21,8 @@ const Nav = styled("nav")`
   }
 `;
 
-const DrawerStyled = styled(Drawer)(() => ({
-  "& .MuiDrawer-paper": {
-    width: drawerWidth,
-    background: colors.light,
-    border: 0,
-  },
-}));
 
-const StyledDrawerContainer = styled("div")`
+const StyledDrawerContainer = styled.div`
   /* Disable side drawer in desktop viewport */
   #summary-side-drawer {
     @media only screen and (min-width: ${responsive.bootstrapMedium}px) {
@@ -66,6 +58,30 @@ const StyledDrawerContainer = styled("div")`
   }
 `;
 
+
+const PermanentDrawer = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: ${drawerWidth}px;
+  background: ${colors.light};
+  display: flex;
+  flex-direction: column;
+  z-index: 1200;
+  @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
+    display: none;
+  }
+`;
+
+const TemporaryDrawer = styled.div`
+  background-color: green;
+    top: 0;
+  left: 0;
+  bottom: 0;
+  width: ${drawerWidth}px;
+`;
+
 const SideDrawer = () => {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -78,7 +94,7 @@ const SideDrawer = () => {
     <StyledDrawerContainer>
       <Root id={currentPath === "/" ? "summary-side-drawer" : ""}>
         <Nav>
-          <DrawerStyled
+          <TemporaryDrawer
             id="temporary-drawer"
             variant="temporary"
             open={isOpen}
@@ -88,13 +104,10 @@ const SideDrawer = () => {
             }}
           >
             <SideDrawerContent type="temporary" />
-          </DrawerStyled>
-          <DrawerStyled
-            id="permanent-drawer"
-            variant="permanent" // this is always mounted, but when on mobile display is none
-          >
+          </TemporaryDrawer>
+          <PermanentDrawer>
             <SideDrawerContent type="permanent" />
-          </DrawerStyled>
+          </PermanentDrawer>
         </Nav>
       </Root>
     </StyledDrawerContainer>
