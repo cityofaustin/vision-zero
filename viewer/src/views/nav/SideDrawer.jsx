@@ -11,27 +11,31 @@ import { responsive } from "../../constants/responsive";
 
 const drawerWidth = responsive.drawerWidth;
 
-const Root = styled("div")`
-  display: flex;
-`;
-
 const Nav = styled("nav")`
+  display: flex;
   @media (min-width: ${responsive.bootstrapMediumMin}px) {
     width: ${drawerWidth}px;
     flex-shrink: 0;
   }
 `;
 
-const DrawerStyled = styled(Drawer)(() => ({
-  "& .MuiDrawer-paper": {
-    width: drawerWidth,
-    background: colors.light,
-    color: colors.light,
-    border: 0,
-  },
-}));
+// const DrawerStyled = styled(Drawer)(() => ({
+//   "& .MuiDrawer-paper": {
+//     background: colors.light,
+//     color: colors.light,
+//     border: 0,
+//   },
+// }));
 
-const StyledDrawer = styled("div")`
+const DrawerStyled = styled.div`
+  background-color: ${colors.light};
+  width: ${drawerWidth}px;
+  border: 0;
+  height: 100%;
+  overflow-y: unset;
+`;
+
+const StyledDrawerContainer = styled("div")`
   /* Disable side drawer in desktop viewport */
   #summary-side-drawer {
     @media only screen and (min-width: ${responsive.bootstrapMedium}px) {
@@ -53,11 +57,6 @@ const StyledDrawer = styled("div")`
     }
   }
 
-  /* Keep logo fixed and scroll content below */
-  .MuiDrawer-paper {
-    overflow-y: unset;
-  }
-
   /* Allow user to scroll when drawer content height exceeds device viewport */
   .drawer-content {
     display: flex;
@@ -75,10 +74,11 @@ const SideDrawer = () => {
     sidebarToggle: [isOpen, setIsOpen],
   } = React.useContext(StoreContext);
 
+  console.log(currentPath);
 
   return (
-    <StyledDrawer>
-      <Root id={currentPath === "/" ? "summary-side-drawer" : ""}>
+    <StyledDrawerContainer>
+      {currentPath !== "/" && (
         <Nav>
           <DrawerStyled
             id="temporary-drawer"
@@ -98,8 +98,8 @@ const SideDrawer = () => {
             <SideDrawerContent type="permanent" />
           </DrawerStyled>
         </Nav>
-      </Root>
-    </StyledDrawer>
+      )}
+    </StyledDrawerContainer>
   );
 };
 
