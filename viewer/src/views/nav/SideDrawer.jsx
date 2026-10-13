@@ -103,10 +103,10 @@ const SideDrawer = () => {
               keepMounted: true,
             }}
           >
-            <SideDrawerContent type="temporary" />
+            <SideDrawerContent type="temporary" currentPath={currentPath}/>
           </TemporaryDrawer>
           <PermanentDrawer>
-            <SideDrawerContent type="permanent" />
+            <SideDrawerContent type="permanent" currentPath={currentPath} />
           </PermanentDrawer>
         </Nav>
       </Root>

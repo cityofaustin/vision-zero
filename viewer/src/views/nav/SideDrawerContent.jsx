@@ -1,5 +1,4 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import SideMapControl from "./SideMapControl";
 import SideMapFooter from "./SideMapFooter";
@@ -30,9 +29,8 @@ const StyledDrawerHeader = styled.div`
   }
 `;
 
-const SideDrawerContent = ({ type }) => {
-  const location = useLocation();
-  const currentPath = location.pathname;
+const SideDrawerContent = ({ type, currentPath }) => {
+  console.count("side drawer content")
 
   return (
     <div className="side-menu">
