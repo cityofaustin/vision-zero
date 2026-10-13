@@ -6,34 +6,29 @@ import Drawer from "@mui/material/Drawer";
 import styled from "styled-components";
 
 import SideDrawerContent from "./SideDrawerContent";
-import { colors } from "../../constants/colors";
-import { responsive } from "../../constants/responsive";
+import { colors } from "src/constants/colors";
+import { responsive } from "src/constants/responsive";
 
 const drawerWidth = responsive.drawerWidth;
 
-const Nav = styled("nav")`
+const Root = styled("div")`
   display: flex;
+`;
+
+const Nav = styled("nav")`
   @media (min-width: ${responsive.bootstrapMediumMin}px) {
     width: ${drawerWidth}px;
     flex-shrink: 0;
   }
 `;
 
-// const DrawerStyled = styled(Drawer)(() => ({
-//   "& .MuiDrawer-paper": {
-//     background: colors.light,
-//     color: colors.light,
-//     border: 0,
-//   },
-// }));
-
-const DrawerStyled = styled.div`
-  background-color: ${colors.light};
-  width: ${drawerWidth}px;
-  border: 0;
-  height: 100%;
-  overflow-y: unset;
-`;
+const DrawerStyled = styled(Drawer)(() => ({
+  "& .MuiDrawer-paper": {
+    width: drawerWidth,
+    background: colors.light,
+    border: 0,
+  },
+}));
 
 const StyledDrawerContainer = styled("div")`
   /* Disable side drawer in desktop viewport */
@@ -57,11 +52,16 @@ const StyledDrawerContainer = styled("div")`
     }
   }
 
+  /* Keep logo fixed and scroll content below */
+  .MuiDrawer-paper {
+    overflow-y: unset;
+  }
+
   /* Allow user to scroll when drawer content height exceeds device viewport */
   .drawer-content {
     display: flex;
     flex-direction: column;
-    overflow-y: scroll;
+    overflow-y: auto;
     height: calc(100vh - ${responsive.headerHeight}px);
   }
 `;
@@ -74,11 +74,9 @@ const SideDrawer = () => {
     sidebarToggle: [isOpen, setIsOpen],
   } = React.useContext(StoreContext);
 
-  console.log(currentPath);
-
   return (
     <StyledDrawerContainer>
-      {currentPath !== "/" && (
+      <Root id={currentPath === "/" ? "summary-side-drawer" : ""}>
         <Nav>
           <DrawerStyled
             id="temporary-drawer"
@@ -98,7 +96,7 @@ const SideDrawer = () => {
             <SideDrawerContent type="permanent" />
           </DrawerStyled>
         </Nav>
-      )}
+      </Root>
     </StyledDrawerContainer>
   );
 };
