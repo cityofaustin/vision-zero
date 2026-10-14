@@ -1,10 +1,9 @@
 import React from "react";
-import { StoreContext } from "src/constants/context";
 import { useLocation } from "react-router-dom";
-
 import styled from "styled-components";
-
+import { Offcanvas } from "reactstrap";
 import SideDrawerContent from "./SideDrawerContent";
+import { StoreContext } from "src/constants/context";
 import { colors } from "src/constants/colors";
 import { responsive } from "src/constants/responsive";
 
@@ -54,10 +53,9 @@ const StyledDrawerContainer = styled.div`
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    height: calc(100vh - ${responsive.headerHeight}px);
+    height: calc(100dvh - ${responsive.headerHeight}px);
   }
 `;
-
 
 const PermanentDrawer = styled.div`
   position: fixed;
@@ -74,12 +72,9 @@ const PermanentDrawer = styled.div`
   }
 `;
 
-const TemporaryDrawer = styled.div`
-  background-color: green;
-    top: 0;
-  left: 0;
-  bottom: 0;
-  width: ${drawerWidth}px;
+const TemporaryDrawer = styled(Offcanvas)`
+  background: ${colors.light};
+  width:100%;
 `;
 
 const SideDrawer = () => {
@@ -96,14 +91,11 @@ const SideDrawer = () => {
         <Nav>
           <TemporaryDrawer
             id="temporary-drawer"
-            variant="temporary"
-            open={isOpen}
-            onClose={() => setIsOpen(!isOpen)}
-            ModalProps={{
-              keepMounted: true,
-            }}
+            isOpen={isOpen}
+            scrollable={true}
+            toggle={() => setIsOpen(false)}
           >
-            <SideDrawerContent type="temporary" currentPath={currentPath}/>
+            <SideDrawerContent type="temporary" currentPath={currentPath} />
           </TemporaryDrawer>
           <PermanentDrawer>
             <SideDrawerContent type="permanent" currentPath={currentPath} />
