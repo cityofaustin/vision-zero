@@ -68,13 +68,17 @@ const getOrderByExp = (
   secondarySortColName?: string,
   secondarySortAsc?: boolean
 ): string => {
-  const primary = `{ ${sortColName}: ${sortAsc ? "asc" : "desc"} }`;
+  const primary = getQueryStringComponent(
+    [sortColName],
+    sortAsc ? "asc" : "desc"
+  );
   if (!secondarySortColName) {
     return primary;
   }
-  const secondary = `{ ${secondarySortColName}: ${
+  const secondary = getQueryStringComponent(
+    [secondarySortColName],
     secondarySortAsc ? "asc" : "desc"
-  } }`;
+  );
   // Hasura accepts order_by as an array of objects for multi-column sorting
   return `[ ${primary}, ${secondary} ]`;
 };
