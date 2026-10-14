@@ -15,18 +15,10 @@ const StyledMobileNav = styled.div`
   .nav-button {
     height: ${responsive.headerButtonHeight}px;
     font-size: 18px;
+    color: ${colors.white};
+    background: ${colors.infoDark};
   }
 
-  .active-button {
-    background: ${colors.white} !important;
-    color: ${colors.dark} !important;
-  }
-
-  .inactive-button {
-    color: ${colors.white} !important;
-    background: ${colors.dark} !important;
-    border: 1px solid ${colors.white};
-  }
 `;
 
 const SideDrawerMobileNav = () => {
@@ -40,23 +32,24 @@ const SideDrawerMobileNav = () => {
   return (
     <StyledMobileNav>
       <Nav className="me-auto mb-2" navbar>
-        {navConfig.map((config, i) => (
-          <NavItem key={i}>
-            <NavLink tag={Link} to={config.url}>
-              <Button
-                className={`nav-button ${
-                  currentPath === config.url ? "active" : "inactive"
-                }-button w-100`}
-                onClick={() => {
-                  trackPageEvent(config.eventKey);
-                  setIsOpen(false);
-                }}
-              >
-                {config.icon} {config.title}
-              </Button>
-            </NavLink>
-          </NavItem>
-        ))}
+        {navConfig.map(
+          (config, i) =>
+            currentPath !== config.url && (
+              <NavItem key={i}>
+                <NavLink tag={Link} to={config.url}>
+                  <Button
+                    className={`nav-button w-100`}
+                    onClick={() => {
+                      trackPageEvent(config.eventKey);
+                      setIsOpen(false);
+                    }}
+                  >
+                    {config.icon} {config.title}
+                  </Button>
+                </NavLink>
+              </NavItem>
+            ),
+        )}
       </Nav>
     </StyledMobileNav>
   );

@@ -53,7 +53,7 @@ const StyledNavbar = styled.div`
   }
 
   .sidedrawer-toggle {
-    /* Hide toggle button in header when SideDrawer is open by default */
+    /* Hide toggle button in header on desktop view */
     @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
       display: none;
     }

@@ -1,7 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { Offcanvas, OffcanvasBody } from "reactstrap";
+import { Offcanvas, OffcanvasBody, OffcanvasHeader } from "reactstrap";
 import SideDrawerContent from "./SideDrawerContent";
 import { StoreContext } from "src/constants/context";
 import { colors } from "src/constants/colors";
@@ -46,7 +46,7 @@ const DesktopDrawer = styled.div`
   background: ${colors.light};
   display: flex;
   flex-direction: column;
-  z-index: 1030;
+  z-index: 1200;
   /* Show permanent drawer medium breakpoint and up */
   @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
     display: none;
@@ -79,6 +79,7 @@ const SideDrawer = () => {
       <Root id={currentPath === "/" ? "summary-side-drawer" : undefined}>
         <Nav>
           <MobileDrawer isOpen={isOpen} toggle={() => setIsOpen(false)}>
+            <OffcanvasHeader toggle={() => setIsOpen(false)} />
             <OffcanvasBody>
               <SideDrawerContent type="temporary" currentPath={currentPath} />
             </OffcanvasBody>
