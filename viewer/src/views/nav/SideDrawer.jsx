@@ -13,7 +13,7 @@ const Root = styled.div`
   display: flex;
 `;
 
-const Nav = styled("nav")`
+const Nav = styled.nav`
   @media (min-width: ${responsive.bootstrapMediumMin}px) {
     width: ${drawerWidth}px;
     flex-shrink: 0;
@@ -60,7 +60,7 @@ const PermanentDrawer = styled.div`
   background: ${colors.light};
   display: flex;
   flex-direction: column;
-  z-index: 1200;
+  z-index: 1030;
   @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
     display: none;
   }
@@ -68,7 +68,7 @@ const PermanentDrawer = styled.div`
 
 const TemporaryDrawer = styled(Offcanvas)`
   background: ${colors.light};
-  // important in order to override the offcanvas width
+  // !important included in order to override the offcanvas width
   width: 100% !important;
   .offcanvas-body {
     padding: 0;
@@ -85,7 +85,7 @@ const SideDrawer = () => {
 
   return (
     <StyledDrawerContainer>
-      <Root id={currentPath === "/" ? "summary-side-drawer" : ""}>
+      <Root id={currentPath === "/" ? "summary-side-drawer" : undefined}>
         <Nav>
           <TemporaryDrawer
             id="temporary-drawer"
