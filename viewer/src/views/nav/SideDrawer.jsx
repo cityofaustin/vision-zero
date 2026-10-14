@@ -1,7 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { Offcanvas } from "reactstrap";
+import { Offcanvas, OffcanvasBody } from "reactstrap";
 import SideDrawerContent from "./SideDrawerContent";
 import { StoreContext } from "src/constants/context";
 import { colors } from "src/constants/colors";
@@ -19,7 +19,6 @@ const Nav = styled("nav")`
     flex-shrink: 0;
   }
 `;
-
 
 const StyledDrawerContainer = styled.div`
   /* Disable side drawer in desktop viewport */
@@ -41,11 +40,6 @@ const StyledDrawerContainer = styled.div`
     @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       display: none;
     }
-  }
-
-  /* Keep logo fixed and scroll content below */
-  .MuiDrawer-paper {
-    overflow-y: unset;
   }
 
   /* Allow user to scroll when drawer content height exceeds device viewport */
@@ -74,7 +68,11 @@ const PermanentDrawer = styled.div`
 
 const TemporaryDrawer = styled(Offcanvas)`
   background: ${colors.light};
-  width:100%;
+  // important in order to override the offcanvas width
+  width: 100% !important;
+  .offcanvas-body {
+    padding: 0;
+  }
 `;
 
 const SideDrawer = () => {
@@ -92,10 +90,11 @@ const SideDrawer = () => {
           <TemporaryDrawer
             id="temporary-drawer"
             isOpen={isOpen}
-            scrollable={true}
             toggle={() => setIsOpen(false)}
           >
-            <SideDrawerContent type="temporary" currentPath={currentPath} />
+            <OffcanvasBody>
+              <SideDrawerContent type="temporary" currentPath={currentPath} />
+            </OffcanvasBody>
           </TemporaryDrawer>
           <PermanentDrawer>
             <SideDrawerContent type="permanent" currentPath={currentPath} />
