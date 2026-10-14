@@ -30,8 +30,6 @@ const StyledDrawerHeader = styled.div`
 `;
 
 const SideDrawerContent = ({ type, currentPath }) => {
-  console.count("side drawer content")
-
   return (
     <div className="side-menu">
       <StyledDrawerHeader>
