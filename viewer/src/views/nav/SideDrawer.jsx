@@ -21,23 +21,9 @@ const Nav = styled.nav`
 `;
 
 const StyledDrawerContainer = styled.div`
-  /* Disable side drawer in desktop viewport */
+  /* Hide side drawer in desktop viewport on summary page */
   #summary-side-drawer {
     @media only screen and (min-width: ${responsive.bootstrapMedium}px) {
-      display: none;
-    }
-  }
-
-  /* Show mobile drawer medium breakpoint and down */
-  #temporary-drawer {
-    @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
-      display: none;
-    }
-  }
-
-  /* Show permanent drawer medium breakpoint and up */
-  #permanent-drawer {
-    @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
       display: none;
     }
   }
@@ -51,7 +37,7 @@ const StyledDrawerContainer = styled.div`
   }
 `;
 
-const PermanentDrawer = styled.div`
+const DesktopDrawer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -61,17 +47,22 @@ const PermanentDrawer = styled.div`
   display: flex;
   flex-direction: column;
   z-index: 1030;
+  /* Show permanent drawer medium breakpoint and up */
   @media only screen and (max-width: ${responsive.bootstrapMedium}px) {
     display: none;
   }
 `;
 
-const TemporaryDrawer = styled(Offcanvas)`
+const MobileDrawer = styled(Offcanvas)`
   background: ${colors.light};
   // !important included in order to override the offcanvas width
   width: 100% !important;
   .offcanvas-body {
     padding: 0;
+  }
+  /* Show mobile drawer medium breakpoint and down */
+  @media only screen and (min-width: ${responsive.bootstrapMediumMin}px) {
+    display: none;
   }
 `;
 
@@ -87,18 +78,14 @@ const SideDrawer = () => {
     <StyledDrawerContainer>
       <Root id={currentPath === "/" ? "summary-side-drawer" : undefined}>
         <Nav>
-          <TemporaryDrawer
-            id="temporary-drawer"
-            isOpen={isOpen}
-            toggle={() => setIsOpen(false)}
-          >
+          <MobileDrawer isOpen={isOpen} toggle={() => setIsOpen(false)}>
             <OffcanvasBody>
               <SideDrawerContent type="temporary" currentPath={currentPath} />
             </OffcanvasBody>
-          </TemporaryDrawer>
-          <PermanentDrawer>
+          </MobileDrawer>
+          <DesktopDrawer>
             <SideDrawerContent type="permanent" currentPath={currentPath} />
-          </PermanentDrawer>
+          </DesktopDrawer>
         </Nav>
       </Root>
     </StyledDrawerContainer>
