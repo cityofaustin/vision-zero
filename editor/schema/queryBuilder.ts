@@ -85,6 +85,8 @@ export const QueryConfigSchema = z.object({
   offset: z.number(),
   sortColName: z.string(),
   sortAsc: z.boolean(),
+  secondarySortColName: z.string().optional(),
+  secondarySortAsc: z.boolean().optional(),
   searchFilter: Filter,
   searchFields: z.array(SearchFilterField),
   dateFilter: DateFilter.optional(),
