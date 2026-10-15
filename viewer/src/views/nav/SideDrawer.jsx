@@ -78,7 +78,11 @@ const SideDrawer = () => {
     <StyledDrawerContainer>
       <Root id={currentPath === "/" ? "summary-side-drawer" : undefined}>
         <Nav>
-          <MobileDrawer isOpen={isOpen} toggle={() => setIsOpen(false)}>
+          <MobileDrawer
+            isOpen={isOpen}
+            toggle={() => setIsOpen(false)}
+            fade={false}
+          >
             <OffcanvasHeader toggle={() => setIsOpen(false)} />
             <OffcanvasBody>
               <SideDrawerContent type="temporary" currentPath={currentPath} />
