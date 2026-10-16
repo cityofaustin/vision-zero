@@ -31,13 +31,6 @@ The design supports an editing environment which enables Vision Zero program sta
       - [Crash record matching](#crash-record-matching)
       - [Matching System Overview](#matching-system-overview)
       - [Database Triggers](#database-triggers)
-        - [CRIS Crash Matching Trigger (`update_crash_ems_match`)](#cris-crash-matching-trigger-update_crash_ems_match)
-        - [EMS Record Update Handler (`ems_update_handle_record_match_event`)](#ems-record-update-handler-ems_update_handle_record_match_event)
-        - [Person Matching Function (`find_matching_person_ids`)](#person-matching-function-find_matching_person_ids)
-        - [Non-CR3 Matching Trigger (`update_noncr3_ems_match`)](#non-cr3-matching-trigger-update_noncr3_ems_match)
-        - [Match Status Values](#match-status-values)
-      - [Injury severity classification](#injury-severity-classification)
-      - [EMS Spatial Attributes](#ems-spatial-attributes)
     - [Austin Fire Department (AFD)](#austin-fire-department-afd)
     - [Computer-Aided Dispatch records](#computer-aided-dispatch-records)
     - [Geospatial layers](#geospatial-layers)
@@ -71,11 +64,11 @@ A single real-world crash typically generates data across multiple independent s
 | ----------------------------- | ------------------ | ---------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Crash reports                 | Yes                | `crashes`              | Crash reports are written based on law enforcement officer discretion and written only if a motor vehicle was involved |
 | Computer-aided dispatch (CAD) | Partial            | `cad_incidents`        | Motor-vehicle-involved records only. Vision Zero access is limited to incidents which are coded as crash-related.      |
-| EMS patient care records      | Partial            | `ems__incidents`       | Motor-vehicle-involved records only                                                                                    |
-| AFD patient care records      | Partial\*          | `afd__incidents`       | Motor-vehicle-involved records only                                                                                    |
+| EMS patient care records      | No                 | N/A                    | Aspirational                                                                                                           |
+| AFD patient care records      | No                 | N/A                    | Aspirational                                                                                                           |
 | Medical examiner reports      | Yes                | N/A                    | Ad-hoc exchange of XLSX files for Motor-vehicle-involved fatalities                                                    |
-| Vehicle telemetry             | No                 | N/A                    |  Aspirational                                                                                                          |
-| Hospital records              | No                 | N/A                    |  Aspirational                                                                                                          |
+| Vehicle telemetry             | No                 | N/A                    | Aspirational                                                                                                           |
+| Hospital records              | No                 | N/A                    | Aspirational                                                                                                           |
 
 \*_Work in progress_
 
@@ -334,7 +327,7 @@ The `crashes.geolocation_provider_id` column tracks the source of a crash record
 #### How the provider is assigned
 
 1. **`cris` (default)**: All crash records default to this provider, reflecting that coordinates are provided by CRIS via the standard import process.
-2. **`apd_cad`**: If an APD-investigated crash (`investigat_agency_id = 74`) is inserted into `crashes` with no lat/lon, the `a_crashes_fill_cad_coordinates_before_insert` trigger searches `cad_incidents` for a record matching the crash's `case_id`, within a ±2-day window of the `crash_timestamp`. If a match is found, the CAD record's coordinates are copied to the crash and the provider is set to `apd_cad`. This trigger must fire _before_ `crashes_set_spatial_attributes_on_insert` and `update_crash_ems_match`, which is why it's named to sort first alphabetically among `BEFORE INSERT` triggers.
+2. **`apd_cad`**: If an APD-investigated crash (`investigat_agency_id = 74`) is inserted into `crashes` with no lat/lon, the `a_crashes_fill_cad_coordinates_before_insert` trigger searches `cad_incidents` for a record matching the crash's `case_id`, within a ±2-day window of the `crash_timestamp`. If a match is found, the CAD record's coordinates are copied to the crash and the provider is set to `apd_cad`. This trigger must fire _before_ `crashes_set_spatial_attributes_on_insert`, which is why it's named to sort first alphabetically among `BEFORE INSERT` triggers.
 3. **`manual_qa`**: If a Vision Zero staff member edits a crash's lat/lon through the VZE, the provider is set to `manual_qa`.
 
 **Note:** once a crash's provider is set to `manual_qa`, there is currently no mechanism to revert it back to `cris` or `apd_cad`—the change is one-directional.
@@ -361,133 +354,7 @@ Note that it is assumed that Non-CR3 records will always be imported _after_ any
 
 ### Austin-Travis County Emergency Medical Services (EMS)
 
-The Vision Zero database stores records received from
-[Austin-Travis County Emergency Medical Services](https://www.austintexas.gov/content/ems-austin-travis-county) (EMS).
-
-Stored in the `ems__incidents` table, these are patient-level records (known to EMS folks as **Patient Care Records** or PCRs) which describe the EMS provider's impression and outcomes of injuries sustained in traffic crashes.
-
-Crucially, these records can be joined to CRIS people records to provide additional insight into crash victims' injuries. Linking CRIS and EMS records is a complex process described in detail below.
-
-#### Integration
-
-EMS records are received via email attachment on a nightly basis and include roughly two-years of data. The records are imported into the Vision Zero database on a nightly basis via the AFD + EMS [import ETL](../etl/afd_ems_import/README.md).
-
-Unlike CRIS records, EMS patient care records are never updated via integration: records are inserted once, and ignored on subsequent attempts to import an existing record (`ON CONFLICT DO NOTHING`) . Per EMS, it is not expected that records will be modified upstream, and so it is not necessary to support record updates.
-
-See also the [ETL readme](../etl/afd_ems_import/README.md) and [Gitbook docs](https://app.gitbook.com/o/-LzDQOVGhTudbKRDGpUA/s/-M4Ve3sp7qA5cPXha0B4/external-data-sources).
-
-#### Crash record matching
-
-Our data system enables EMS patient care records to be linked to other crash records in the database. Linking these various records together enables the VZ team to produce more comprehensive analyses of the safety conditions on roadways. Record linking is accomplished through a combination of automated record matching (via database trigger) and/or manual matching of records through the Vision Zero Editor UI.
-
-EMS records can be matched to three different record types, as summarized in the table below.
-
-| EMS foreign key column     | Foreign table      | Foreign column | Matching mechanism                | Note                                                                                                                           |
-| -------------------------- | ------------------ | -------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `crash_pk`                 | `crashes`          | `id`           | Trigger and/or VZE user interface | CRIS-crash level match. This link associates the patient care record to a specific crash, but not to a specific person record. |
-| `person_id`                | `people`           | `id`           | Trigger and/or VZE user interface |  CRIS-person level match. This link associates a patient care to specific CRIS crash person                                    |
-| `atd_apd_blueform_case_id` | `atd_apd_blueform` | `case_id`      | Trigger                           | Also known as "non-CR3" records, this linkage is made automatically via database trigger only.                                 |
-
-#### Matching System Overview
-
-The EMS record matching system operates through a coordinated set of database triggers and functions that automatically link EMS incidents to crash records based on spatial and temporal proximity, then refine those matches using demographic data. The system handles three types of matching:
-
-1. **CRIS Crash Matching**: Links EMS records to official crash reports using location and time
-2. **Person-Level Matching**: Further refines crash matches by linking to specific individuals using demographics
-3. **Non-CR3 Matching**: Links EMS records to police blueform incidents (non-reportable crashes)
-
-The matching process balances automation with manual oversight, allowing staff to review and override automated matches through the Vision Zero Editor interface while maintaining data integrity through comprehensive status tracking.
-
-#### Database Triggers
-
-##### CRIS Crash Matching Trigger (`update_crash_ems_match`)
-
-**Triggered by**: INSERT/UPDATE operations on the `crashes` table
-
-This trigger handles the initial spatial-temporal matching between EMS incidents and CRIS crash records. When a crash record is inserted or updated, the trigger:
-
-- Searches for EMS records within a 1200-meter radius and ±30-minute time window of the crash
-- For each matching EMS record, identifies all crashes that meet the same spatial-temporal criteria
-- Updates the EMS record's `matched_crash_pks` array with all qualifying crash IDs
-- Sets the `_match_event_name` to `'handle_matched_crash_pks_updated'` to trigger downstream processing
-
-On updates, the trigger also performs cleanup by removing crash IDs from EMS records that no longer meet the matching criteria (due to location/time changes or crash deletions).
-
-##### EMS Record Update Handler (`ems_update_handle_record_match_event`)
-
-**Triggered by**: UPDATE operations on the `ems__incidents` table when `_match_event_name` is set
-
-This is the central orchestration function that processes various matching events and maintains data consistency. It handles multiple event types:
-
-**Manual Matching Events:**
-
-- `unmatch_crash_by_manual_qa`: Clears crash and person matches when staff mark a match as incorrect
-- `unmatch_person_by_manual_qa`: Clears person-level matches while preserving crash matches
-- `match_person_by_manual_qa`: Assigns person matches and synchronizes crash associations
-
-**Automated Events:**
-
-- `reset_crash_match`: Resets EMS record to automated matching state based on current `matched_crash_pks`
-- `handle_matched_crash_pks_updated`: Processes changes to the matched crash IDs array
-- `match_crash_by_automation`: Handles new automated crash matches
-
-The function ensures crash and person matches remain synchronized and respects manual overrides by preserving `matched_by_manual_qa` status.
-
-##### Person Matching Function (`find_matching_person_ids`)
-
-**Called by**: The EMS update handler during automated person-level matching
-
-This function refines crash-level matches by identifying specific individuals within a crash using demographic data. The matching process:
-
-1. Validates the EMS record is already matched to a crash
-2. Checks for duplicate EMS records with identical demographics to avoid conflicts
-3. Queries the `people_list_view` for individuals matching:
-   - Same crash ID
-   - Exact age match
-   - Case-insensitive gender match
-   - Fuzzy ethnicity matching with special handling for Native American categories
-
-Returns an array of matching person IDs, enabling the update handler to determine if there's a single match, multiple matches, or no match.
-
-##### Non-CR3 Matching Trigger (`update_noncr3_ems_match`)
-
-**Triggered by**: INSERT/UPDATE operations on the `atd_apd_blueform` table
-
-This trigger manages matching between EMS records and police "blueform" incidents (non-reportable crashes). Similar to CRIS matching but with tighter spatial criteria (600-meter radius):
-
-- Identifies EMS records within spatial-temporal proximity of blueform incidents
-- Updates match status based on result count (unmatched/single match/multiple matches)
-- Respects manual matching decisions by only updating match arrays for manually matched records
-- Performs cleanup on updates to remove invalid matches
-
-The trigger maintains separate matching columns (`atd_apd_blueform_case_id`, `non_cr3_match_status`, `matched_non_cr3_case_ids`) to track non-CR3 associations independently of CRIS crash matching.
-
-##### Match Status Values
-
-The system uses standardized status values across different match types:
-
-- `unmatched`: No automated or manual matches found
-- `matched_by_automation`: Single match found automatically
-- `matched_by_manual_qa`: Match assigned through staff review
-- `multiple_matches_by_automation`: Multiple potential matches require staff review
-- `unmatched_by_manual_qa`: Staff determined no valid match exists
-
-#### Injury severity classification
-
-CRIS person-level records have an injury level assigned based on the crash investigator's assessment of the injuries each person may have sustained in the crash. The injury severity levels are stored in the `lookups.injry_sev` table and form the basis of all Vision Zero statistics related to crashes injuries.
-
-In order to make EMS records compatible with CRIS-based analyses, we have established a process to assign a CRIS-style injury classification to EMS patient records. The specific business rules for assigning the injury were developed in partnership with the Vision Zero team as well as our partners at EMS, and reflect our best effort to approximate CRIS's injury levels based on the data we have available.
-
-We have two fields on the `ems__incidents` table related to injury classification, both of which are set via the `update_ems_patient_injry_sev` trigger when a new EMS record is inserted into the database.
-
-- `ems__incidents.patient_injry_sev_id`: The injury severity ID value which references `lookups.ems_patient_injry_sev`.
-- `ems__incidents.patient_injry_sev_reason`: A text field which describes which field/values were used to assign injury severity level.
-
-The ruleset for assigning injury severity is long: refer to the `update_ems_patient_injry_sev` trigger itself to learn more. See also PR [#1829](https://github.com/cityofaustin/vision-zero/pull/1829) for an example of how these values can be backfilled if needed.
-
-#### EMS Spatial Attributes
-
-On the `ems__incidents` table, the `austin_full_purpose` and `location_id` are values set by spatial join on the `geo.jurisdictions` and the `atd_txdot_locations` locations tables, respectively. The values are managed by the `ems_incidents_trigger` trigger, which fires on `INSERT`.
+https://github.com/cityofaustin/vision-zero/pull/2184
 
 ### Austin Fire Department (AFD)
 
@@ -638,7 +505,7 @@ Typically, any foreign key constraint that references the layer should use the `
 
 Use the [ArcGIS Online Layer Helper](/toolbox/load_agol_layer) to update layers in our database from their authoritative source on ArcGIS Online.
 
-After a geospatial layer is updated, you must reprocess any records which reference the layer. These updates require manual crafting of SQL statements which mirror the trigger functions that typically set these associations when a record is inserted or updated. For example, after updating the `location` polygons layer, you will need to re-process the `location_id` associations for `crashes`, `atd_apd_blueform`, `ems__incidents`, and `afd__incdents`.
+After a geospatial layer is updated, you must reprocess any records which reference the layer. These updates require manual crafting of SQL statements which mirror the trigger functions that typically set these associations when a record is inserted or updated. For example, after updating the `location` polygons layer, you will need to re-process the `location_id` associations for `crashes`, `atd_apd_blueform`, and `afd__incdents`.
 
 You can find example SQL statements for reprocessing reference layer associations in the following issues:
 

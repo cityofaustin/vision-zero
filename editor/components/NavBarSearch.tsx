@@ -11,13 +11,11 @@ import DropdownButtonToggle from "@/components/DropdownButtonToggle";
 import AlignedLabel from "@/components/AlignedLabel";
 import { CRASH_NAV_SEARCH, CASE_NAV_SEARCH } from "@/queries/crash";
 import { LOCATION_NAV_SEARCH } from "@/queries/location";
-import { EMS_INCIDENT_NAV_SEARCH } from "@/queries/ems";
 import { Crash } from "@/types/crashes";
-import { EMSPatientCareRecord } from "@/types/ems";
 import { Location } from "@/types/locations";
 import { useQuery } from "@/utils/graphql";
 import { useLogUserEvent } from "@/utils/userEvents";
-import { ADMIN_EDIT_ROLES, hasRole, HasuraUserRoleName } from "@/utils/auth";
+import { hasRole, HasuraUserRoleName } from "@/utils/auth";
 
 const navSearchLocalStorageKey = "navBarSearchField";
 
@@ -26,7 +24,7 @@ const userEventName = "navbar_search";
 /**
  * Types that can be used in the search field config
  */
-type SearchableTypes = Crash | Location | EMSPatientCareRecord;
+type SearchableTypes = Crash | Location;
 
 /**
  * The search field config
@@ -42,12 +40,9 @@ type SearchField<T extends SearchableTypes = SearchableTypes> = {
 /**
  * This union lets us pass Search<some-type> around in state and handlers
  */
-type AnySearchField =
-  | SearchField<Crash>
-  | SearchField<Location>
-  | SearchField<EMSPatientCareRecord>;
+type AnySearchField = SearchField<Crash> | SearchField<Location>;
 
-const SEARCH_FIELDS = [
+const SEARCH_FIELDS: AnySearchField[] = [
   {
     key: "case_id",
     label: "Case ID",
@@ -61,19 +56,12 @@ const SEARCH_FIELDS = [
     getUrl: (record: Crash) => `/crashes/${record.record_locator}`,
   },
   {
-    key: "incident_number",
-    label: "EMS Incident #",
-    query: EMS_INCIDENT_NAV_SEARCH,
-    getUrl: (record: EMSPatientCareRecord) => `/ems/${record.incident_number}`,
-    allowedRoles: ADMIN_EDIT_ROLES,
-  },
-  {
     key: "location_id",
     label: "Location ID",
     query: LOCATION_NAV_SEARCH,
     getUrl: (record: Location) => `/locations/${record.location_id}`,
   },
-] satisfies AnySearchField[];
+];
 
 /**
  * Find a search field config from an input key - it's a safe way to handle an
@@ -138,7 +126,7 @@ export default function NavBarSearch() {
 
   // When a unique match arrives, prepare navigation during render (React-recommended)
   if (searchClicked && data?.length === 1 && !pendingRoute) {
-    const matchedRecord = data[0] as Crash & Location & EMSPatientCareRecord;
+    const matchedRecord = data[0] as Crash & Location;
     setPendingRoute(searchField.getUrl(matchedRecord));
     setSearchValue("");
     setSearchClicked(false);
