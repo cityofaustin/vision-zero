@@ -31,7 +31,6 @@ The design supports an editing environment which enables Vision Zero program sta
       - [Crash record matching](#crash-record-matching)
       - [Matching System Overview](#matching-system-overview)
       - [Database Triggers](#database-triggers)
-    - [Austin Fire Department (AFD)](#austin-fire-department-afd)
     - [Computer-Aided Dispatch records](#computer-aided-dispatch-records)
     - [Geospatial layers](#geospatial-layers)
   - [Common maintenance tasks](#common-maintenance-tasks)
@@ -356,7 +355,6 @@ Note that it is assumed that Non-CR3 records will always be imported _after_ any
 
 https://github.com/cityofaustin/vision-zero/pull/2184
 
-### Austin Fire Department (AFD)
 
 ### Computer-Aided Dispatch records
 
@@ -505,7 +503,7 @@ Typically, any foreign key constraint that references the layer should use the `
 
 Use the [ArcGIS Online Layer Helper](/toolbox/load_agol_layer) to update layers in our database from their authoritative source on ArcGIS Online.
 
-After a geospatial layer is updated, you must reprocess any records which reference the layer. These updates require manual crafting of SQL statements which mirror the trigger functions that typically set these associations when a record is inserted or updated. For example, after updating the `location` polygons layer, you will need to re-process the `location_id` associations for `crashes`, `atd_apd_blueform`, and `afd__incdents`.
+After a geospatial layer is updated, you must reprocess any records which reference the layer. These updates require manual crafting of SQL statements which mirror the trigger functions that typically set these associations when a record is inserted or updated. For example, after updating the `location` polygons layer, you will need to re-process the `location_id` associations for `crashes`, and `atd_apd_blueform`.
 
 You can find example SQL statements for reprocessing reference layer associations in the following issues:
 
