@@ -1,0 +1,648 @@
+diff --git a/database/README.md b/database/README.md
+index 46941ed..7c06989 100644
+--- a/database/README.md
++++ b/database/README.md
+@@ -262,15 +262,27 @@ CRIS stores granular contributing factors chosen by investigating officers on ea
+ - `units.contrib_factr_p1_id`
+ - `units.contrib_factr_p2_id`
+ 
+-Those ~70 CRIS label options are very granular and repetitive, so we compute crash-level **risk factors**. These are simplified categories such as "Distracted driving", "Speeding", and "Impaired driving".
++Those ~70 CRIS label options are very granular and repetitive, so we compute crash-level **risk factors**. These are simplified categories such as "Distracted driving", "Speeding", and "Impairment".
+ 
+-The simplified [`lookups.risk_factor_categories`](metadata/databases/default/tables/lookups_risk_factor_categories.yaml) maps each CRIS `contrib_factr` ID to a Vision Zero risk factor category.
++The [`crash_risk_factors_view`](views/crash_risk_factors_view.sql) returns one row per crash with a `risk_factors` array of text values (or `null` when none apply); exposed on `crashes` via Hasura. This database view is the source of truth for how crash risk factors are computed.
+ 
+-The [`crash_risk_factors_view`](views/crash_risk_factors_view.sql) returns one row per crash with a `risk_factors` array of text values (or `null` when none apply); exposed on `crashes` via Hasura. It also adds categories from other crash attributes when the business rules require it. This database view is the source of truth for how crash risk factor are computed.
++All rule logic lives in the view. Rules combine unit contributing factors (including possible factors), unit type and movement, crash collision type, location signal type and location group, person test results, and charge text. The view is organized into CTEs by data granularity (`unit_rules`, `crash_rules`, `people_rules`, `charge_rules`), each commented with the category it produces. The categories are:
+ 
+-For example, impaired driving from positive alcohol/drug results, speeding from speed-related charges or other charges, red light running from collision type plus location signal type, are included in the risk factors calculation in addition to the contributing factor to risk factor category mapping. The Vision Zero team maintains a plain-language list of crash risk factor business rules in their [internal methodology Sharepoint doc](https://cityofaustin.sharepoint.com/:w:/r/sites/VisionZero/_layouts/15/Doc.aspx?sourcedoc=%7BC6A5C38D-42C0-4BA2-89D6-7775CB658389%7D&file=Vision%20Zero%20Methodology.docx&action=default&mobileredirect=true).
++- Distracted driving
++- Impairment
++- Speeding
++- Failure to yield - left turn
++- Failure to yield - right turn
++- Failure to yield - stop or yield sign
++- Failure to yield - ran red light
++- Failure to yield - unsafe maneuver or other
++- Failure to yield - vulnerable user to driver
++- Failure to yield - driver to vulnerable user
++- Visual obstruction
+ 
+-The mapping seeds and view definition live in migration [`1784264703617_crash_risk_factors`](migrations/default/1784264703617_crash_risk_factors/up.sql). See also [PR #2086](https://github.com/cityofaustin/vision-zero/pull/2086).
++The Vision Zero team maintains a plain-language list of crash risk factor business rules in their [internal methodology Sharepoint doc](https://cityofaustin.sharepoint.com/:w:/r/sites/VisionZero/_layouts/15/Doc.aspx?sourcedoc=%7BC6A5C38D-42C0-4BA2-89D6-7775CB658389%7D&file=Vision%20Zero%20Methodology.docx&action=default&mobileredirect=true).
++
++The current view definition lives in migration [`1792163067968_crash_risk_factors_rules`](migrations/default/1792163067968_crash_risk_factors_rules/up.sql), which replaced the original contributing-factor lookup table (`lookups.risk_factor_categories`) from [`1784264703617_crash_risk_factors`](migrations/default/1784264703617_crash_risk_factors/up.sql). See also [PR #2086](https://github.com/cityofaustin/vision-zero/pull/2086).
+ 
+ #### Database IDs, CRIS record IDs, and primary keys
+ 
+diff --git a/database/metadata/databases/default/tables/lookups_risk_factor_categories.yaml b/database/metadata/databases/default/tables/lookups_risk_factor_categories.yaml
+deleted file mode 100644
+index f03fdf3..0000000
+--- a/database/metadata/databases/default/tables/lookups_risk_factor_categories.yaml
++++ /dev/null
+@@ -1,29 +0,0 @@
+-table:
+-  name: risk_factor_categories
+-  schema: lookups
+-object_relationships:
+-  - name: contrib_factr
+-    using:
+-      foreign_key_constraint_on: contrib_factor_id
+-select_permissions:
+-  - role: editor
+-    permission:
+-      columns:
+-        - contrib_factor_id
+-        - risk_factor_category
+-      filter: {}
+-    comment: ""
+-  - role: readonly
+-    permission:
+-      columns:
+-        - contrib_factor_id
+-        - risk_factor_category
+-      filter: {}
+-    comment: ""
+-  - role: vz-admin
+-    permission:
+-      columns:
+-        - contrib_factor_id
+-        - risk_factor_category
+-      filter: {}
+-    comment: ""
+diff --git a/database/metadata/databases/default/tables/tables.yaml b/database/metadata/databases/default/tables/tables.yaml
+index 1d442dd..24f109f 100644
+--- a/database/metadata/databases/default/tables/tables.yaml
++++ b/database/metadata/databases/default/tables/tables.yaml
+@@ -35,7 +35,6 @@
+ - "!include lookups_pedestrian_action.yaml"
+ - "!include lookups_prsn_type.yaml"
+ - "!include lookups_rest.yaml"
+-- "!include lookups_risk_factor_categories.yaml"
+ - "!include lookups_road_part.yaml"
+ - "!include lookups_rwy_sys.yaml"
+ - "!include lookups_specimen_type.yaml"
+diff --git a/database/migrations/default/1792163067968_crash_risk_factors_rules/down.sql b/database/migrations/default/1792163067968_crash_risk_factors_rules/down.sql
+new file mode 100644
+index 0000000..cbd9775
+--- /dev/null
++++ b/database/migrations/default/1792163067968_crash_risk_factors_rules/down.sql
+@@ -0,0 +1,208 @@
++-- Restore lookups.risk_factor_categories and the original crash_risk_factors_view
++-- (verbatim copy of 1784264703617_crash_risk_factors/up.sql).
++-- Also restore lookups_risk_factor_categories.yaml in Hasura metadata if rolling back.
++
++-- Mapping of CRIS contrib_factr IDs to Vision Zero crash-level risk factors.
++-- Source: Crash contributing factors business rules: https://docs.google.com/document/d/1YPVyAz72YUMo-kMvN65dMjN7DKba6OEqGJGQWMTwWAc/edit?tab=t.0#heading=h.5wz64nv7k8b0
++-- Note: CRIS id 72 (CELL/MOBILE PHONE USE) was removed in CRIS v30.1; use 75–78.
++CREATE TABLE lookups.risk_factor_categories (
++    contrib_factor_id integer NOT NULL REFERENCES lookups.contrib_factr (id) ON UPDATE CASCADE ON DELETE RESTRICT,
++    risk_factor_category text NOT NULL,
++    source text DEFAULT 'vz'::text NOT NULL,
++    PRIMARY KEY (contrib_factor_id, risk_factor_category)
++);
++
++COMMENT ON TABLE lookups.risk_factor_categories IS
++'Maps CRIS contributing factor IDs to Vision Zero crash-level risk factor categories.';
++
++-- Seed mappings only when the referenced CRIS lookup rows already exist.
++-- CI applies migrations on an empty DB (no lookup dump), so a plain VALUES
++-- insert would fail the FK; staging/prod/local dumps have these rows.
++INSERT INTO lookups.risk_factor_categories (contrib_factor_id, risk_factor_category)
++SELECT
++    v.contrib_factor_id,
++    v.risk_factor_category
++FROM (
++    VALUES
++        -- Distracted driving
++        (19, 'Distracted driving'),
++        (20, 'Distracted driving'),
++        (40, 'Distracted driving'),
++        (75, 'Distracted driving'),
++        (76, 'Distracted driving'),
++        (77, 'Distracted driving'),
++        (78, 'Distracted driving'),
++        -- Failure to yield
++        (3, 'Failure to yield'),
++        (4, 'Failure to yield'),
++        (17, 'Failure to yield'),
++        (18, 'Failure to yield'),
++        (23, 'Failure to yield'),
++        (24, 'Failure to yield'),
++        (25, 'Failure to yield'),
++        (26, 'Failure to yield'),
++        (27, 'Failure to yield'),
++        (28, 'Failure to yield'),
++        (29, 'Failure to yield'),
++        (30, 'Failure to yield'),
++        (31, 'Failure to yield'),
++        (32, 'Failure to yield'),
++        (33, 'Failure to yield'),
++        (34, 'Failure to yield'),
++        (35, 'Failure to yield'),
++        (36, 'Failure to yield'),
++        (37, 'Failure to yield'),
++        (38, 'Failure to yield'),
++        (39, 'Failure to yield'),
++        (41, 'Failure to yield'),
++        (51, 'Failure to yield'),
++        (53, 'Failure to yield'),
++        (57, 'Failure to yield'),
++        (58, 'Failure to yield'),
++        (59, 'Failure to yield'),
++        (63, 'Failure to yield'),
++        (64, 'Failure to yield'),
++        (65, 'Failure to yield'),
++        (66, 'Failure to yield'),
++        (69, 'Failure to yield'),
++        (70, 'Failure to yield'),
++        (71, 'Failure to yield'),
++        (79, 'Failure to yield'),
++        (80, 'Failure to yield'),
++        -- Impaired driving
++        (45, 'Impaired driving'),
++        (62, 'Impaired driving'),
++        (67, 'Impaired driving'),
++        (68, 'Impaired driving'),
++        -- Red light running
++        (15, 'Red light running'),
++        (16, 'Red light running'),
++        -- Speeding
++        (22, 'Speeding'),
++        (44, 'Speeding'),
++        (60, 'Speeding'),
++        (61, 'Speeding'),
++        -- Visual obstruction
++        (48, 'Visual obstruction')
++) AS v(contrib_factor_id, risk_factor_category)
++INNER JOIN lookups.contrib_factr AS cf ON cf.id = v.contrib_factor_id;
++
++CREATE OR REPLACE VIEW crash_risk_factors_view AS
++WITH
++    unit_factors AS (
++        SELECT
++            units.crash_pk AS id,
++            categories.risk_factor_category
++        FROM
++            units
++            CROSS JOIN LATERAL (
++                VALUES
++                    (units.contrib_factr_1_id),
++                    (units.contrib_factr_2_id),
++                    (units.contrib_factr_3_id),
++                    (units.contrib_factr_p1_id),
++                    (units.contrib_factr_p2_id)
++            ) AS factor_ids (contrib_factor_id)
++            INNER JOIN lookups.risk_factor_categories AS categories
++                ON categories.contrib_factor_id = factor_ids.contrib_factor_id
++        WHERE
++            units.is_deleted = FALSE
++            AND factor_ids.contrib_factor_id IS NOT NULL
++            AND factor_ids.contrib_factor_id <> 0
++    ),
++    attribute_factors AS (
++        -- Impaired driving from people alcohol/drug test results or BAC
++        SELECT DISTINCT
++            units.crash_pk AS id,
++            'Impaired driving'::text AS risk_factor_category
++        FROM
++            people
++            INNER JOIN units ON units.id = people.unit_id
++        WHERE
++            people.is_deleted = FALSE
++            AND units.is_deleted = FALSE
++            AND (
++                people.prsn_alc_rslt_id = 1
++                OR people.prsn_drg_rslt_id = 1
++                OR (
++                    -- BAC is stored as free text; match numeric values at/above 0.08
++                    -- e.g. '0.08', '0.15', '.12'. Skip non-numeric values like '', 'NONE'.
++                    people.prsn_bac_test_rslt ~ '^[0-9]*\.?[0-9]+$'
++                    AND people.prsn_bac_test_rslt::numeric >= 0.08
++                )
++            )
++        UNION
++        -- Impaired driving from charges
++        SELECT DISTINCT
++            charges_cris.crash_pk AS id,
++            'Impaired driving'::text AS risk_factor_category
++        FROM
++            charges_cris
++        WHERE
++            charges_cris.charge ILIKE '%DWI%'
++            OR charges_cris.charge ILIKE '%DUI%'
++            OR charges_cris.charge ILIKE '%INTOX%'
++            OR charges_cris.charge ILIKE '%INFL%'
++            OR charges_cris.charge ILIKE '%CONTAINER%'
++        UNION
++        -- Speeding from charges
++        SELECT DISTINCT
++            charges_cris.crash_pk AS id,
++            'Speeding'::text AS risk_factor_category
++        FROM
++            charges_cris
++        WHERE
++            charges_cris.charge ILIKE '%SPEED%'
++        UNION
++        -- Red light running from collision type + signalized location
++        SELECT
++            crashes.id,
++            'Red light running'::text AS risk_factor_category
++        FROM
++            crashes
++            INNER JOIN locations
++                ON locations.location_id::text = crashes.location_id
++        WHERE
++            crashes.fhe_collsn_id = 10
++            AND locations.signal_type ILIKE 'TRAFFIC'
++    ),
++    -- Combine unit and attribute factors and remove duplicates.
++    -- Ex: A crash with two speeding contributing factors would result in 'Speeding' only.
++    all_categories AS (
++        SELECT
++            id,
++            risk_factor_category
++        FROM
++            unit_factors
++        UNION
++        SELECT
++            id,
++            risk_factor_category
++        FROM
++            attribute_factors
++    ),
++    -- Produce a list of risk factors for each crash.
++    -- Example:
++    -- id       risk_factors
++    -- 12345    {"Distracted driving","Speeding"}
++    -- 12346    {"Impaired driving"}
++    -- 12347    null
++    aggregated AS (
++        SELECT
++            id,
++            ARRAY_AGG(
++                DISTINCT risk_factor_category
++                ORDER BY
++                    risk_factor_category
++            ) AS risk_factors
++        FROM
++            all_categories
++        GROUP BY
++            id
++    )
++SELECT
++    crashes.id,
++    NULLIF(aggregated.risk_factors, '{}'::text[]) AS risk_factors
++FROM
++    crashes
++    LEFT JOIN aggregated ON aggregated.id = crashes.id;
+diff --git a/database/migrations/default/1792163067968_crash_risk_factors_rules/up.sql b/database/migrations/default/1792163067968_crash_risk_factors_rules/up.sql
+new file mode 100644
+index 0000000..bc3c218
+--- /dev/null
++++ b/database/migrations/default/1792163067968_crash_risk_factors_rules/up.sql
+@@ -0,0 +1,344 @@
++-- Crash risk factors v2: rule-based view.
++--
++-- The rules now depend on combinations of unit, crash, location, and charge
++-- attributes, which a contrib_factr -> category lookup table can't express.
++-- All rule logic lives in this view and lookups.risk_factor_categories is dropped.
++--
++-- Output contract is unchanged: one row per crash, `id` plus `risk_factors`
++-- as a sorted, de-duplicated text[] (NULL when no factors apply).
++--
++-- A unit "has factor X" when any of contrib_factr_1_id, contrib_factr_2_id,
++-- contrib_factr_3_id, contrib_factr_p1_id, contrib_factr_p2_id equals X
++-- (possible contributing factors are included). Unit-level rules are evaluated
++-- per unit row, so factor, unit_desc_id, and movement_id must match on the same unit.
++--
++-- Not yet implemented: Access Management (needs spatial proximity to
++-- intersections and driveways).
++--
++-- CRIS ID labels in the comments below are from CRIS lookups
++-- (CONTRIB_FACTR_LKP, COLLSN_LKP, UNIT_DESC_LKP).
++
++-- Replace the view first so it no longer depends on the lookup table.
++-- Column names/types are unchanged, so CREATE OR REPLACE keeps the
++-- Hasura relationship from crashes intact.
++CREATE OR REPLACE VIEW crash_risk_factors_view AS
++WITH
++    -- One row per unit per non-null, non-zero contributing factor
++    unit_factor_rows AS (
++        SELECT
++            units.crash_pk,
++            units.unit_desc_id,
++            units.movement_id,
++            factor_ids.contrib_factor_id
++        FROM
++            units
++            CROSS JOIN LATERAL (
++                VALUES
++                    (units.contrib_factr_1_id),
++                    (units.contrib_factr_2_id),
++                    (units.contrib_factr_3_id),
++                    (units.contrib_factr_p1_id),
++                    (units.contrib_factr_p2_id)
++            ) AS factor_ids (contrib_factor_id)
++        WHERE
++            units.is_deleted = FALSE
++            AND factor_ids.contrib_factor_id IS NOT NULL
++            AND factor_ids.contrib_factor_id <> 0
++    ),
++    -- Rules evaluated per unit factor row (optionally with the crash's location).
++    -- Each VALUES row yields a category or NULL; NULLs are filtered out.
++    unit_rules AS (
++        SELECT
++            unit_factor_rows.crash_pk AS id,
++            rules.risk_factor_category
++        FROM
++            unit_factor_rows
++            LEFT JOIN crashes
++                ON crashes.id = unit_factor_rows.crash_pk
++            LEFT JOIN locations
++                ON locations.location_id::text = crashes.location_id
++            CROSS JOIN LATERAL (
++                VALUES
++                    -- Distracted driving
++                    (
++                        CASE WHEN unit_factor_rows.contrib_factor_id IN (
++                            19, -- DISTRACTION IN VEHICLE
++                            20, -- DRIVER INATTENTION
++                            40, -- FATIGUED OR ASLEEP
++                            75, -- CELL/MOBILE DEVICE USE - TALKING
++                            76, -- CELL/MOBILE DEVICE USE - TEXTING
++                            77, -- CELL/MOBILE DEVICE USE - OTHER
++                            78  -- CELL/MOBILE DEVICE USE - UNKNOWN
++                        ) THEN 'Distracted driving' END
++                    ),
++                    -- Impairment
++                    (
++                        CASE WHEN unit_factor_rows.contrib_factor_id IN (
++                            45, -- HAD BEEN DRINKING
++                            62, -- TAKING MEDICATION
++                            67, -- INTOXICATED - ALCOHOL
++                            68  -- INTOXICATED - DRUG
++                        ) THEN 'Impairment' END
++                    ),
++                    -- Speeding
++                    (
++                        CASE WHEN unit_factor_rows.contrib_factor_id IN (
++                            22, -- FAILED TO CONTROL SPEED
++                            44, -- FOLLOWED TOO CLOSELY
++                            60, -- UNSAFE SPEED
++                            61  -- SPEEDING - (OVERLIMIT)
++                        ) THEN 'Speeding' END
++                    ),
++                    -- Failure to yield - left turn
++                    (
++                        CASE WHEN unit_factor_rows.unit_desc_id = 1 -- MOTOR VEHICLE
++                            AND unit_factor_rows.contrib_factor_id IN (
++                                37, -- FAILED TO YIELD ROW - TURNING LEFT
++                                63  -- TURNED IMPROPERLY - CUT CORNER ON LEFT
++                            )
++                            AND unit_factor_rows.movement_id = 1 -- left turn movement
++                            THEN 'Failure to yield - left turn' END
++                    ),
++                    -- Failure to yield - right turn
++                    (
++                        CASE WHEN unit_factor_rows.unit_desc_id = 1 -- MOTOR VEHICLE
++                            AND unit_factor_rows.contrib_factor_id IN (
++                                38, -- FAILED TO YIELD ROW - TURN ON RED
++                                64  -- TURNED IMPROPERLY - WIDE RIGHT
++                            )
++                            AND unit_factor_rows.movement_id = 2 -- right turn movement
++                            THEN 'Failure to yield - right turn' END
++                    ),
++                    -- Failure to yield - stop or yield sign (not at a traffic signal;
++                    -- includes crashes with no location or no signal)
++                    (
++                        CASE WHEN unit_factor_rows.contrib_factor_id IN (
++                                18, -- DISREGARD WARNING SIGN AT CONSTRUCTION
++                                25, -- FAILED TO HEED WARNING SIGN OR TRAFFIC CONTROL DEVICE
++                                29, -- FAILED TO STOP AT PROPER PLACE
++                                30, -- FAILED TO STOP FOR SCHOOL BUS
++                                31, -- FAILED TO STOP FOR TRAIN
++                                35, -- FAILED TO YIELD ROW - STOP SIGN
++                                39  -- FAILED TO YIELD ROW - YIELD SIGN
++                            )
++                            AND UPPER(locations.signal_type) IS DISTINCT FROM 'TRAFFIC'
++                            THEN 'Failure to yield - stop or yield sign' END
++                    ),
++                    -- Failure to yield - ran red light (at a traffic signal)
++                    (
++                        CASE WHEN unit_factor_rows.contrib_factor_id IN (
++                                15, -- DISREGARD STOP AND GO SIGNAL
++                                16  -- DISREGARD STOP SIGN OR LIGHT
++                            )
++                            AND UPPER(locations.signal_type) = 'TRAFFIC'
++                            THEN 'Failure to yield - ran red light' END
++                    ),
++                    -- Failure to yield - unsafe maneuver or other
++                    (
++                        CASE
++                            -- Only where there is no signal (includes crashes with no location)
++                            WHEN unit_factor_rows.contrib_factor_id IN (
++                                    3,  -- BACKED WITHOUT SAFETY
++                                    4,  -- CHANGED LANE WHEN UNSAFE
++                                    23, -- FAILED TO DRIVE IN SINGLE LANE
++                                    24, -- FAILED TO GIVE HALF OF ROADWAY
++                                    26, -- FAILED TO PASS TO LEFT SAFELY
++                                    27, -- FAILED TO PASS TO RIGHT SAFELY
++                                    32, -- FAILED TO YIELD ROW - EMERGENCY VEHICLE
++                                    33, -- FAILED TO YIELD ROW - OPEN INTERSECTION
++                                    34, -- FAILED TO YIELD ROW - PRIVATE DRIVE
++                                    41, -- FAULTY EVASIVE ACTION
++                                    51, -- OPENED DOOR INTO TRAFFIC LANE
++                                    53, -- OVERTAKE AND PASS INSUFFICIENT CLEARANCE
++                                    57, -- PASSED IN NO PASSING LANE
++                                    58, -- PASSED ON SHOULDER
++                                    69, -- WRONG SIDE - APPROACH OR INTERSECTION
++                                    70, -- WRONG SIDE - NOT PASSING
++                                    71, -- WRONG WAY - ONE WAY ROAD
++                                    80  -- DROVE ON IMPROVED SHOULDER
++                                )
++                                AND locations.signal_type IS NULL
++                                THEN 'Failure to yield - unsafe maneuver or other'
++                            -- Any location
++                            WHEN unit_factor_rows.contrib_factor_id IN (
++                                    17, -- DISREGARD TURN MARKS AT INTERSECTION
++                                    28, -- FAILED TO SIGNAL OR GAVE WRONG SIGNAL
++                                    65, -- TURNED IMPROPERLY - WRONG LANE
++                                    66, -- TURNED WHEN UNSAFE
++                                    79  -- FAILED TO SLOW OR MOVE OVER FOR VEHICLES DISPLAYING EMERGENCY LIGHTS
++                                )
++                                THEN 'Failure to yield - unsafe maneuver or other'
++                        END
++                    ),
++                    -- Failure to yield - vulnerable user to driver
++                    (
++                        CASE WHEN unit_factor_rows.contrib_factor_id = 59 -- PEDESTRIAN FAILED TO YIELD ROW TO VEHICLE
++                            THEN 'Failure to yield - vulnerable user to driver' END
++                    ),
++                    -- Failure to yield - driver to vulnerable user
++                    (
++                        CASE WHEN unit_factor_rows.contrib_factor_id = 36 -- FAILED TO YIELD ROW - TO PEDESTRIAN
++                            THEN 'Failure to yield - driver to vulnerable user' END
++                    ),
++                    -- Visual obstruction
++                    (
++                        CASE WHEN unit_factor_rows.contrib_factor_id = 48 -- IMPAIRED VISIBILITY
++                            THEN 'Visual obstruction' END
++                    )
++            ) AS rules (risk_factor_category)
++        WHERE
++            rules.risk_factor_category IS NOT NULL
++    ),
++    -- Rules based on crash collision type and location
++    crash_rules AS (
++        SELECT
++            crashes.id,
++            rules.risk_factor_category
++        FROM
++            crashes
++            LEFT JOIN locations
++                ON locations.location_id::text = crashes.location_id
++            CROSS JOIN LATERAL (
++                VALUES
++                    -- Failure to yield - left turn
++                    (
++                        CASE WHEN crashes.fhe_collsn_id IN (
++                            14, -- ANGLE - ONE STRAIGHT-ONE LEFT TURN
++                            34  -- OPPOSITE DIRECTION - ONE STRAIGHT-ONE LEFT TURN
++                        ) THEN 'Failure to yield - left turn' END
++                    ),
++                    -- Failure to yield - right turn
++                    (
++                        CASE WHEN crashes.fhe_collsn_id IN (
++                            13, -- ANGLE - ONE STRAIGHT-ONE RIGHT TURN
++                            33  -- OPPOSITE DIRECTION - ONE STRAIGHT-ONE RIGHT TURN
++                        ) THEN 'Failure to yield - right turn' END
++                    ),
++                    -- Failure to yield - ran red light
++                    (
++                        CASE WHEN crashes.fhe_collsn_id = 10 -- ANGLE - BOTH GOING STRAIGHT
++                            AND UPPER(locations.signal_type) = 'TRAFFIC'
++                            THEN 'Failure to yield - ran red light' END
++                    ),
++                    -- Failure to yield - vulnerable user to driver
++                    (
++                        CASE WHEN crashes.fhe_collsn_id IN (
++                                1, -- ONE MOTOR VEHICLE - GOING STRAIGHT
++                                2, -- ONE MOTOR VEHICLE - TURNING RIGHT
++                                3  -- ONE MOTOR VEHICLE - TURNING LEFT
++                            )
++                            AND locations.location_group = 2
++                            AND EXISTS (
++                                SELECT 1
++                                FROM units AS vu_units
++                                WHERE
++                                    vu_units.crash_pk = crashes.id
++                                    AND vu_units.is_deleted = FALSE
++                                    AND vu_units.unit_desc_id IN (
++                                        3,  -- PEDALCYCLIST
++                                        4,  -- PEDESTRIAN
++                                        177 -- VZ: micromobility (e.g. e-scooter)
++                                    )
++                            )
++                            THEN 'Failure to yield - vulnerable user to driver' END
++                    )
++            ) AS rules (risk_factor_category)
++        WHERE
++            crashes.is_deleted = FALSE
++            AND rules.risk_factor_category IS NOT NULL
++    ),
++    -- Rules based on person test results
++    people_rules AS (
++        -- Impairment
++        SELECT DISTINCT
++            units.crash_pk AS id,
++            'Impairment'::text AS risk_factor_category
++        FROM
++            people
++            INNER JOIN units ON units.id = people.unit_id
++        WHERE
++            people.is_deleted = FALSE
++            AND units.is_deleted = FALSE
++            AND (
++                people.prsn_alc_rslt_id = 1 -- positive alcohol result
++                OR people.prsn_drg_rslt_id = 1 -- positive drug result
++                OR (
++                    -- BAC is stored as free text; match numeric values at/above 0.08
++                    -- e.g. '0.08', '0.15', '.12'. Skip non-numeric values like '', 'NONE'.
++                    people.prsn_bac_test_rslt ~ '^[0-9]*\.?[0-9]+$'
++                    AND people.prsn_bac_test_rslt::numeric >= 0.08
++                )
++            )
++    ),
++    -- Rules based on charge text
++    charge_rules AS (
++        SELECT DISTINCT
++            charges_cris.crash_pk AS id,
++            rules.risk_factor_category
++        FROM
++            charges_cris
++            CROSS JOIN LATERAL (
++                VALUES
++                    -- Impairment (substring match: terms are prefixes, e.g. INFL -> INFLUENCE)
++                    (
++                        CASE WHEN charges_cris.charge ILIKE '%DWI%'
++                            OR charges_cris.charge ILIKE '%DUI%'
++                            OR charges_cris.charge ILIKE '%INTOX%'
++                            OR charges_cris.charge ILIKE '%INFL%'
++                            OR charges_cris.charge ILIKE '%CONTAINER%'
++                            THEN 'Impairment' END
++                    ),
++                    -- Speeding (substring match)
++                    (
++                        CASE WHEN charges_cris.charge ILIKE '%SPEED%'
++                            THEN 'Speeding' END
++                    ),
++                    -- Failure to yield - unsafe maneuver or other
++                    -- Whole-word match so 'ROW' doesn't hit THROW, NARROW, etc.
++                    -- 'FAIL TO FIELD' is a known misspelling in source data.
++                    (
++                        CASE WHEN charges_cris.charge ~* '\m(YIELD|FTY|ROW|FAIL TO FIELD)\M'
++                            THEN 'Failure to yield - unsafe maneuver or other' END
++                    )
++            ) AS rules (risk_factor_category)
++        WHERE
++            rules.risk_factor_category IS NOT NULL
++    ),
++    -- Combine all rule outputs and remove duplicates.
++    -- Ex: A crash with two speeding contributing factors would result in 'Speeding' only.
++    all_categories AS (
++        SELECT id, risk_factor_category FROM unit_rules
++        UNION
++        SELECT id, risk_factor_category FROM crash_rules
++        UNION
++        SELECT id, risk_factor_category FROM people_rules
++        UNION
++        SELECT id, risk_factor_category FROM charge_rules
++    ),
++    -- Produce a list of risk factors for each crash.
++    -- Example:
++    -- id       risk_factors
++    -- 12345    {"Distracted driving","Speeding"}
++    -- 12346    {"Impairment"}
++    -- 12347    null
++    aggregated AS (
++        SELECT
++            id,
++            ARRAY_AGG(
++                DISTINCT risk_factor_category
++                ORDER BY
++                    risk_factor_category
++            ) AS risk_factors
++        FROM
++            all_categories
++        GROUP BY
++            id
++    )
++SELECT
++    crashes.id,
++    NULLIF(aggregated.risk_factors, '{}'::text[]) AS risk_factors
++FROM
++    crashes
++    LEFT JOIN aggregated ON aggregated.id = crashes.id;
++
++DROP TABLE lookups.risk_factor_categories;
