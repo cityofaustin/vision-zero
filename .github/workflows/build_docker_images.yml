@@ -8,7 +8,6 @@ on:
     paths:
       - ".github/workflows/build_docker_images.yml"
       - "api/**"
-      - "etl/afd_ems_import/**"
       - "etl/cad_incidents_import/**"
       - "etl/cris_import/**"
       - "etl/ems_person_match/**"
@@ -37,8 +36,6 @@ jobs:
         with:
           base: ${{ github.ref }}
           filters: |
-            afd_ems:
-              - 'etl/afd_ems_import/**'
             cad_incidents:
               - 'etl/cad_incidents_import/**'
             cris:
@@ -56,15 +53,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
-
-      - name: Build and push AFD / EMS image
-        if: steps.changes.outputs.afd_ems == 'true'
-        uses: docker/build-push-action@v7
-        with:
-          platforms: linux/amd64,linux/arm64
-          context: etl/afd_ems_import
-          push: true
-          tags: atddocker/vz-afd-ems-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
 
       - name: Build and push CAD incidents image
         if: steps.changes.outputs.cad_incidents == 'true'
