@@ -11,7 +11,6 @@ on:
       - "etl/afd_ems_import/**"
       - "etl/cad_incidents_import/**"
       - "etl/cris_import/**"
-      - "etl/ems_person_match/**"
       - "etl/moped_projects/**"
       - "etl/run_sql/**"
       - "etl/socrata_export/**"
@@ -43,8 +42,6 @@ jobs:
               - 'etl/cad_incidents_import/**'
             cris:
               - 'etl/cris_import/**'
-            ems_person_match:
-              - 'etl/ems_person_match/**'
             moped_projects:
               - 'etl/moped_projects/**'
             run_sql:
@@ -83,15 +80,6 @@ jobs:
           context: etl/cris_import
           push: true
           tags: atddocker/vz-cris-import:${{ github.ref == 'refs/heads/production' && 'production' || 'latest' }}
-
-      - name: Build and push EMS person match ETL image
-        if: steps.changes.outputs.ems_person_match == 'true'
-        uses: docker/build-push-action@v7
-        with:
-          platforms: linux/amd64
-          context: etl/ems_person_match
-          push: true
-          tags: atddocker/vz-ems-person-match:${{ github.ref == 'refs/heads/production' && 'production' || 'development' }}
 
       - name: Build and push Socrata export image
         if: steps.changes.outputs.socrata_export == 'true'
