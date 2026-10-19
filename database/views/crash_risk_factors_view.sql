@@ -107,6 +107,10 @@ CREATE OR REPLACE VIEW crash_risk_factors_view AS
                             ELSE NULL::text
                         END), (
                         CASE
+                            WHEN charges_cris.charge ~* '\mran\s*red\s*light\M'::text THEN 'Failure to yield - ran red light'::text
+                            ELSE NULL::text
+                        END), (
+                        CASE
                             WHEN charges_cris.charge ~* '\m(YIELD|FTY|ROW|FAIL TO FIELD)\M'::text THEN 'Failure to yield - unsafe maneuver or other'::text
                             ELSE NULL::text
                         END)) rules(risk_factor_category)
