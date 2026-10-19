@@ -340,6 +340,13 @@ charge_rules AS (
                         THEN 'Speeding'
                 END
             ),
+            -- Failure to yield - ran red light (word match; ignores whitespace)
+            (
+                CASE
+                    WHEN charges_cris.charge ~* '\mran\s*red\s*light\M'
+                        THEN 'Failure to yield - ran red light'
+                END
+            ),
             -- Failure to yield - unsafe maneuver or other
             -- Whole-word match so 'ROW' doesn't hit THROW, NARROW, etc.
             -- 'FAIL TO FIELD' is a known misspelling in source data.
