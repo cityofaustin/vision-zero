@@ -35,7 +35,6 @@
 - "!include lookups_pedestrian_action.yaml"
 - "!include lookups_prsn_type.yaml"
 - "!include lookups_rest.yaml"
-- "!include lookups_risk_factor_categories.yaml"
 - "!include lookups_road_part.yaml"
 - "!include lookups_rwy_sys.yaml"
 - "!include lookups_specimen_type.yaml"
