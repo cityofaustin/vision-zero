@@ -76,7 +76,7 @@ const MapInfoBox = React.memo(
         </StyledPopup>
       )
     );
-  }
+  },
 );
 
 export default MapInfoBox;
