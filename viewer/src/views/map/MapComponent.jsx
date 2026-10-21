@@ -338,10 +338,8 @@ const MapComponent = () => {
       )}
       <TravisCountyBboxLayer beforeId="overlay-slot" />
       {selectedFeature &&
-        !(
-          selectedFeature.source === "cityCouncil-source" &&
-          overlay.name !== "cityCouncil"
-        ) && (
+        (selectedFeature.layer.id !== "cityCouncil" ||
+          overlay.name === "cityCouncil") && (
           <MapInfoBox
             selectedFeature={selectedFeature}
             setSelectedFeature={setSelectedFeature}
