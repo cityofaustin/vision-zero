@@ -2,7 +2,6 @@ import MapGL, { LayerProps } from "react-map-gl";
 import TableMapPopupContent from "@/components/TableMapPopupContent";
 import LocationTableMapPopupContent from "@/components/LocationsTableMapPopupContent";
 import FatalitiesMapPopupContent from "@/components/FatalitiesMapPopupContent";
-import EMSMapPopupContent from "@/components/EMSMapPopupContent";
 
 // importing MapProps does not work: https://github.com/visgl/react-map-gl/issues/2140
 type MapGLComponentProps = React.ComponentProps<typeof MapGL>;
@@ -23,8 +22,6 @@ export const getPopupComponent = (
       return LocationTableMapPopupContent;
     case "fatalitiesTableMap":
       return FatalitiesMapPopupContent;
-    case "emsTableMap":
-      return EMSMapPopupContent;
     default:
       return TableMapPopupContent;
   }
