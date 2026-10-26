@@ -60,9 +60,27 @@ const arrayToStringRep = (arr: number[] | string[]): string => {
 
 /**
  * Get the order_by graphql expression, e.g. `{ case_id: desc }`
+ * or for multiple columns: `{ cr3_crash_count: desc, location_id: asc }`
  */
-const getOrderByExp = (sortColName: string, sortAsc: boolean): string => {
-  return getQueryStringComponent([sortColName], sortAsc ? "asc" : "desc");
+const getOrderByExp = (
+  sortColName: string,
+  sortAsc: boolean,
+  secondarySortColName?: string,
+  secondarySortAsc?: boolean
+): string => {
+  const primary = getQueryStringComponent(
+    [sortColName],
+    sortAsc ? "asc" : "desc"
+  );
+  if (!secondarySortColName) {
+    return primary;
+  }
+  const secondary = getQueryStringComponent(
+    [secondarySortColName],
+    secondarySortAsc ? "asc" : "desc"
+  );
+  // Hasura accepts order_by as an array of objects for multi-column sorting
+  return `[ ${primary}, ${secondary} ]`;
 };
 
 /**
@@ -257,6 +275,8 @@ const buildQuery = <T extends Record<string, unknown>>(
     offset,
     sortColName,
     sortAsc,
+    secondarySortColName,
+    secondarySortAsc,
     filterCards,
     dateFilter,
     searchFilter,
@@ -350,7 +370,15 @@ const buildQuery = <T extends Record<string, unknown>>(
     .replaceAll("$tableName", tableName)
     .replace("$limit", String(limit))
     .replace("$offset", String(offset))
-    .replace("$orderBy", getOrderByExp(sortColName, sortAsc))
+    .replace(
+      "$orderBy",
+      getOrderByExp(
+        sortColName,
+        sortAsc,
+        secondarySortColName,
+        secondarySortAsc
+      )
+    )
     .replace("$columns", columnQueryString)
     .replaceAll("$where", where);
 
