@@ -1,7 +1,7 @@
-ALTER TABLE cad_incidents DROP COLUMN is_canceled_call;
+ALTER TABLE cad_incidents DROP COLUMN is_cancelled_call;
 
 ALTER TABLE cad_incidents
-ADD COLUMN is_canceled_call BOOLEAN
+ADD COLUMN is_cancelled_call BOOLEAN
 GENERATED ALWAYS AS (
     COALESCE(
         (lower(call_disposition) ~~ '%cancelled%'::text)
