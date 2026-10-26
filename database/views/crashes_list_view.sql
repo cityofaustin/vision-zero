@@ -51,8 +51,10 @@ SELECT
     crash_injury_metrics_view.est_total_person_comp_cost,
     crash_injury_metrics_view.crash_injry_sev_id,
     crash_injury_metrics_view.years_of_life_lost,
-    injry_sev.label AS crash_injry_sev_desc,
-    collsn.label    AS collsn_desc,
+    injry_sev.label
+        AS crash_injry_sev_desc,
+    collsn.label
+        AS collsn_desc,
     crashes.geolocation_provider_id = 3 AND NOT (
         EXISTS (
             SELECT 1
