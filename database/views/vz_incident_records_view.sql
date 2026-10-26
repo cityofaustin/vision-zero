@@ -11,7 +11,7 @@ SELECT
     c.case_id         AS record_incident_number,
     c.crash_timestamp AS record_timestamp,
     c.address_display AS record_address,
-    c."position"      AS geom,
+    c.position        AS geom,
     c.vz_incident_id,
     c.vz_incident_match_status
 FROM crashes c
