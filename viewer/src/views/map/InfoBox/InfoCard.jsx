@@ -30,7 +30,16 @@ const InfoCard = ({ content }) => {
               <th className="align" scope="row">
                 {item.title}
               </th>
-              <td className="align">{item.content}</td>
+              <td
+                className="align"
+                style={
+                  item.title === "Crash ID"
+                    ? { overflowWrap: "anywhere" }
+                    : undefined
+                }
+              >
+                {item.content}
+              </td>
               {item.title === "Crash ID" ? (
                 <td className="align" ref={ref}>
                   <Button
