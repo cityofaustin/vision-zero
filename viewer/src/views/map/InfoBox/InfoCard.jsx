@@ -42,38 +42,48 @@ const InfoCard = ({ content }) => {
               >
                 <div style={{ overflowWrap: "anywhere" }}>{item.content} </div>
                 {item.title === "Crash ID" ? (
-                  <Button
-                    id="copyCrashIDButton"
-                    aria-label="Copy crash ID"
-                    style={{
-                      flexShrink: 0,
-                      boxShadow: "none",
-                      width: "30px",
-                      height: "30px",
-                      padding: "6px 0px",
-                      borderRadius: "15px",
-                      textAlign: "center",
-                      fontSize: "12px",
-                      lineHeight: 1.42857,
-                      backgroundColor: colors.info,
-                      border: 0,
-                    }}
-                    outline={false}
-                    onClick={() => {
-                      navigator.clipboard.writeText(item.content);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faClipboard} color={colors.white} />
-                  </Button>
+                  <>
+                    <Button
+                      id="copyCrashIDButton"
+                      innerRef={ref}
+                      aria-label="Copy crash ID"
+                      style={{
+                        flexShrink: 0,
+                        boxShadow: "none",
+                        width: "30px",
+                        height: "30px",
+                        padding: "6px 0px",
+                        borderRadius: "15px",
+                        textAlign: "center",
+                        fontSize: "12px",
+                        lineHeight: 1.42857,
+                        backgroundColor: colors.info,
+                        border: 0,
+                      }}
+                      outline={false}
+                      onClick={() => {
+                        navigator.clipboard.writeText(item.content);
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faClipboard}
+                        color={colors.white}
+                      />
+                    </Button>
+                    <UncontrolledPopover
+                      trigger="click"
+                      placement="top"
+                      target={ref}
+                    >
+                      <PopoverBody>Copied</PopoverBody>
+                    </UncontrolledPopover>
+                  </>
                 ) : null}
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
-      <UncontrolledPopover trigger="click" placement="top" target={ref}>
-        <PopoverBody>Copied</PopoverBody>
-      </UncontrolledPopover>
     </Card>
   );
 };
