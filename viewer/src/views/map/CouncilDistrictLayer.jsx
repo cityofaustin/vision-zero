@@ -1,7 +1,5 @@
-
 import { Source, Layer } from "react-map-gl/mapbox";
 import { colors } from "../../constants/colors";
-
 
 const cityCouncilDataLayer = {
   id: "cityCouncil",

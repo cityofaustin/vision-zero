@@ -1,6 +1,6 @@
 "use client";
 import { notFound } from "next/navigation";
-import { use, useCallback, useMemo } from "react";
+import { use, useCallback } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import ChangeLog from "@/components/ChangeLog";
@@ -13,14 +13,12 @@ import CrashNarrativeCard from "@/components/CrashNarrativeCard";
 import CrashRecommendationCard from "@/components/CrashRecommendationCard";
 import DataCard from "@/components/DataCard";
 import NotesCard from "@/components/NotesCard";
-import PermissionsRequired from "@/components/PermissionsRequired";
 import RelatedRecordTable from "@/components/RelatedRecordTable";
 import ShortcutHelperText from "@/components/ShortcutHelperText";
 import UserEventsLogger from "@/components/UserEventsLogger";
 import { chargeRelatedRecordCols } from "@/configs/chargeRelatedRecordTable";
 import { crashDataCards } from "@/configs/crashDataCard";
 import { peopleRelatedRecordCols } from "@/configs/peopleRelatedRecordTable";
-import { emsRelatedRecordCols } from "@/configs/emsRelatedRecordTable";
 import { unitRelatedRecordCols } from "@/configs/unitRelatedRecordTable";
 import { GET_CRASH, UPDATE_CRASH } from "@/queries/crash";
 import { INSERT_CRASH_NOTE, UPDATE_CRASH_NOTE } from "@/queries/crashNotes";
@@ -33,10 +31,7 @@ import {
   scrollToElementOnKeyPress,
   useKeyboardShortcut,
 } from "@/utils/shortcuts";
-import EMSCardHeader from "@/components/EMSCardHeader";
 import { useDocumentTitle } from "@/utils/documentTitle";
-import { hasRole, ADMIN_EDIT_ROLES } from "@/utils/auth";
-import { useAuth0 } from "@auth0/auth0-react";
 
 const typename = "crashes";
 
@@ -44,7 +39,6 @@ const typename = "crashes";
 const shortcutKeyLookup: ShortcutKeyLookup[] = [
   { key: "U", elementId: "units" },
   { key: "P", elementId: "people" },
-  { key: "E", elementId: "ems" },
   { key: "C", elementId: "charges" },
   { key: "N", elementId: "notes" },
   { key: "F", elementId: "fatality" },
@@ -56,23 +50,13 @@ export default function CrashDetailsPage({
   params: Promise<{ record_locator: string }>;
 }) {
   const { record_locator: recordLocator } = use(params);
-  const { user } = useAuth0();
-  const includeEms = hasRole(ADMIN_EDIT_ROLES, user);
-
-  const activeShortcutKeyLookup = useMemo(
-    () =>
-      includeEms
-        ? shortcutKeyLookup
-        : shortcutKeyLookup.filter((shortcut) => shortcut.key !== "E"),
-    [includeEms]
-  );
 
   // Call hook to watch out for the use of keyboard shortcuts
-  useKeyboardShortcut(activeShortcutKeyLookup, scrollToElementOnKeyPress);
+  useKeyboardShortcut(shortcutKeyLookup, scrollToElementOnKeyPress);
 
   const { data, error, refetch, isValidating } = useQuery<Crash>({
     query: recordLocator ? GET_CRASH : null,
-    variables: { recordLocator, includeEms },
+    variables: { recordLocator },
     typename,
   });
 
@@ -209,24 +193,6 @@ export default function CrashDetailsPage({
           />
         </Col>
       </Row>
-      <PermissionsRequired allowedRoles={ADMIN_EDIT_ROLES}>
-        <Row id="ems" className="offset-header-scroll-top">
-          <ShortcutHelperText shortcutKey="E" />
-          <Col sm={12} className="mb-1">
-            <RelatedRecordTable
-              records={crash.ems__incidents || []}
-              isValidating={isValidating}
-              header={<EMSCardHeader />}
-              noRowsMessage="No EMS records found"
-              columns={emsRelatedRecordCols}
-              mutation=""
-              onSaveCallback={onSaveCallback}
-              shouldShowColumnVisibilityPicker={true}
-              localStorageKey="crashPageEmsPatientCare"
-            />
-          </Col>
-        </Row>
-      </PermissionsRequired>
       <Row id="charges" className="offset-header-scroll-top">
         <ShortcutHelperText shortcutKey="C" />
         <Col sm={12} className="mb-1">

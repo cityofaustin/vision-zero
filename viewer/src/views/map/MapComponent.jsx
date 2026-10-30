@@ -337,14 +337,16 @@ const MapComponent = () => {
         </>
       )}
       <TravisCountyBboxLayer beforeId="overlay-slot" />
-      {selectedFeature && (
-        <MapInfoBox
-          selectedFeature={selectedFeature}
-          setSelectedFeature={setSelectedFeature}
-          isTablet={isTablet}
-          type={selectedFeature.layer.id}
-        />
-      )}
+      {selectedFeature &&
+        (selectedFeature.layer.id !== "cityCouncil" ||
+          overlay.name === "cityCouncil") && (
+          <MapInfoBox
+            selectedFeature={selectedFeature}
+            setSelectedFeature={setSelectedFeature}
+            isTablet={isTablet}
+            type={selectedFeature.layer.id}
+          />
+        )}
       {!!crashCounts && mapPolygon && !selectedFeature && (
         <MapPolygonInfoBox
           crashCounts={crashCounts}

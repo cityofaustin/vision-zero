@@ -79,11 +79,11 @@ SELECT
     cimv.years_of_life_lost,
     to_char(
         crashes.crash_timestamp, 'YYYY-MM-DD"T"HH24:MI:SS'::text
-    )                                          AS crash_timestamp,
+    ) AS crash_timestamp,
     to_char(
         (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text),
         'YYYY-MM-DD"T"HH24:MI:SS'::text
-    )                                          AS crash_timestamp_ct,
+    ) AS crash_timestamp_ct,
     CASE
         WHEN
             crashes.latitude IS NOT NULL AND crashes.longitude IS NOT NULL
@@ -98,7 +98,7 @@ SELECT
         AS point,
     coalesce(
         cimv.crash_injry_sev_id = 4, FALSE
-    )                                          AS crash_fatal_fl,
+    ) AS crash_fatal_fl,
     collsn.label
         AS collsn_desc
 FROM crashes

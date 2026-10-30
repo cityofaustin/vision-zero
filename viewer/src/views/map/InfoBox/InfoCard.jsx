@@ -8,62 +8,82 @@ import {
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
-import styled from "styled-components";
 import { colors } from "../../../constants/colors";
-
-const StyledTableRow = styled.tr`
-  .align {
-    vertical-align: initial;
-    font-size: 14px;
-  }
-`;
 
 const InfoCard = ({ content }) => {
   const ref = useRef(null);
 
   return (
-    <Card className="p-2 m-1">
-      <Table borderless size="sm" className="mt-0 mb-0">
+    <Card className="m-1">
+      <Table
+        borderless
+        size="sm"
+        className="mt-0 mb-0"
+        style={{ tableLayout: "fixed", width: "100%" }}
+      >
+        <colgroup>
+          <col style={{ width: "40%" }} />
+          <col style={{ width: "60%" }} />
+        </colgroup>
         <tbody>
           {content.map((item) => (
-            <StyledTableRow key={item.title}>
-              <th className="align" scope="row">
-                {item.title}
-              </th>
-              <td className="align">{item.content}</td>
-              {item.title === "Crash ID" ? (
-                <td className="align" ref={ref}>
-                  <Button
-                    id="copyCrashIDButton"
-                    aria-label="Copy crash ID"
-                    style={{
-                      boxShadow: "none",
-                      width: "30px",
-                      height: "30px",
-                      padding: "6px 0px",
-                      borderRadius: "15px",
-                      textAlign: "center",
-                      fontSize: "12px",
-                      lineHeight: 1.42857,
-                      backgroundColor: colors.info,
-                      border: 0,
-                    }}
-                    outline={false}
-                    onClick={() => {
-                      navigator.clipboard.writeText(item.content);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faClipboard} color={colors.white} />
-                  </Button>
-                </td>
-              ) : null}
-            </StyledTableRow>
+            <tr
+              key={item.title}
+              style={{ verticalAlign: "initial", fontSize: "14px" }}
+            >
+              <th scope="row">{item.title}</th>
+              <td
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "8px",
+                }}
+              >
+                <div style={{ overflowWrap: "anywhere" }}>{item.content} </div>
+                {item.title === "Crash ID" ? (
+                  <>
+                    <Button
+                      id="copyCrashIDButton"
+                      innerRef={ref}
+                      aria-label="Copy crash ID"
+                      style={{
+                        flexShrink: 0,
+                        boxShadow: "none",
+                        width: "30px",
+                        height: "30px",
+                        padding: "6px 0px",
+                        borderRadius: "15px",
+                        textAlign: "center",
+                        fontSize: "12px",
+                        lineHeight: 1.42857,
+                        backgroundColor: colors.info,
+                        border: 0,
+                      }}
+                      outline={false}
+                      onClick={() => {
+                        navigator.clipboard.writeText(item.content);
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faClipboard}
+                        color={colors.white}
+                      />
+                    </Button>
+                    <UncontrolledPopover
+                      trigger="click"
+                      placement="top"
+                      target={ref}
+                    >
+                      <PopoverBody>Copied</PopoverBody>
+                    </UncontrolledPopover>
+                  </>
+                ) : null}
+              </td>
+            </tr>
           ))}
         </tbody>
       </Table>
-      <UncontrolledPopover trigger="click" placement="top" target={ref}>
-        <PopoverBody>Copied</PopoverBody>
-      </UncontrolledPopover>
     </Card>
   );
 };
