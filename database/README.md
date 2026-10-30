@@ -353,8 +353,7 @@ Note that it is assumed that Non-CR3 records will always be imported _after_ any
 
 ### Austin-Travis County Emergency Medical Services (EMS)
 
-https://github.com/cityofaustin/vision-zero/pull/2184
-
+We removed EMS data and functionality from the system as part of [v2.43.0](https://github.com/cityofaustin/vision-zero/pull/2203). See also issue [#30640](https://github.com/cityofaustin/atd-data-tech/issues/30640). We are actively working on a new data sharing agreement and methodology that will eventually bring new EMS features to the platform.
 
 ### Computer-Aided Dispatch records
 
