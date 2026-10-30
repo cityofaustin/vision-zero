@@ -1,4 +1,0 @@
-boto3==1.*
-openpyxl
-pandas==2.*
-requests==2.*

@@ -130,8 +130,8 @@ export const useGetToken = (): (() => Promise<string | undefined>) => {
  * the allowed roles.
  *
  * @example
- * const allowedEmsRoles = ["editor", "vz-admin"];
- * const isAuthorized = useRequiredPageRole(allowedEmsRoles);
+ * const allowedRoles = ["editor", "vz-admin"];
+ * const isAuthorized = useRequiredPageRole(allowedRoles);
  * if (!isAuthorized) return null;
  */
 export const useRequiredPageRole = (
