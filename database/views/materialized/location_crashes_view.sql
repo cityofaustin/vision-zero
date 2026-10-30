@@ -8,8 +8,7 @@ SELECT
     crashes.cris_crash_id,
     crashes.id
         AS crash_pk,
-    'CR3'::text
-        AS type,
+    'CR3'::text AS type,
     crashes.location_id,
     crashes.case_id,
     crashes.crash_timestamp,
@@ -94,12 +93,10 @@ SELECT
         AS record_locator,
     aab.form_id
         AS cris_crash_id,
-    null::integer
-        AS crash_pk,
-    'NON-CR3'::text                                                                        AS type,
+    null::integer     AS crash_pk,
+    'NON-CR3'::text   AS type,
     aab.location_id,
-    aab.case_id::text
-        AS case_id,
+    aab.case_id::text AS case_id,
     aab.case_timestamp
         AS crash_timestamp,
     to_char((aab.case_timestamp AT TIME ZONE 'America/Chicago'::text), 'YYYY-MM-DD'::text)
