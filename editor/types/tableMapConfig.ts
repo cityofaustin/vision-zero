@@ -14,7 +14,6 @@ export const getPopupComponent = (
   popupName:
     | "locationTableMap"
     | "fatalitiesTableMap"
-    | "emsTableMap"
     | undefined
 ) => {
   switch (popupName) {
@@ -60,8 +59,7 @@ export interface TableMapConfig {
    */
   popupComponentName?:
     | "locationTableMap"
-    | "fatalitiesTableMap"
-    | "emsTableMap";
+    | "fatalitiesTableMap";
   /**
    *
    */
