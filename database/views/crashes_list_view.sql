@@ -51,10 +51,8 @@ SELECT
     crash_injury_metrics_view.est_total_person_comp_cost,
     crash_injury_metrics_view.crash_injry_sev_id,
     crash_injury_metrics_view.years_of_life_lost,
-    injry_sev.label
-        AS crash_injry_sev_desc,
-    collsn.label
-        AS collsn_desc,
+    injry_sev.label AS crash_injry_sev_desc,
+    collsn.label    AS collsn_desc,
     crashes.geolocation_provider_id = 3 AND NOT (
         EXISTS (
             SELECT 1
@@ -67,16 +65,16 @@ SELECT
                     OR (u.veh_trvl_dir_id <> ALL(ARRAY[1, 3, 5, 7, 9, 11]))
                 )
         )
-    ) AS is_manual_review_qa_complete,
+    )               AS is_manual_review_qa_complete,
     TO_CHAR(
         (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'YYYY-MM-DD'::text
-    ) AS crash_date_ct,
+    )               AS crash_date_ct,
     TO_CHAR(
         (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'HH24:MI:SS'::text
-    ) AS crash_time_ct,
+    )               AS crash_time_ct,
     UPPER(
         TO_CHAR((crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'dy'::text)
-    ) AS crash_day_of_week
+    )               AS crash_day_of_week
 FROM crashes
 LEFT JOIN LATERAL (SELECT
     crash_injury_metrics_view_1.id,
