@@ -65,16 +65,16 @@ SELECT
                     OR (u.veh_trvl_dir_id <> ALL(ARRAY[1, 3, 5, 7, 9, 11]))
                 )
         )
-    ) AS is_manual_review_qa_complete,
+    )               AS is_manual_review_qa_complete,
     TO_CHAR(
         (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'YYYY-MM-DD'::text
-    ) AS crash_date_ct,
+    )               AS crash_date_ct,
     TO_CHAR(
         (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'HH24:MI:SS'::text
-    ) AS crash_time_ct,
+    )               AS crash_time_ct,
     UPPER(
         TO_CHAR((crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'dy'::text)
-    ) AS crash_day_of_week
+    )               AS crash_day_of_week
 FROM crashes
 LEFT JOIN LATERAL (SELECT
     crash_injury_metrics_view_1.id,

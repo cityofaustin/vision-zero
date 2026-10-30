@@ -55,7 +55,4 @@ FROM people
 LEFT JOIN units ON people.unit_id = units.id
 LEFT JOIN crashes ON units.crash_pk = crashes.id
 WHERE
-    crashes.in_austin_full_purpose = true
-    AND people.prsn_injry_sev_id = 4
-    AND crashes.private_dr_fl = false
-    AND crashes.is_deleted = false;
+    crashes.in_austin_full_purpose = true AND people.prsn_injry_sev_id = 4 AND crashes.private_dr_fl = false AND crashes.is_deleted = false;
