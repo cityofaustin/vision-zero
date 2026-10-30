@@ -15,12 +15,10 @@ SELECT
         AS unit_id,
     concat_ws(
         ' '::text, people.prsn_first_name, people.prsn_mid_name, people.prsn_last_name
-    )
-        AS victim_name,
+    ) AS victim_name,
     to_char(
         (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'yyyy'::text
-    )
-        AS year,
+    ) AS year,
     crashes.crash_timestamp,
     concat_ws(
         ' '::text,
@@ -32,16 +30,13 @@ SELECT
         crashes.rpt_sec_street_pfx,
         crashes.rpt_sec_street_name,
         ')'
-    )
-        AS location,
+    ) AS location,
     to_char(
         (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'YYYY-MM-DD'::text
-    )
-        AS crash_date_ct,
+    ) AS crash_date_ct,
     to_char(
         (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text), 'HH24:MI:SS'::text
-    )
-        AS crash_time_ct,
+    ) AS crash_time_ct,
     row_number()
         OVER (
             PARTITION BY
@@ -63,4 +58,7 @@ FROM people
 LEFT JOIN units ON people.unit_id = units.id
 LEFT JOIN crashes ON units.crash_pk = crashes.id
 WHERE
-    crashes.in_austin_full_purpose = true AND people.prsn_injry_sev_id = 4 AND crashes.private_dr_fl = false AND crashes.is_deleted = false;
+    crashes.in_austin_full_purpose = true
+    AND people.prsn_injry_sev_id = 4
+    AND crashes.private_dr_fl = false
+    AND crashes.is_deleted = false;

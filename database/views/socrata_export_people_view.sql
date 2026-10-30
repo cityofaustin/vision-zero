@@ -25,11 +25,11 @@ SELECT
         AS mode_desc,
     to_char(
         crashes.crash_timestamp, 'YYYY-MM-DD"T"HH24:MI:SS'::text
-    )                         AS crash_timestamp,
+    ) AS crash_timestamp,
     to_char(
         (crashes.crash_timestamp AT TIME ZONE 'America/Chicago'::text),
         'YYYY-MM-DD"T"HH24:MI:SS'::text
-    )                         AS crash_timestamp_ct
+    ) AS crash_timestamp_ct
 FROM people
 LEFT JOIN units units ON people.unit_id = units.id
 LEFT JOIN crashes crashes ON units.crash_pk = crashes.id
@@ -37,4 +37,9 @@ LEFT JOIN lookups.mode_category mode_categories ON units.vz_mode_category_id = m
 LEFT JOIN lookups.drvr_ethncty ON people.prsn_ethnicity_id = drvr_ethncty.id
 LEFT JOIN lookups.gndr ON people.prsn_gndr_id = gndr.id
 WHERE
-    people.is_deleted = false AND crashes.in_austin_full_purpose = true AND crashes.private_dr_fl = false AND crashes.is_deleted = false AND crashes.crash_timestamp < (now() - '14 days'::interval) AND (people.prsn_injry_sev_id = 1 OR people.prsn_injry_sev_id = 4);
+    people.is_deleted = false
+    AND crashes.in_austin_full_purpose = true
+    AND crashes.private_dr_fl = false
+    AND crashes.is_deleted = false
+    AND crashes.crash_timestamp < (now() - '14 days'::interval)
+    AND (people.prsn_injry_sev_id = 1 OR people.prsn_injry_sev_id = 4);
