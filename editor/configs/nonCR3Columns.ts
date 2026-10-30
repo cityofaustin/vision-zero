@@ -20,9 +20,3 @@ export const nonCR3Columns = {
     sortable: true,
   },
 } satisfies Record<string, ColDataCardDef<NonCR3Record>>;
-
-export const emsNonCR3Columns = [
-  nonCR3Columns.address,
-  nonCR3Columns.case_timestamp,
-  nonCR3Columns.case_id,
-];

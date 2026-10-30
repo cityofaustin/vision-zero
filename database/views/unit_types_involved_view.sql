@@ -38,8 +38,7 @@ crash_summaries AS (
         distinct_unit_types.crash_pk,
         ARRAY_AGG(distinct_unit_types.unit_type ORDER BY distinct_unit_types.unit_type)
             AS unit_types_array,
-        SUM(distinct_unit_types.unit_count)
-            AS total_units
+        SUM(distinct_unit_types.unit_count) AS total_units
     FROM distinct_unit_types
     GROUP BY distinct_unit_types.crash_pk
 )

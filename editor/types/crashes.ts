@@ -7,7 +7,6 @@ import { PeopleListRow } from "@/types/peopleList";
 import { Recommendation } from "@/types/recommendation";
 import { CrashesListRow } from "@/types/crashesList";
 import { CrashNote } from "./crashNote";
-import { EMSPatientCareRecord } from "@/types/ems";
 import { CrashDiagramOrientation } from "./crashDiagramOrientation";
 import { UnitTypesInvolved } from "@/types/unitTypesInvolved";
 import { CrashRiskFactors } from "@/types/crashRiskFactors";
@@ -29,7 +28,6 @@ export type Crash = {
   geolocation_provider: GeolocationProvider;
   collsn: LookupTableOption | null;
   diagram_transform: CrashDiagramOrientation | null;
-  ems__incidents?: EMSPatientCareRecord[] | null;
   fhe_collsn_id: number | null;
   investigat_agency_id: number | null;
   agency: LookupTableOption | null;

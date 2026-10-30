@@ -1,7 +1,7 @@
 import { Crash } from "@/types/crashes";
 import { LookupTableOption } from "./relationships";
 import { Unit } from "@/types/unit";
-import { EMSPatientCareRecord } from "@/types/ems";
+
 
 export type PeopleListRow = {
   crash_pk: number;
@@ -30,8 +30,6 @@ export type PeopleListRow = {
   unit_id: number;
   unit?: Unit;
   crash?: Crash;
-  // we are using Omit to avoid a circular reference
-  ems_pcr?: Omit<EMSPatientCareRecord, "person">;
   occpnt_pos?: LookupTableOption;
   prsn_occpnt_pos_id: number | null;
   rest?: LookupTableOption;
