@@ -287,3 +287,4 @@ def test_readonly_user_cannot_copy_person_image(
     copy_url = f"{api_base_url}/images/person/{test_person_id}/copy/{test_target_person_id}"
     res = requests.post(copy_url, headers=read_only_user_headers)
     assert res.status_code == 403
+    
