@@ -262,3 +262,28 @@ def test_copy_person_image(
     res = requests.get(target_url, headers=editor_user_headers)
     assert res.status_code == 200
     assert "url" in res.json()
+
+
+def test_readonly_user_cannot_copy_person_image(
+    api_base_url,
+    test_person_id,
+    test_target_person_id,
+    editor_user_headers,
+    read_only_user_headers,
+    test_image_jpg,
+    cleanup_person_image,
+    cleanup_target_person_image,
+):
+    """Test that readonly users cannot copy a person image."""
+    source_url = f"{api_base_url}/images/person/{test_person_id}"
+
+    # Upload image to source person
+    files = {"file": test_image_jpg}
+    data = {"image_source": "test_source"}
+    res = requests.put(source_url, files=files, headers=editor_user_headers, data=data)
+    assert res.status_code == 201
+
+    # Attempt copy as readonly user
+    copy_url = f"{api_base_url}/images/person/{test_person_id}/copy/{test_target_person_id}"
+    res = requests.post(copy_url, headers=read_only_user_headers)
+    assert res.status_code == 403

@@ -440,6 +440,7 @@ def modify_person_image(person_id):
 )
 @cross_origin(headers=CORS_HEADERS)
 @requires_auth
+@requires_roles(ADMIN_ROLE_NAME, EDITOR_ROLE_NAME)
 def copy_person_image(source_person_id, target_person_id):
     """Copy a person image from one person record to another"""
     return copy_person_image_handler(source_person_id, target_person_id, s3)
