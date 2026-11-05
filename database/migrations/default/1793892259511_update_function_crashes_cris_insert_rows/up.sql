@@ -130,3 +130,4 @@ $function$
 alter table crashes_cris
     drop column cr3_stored_fl,
     drop column cr3_processed_at;
+    
