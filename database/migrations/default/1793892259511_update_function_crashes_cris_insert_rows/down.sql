@@ -1,3 +1,7 @@
+alter table crashes_cris
+  add cr3_processed_at timestamp with time zone,
+  add cr3_stored_fl boolean;
+
 CREATE OR REPLACE FUNCTION public.crashes_cris_insert_rows()
  RETURNS trigger
  LANGUAGE plpgsql
@@ -130,7 +134,3 @@ BEGIN
 END;
 $function$
 ;
-
-alter table crashes_cris
-  add cr3_processed_at timestamp with time zone,
-  add cr3_stored_fl boolean;
