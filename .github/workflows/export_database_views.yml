@@ -58,10 +58,15 @@ jobs:
 
       - name: Install sqruff
         uses: quarylabs/install-sqruff-cli-action@7805329baf7cf340e849e254cddc782f08f2d36c
+        with:
+          version: v0.40.0
+
+      - name: Verify sqruff installation
+        run: sqruff --version
+
       - name: Format SQL with sqruff
         run: |
-          sqruff fix --format human database/views
-        continue-on-error: true
+          sqruff fix --format human database/views || test $? -eq 1
 
       - name: Set Git Config
         run: |
