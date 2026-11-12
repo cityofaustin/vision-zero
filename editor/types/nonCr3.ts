@@ -68,26 +68,26 @@ export const NonCr3UploadSchema = z.object({
     (val) => (val ? Number(val) : null),
     z
       .number({
-        invalid_type_error: "Longitude is required and must be a number",
+        error: "Longitude is required and must be a number",
       })
       .min(ATX_BBOX.longitude.min, {
-        message: `Longitude is less than the minimum bounds (${ATX_BBOX.longitude.min})`,
+        error: `Longitude is less than the minimum bounds (${ATX_BBOX.longitude.min})`,
       })
       .max(ATX_BBOX.longitude.max, {
-        message: `Longitude is greater than the maximum bounds (${ATX_BBOX.longitude.max})`,
+        error: `Longitude is greater than the maximum bounds (${ATX_BBOX.longitude.max})`,
       })
   ),
   latitude: z.preprocess(
     (val) => (val ? Number(val) : null),
     z
       .number({
-        invalid_type_error: "Latitude is required and must be a number",
+        error: "Latitude is required and must be a number",
       })
       .min(ATX_BBOX.latitude.min, {
-        message: `Latitude is less than the minimum bounds (${ATX_BBOX.latitude.min})`,
+        error: `Latitude is less than the minimum bounds (${ATX_BBOX.latitude.min})`,
       })
       .max(ATX_BBOX.latitude.max, {
-        message: `Latitude is greater than the maximum bounds (${ATX_BBOX.latitude.max})`,
+        error: `Latitude is greater than the maximum bounds (${ATX_BBOX.latitude.max})`,
       })
   ),
 });
